@@ -27,18 +27,30 @@
 
 package com.alkacon.forms.client;
 
+import com.alkacon.vie.client.Entity;
 import com.alkacon.vie.client.I_Entity;
 import com.alkacon.vie.client.I_Type;
 import com.alkacon.vie.client.I_Vie;
 import com.alkacon.vie.client.Vie;
 
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.InputElement;
+import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.dom.client.NodeList;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.junit.client.GWTTestCase;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Tests the forms.<p>
  */
 public class TestForms extends GWTTestCase {
+
+    /** Change counter. */
+    private int m_changeCount;
 
     /**
      * @see com.google.gwt.junit.client.GWTTestCase#getModuleName()
@@ -71,8 +83,52 @@ public class TestForms extends GWTTestCase {
         assertNotNull("The form should not be null", form);
         assertEquals(
             "The forms inner HTML should match the exspected.",
-            "<div class=\"gwt-Label\">&lt;http:opencms/simpleAttribute&gt;</div><div class=\"gwt-Label\">my attribute value</div>",
+            "<div class=\"label\">&lt;http:opencms/simpleAttribute&gt;</div><div class=\"widgetHolder\"><input value=\"my attribute value\" class=\"gwt-TextBox\" type=\"text\"></input></div>",
             form.getElement().getInnerHTML());
+        resetChangeCount();
+        RootPanel.get().add(form);
+        ((Entity)entity).addValueChangeHandler(new ValueChangeHandler<I_Entity>() {
+
+            public void onValueChange(ValueChangeEvent<I_Entity> event) {
+
+                assertNotNull(event.getValue());
+                incrementChangeCount();
+            }
+        });
+        NodeList<Element> inputs = RootPanel.getBodyElement().getElementsByTagName("input");
+        InputElement input = (InputElement)inputs.getItem(0);
+        input.setValue("my new value");
+        triggerChangeEvent(input);
+        assertEquals(1, getChangeCount());
+    }
+
+    /**
+     * Triggers a change event on the given element.<p>
+     * 
+     * @param element the element
+     */
+    private void triggerChangeEvent(Element element) {
+
+        NativeEvent nativeEvent = Document.get().createChangeEvent();
+        element.dispatchEvent(nativeEvent);
+    }
+
+    /**
+     * Increments the change counter.<p>
+     */
+    protected void incrementChangeCount() {
+
+        m_changeCount++;
+    }
+
+    /**
+     * Returns the change count.<p>
+     * 
+     * @return the change count
+     */
+    protected int getChangeCount() {
+
+        return m_changeCount;
     }
 
     /**
@@ -83,6 +139,14 @@ public class TestForms extends GWTTestCase {
     private I_Vie getVieInstance() {
 
         return Vie.getInstance();
+    }
+
+    /**
+     * Resets the change counter.<p>
+     */
+    private void resetChangeCount() {
+
+        m_changeCount = 0;
     }
 
 }
