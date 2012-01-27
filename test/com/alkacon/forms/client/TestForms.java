@@ -29,9 +29,9 @@ package com.alkacon.forms.client;
 
 import com.alkacon.vie.client.Entity;
 import com.alkacon.vie.client.I_Entity;
-import com.alkacon.vie.client.I_Type;
 import com.alkacon.vie.client.I_Vie;
 import com.alkacon.vie.client.Vie;
+import com.alkacon.vie.shared.I_Type;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;

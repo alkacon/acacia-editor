@@ -27,7 +27,7 @@
 
 package com.alkacon.forms.client;
 
-import com.alkacon.vie.client.I_Type;
+import com.alkacon.vie.shared.I_Type;
 
 /**
  * Provides widget renderer for entity attributes.<p>

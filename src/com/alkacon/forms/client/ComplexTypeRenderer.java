@@ -29,8 +29,8 @@ package com.alkacon.forms.client;
 
 import com.alkacon.vie.client.I_Entity;
 import com.alkacon.vie.client.I_EntityAttribute;
-import com.alkacon.vie.client.I_Type;
 import com.alkacon.vie.client.I_Vie;
+import com.alkacon.vie.shared.I_Type;
 
 import java.util.List;
 

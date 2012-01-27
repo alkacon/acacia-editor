@@ -27,7 +27,7 @@
 
 package com.alkacon.forms.client;
 
-import com.alkacon.vie.client.I_Type;
+import com.alkacon.vie.shared.I_Type;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -81,7 +81,7 @@ public class WidgetService implements I_WidgetService {
     }
 
     /**
-     * @see com.alkacon.forms.client.I_WidgetService#getRendererForAttribute(java.lang.String, com.alkacon.vie.client.I_Type)
+     * @see com.alkacon.forms.client.I_WidgetService#getRendererForAttribute(java.lang.String, com.alkacon.vie.shared.I_Type)
      */
     public I_EntityRenderer getRendererForAttribute(String attributeName, I_Type attributeType) {
 
@@ -112,7 +112,7 @@ public class WidgetService implements I_WidgetService {
     }
 
     /**
-     * @see com.alkacon.forms.client.I_WidgetService#getRendererForType(com.alkacon.vie.client.I_Type)
+     * @see com.alkacon.forms.client.I_WidgetService#getRendererForType(com.alkacon.vie.shared.I_Type)
      */
     public I_EntityRenderer getRendererForType(I_Type entityType) {
 
