@@ -27,6 +27,7 @@
 
 package com.alkacon.forms.client;
 
+import com.alkacon.forms.client.css.I_LayoutBundle;
 import com.alkacon.vie.client.I_Entity;
 import com.alkacon.vie.client.I_EntityAttribute;
 import com.alkacon.vie.client.I_Vie;
@@ -45,16 +46,16 @@ import com.google.gwt.user.client.ui.Widget;
 public class ComplexTypeRenderer implements I_EntityRenderer {
 
     /** The entity CSS class. */
-    public static final String ENTITY_CLASS = "entitiy";
+    public static final String ENTITY_CLASS = I_LayoutBundle.INSTANCE.style().entity();
 
     /** The attribute label CSS class. */
-    public static final String LABEL_CLASS = "label";
-
-    /** The widget service. */
-    private I_WidgetService m_widgetService;
+    public static final String LABEL_CLASS = I_LayoutBundle.INSTANCE.style().label();
 
     /** The VIE instance. */
     private I_Vie m_vie;
+
+    /** The widget service. */
+    private I_WidgetService m_widgetService;
 
     /**
      * Constructor.<p>
@@ -69,6 +70,22 @@ public class ComplexTypeRenderer implements I_EntityRenderer {
     }
 
     /**
+     * @see com.alkacon.forms.client.I_EntityRenderer#getHelp(java.lang.String)
+     */
+    public String getHelp(String attributeName) {
+
+        return attributeName;
+    }
+
+    /**
+     * @see com.alkacon.forms.client.I_EntityRenderer#getLabel(java.lang.String)
+     */
+    public String getLabel(String attributeName) {
+
+        return attributeName;
+    }
+
+    /**
      * @see com.alkacon.forms.client.I_EntityRenderer#render(com.alkacon.vie.client.I_Entity)
      */
     public Widget render(I_Entity entity) {
@@ -78,11 +95,16 @@ public class ComplexTypeRenderer implements I_EntityRenderer {
         I_Type entityType = m_vie.getType(entity.getTypeName());
         List<String> attributeNames = entityType.getAttributeNames();
         for (String attributeName : attributeNames) {
-            Label label = new Label(attributeName);
-            label.setStyleName(LABEL_CLASS);
-            result.add(label);
             I_Type attributeType = entityType.getAttributeType(attributeName);
             I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(attributeName, attributeType);
+            Label label = new Label(renderer.getLabel(attributeName));
+            label.setStyleName(LABEL_CLASS);
+            label.setTitle(renderer.getHelp(attributeName));
+            result.add(label);
+            I_EntityAttribute attribute = entity.getAttribute(attributeName);
+            if (attribute == null) {
+                throw new RuntimeException("Attribute " + attributeName + " is not set for the given entity.");
+            }
             renderer.render(entity, entity.getAttribute(attributeName), result);
         }
         return result;
@@ -100,5 +122,13 @@ public class ComplexTypeRenderer implements I_EntityRenderer {
                 parentPanel.add(render(entity));
             }
         }
+    }
+
+    /**
+     * @see com.alkacon.forms.client.I_EntityRenderer#initConfiguration(java.lang.String)
+     */
+    public void initConfiguration(String configuration) {
+
+        // nothing to do
     }
 }

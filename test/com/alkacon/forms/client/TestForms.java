@@ -77,7 +77,7 @@ public class TestForms extends GWTTestCase {
         entity.setAttributeValue(attributeName, "my attribute value");
         WidgetService service = new WidgetService();
         service.setDefaultComplexRenderer(new ComplexTypeRenderer(service, vie));
-        service.setDefaultSimpleRenderer(new SimpleTypeRenderer());
+        service.setDefaultSimpleRenderer(new StringTypeRenderer());
         I_EntityRenderer renderer = service.getRendererForType(complex);
         Widget form = renderer.render(entity);
         assertNotNull("The form should not be null", form);

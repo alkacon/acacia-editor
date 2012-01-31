@@ -1,0 +1,11 @@
+@external entity, label, widgetHolder;
+
+.entity{
+	margin-left:20px;
+}
+
+.label{
+	font-weight: bold;
+}
+
+.widgetHolder{}

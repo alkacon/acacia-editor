@@ -39,6 +39,31 @@ import com.google.gwt.user.client.ui.Widget;
 public interface I_EntityRenderer {
 
     /**
+     * Initializes the render configuration.<p>
+     * 
+     * @param configuration the configuration
+     */
+    void initConfiguration(String configuration);
+
+    /**
+     * Returns the help information to the attribute.<p>
+     * 
+     * @param attributeName the attribute name
+     * 
+     * @return the help information to the attribute
+     */
+    String getHelp(String attributeName);
+
+    /**
+     * Returns the attribute label.<p>
+     * 
+     * @param attributeName the name of the attribute to render
+     * 
+     * @return the attribute label
+     */
+    String getLabel(String attributeName);
+
+    /**
      * Renders the given entity into a widget.<p>
      * 
      * @param entity the entity to render

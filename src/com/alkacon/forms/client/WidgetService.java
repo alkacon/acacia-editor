@@ -27,10 +27,13 @@
 
 package com.alkacon.forms.client;
 
+import com.alkacon.forms.shared.AttributeConfiguration;
+import com.alkacon.forms.shared.ContentDefinition;
 import com.alkacon.vie.shared.I_Type;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Service providing form widget renderer for entity attributes.<p>
@@ -56,6 +59,29 @@ public class WidgetService implements I_WidgetService {
 
         m_rendererByAttribute = new HashMap<String, I_EntityRenderer>();
         m_rendererByType = new HashMap<String, I_EntityRenderer>();
+    }
+
+    /**
+     * Initializes the widget service with the given content definition.<p>
+     * 
+     * @param definition the content definition
+     */
+    public void init(ContentDefinition definition) {
+
+        for (Entry<String, AttributeConfiguration> entry : definition.getConfigurations().entrySet()) {
+            if (entry.getValue().getWidgetName().equals("string")) {
+                I_EntityRenderer renderer = new StringTypeRenderer(
+                    entry.getValue().getLabel(),
+                    entry.getValue().getHelp());
+                m_rendererByAttribute.put(entry.getKey(), renderer);
+            } else if (entry.getValue().getWidgetName().equals("select")) {
+                I_EntityRenderer renderer = new SelectTypeRenderer(
+                    entry.getValue().getLabel(),
+                    entry.getValue().getHelp());
+                renderer.initConfiguration(entry.getValue().getWidgetConfig());
+                m_rendererByAttribute.put(entry.getKey(), renderer);
+            }
+        }
     }
 
     /**

@@ -27,6 +27,7 @@
 
 package com.alkacon.forms.client;
 
+import com.alkacon.forms.client.css.I_LayoutBundle;
 import com.alkacon.vie.client.I_Entity;
 import com.alkacon.vie.client.I_EntityAttribute;
 
@@ -42,21 +43,18 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * The simple type renderer.<p>
  */
-public class SimpleTypeRenderer implements I_EntityRenderer {
-
-    /** The widget holder CSS class. */
-    public static final String WIDGET_HOLDER_CLASS = "widgetHolder";
+public class StringTypeRenderer implements I_EntityRenderer {
 
     /**
      * The value change handler.<p>
      */
     protected class SimpleValueChangeHandler implements ValueChangeHandler<String> {
 
-        /** The entity. */
-        private I_Entity m_entity;
-
         /** The attribute name. */
         private String m_attributeName;
+
+        /** The entity. */
+        private I_Entity m_entity;
 
         /** The value index. */
         private int m_index;
@@ -100,6 +98,58 @@ public class SimpleTypeRenderer implements I_EntityRenderer {
             }
 
         }
+    }
+
+    /** The widget holder CSS class. */
+    public static final String WIDGET_HOLDER_CLASS = I_LayoutBundle.INSTANCE.style().widgetHolder();
+
+    /** The help information. */
+    private String m_help;
+
+    /** The label. */
+    private String m_label;
+
+    /**
+     * Constructor.<p>
+     */
+    public StringTypeRenderer() {
+
+    }
+
+    /**
+     * Constructor.<p>
+     * 
+     * @param label the attribute label
+     * @param help the attribute help information
+     */
+    public StringTypeRenderer(String label, String help) {
+
+        m_label = label;
+        m_help = help;
+    }
+
+    /**
+     * @see com.alkacon.forms.client.I_EntityRenderer#getHelp(java.lang.String)
+     */
+    public String getHelp(String attributeName) {
+
+        return m_help != null ? m_help : attributeName;
+    }
+
+    /**
+     * @see com.alkacon.forms.client.I_EntityRenderer#getLabel(java.lang.String)
+     */
+    public String getLabel(String attributeName) {
+
+        return m_label != null ? m_label : attributeName;
+    }
+
+    /**
+     * @see com.alkacon.forms.client.I_EntityRenderer#initConfiguration(java.lang.String)
+     */
+    public void initConfiguration(String configuration) {
+
+        // nothing to do
     }
 
     /**
