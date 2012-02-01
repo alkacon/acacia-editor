@@ -28,7 +28,6 @@
 package com.alkacon.forms.client;
 
 import com.alkacon.vie.client.I_Entity;
-import com.alkacon.vie.client.I_EntityAttribute;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
@@ -76,8 +75,15 @@ public interface I_EntityRenderer {
      * Renders the attribute values.<p>
      * 
      * @param parentEntity the parent entity 
-     * @param attribute the attribute
+     * @param attributeName the attribute name
      * @param parentPanel the parent widget
+     * @param minOccurrence the minimum occurrence of this attribute
+     * @param MaxOccurrence the maximum occurrence of this attribute
      */
-    void render(I_Entity parentEntity, I_EntityAttribute attribute, HasWidgets parentPanel);
+    void render(
+        I_Entity parentEntity,
+        String attributeName,
+        HasWidgets parentPanel,
+        int minOccurrence,
+        int MaxOccurrence);
 }

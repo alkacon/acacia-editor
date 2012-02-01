@@ -28,21 +28,19 @@
 package com.alkacon.forms.client;
 
 import com.alkacon.vie.client.I_Entity;
-import com.alkacon.vie.client.I_EntityAttribute;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Select box renderer.<p>
  */
-public class SelectTypeRenderer extends StringTypeRenderer {
+public class SelectTypeRenderer extends A_SimpleTypeRenderer {
 
     /**
      * The change handler.<p>
@@ -79,23 +77,7 @@ public class SelectTypeRenderer extends StringTypeRenderer {
 
             ListBox box = (ListBox)event.getSource();
             String newValue = box.getValue(box.getSelectedIndex());
-            I_EntityAttribute attribute = m_entity.getAttribute(m_attributeName);
-            if ((m_index == 0) && attribute.isSingleValue()) {
-                m_entity.setAttributeValue(m_attributeName, newValue);
-            } else {
-                List<String> values = attribute.getSimpleValues();
-                if (m_index >= values.size()) {
-                    // TODO: throw exception
-                }
-                m_entity.removeAttributeSilent(m_attributeName);
-                for (int i = 0; i < values.size(); i++) {
-                    if (i == m_index) {
-                        m_entity.addAttributeValue(m_attributeName, newValue);
-                    } else {
-                        m_entity.addAttributeValue(m_attributeName, values.get(i));
-                    }
-                }
-            }
+            m_entity.setAttributeValue(m_attributeName, newValue, m_index);
         }
     }
 
@@ -184,37 +166,27 @@ public class SelectTypeRenderer extends StringTypeRenderer {
     }
 
     /**
-     * @see com.alkacon.forms.client.I_EntityRenderer#render(com.alkacon.vie.client.I_Entity, com.alkacon.vie.client.I_EntityAttribute, com.google.gwt.user.client.ui.HasWidgets)
+     * @see com.alkacon.forms.client.A_SimpleTypeRenderer#getWidget(java.lang.String, com.alkacon.vie.client.I_Entity, java.lang.String, int)
      */
     @Override
-    public void render(I_Entity parentEntity, I_EntityAttribute attribute, HasWidgets parentPanel) {
+    protected Widget getWidget(String value, I_Entity entity, String attributeName, int valueIndex) {
 
-        if (attribute.isComplexValue()) {
-            // TODO: throw exception
-        } else {
-            List<String> values = attribute.getSimpleValues();
-            for (int i = 0; i < values.size(); i++) {
-                SimplePanel panel = new SimplePanel();
-                panel.setStyleName(WIDGET_HOLDER_CLASS);
-                ListBox select = new ListBox();
-                int index = -1;
-                for (int j = 0; j < m_options.size(); j++) {
-                    SelectOption option = m_options.get(j);
-                    select.addItem(option.getLabel(), option.getValue());
-                    if ((index == -1) && option.getValue().equals(values.get(i))) {
-                        index = j;
-                    }
-                }
-                if (index == -1) {
-                    index = 0;
-                }
-
-                select.setSelectedIndex(index);
-                select.addChangeHandler(new SelectChangeHandler(parentEntity, attribute.getAttributeName(), i));
-                panel.setWidget(select);
-                parentPanel.add(panel);
+        ListBox select = new ListBox();
+        int index = -1;
+        for (int j = 0; j < m_options.size(); j++) {
+            SelectOption option = m_options.get(j);
+            select.addItem(option.getLabel(), option.getValue());
+            if ((index == -1) && option.getValue().equals(value)) {
+                index = j;
             }
         }
+        if (index == -1) {
+            index = 0;
+        }
+
+        select.setSelectedIndex(index);
+        select.addChangeHandler(new SelectChangeHandler(entity, attributeName, valueIndex));
+        return select;
     }
 
 }

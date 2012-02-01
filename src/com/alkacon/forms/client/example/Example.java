@@ -113,7 +113,7 @@ public class Example implements EntryPoint {
             @Override
             public void onValueChange(ValueChangeEvent<I_Entity> event) {
 
-                RootPanel.get().getElement().getStyle().setBackgroundColor("red");
+                RootPanel.get().getElement().getStyle().setBackgroundColor("#77f3f3");
                 RootPanel.get().add(new Label(event.getValue().toJSON()));
             }
         });

@@ -101,20 +101,27 @@ public class ComplexTypeRenderer implements I_EntityRenderer {
             label.setStyleName(LABEL_CLASS);
             label.setTitle(renderer.getHelp(attributeName));
             result.add(label);
-            I_EntityAttribute attribute = entity.getAttribute(attributeName);
-            if (attribute == null) {
-                throw new RuntimeException("Attribute " + attributeName + " is not set for the given entity.");
-            }
-            renderer.render(entity, entity.getAttribute(attributeName), result);
+            renderer.render(
+                entity,
+                attributeName,
+                result,
+                entityType.getAttributeMinOccurrence(attributeName),
+                entityType.getAttributeMaxOccurrence(attributeName));
         }
         return result;
     }
 
     /**
-     * @see com.alkacon.forms.client.I_EntityRenderer#render(com.alkacon.vie.client.I_Entity, com.alkacon.vie.client.I_EntityAttribute, com.google.gwt.user.client.ui.HasWidgets)
+     * @see com.alkacon.forms.client.I_EntityRenderer#render(com.alkacon.vie.client.I_Entity, java.lang.String, com.google.gwt.user.client.ui.HasWidgets, int, int)
      */
-    public void render(I_Entity parentEntity, I_EntityAttribute attribute, HasWidgets parentPanel) {
+    public void render(
+        I_Entity parentEntity,
+        String attributeName,
+        HasWidgets parentPanel,
+        int minOccurrence,
+        int maxOccurrence) {
 
+        I_EntityAttribute attribute = parentEntity.getAttribute(attributeName);
         if (attribute.isSimpleValue()) {
             //TODO: throw exception
         } else {

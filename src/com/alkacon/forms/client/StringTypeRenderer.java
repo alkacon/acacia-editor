@@ -27,87 +27,15 @@
 
 package com.alkacon.forms.client;
 
-import com.alkacon.forms.client.css.I_LayoutBundle;
 import com.alkacon.vie.client.I_Entity;
-import com.alkacon.vie.client.I_EntityAttribute;
 
-import java.util.List;
-
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
  * The simple type renderer.<p>
  */
-public class StringTypeRenderer implements I_EntityRenderer {
-
-    /**
-     * The value change handler.<p>
-     */
-    protected class SimpleValueChangeHandler implements ValueChangeHandler<String> {
-
-        /** The attribute name. */
-        private String m_attributeName;
-
-        /** The entity. */
-        private I_Entity m_entity;
-
-        /** The value index. */
-        private int m_index;
-
-        /**
-         * Constructor.<p>
-         * 
-         * @param parentEntity the entity to change
-         * @param attributeName the attribute name
-         * @param index the value index
-         */
-        protected SimpleValueChangeHandler(I_Entity parentEntity, String attributeName, int index) {
-
-            m_entity = parentEntity;
-            m_attributeName = attributeName;
-            m_index = index;
-        }
-
-        /**
-         * @see com.google.gwt.event.logical.shared.ValueChangeHandler#onValueChange(com.google.gwt.event.logical.shared.ValueChangeEvent)
-         */
-        public void onValueChange(ValueChangeEvent<String> event) {
-
-            String newValue = event.getValue();
-            I_EntityAttribute attribute = m_entity.getAttribute(m_attributeName);
-            if ((m_index == 0) && attribute.isSingleValue()) {
-                m_entity.setAttributeValue(m_attributeName, newValue);
-            } else {
-                List<String> values = attribute.getSimpleValues();
-                if (m_index >= values.size()) {
-                    // TODO: throw exception
-                }
-                m_entity.removeAttributeSilent(m_attributeName);
-                for (int i = 0; i < values.size(); i++) {
-                    if (i == m_index) {
-                        m_entity.addAttributeValue(m_attributeName, newValue);
-                    } else {
-                        m_entity.addAttributeValue(m_attributeName, values.get(i));
-                    }
-                }
-            }
-
-        }
-    }
-
-    /** The widget holder CSS class. */
-    public static final String WIDGET_HOLDER_CLASS = I_LayoutBundle.INSTANCE.style().widgetHolder();
-
-    /** The help information. */
-    private String m_help;
-
-    /** The label. */
-    private String m_label;
+public class StringTypeRenderer extends A_SimpleTypeRenderer {
 
     /**
      * Constructor.<p>
@@ -124,64 +52,18 @@ public class StringTypeRenderer implements I_EntityRenderer {
      */
     public StringTypeRenderer(String label, String help) {
 
-        m_label = label;
-        m_help = help;
+        super(label, help);
     }
 
     /**
-     * @see com.alkacon.forms.client.I_EntityRenderer#getHelp(java.lang.String)
+     * @see com.alkacon.forms.client.A_SimpleTypeRenderer#getWidget(java.lang.String, com.alkacon.vie.client.I_Entity, java.lang.String, int)
      */
-    public String getHelp(String attributeName) {
+    @Override
+    protected Widget getWidget(String value, I_Entity entity, String attributeName, int valueIndex) {
 
-        return m_help != null ? m_help : attributeName;
-    }
-
-    /**
-     * @see com.alkacon.forms.client.I_EntityRenderer#getLabel(java.lang.String)
-     */
-    public String getLabel(String attributeName) {
-
-        return m_label != null ? m_label : attributeName;
-    }
-
-    /**
-     * @see com.alkacon.forms.client.I_EntityRenderer#initConfiguration(java.lang.String)
-     */
-    public void initConfiguration(String configuration) {
-
-        // nothing to do
-    }
-
-    /**
-     * @see com.alkacon.forms.client.I_EntityRenderer#render(com.alkacon.vie.client.I_Entity)
-     */
-    public Widget render(I_Entity entity) {
-
-        // TODO: throw exception
-        return null;
-    }
-
-    /**
-     * @see com.alkacon.forms.client.I_EntityRenderer#render(com.alkacon.vie.client.I_Entity, com.alkacon.vie.client.I_EntityAttribute, com.google.gwt.user.client.ui.HasWidgets)
-     */
-    public void render(I_Entity parentEntity, I_EntityAttribute attribute, HasWidgets parentPanel) {
-
-        if (attribute.isComplexValue()) {
-            // TODO: throw exception
-        } else {
-            List<String> values = attribute.getSimpleValues();
-            for (int i = 0; i < values.size(); i++) {
-                SimplePanel panel = new SimplePanel();
-                panel.setStyleName(WIDGET_HOLDER_CLASS);
-                TextBox textBox = new TextBox();
-                textBox.setValue(values.get(i), false);
-                textBox.addValueChangeHandler(new SimpleValueChangeHandler(
-                    parentEntity,
-                    attribute.getAttributeName(),
-                    i));
-                panel.setWidget(textBox);
-                parentPanel.add(panel);
-            }
-        }
+        TextBox textBox = new TextBox();
+        textBox.setValue(value, false);
+        textBox.addValueChangeHandler(new SimpleValueChangeHandler(entity, attributeName, valueIndex));
+        return textBox;
     }
 }
