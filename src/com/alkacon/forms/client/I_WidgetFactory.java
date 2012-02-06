@@ -27,6 +27,8 @@
 
 package com.alkacon.forms.client;
 
+import com.alkacon.forms.client.widgets.I_EditWidget;
+
 /**
  * Generates an editing widget with the given configuration.<p>
  */

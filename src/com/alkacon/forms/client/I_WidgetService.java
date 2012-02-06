@@ -27,6 +27,7 @@
 
 package com.alkacon.forms.client;
 
+import com.alkacon.forms.client.widgets.I_EditWidget;
 import com.alkacon.vie.shared.I_Type;
 
 /**

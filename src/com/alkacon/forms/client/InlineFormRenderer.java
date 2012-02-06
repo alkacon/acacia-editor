@@ -27,6 +27,7 @@
 
 package com.alkacon.forms.client;
 
+import com.alkacon.forms.client.widgets.I_EditWidget;
 import com.alkacon.vie.client.I_Entity;
 import com.alkacon.vie.client.I_EntityAttribute;
 import com.alkacon.vie.client.I_Vie;

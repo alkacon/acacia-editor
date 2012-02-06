@@ -25,19 +25,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package com.alkacon.forms.client;
+package com.alkacon.forms.client.widgets;
 
-import com.alkacon.vie.client.I_Entity;
 
-import com.google.gwt.event.dom.client.BlurEvent;
-import com.google.gwt.event.dom.client.BlurHandler;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.DomEvent;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerManager;
@@ -49,18 +41,15 @@ import com.google.gwt.user.client.EventListener;
 import com.google.gwt.user.client.ui.UIObject;
 
 /**
- * The string edit widget.<p>
+ * Abstract editing widget class.<p>
  */
-public class StringWidget extends UIObject implements I_EditWidget, EventListener {
+public abstract class A_EditWidget extends UIObject implements I_EditWidget, EventListener {
 
     /** The handler manager. */
     private HandlerManager m_handlerManager;
 
     /** The previous value. */
     private String m_previousValue;
-
-    /** The value changed handler initialized flag. */
-    private boolean m_valueChangeHandlerInitialized;
 
     /**
      * Adds a native event handler to the widget and sinks the corresponding
@@ -99,44 +88,6 @@ public class StringWidget extends UIObject implements I_EditWidget, EventListene
     }
 
     /**
-     * @see com.google.gwt.event.logical.shared.HasValueChangeHandlers#addValueChangeHandler(com.google.gwt.event.logical.shared.ValueChangeHandler)
-     */
-    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> handler) {
-
-        // Initialization code
-        if (!m_valueChangeHandlerInitialized) {
-            m_valueChangeHandlerInitialized = true;
-            addDomHandler(new KeyPressHandler() {
-
-                @Override
-                public void onKeyPress(KeyPressEvent event) {
-
-                    fireValueChange();
-
-                }
-            }, KeyPressEvent.getType());
-            addDomHandler(new ChangeHandler() {
-
-                @Override
-                public void onChange(ChangeEvent event) {
-
-                    fireValueChange();
-
-                }
-            }, ChangeEvent.getType());
-            addDomHandler(new BlurHandler() {
-
-                @Override
-                public void onBlur(BlurEvent event) {
-
-                    fireValueChange();
-                }
-            }, BlurEvent.getType());
-        }
-        return addHandler(handler, ValueChangeEvent.getType());
-    }
-
-    /**
      * @see com.google.gwt.event.shared.HasHandlers#fireEvent(com.google.gwt.event.shared.GwtEvent)
      */
     public void fireEvent(GwtEvent<?> event) {
@@ -154,19 +105,6 @@ public class StringWidget extends UIObject implements I_EditWidget, EventListene
     public String getValue() {
 
         return getElement().getInnerText();
-    }
-
-    /**
-     * @see com.alkacon.forms.client.I_EditWidget#initWidget(com.google.gwt.user.client.Element, com.alkacon.vie.client.I_Entity, java.lang.String, int)
-     */
-    public I_EditWidget initWidget(Element element, I_Entity entity, String attributeName, int valueIndex) {
-
-        setElement(element);
-        DOM.setEventListener(getElement(), this);
-        m_previousValue = getValue();
-        getElement().setAttribute("contenteditable", "true");
-        getElement().getStyle().setColor("red");
-        return this;
     }
 
     /**
@@ -192,34 +130,6 @@ public class StringWidget extends UIObject implements I_EditWidget, EventListene
     }
 
     /**
-     * @see com.alkacon.forms.client.I_EditWidget#setConfiguration(java.lang.String)
-     */
-    public void setConfiguration(String confuguration) {
-
-        // TODO: Auto-generated method stub
-
-    }
-
-    /**
-     * @see com.google.gwt.user.client.ui.HasValue#setValue(java.lang.Object)
-     */
-    public void setValue(String value) {
-
-        setValue(value, true);
-    }
-
-    /**
-     * @see com.google.gwt.user.client.ui.HasValue#setValue(java.lang.Object, boolean)
-     */
-    public void setValue(String value, boolean fireEvents) {
-
-        getElement().setInnerText(value);
-        if (fireEvents) {
-            fireValueChange();
-        }
-    }
-
-    /**
      * Creates the {@link HandlerManager} used by this Widget. You can override
      * this method to create a custom {@link HandlerManager}.
      *
@@ -240,6 +150,36 @@ public class StringWidget extends UIObject implements I_EditWidget, EventListene
             m_previousValue = currentValue;
         }
         ValueChangeEvent.fire(this, currentValue);
+    }
+
+    /**
+     * Returns the previous value.<p>
+     *
+     * @return the previous value
+     */
+    protected String getPreviousValue() {
+
+        return m_previousValue;
+    }
+
+    /**
+     * @see com.google.gwt.user.client.ui.UIObject#setElement(com.google.gwt.user.client.Element)
+     */
+    @Override
+    protected void setElement(Element element) {
+
+        super.setElement(element);
+        DOM.setEventListener(getElement(), this);
+    }
+
+    /**
+     * Sets the previous value.<p>
+     *
+     * @param previousValue the previous value to set
+     */
+    protected void setPreviousValue(String previousValue) {
+
+        m_previousValue = previousValue;
     }
 
     /**

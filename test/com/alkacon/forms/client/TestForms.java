@@ -27,6 +27,8 @@
 
 package com.alkacon.forms.client;
 
+import com.alkacon.forms.client.widgets.I_EditWidget;
+import com.alkacon.forms.client.widgets.StringWidget;
 import com.alkacon.forms.shared.AttributeConfiguration;
 import com.alkacon.forms.shared.ContentDefinition;
 import com.alkacon.forms.shared.Type;

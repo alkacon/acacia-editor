@@ -28,9 +28,12 @@
 package com.alkacon.forms.client.example;
 
 import com.alkacon.forms.client.I_EntityRenderer;
+import com.alkacon.forms.client.I_WidgetFactory;
 import com.alkacon.forms.client.InlineFormRenderer;
 import com.alkacon.forms.client.WidgetService;
 import com.alkacon.forms.client.css.I_LayoutBundle;
+import com.alkacon.forms.client.widgets.I_EditWidget;
+import com.alkacon.forms.client.widgets.StringWidget;
 import com.alkacon.forms.shared.AttributeConfiguration;
 import com.alkacon.forms.shared.ContentDefinition;
 import com.alkacon.forms.shared.Type;
@@ -101,6 +104,13 @@ public class Example implements EntryPoint {
         person.setAttributeValue(addressAttribute, address);
         WidgetService service = new WidgetService();
         service.init(definition);
+        service.registerWidgetFactory("string", new I_WidgetFactory() {
+
+            public I_EditWidget createWidget(String configuration) {
+
+                return new StringWidget();
+            }
+        });
         I_EntityRenderer inlineRenderer = new InlineFormRenderer(vie, service);
         service.setDefaultComplexRenderer(inlineRenderer);
         service.setDefaultSimpleRenderer(inlineRenderer);
