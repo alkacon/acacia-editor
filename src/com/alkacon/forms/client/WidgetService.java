@@ -33,18 +33,14 @@ import com.alkacon.vie.shared.I_Type;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Service providing form widget renderer for entity attributes.<p>
  */
 public class WidgetService implements I_WidgetService {
 
-    /** Map of renderer by attribute name. */
-    private Map<String, I_EntityRenderer> m_rendererByAttribute;
-
-    /** Map of renderer by type name. */
-    private Map<String, I_EntityRenderer> m_rendererByType;
+    /** The attribute configurations. */
+    private Map<String, AttributeConfiguration> m_attributeConfigurations;
 
     /** The default complex type renderer. */
     private I_EntityRenderer m_defaultComplexTypeRenderer;
@@ -52,13 +48,101 @@ public class WidgetService implements I_WidgetService {
     /** The default simple type renderer. */
     private I_EntityRenderer m_defaultSimpleTypeRenderer;
 
+    /** Map of renderer by type name. */
+    private Map<String, I_EntityRenderer> m_rendererByType;
+
     /**
      * Constructor.<p>
      */
     public WidgetService() {
 
-        m_rendererByAttribute = new HashMap<String, I_EntityRenderer>();
         m_rendererByType = new HashMap<String, I_EntityRenderer>();
+    }
+
+    /**
+     * @see com.alkacon.forms.client.I_WidgetService#getAttributeHelp(java.lang.String)
+     */
+    public String getAttributeHelp(String attributeName) {
+
+        if (m_attributeConfigurations != null) {
+            AttributeConfiguration config = m_attributeConfigurations.get(attributeName);
+            if (config != null) {
+                return config.getHelp();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @see com.alkacon.forms.client.I_WidgetService#getAttributeLabel(java.lang.String)
+     */
+    public String getAttributeLabel(String attributeName) {
+
+        if (m_attributeConfigurations != null) {
+            AttributeConfiguration config = m_attributeConfigurations.get(attributeName);
+            if (config != null) {
+                return config.getLabel();
+            }
+        }
+        return attributeName;
+    }
+
+    /**
+     * @see com.alkacon.forms.client.I_WidgetService#getAttributeWidget(java.lang.String)
+     */
+    public I_EditWidget getAttributeWidget(String attributeName) {
+
+        if (m_attributeConfigurations != null) {
+            AttributeConfiguration config = m_attributeConfigurations.get(attributeName);
+            if (config != null) {
+                if (config.getWidgetName().equals("string")) {
+
+                    return new StringWidget();
+                }
+            }
+        }
+        return new StringWidget();
+    }
+
+    /**
+     * @see com.alkacon.forms.client.I_WidgetService#getRendererForAttribute(java.lang.String, com.alkacon.vie.shared.I_Type)
+     */
+    public I_EntityRenderer getRendererForAttribute(String attributeName, I_Type attributeType) {
+
+        if (m_attributeConfigurations != null) {
+            AttributeConfiguration config = m_attributeConfigurations.get(attributeName);
+            if (config != null) {
+
+                // TODO: change render mechanism
+
+                //            if (config.getWidgetName().equals("string")) {
+                //                I_EntityRenderer renderer = new StringTypeRenderer(config.getLabel(), config.getHelp());
+                //                return renderer;
+                //            }
+                //            if (config.getWidgetName().equals("select")) {
+                //                I_EntityRenderer renderer = new SelectTypeRenderer(config.getLabel(), config.getHelp());
+                //                return renderer;
+                //            }
+            }
+        }
+        if (attributeType.isSimpleType()) {
+            return m_defaultSimpleTypeRenderer;
+        }
+        return m_defaultComplexTypeRenderer;
+    }
+
+    /**
+     * @see com.alkacon.forms.client.I_WidgetService#getRendererForType(com.alkacon.vie.shared.I_Type)
+     */
+    public I_EntityRenderer getRendererForType(I_Type entityType) {
+
+        if (m_rendererByType.containsKey(entityType.getId())) {
+            return m_rendererByType.get(entityType.getId());
+        }
+        if (entityType.isSimpleType()) {
+            return m_defaultSimpleTypeRenderer;
+        }
+        return m_defaultComplexTypeRenderer;
     }
 
     /**
@@ -68,53 +152,7 @@ public class WidgetService implements I_WidgetService {
      */
     public void init(ContentDefinition definition) {
 
-        for (Entry<String, AttributeConfiguration> entry : definition.getConfigurations().entrySet()) {
-            if (entry.getValue().getWidgetName().equals("string")) {
-                I_EntityRenderer renderer = new StringTypeRenderer(
-                    entry.getValue().getLabel(),
-                    entry.getValue().getHelp());
-                m_rendererByAttribute.put(entry.getKey(), renderer);
-            } else if (entry.getValue().getWidgetName().equals("select")) {
-                I_EntityRenderer renderer = new SelectTypeRenderer(
-                    entry.getValue().getLabel(),
-                    entry.getValue().getHelp());
-                renderer.initConfiguration(entry.getValue().getWidgetConfig());
-                m_rendererByAttribute.put(entry.getKey(), renderer);
-            }
-        }
-    }
-
-    /**
-     * Adds a renderer for the given attribute.<p>
-     * 
-     * @param attributeName the attribute name
-     * @param renderer the renderer
-     */
-    public void addRendererForAttribute(String attributeName, I_EntityRenderer renderer) {
-
-        m_rendererByAttribute.put(attributeName, renderer);
-    }
-
-    /**
-     * Adds a renderer for the given type.<p>
-     * 
-     * @param typeName the type name
-     * @param renderer the renderer
-     */
-    public void addRendererForType(String typeName, I_EntityRenderer renderer) {
-
-        m_rendererByType.put(typeName, renderer);
-    }
-
-    /**
-     * @see com.alkacon.forms.client.I_WidgetService#getRendererForAttribute(java.lang.String, com.alkacon.vie.shared.I_Type)
-     */
-    public I_EntityRenderer getRendererForAttribute(String attributeName, I_Type attributeType) {
-
-        if (m_rendererByAttribute.containsKey(attributeName)) {
-            return m_rendererByAttribute.get(attributeName);
-        }
-        return getRendererForType(attributeType);
+        m_attributeConfigurations = definition.getConfigurations();
     }
 
     /**
@@ -135,20 +173,6 @@ public class WidgetService implements I_WidgetService {
     public void setDefaultSimpleRenderer(I_EntityRenderer renderer) {
 
         m_defaultSimpleTypeRenderer = renderer;
-    }
-
-    /**
-     * @see com.alkacon.forms.client.I_WidgetService#getRendererForType(com.alkacon.vie.shared.I_Type)
-     */
-    public I_EntityRenderer getRendererForType(I_Type entityType) {
-
-        if (m_rendererByType.containsKey(entityType.getId())) {
-            return m_rendererByType.get(entityType.getId());
-        }
-        if (entityType.isSimpleType()) {
-            return m_defaultSimpleTypeRenderer;
-        }
-        return m_defaultComplexTypeRenderer;
     }
 
 }

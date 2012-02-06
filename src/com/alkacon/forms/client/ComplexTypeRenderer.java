@@ -31,14 +31,13 @@ import com.alkacon.forms.client.css.I_LayoutBundle;
 import com.alkacon.vie.client.I_Entity;
 import com.alkacon.vie.client.I_EntityAttribute;
 import com.alkacon.vie.client.I_Vie;
+import com.alkacon.vie.client.Vie;
 import com.alkacon.vie.shared.I_Type;
 
 import java.util.List;
 
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 
 /**
  * Widget rendering the form view of an entity.<p>
@@ -50,6 +49,9 @@ public class ComplexTypeRenderer implements I_EntityRenderer {
 
     /** The attribute label CSS class. */
     public static final String LABEL_CLASS = I_LayoutBundle.INSTANCE.style().label();
+
+    /** The widget holder CSS class. */
+    public static final String WIDGET_HOLDER_CLASS = I_LayoutBundle.INSTANCE.style().widgetHolder();
 
     /** The VIE instance. */
     private I_Vie m_vie;
@@ -70,37 +72,24 @@ public class ComplexTypeRenderer implements I_EntityRenderer {
     }
 
     /**
-     * @see com.alkacon.forms.client.I_EntityRenderer#getHelp(java.lang.String)
+     * @see com.alkacon.forms.client.I_EntityRenderer#render(com.alkacon.vie.client.I_Entity, com.google.gwt.user.client.Element)
      */
-    public String getHelp(String attributeName) {
+    public void render(I_Entity entity, Element context) {
 
-        return attributeName;
-    }
-
-    /**
-     * @see com.alkacon.forms.client.I_EntityRenderer#getLabel(java.lang.String)
-     */
-    public String getLabel(String attributeName) {
-
-        return attributeName;
-    }
-
-    /**
-     * @see com.alkacon.forms.client.I_EntityRenderer#render(com.alkacon.vie.client.I_Entity)
-     */
-    public Widget render(I_Entity entity) {
-
-        FlowPanel result = new FlowPanel();
-        result.setStyleName(ENTITY_CLASS);
+        Element result = DOM.createDiv();
+        result.addClassName(ENTITY_CLASS);
+        result.setAttribute("typeof", Vie.removePointyBrackets(entity.getTypeName()));
+        result.setAttribute("about", Vie.removePointyBrackets(entity.getId()));
         I_Type entityType = m_vie.getType(entity.getTypeName());
         List<String> attributeNames = entityType.getAttributeNames();
         for (String attributeName : attributeNames) {
             I_Type attributeType = entityType.getAttributeType(attributeName);
             I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(attributeName, attributeType);
-            Label label = new Label(renderer.getLabel(attributeName));
-            label.setStyleName(LABEL_CLASS);
-            label.setTitle(renderer.getHelp(attributeName));
-            result.add(label);
+            Element label = DOM.createDiv();
+            label.setInnerText(m_widgetService.getAttributeLabel(attributeName));
+            label.addClassName(LABEL_CLASS);
+            label.setTitle(m_widgetService.getAttributeHelp(attributeName));
+            result.appendChild(label);
             renderer.render(
                 entity,
                 attributeName,
@@ -108,34 +97,37 @@ public class ComplexTypeRenderer implements I_EntityRenderer {
                 entityType.getAttributeMinOccurrence(attributeName),
                 entityType.getAttributeMaxOccurrence(attributeName));
         }
-        return result;
+        context.appendChild(result);
     }
 
     /**
-     * @see com.alkacon.forms.client.I_EntityRenderer#render(com.alkacon.vie.client.I_Entity, java.lang.String, com.google.gwt.user.client.ui.HasWidgets, int, int)
+     * @see com.alkacon.forms.client.I_EntityRenderer#render(com.alkacon.vie.client.I_Entity, java.lang.String, com.google.gwt.user.client.Element, int, int)
      */
     public void render(
         I_Entity parentEntity,
         String attributeName,
-        HasWidgets parentPanel,
+        Element context,
         int minOccurrence,
         int maxOccurrence) {
 
         I_EntityAttribute attribute = parentEntity.getAttribute(attributeName);
+        Element holderDiv = DOM.createDiv();
+        holderDiv.addClassName(WIDGET_HOLDER_CLASS);
         if (attribute.isSimpleValue()) {
-            //TODO: throw exception
+            for (int i = 0; i < attribute.getSimpleValues().size(); i++) {
+                String value = attribute.getSimpleValues().get(i);
+                Element valueDiv = DOM.createDiv();
+                valueDiv.setAttribute("property", Vie.removePointyBrackets(attributeName));
+                valueDiv.setInnerText(value);
+                holderDiv.appendChild(valueDiv);
+                context.appendChild(holderDiv);
+                m_widgetService.getAttributeWidget(attributeName).initWidget(valueDiv, parentEntity, attributeName, i);
+            }
         } else {
             for (I_Entity entity : attribute.getComplexValues()) {
-                parentPanel.add(render(entity));
+                holderDiv.setAttribute("rel", attributeName);
+                render(entity, holderDiv);
             }
         }
-    }
-
-    /**
-     * @see com.alkacon.forms.client.I_EntityRenderer#initConfiguration(java.lang.String)
-     */
-    public void initConfiguration(String configuration) {
-
-        // nothing to do
     }
 }

@@ -29,8 +29,7 @@ package com.alkacon.forms.client;
 
 import com.alkacon.vie.client.I_Entity;
 
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.Element;
 
 /**
  * Renders an entity into a widget.<p>
@@ -38,52 +37,21 @@ import com.google.gwt.user.client.ui.Widget;
 public interface I_EntityRenderer {
 
     /**
-     * Initializes the render configuration.<p>
-     * 
-     * @param configuration the configuration
-     */
-    void initConfiguration(String configuration);
-
-    /**
-     * Returns the help information to the attribute.<p>
-     * 
-     * @param attributeName the attribute name
-     * 
-     * @return the help information to the attribute
-     */
-    String getHelp(String attributeName);
-
-    /**
-     * Returns the attribute label.<p>
-     * 
-     * @param attributeName the name of the attribute to render
-     * 
-     * @return the attribute label
-     */
-    String getLabel(String attributeName);
-
-    /**
      * Renders the given entity into a widget.<p>
      * 
      * @param entity the entity to render
-     * 
-     * @return the widget
+     * @param context the context DOM element
      */
-    Widget render(I_Entity entity);
+    void render(I_Entity entity, Element context);
 
     /**
      * Renders the attribute values.<p>
      * 
      * @param parentEntity the parent entity 
      * @param attributeName the attribute name
-     * @param parentPanel the parent widget
+     * @param context the context DOM element
      * @param minOccurrence the minimum occurrence of this attribute
      * @param MaxOccurrence the maximum occurrence of this attribute
      */
-    void render(
-        I_Entity parentEntity,
-        String attributeName,
-        HasWidgets parentPanel,
-        int minOccurrence,
-        int MaxOccurrence);
+    void render(I_Entity parentEntity, String attributeName, Element context, int minOccurrence, int MaxOccurrence);
 }

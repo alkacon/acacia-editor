@@ -33,16 +33,16 @@ import com.alkacon.vie.client.I_Vie;
 import com.alkacon.vie.client.Vie;
 import com.alkacon.vie.shared.I_Type;
 
+import java.util.List;
+
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.junit.client.GWTTestCase;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Tests the forms.<p>
@@ -76,17 +76,19 @@ public class TestForms extends GWTTestCase {
         I_Entity entity = vie.createEntity("<myEntity>", complexTypeId);
         entity.setAttributeValue(attributeName, "my attribute value");
         WidgetService service = new WidgetService();
-        service.setDefaultComplexRenderer(new ComplexTypeRenderer(service, vie));
-        service.setDefaultSimpleRenderer(new StringTypeRenderer());
+        I_EntityRenderer defaultRenderer = new ComplexTypeRenderer(service, vie);
+        service.setDefaultComplexRenderer(defaultRenderer);
+        service.setDefaultSimpleRenderer(defaultRenderer);
         I_EntityRenderer renderer = service.getRendererForType(complex);
-        Widget form = renderer.render(entity);
-        assertNotNull("The form should not be null", form);
+        Element context = DOM.createDiv();
+        RootPanel.getBodyElement().appendChild(context);
+        renderer.render(entity, (com.google.gwt.user.client.Element)context);
         assertEquals(
             "The forms inner HTML should match the exspected.",
-            "<div class=\"label\">&lt;http:opencms/simpleAttribute&gt;</div><div class=\"widgetHolder\"><input value=\"my attribute value\" class=\"gwt-TextBox\" type=\"text\"></input></div>",
-            form.getElement().getInnerHTML());
+            "<div typeof=\"cms:complex\" about=\"myEntity\" class=\"entity\"><div title=\"\" class=\"label\">&lt;http:opencms/simpleAttribute&gt;</div><div class=\"widgetHolder\"><div style=\"color: red;\" contenteditable=\"true\" property=\"http:opencms/simpleAttribute\">my attribute value</div></div></div>",
+            context.getInnerHTML());
+        // TODO: fix event triggering
         resetChangeCount();
-        RootPanel.get().add(form);
         ((Entity)entity).addValueChangeHandler(new ValueChangeHandler<I_Entity>() {
 
             public void onValueChange(ValueChangeEvent<I_Entity> event) {
@@ -95,9 +97,11 @@ public class TestForms extends GWTTestCase {
                 incrementChangeCount();
             }
         });
-        NodeList<Element> inputs = RootPanel.getBodyElement().getElementsByTagName("input");
-        InputElement input = (InputElement)inputs.getItem(0);
-        input.setValue("my new value");
+        List<com.google.gwt.user.client.Element> inputs = ((Vie)vie).select(
+            "[property='http:opencms/simpleAttribute']",
+            null);
+        Element input = inputs.get(0);
+        input.setInnerText("my new value");
         triggerChangeEvent(input);
         assertEquals(1, getChangeCount());
     }
@@ -109,7 +113,7 @@ public class TestForms extends GWTTestCase {
      */
     private void triggerChangeEvent(Element element) {
 
-        NativeEvent nativeEvent = Document.get().createChangeEvent();
+        NativeEvent nativeEvent = Document.get().createBlurEvent();
         element.dispatchEvent(nativeEvent);
     }
 

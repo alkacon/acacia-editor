@@ -27,22 +27,21 @@
 
 package com.alkacon.forms.client;
 
-import com.alkacon.forms.client.css.I_LayoutBundle;
 import com.alkacon.vie.client.I_Entity;
 import com.alkacon.vie.client.I_EntityAttribute;
+import com.alkacon.vie.client.I_Vie;
+import com.alkacon.vie.shared.I_Type;
 
 import java.util.List;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.Element;
 
 /**
- * The simple type renderer.<p>
+ * Renders the widgets for an in-line form.<p>
  */
-public abstract class A_SimpleTypeRenderer implements I_EntityRenderer {
+public class InlineFormRenderer implements I_EntityRenderer {
 
     /**
      * The value change handler.<p>
@@ -82,101 +81,69 @@ public abstract class A_SimpleTypeRenderer implements I_EntityRenderer {
         }
     }
 
-    /** The widget holder CSS class. */
-    public static final String WIDGET_HOLDER_CLASS = I_LayoutBundle.INSTANCE.style().widgetHolder();
+    /** The VIE instance. */
+    private I_Vie m_vie;
 
-    /** The help information. */
-    private String m_help;
-
-    /** The label. */
-    private String m_label;
-
-    /**
-     * Constructor.<p>
-     */
-    public A_SimpleTypeRenderer() {
-
-    }
+    /** The widget service. */
+    private I_WidgetService m_widgetService;
 
     /**
      * Constructor.<p>
      * 
-     * @param label the attribute label
-     * @param help the attribute help information
+     * @param vie the VIE instance
+     * @param widgetService the widget service
      */
-    public A_SimpleTypeRenderer(String label, String help) {
+    public InlineFormRenderer(I_Vie vie, I_WidgetService widgetService) {
 
-        m_label = label;
-        m_help = help;
+        m_vie = vie;
+        m_widgetService = widgetService;
     }
 
     /**
-     * @see com.alkacon.forms.client.I_EntityRenderer#getHelp(java.lang.String)
+     * @see com.alkacon.forms.client.I_EntityRenderer#render(com.alkacon.vie.client.I_Entity, com.google.gwt.user.client.Element)
      */
-    public String getHelp(String attributeName) {
+    public void render(I_Entity entity, Element context) {
 
-        return m_help != null ? m_help : attributeName;
-    }
-
-    /**
-     * @see com.alkacon.forms.client.I_EntityRenderer#getLabel(java.lang.String)
-     */
-    public String getLabel(String attributeName) {
-
-        return m_label != null ? m_label : attributeName;
-    }
-
-    /**
-     * @see com.alkacon.forms.client.I_EntityRenderer#initConfiguration(java.lang.String)
-     */
-    public void initConfiguration(String configuration) {
-
-        // nothing to do
-    }
-
-    /**
-     * @see com.alkacon.forms.client.I_EntityRenderer#render(com.alkacon.vie.client.I_Entity)
-     */
-    public Widget render(I_Entity entity) {
-
-        // TODO: throw exception
-        return null;
-    }
-
-    /**
-     * @see com.alkacon.forms.client.I_EntityRenderer#render(com.alkacon.vie.client.I_Entity, java.lang.String, com.google.gwt.user.client.ui.HasWidgets, int, int)
-     */
-    public void render(
-        I_Entity parentEntity,
-        String attributeName,
-        HasWidgets parentPanel,
-        int minOccurrence,
-        int maxOccurrence) {
-
-        I_EntityAttribute attribute = parentEntity.getAttribute(attributeName);
-        if (attribute.isComplexValue()) {
-            // TODO: throw exception
-        } else {
-            List<String> values = attribute.getSimpleValues();
-            for (int i = 0; i < values.size(); i++) {
-                SimplePanel panel = new SimplePanel();
-                panel.setStyleName(WIDGET_HOLDER_CLASS);
-                panel.setWidget(getWidget(values.get(i), parentEntity, attributeName, i));
-                parentPanel.add(panel);
-            }
+        I_Type entityType = m_vie.getType(entity.getTypeName());
+        List<String> attributeNames = entityType.getAttributeNames();
+        for (String attributeName : attributeNames) {
+            I_Type attributeType = entityType.getAttributeType(attributeName);
+            I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(attributeName, attributeType);
+            renderer.render(
+                entity,
+                attributeName,
+                context,
+                entityType.getAttributeMinOccurrence(attributeName),
+                entityType.getAttributeMaxOccurrence(attributeName));
         }
     }
 
     /**
-     * Returns the editing widget.<p>
-     * Needs to assign a value change handler to set the changed value within the entity.<p>
-     * 
-     * @param value the current value
-     * @param entity the parent entity
-     * @param attributeName the attribute name
-     * @param valueIndex the value index
-     * 
-     * @return the editing widget
+     * @see com.alkacon.forms.client.I_EntityRenderer#render(com.alkacon.vie.client.I_Entity, java.lang.String, com.google.gwt.user.client.Element, int, int)
      */
-    protected abstract Widget getWidget(String value, I_Entity entity, String attributeName, int valueIndex);
+    public void render(
+        I_Entity parentEntity,
+        String attributeName,
+        Element context,
+        int minOccurrence,
+        int MaxOccurrence) {
+
+        I_EntityAttribute attribute = parentEntity.getAttribute(attributeName);
+        if (attribute.isSimpleValue()) {
+            List<Element> elements = m_vie.getAttributeElements(parentEntity, attributeName, context);
+            for (int i = 0; i < elements.size(); i++) {
+                Element element = elements.get(i);
+                I_EditWidget widget = m_widgetService.getAttributeWidget(attributeName).initWidget(
+                    element,
+                    parentEntity,
+                    attributeName,
+                    i);
+                widget.addValueChangeHandler(new SimpleValueChangeHandler(parentEntity, attributeName, i));
+            }
+        } else {
+            for (I_Entity entity : attribute.getComplexValues()) {
+                render(entity, context);
+            }
+        }
+    }
 }

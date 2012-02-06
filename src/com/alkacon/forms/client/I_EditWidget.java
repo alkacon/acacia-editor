@@ -29,41 +29,31 @@ package com.alkacon.forms.client;
 
 import com.alkacon.vie.client.I_Entity;
 
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.ui.HasValue;
 
 /**
- * The simple type renderer.<p>
+ * The edit widget interface.<p>
  */
-public class StringTypeRenderer extends A_SimpleTypeRenderer {
+public interface I_EditWidget extends HasValue<String> {
 
     /**
-     * Constructor.<p>
-     */
-    public StringTypeRenderer() {
-
-    }
-
-    /**
-     * Constructor.<p>
+     * Initializes the widget using the given element.<p>
+     * The element needs to be attached to the DOM containing the current value.<p>
      * 
-     * @param label the attribute label
-     * @param help the attribute help information
+     * @param element the element
+     * @param entity the parent widget
+     * @param attributeName the attribute name
+     * @param valueIndex the value index
+     * 
+     * @return the initialized widget
      */
-    public StringTypeRenderer(String label, String help) {
-
-        super(label, help);
-    }
+    I_EditWidget initWidget(Element element, I_Entity entity, String attributeName, int valueIndex);
 
     /**
-     * @see com.alkacon.forms.client.A_SimpleTypeRenderer#getWidget(java.lang.String, com.alkacon.vie.client.I_Entity, java.lang.String, int)
+     * Sets the configuration for the given widget.<p>
+     * 
+     *  @param confuguration the configuration string
      */
-    @Override
-    protected Widget getWidget(String value, I_Entity entity, String attributeName, int valueIndex) {
-
-        TextBox textBox = new TextBox();
-        textBox.setValue(value, false);
-        textBox.addValueChangeHandler(new SimpleValueChangeHandler(entity, attributeName, valueIndex));
-        return textBox;
-    }
+    void setConfiguration(String confuguration);
 }

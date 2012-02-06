@@ -35,6 +35,33 @@ import com.alkacon.vie.shared.I_Type;
 public interface I_WidgetService {
 
     /**
+     * Returns the attribute help information.<p>
+     * 
+     * @param attributeName the attribute name
+     * 
+     * @return the attribute help information
+     */
+    String getAttributeHelp(String attributeName);
+
+    /**
+     * Returns the label for the given attribute.<p>
+     * 
+     * @param attributeName the attribute name
+     * 
+     * @return the attribute label
+     */
+    String getAttributeLabel(String attributeName);
+
+    /**
+     * Returns the attribute widget.<p>
+     * 
+     * @param attributeName the attribute name
+     * 
+     * @return the attribute widget
+     */
+    I_EditWidget getAttributeWidget(String attributeName);
+
+    /**
      * Returns the renderer for the given attribute.<p>
      * 
      * @param attributeName the name of the attribute

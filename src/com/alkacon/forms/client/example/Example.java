@@ -27,9 +27,8 @@
 
 package com.alkacon.forms.client.example;
 
-import com.alkacon.forms.client.ComplexTypeRenderer;
 import com.alkacon.forms.client.I_EntityRenderer;
-import com.alkacon.forms.client.StringTypeRenderer;
+import com.alkacon.forms.client.InlineFormRenderer;
 import com.alkacon.forms.client.WidgetService;
 import com.alkacon.forms.client.css.I_LayoutBundle;
 import com.alkacon.forms.shared.AttributeConfiguration;
@@ -51,7 +50,6 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Show case for the form renderer.<p>
@@ -59,22 +57,22 @@ import com.google.gwt.user.client.ui.Widget;
 public class Example implements EntryPoint {
 
     /** Address attribute name. */
-    private static String addressAttribute = "<http://person/address>";
+    private static String addressAttribute = "<person:address>";
 
     /** Address type name. */
     private static String addressTypeName = "<type:address>";
 
     /** City attribute name. */
-    private static String cityAttribute = "<http://address/city>";
+    private static String cityAttribute = "<address:city>";
 
     /** Country attribute type name. */
-    private static String countryAttribute = "<http://address/country>";
+    private static String countryAttribute = "<address:country>";
 
     /** First name attribute name. */
-    private static String firstnameAttribute = "<http://person/firstname>";
+    private static String firstnameAttribute = "<person:firstname>";
 
     /** Last name attribute name. */
-    private static String lastNameAttribute = "<http://person/lastname>";
+    private static String lastNameAttribute = "<person:lastname>";
 
     /** Person type name. */
     private static String personTypeName = "<type:person>";
@@ -103,11 +101,12 @@ public class Example implements EntryPoint {
         person.setAttributeValue(addressAttribute, address);
         WidgetService service = new WidgetService();
         service.init(definition);
-        service.setDefaultComplexRenderer(new ComplexTypeRenderer(service, vie));
-        service.setDefaultSimpleRenderer(new StringTypeRenderer());
+        I_EntityRenderer inlineRenderer = new InlineFormRenderer(vie, service);
+        service.setDefaultComplexRenderer(inlineRenderer);
+        service.setDefaultSimpleRenderer(inlineRenderer);
         I_EntityRenderer renderer = service.getRendererForType(vie.getType(personTypeName));
-        Widget form = renderer.render(person);
-        RootPanel.get().add(form);
+        renderer.render(person, RootPanel.getBodyElement());
+
         ((Entity)person).addValueChangeHandler(new ValueChangeHandler<I_Entity>() {
 
             @Override
