@@ -27,19 +27,27 @@
 
 package com.alkacon.forms.client;
 
+import com.alkacon.forms.shared.AttributeConfiguration;
+import com.alkacon.forms.shared.ContentDefinition;
+import com.alkacon.forms.shared.Type;
 import com.alkacon.vie.client.Entity;
 import com.alkacon.vie.client.I_Entity;
 import com.alkacon.vie.client.I_Vie;
 import com.alkacon.vie.client.Vie;
 import com.alkacon.vie.shared.I_Type;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.shared.GwtEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.junit.client.GWTTestCase;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -59,6 +67,82 @@ public class TestForms extends GWTTestCase {
     public String getModuleName() {
 
         return "com.alkacon.forms.Forms";
+    }
+
+    /**
+     * Tests the widget service implementation.<p>
+     */
+    public void testWidgetService() {
+
+        WidgetService service = new WidgetService();
+        final I_EditWidget widget1 = new I_EditWidget() {
+
+            public String getValue() {
+
+                return null;
+            }
+
+            public void setValue(String value) {
+
+                // dummy method
+            }
+
+            public void setValue(String value, boolean fireEvents) {
+
+                // dummy method
+            }
+
+            public HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> handler) {
+
+                return null;
+            }
+
+            public void fireEvent(GwtEvent<?> event) {
+
+                // dummy method
+            }
+
+            public I_EditWidget initWidget(
+                com.google.gwt.user.client.Element element,
+                I_Entity entity,
+                String attributeName,
+                int valueIndex) {
+
+                return null;
+            }
+
+            public void setConfiguration(String confuguration) {
+
+                // dummy method
+            }
+        };
+        Map<String, AttributeConfiguration> configs = new HashMap<String, AttributeConfiguration>();
+        configs.put("<attribute1>", new AttributeConfiguration("label", "help", "widget1", ""));
+        configs.put("<attribute2>", new AttributeConfiguration("label", "help", "widget2", ""));
+        ContentDefinition definition = new ContentDefinition("", configs, Collections.<String, Type> emptyMap());
+        service.init(definition);
+        service.registerWidgetFactory("widget1", new I_WidgetFactory() {
+
+            public I_EditWidget createWidget(String configuration) {
+
+                return widget1;
+            }
+        });
+        service.registerWidgetFactory("widget2", new I_WidgetFactory() {
+
+            @Override
+            public I_EditWidget createWidget(String configuration) {
+
+                return new StringWidget();
+            }
+        });
+        assertEquals(widget1, service.getAttributeWidget("<attribute1>"));
+        assertTrue(
+            "Should be instance of StringWidget",
+            service.getAttributeWidget("<attribute2>") instanceof StringWidget);
+        assertTrue(
+            "Should be instance of StringWidget as the default widget",
+            service.getAttributeWidget("<some other>") instanceof StringWidget);
     }
 
     /**

@@ -51,12 +51,16 @@ public class WidgetService implements I_WidgetService {
     /** Map of renderer by type name. */
     private Map<String, I_EntityRenderer> m_rendererByType;
 
+    /** The registered widget factories. */
+    private Map<String, I_WidgetFactory> m_widgetFactories;
+
     /**
      * Constructor.<p>
      */
     public WidgetService() {
 
         m_rendererByType = new HashMap<String, I_EntityRenderer>();
+        m_widgetFactories = new HashMap<String, I_WidgetFactory>();
     }
 
     /**
@@ -95,12 +99,13 @@ public class WidgetService implements I_WidgetService {
         if (m_attributeConfigurations != null) {
             AttributeConfiguration config = m_attributeConfigurations.get(attributeName);
             if (config != null) {
-                if (config.getWidgetName().equals("string")) {
-
-                    return new StringWidget();
+                I_WidgetFactory factory = m_widgetFactories.get(config.getWidgetName());
+                if (factory != null) {
+                    return factory.createWidget(config.getWidgetConfig());
                 }
             }
         }
+        // no configuration or widget factory found, return default string widget 
         return new StringWidget();
     }
 
@@ -153,6 +158,17 @@ public class WidgetService implements I_WidgetService {
     public void init(ContentDefinition definition) {
 
         m_attributeConfigurations = definition.getConfigurations();
+    }
+
+    /**
+     * Registers the given widget factory with the service.<p>
+     * 
+     * @param widgetName the widget name
+     * @param widgetFactory the widget factory
+     */
+    public void registerWidgetFactory(String widgetName, I_WidgetFactory widgetFactory) {
+
+        m_widgetFactories.put(widgetName, widgetFactory);
     }
 
     /**
