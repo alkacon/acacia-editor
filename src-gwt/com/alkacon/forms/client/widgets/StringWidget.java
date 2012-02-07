@@ -27,7 +27,7 @@
 
 package com.alkacon.forms.client.widgets;
 
-import com.alkacon.vie.client.I_Entity;
+import com.alkacon.vie.shared.I_Entity;
 
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
@@ -97,7 +97,7 @@ public class StringWidget extends A_EditWidget {
     }
 
     /**
-     * @see com.alkacon.forms.client.widgets.I_EditWidget#initWidget(com.google.gwt.user.client.Element, com.alkacon.vie.client.I_Entity, java.lang.String, int)
+     * @see com.alkacon.forms.client.widgets.I_EditWidget#initWidget(com.google.gwt.user.client.Element, com.alkacon.vie.shared.I_Entity, java.lang.String, int)
      */
     public I_EditWidget initWidget(Element element, I_Entity entity, String attributeName, int valueIndex) {
 

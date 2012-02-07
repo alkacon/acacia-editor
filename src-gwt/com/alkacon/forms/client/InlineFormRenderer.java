@@ -28,9 +28,9 @@
 package com.alkacon.forms.client;
 
 import com.alkacon.forms.client.widgets.I_EditWidget;
-import com.alkacon.vie.client.I_Entity;
-import com.alkacon.vie.client.I_EntityAttribute;
 import com.alkacon.vie.client.I_Vie;
+import com.alkacon.vie.shared.I_Entity;
+import com.alkacon.vie.shared.I_EntityAttribute;
 import com.alkacon.vie.shared.I_Type;
 
 import java.util.List;
@@ -101,7 +101,7 @@ public class InlineFormRenderer implements I_EntityRenderer {
     }
 
     /**
-     * @see com.alkacon.forms.client.I_EntityRenderer#render(com.alkacon.vie.client.I_Entity, com.google.gwt.user.client.Element)
+     * @see com.alkacon.forms.client.I_EntityRenderer#render(com.alkacon.vie.shared.I_Entity, com.google.gwt.user.client.Element)
      */
     public void render(I_Entity entity, Element context) {
 
@@ -120,7 +120,7 @@ public class InlineFormRenderer implements I_EntityRenderer {
     }
 
     /**
-     * @see com.alkacon.forms.client.I_EntityRenderer#render(com.alkacon.vie.client.I_Entity, java.lang.String, com.google.gwt.user.client.Element, int, int)
+     * @see com.alkacon.forms.client.I_EntityRenderer#render(com.alkacon.vie.shared.I_Entity, java.lang.String, com.google.gwt.user.client.Element, int, int)
      */
     public void render(
         I_Entity parentEntity,

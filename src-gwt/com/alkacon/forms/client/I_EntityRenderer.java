@@ -27,7 +27,7 @@
 
 package com.alkacon.forms.client;
 
-import com.alkacon.vie.client.I_Entity;
+import com.alkacon.vie.shared.I_Entity;
 
 import com.google.gwt.user.client.Element;
 

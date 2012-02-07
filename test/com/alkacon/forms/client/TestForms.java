@@ -33,9 +33,9 @@ import com.alkacon.forms.shared.AttributeConfiguration;
 import com.alkacon.forms.shared.ContentDefinition;
 import com.alkacon.forms.shared.Type;
 import com.alkacon.vie.client.Entity;
-import com.alkacon.vie.client.I_Entity;
 import com.alkacon.vie.client.I_Vie;
 import com.alkacon.vie.client.Vie;
+import com.alkacon.vie.shared.I_Entity;
 import com.alkacon.vie.shared.I_Type;
 
 import java.util.Collections;
