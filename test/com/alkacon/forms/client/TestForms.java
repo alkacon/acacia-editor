@@ -72,82 +72,6 @@ public class TestForms extends GWTTestCase {
     }
 
     /**
-     * Tests the widget service implementation.<p>
-     */
-    public void testWidgetService() {
-
-        WidgetService service = new WidgetService();
-        final I_EditWidget widget1 = new I_EditWidget() {
-
-            public String getValue() {
-
-                return null;
-            }
-
-            public void setValue(String value) {
-
-                // dummy method
-            }
-
-            public void setValue(String value, boolean fireEvents) {
-
-                // dummy method
-            }
-
-            public HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> handler) {
-
-                return null;
-            }
-
-            public void fireEvent(GwtEvent<?> event) {
-
-                // dummy method
-            }
-
-            public I_EditWidget initWidget(
-                com.google.gwt.user.client.Element element,
-                I_Entity entity,
-                String attributeName,
-                int valueIndex) {
-
-                return null;
-            }
-
-            public void setConfiguration(String confuguration) {
-
-                // dummy method
-            }
-        };
-        Map<String, AttributeConfiguration> configs = new HashMap<String, AttributeConfiguration>();
-        configs.put("<attribute1>", new AttributeConfiguration("label", "help", "widget1", ""));
-        configs.put("<attribute2>", new AttributeConfiguration("label", "help", "widget2", ""));
-        ContentDefinition definition = new ContentDefinition("", configs, Collections.<String, Type> emptyMap());
-        service.init(definition);
-        service.registerWidgetFactory("widget1", new I_WidgetFactory() {
-
-            public I_EditWidget createWidget(String configuration) {
-
-                return widget1;
-            }
-        });
-        service.registerWidgetFactory("widget2", new I_WidgetFactory() {
-
-            @Override
-            public I_EditWidget createWidget(String configuration) {
-
-                return new StringWidget();
-            }
-        });
-        assertEquals(widget1, service.getAttributeWidget("<attribute1>"));
-        assertTrue(
-            "Should be instance of StringWidget",
-            service.getAttributeWidget("<attribute2>") instanceof StringWidget);
-        assertTrue(
-            "Should be instance of StringWidget as the default widget",
-            service.getAttributeWidget("<some other>") instanceof StringWidget);
-    }
-
-    /**
      * Tests the form renderer.<p>
      */
     public void testFormRenderer() {
@@ -193,22 +117,79 @@ public class TestForms extends GWTTestCase {
     }
 
     /**
-     * Triggers a change event on the given element.<p>
-     * 
-     * @param element the element
+     * Tests the widget service implementation.<p>
      */
-    private void triggerChangeEvent(Element element) {
+    public void testWidgetService() {
 
-        NativeEvent nativeEvent = Document.get().createBlurEvent();
-        element.dispatchEvent(nativeEvent);
-    }
+        WidgetService service = new WidgetService();
+        final I_EditWidget widget1 = new I_EditWidget() {
 
-    /**
-     * Increments the change counter.<p>
-     */
-    protected void incrementChangeCount() {
+            public HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> handler) {
 
-        m_changeCount++;
+                return null;
+            }
+
+            public void fireEvent(GwtEvent<?> event) {
+
+                // dummy method
+            }
+
+            public String getValue() {
+
+                return null;
+            }
+
+            public I_EditWidget initWidget(
+                com.google.gwt.user.client.Element element,
+                I_Entity entity,
+                String attributeName,
+                int valueIndex) {
+
+                return null;
+            }
+
+            public void setConfiguration(String confuguration) {
+
+                // dummy method
+            }
+
+            public void setValue(String value) {
+
+                // dummy method
+            }
+
+            public void setValue(String value, boolean fireEvents) {
+
+                // dummy method
+            }
+        };
+        Map<String, AttributeConfiguration> configs = new HashMap<String, AttributeConfiguration>();
+        configs.put("<attribute1>", new AttributeConfiguration("label", "help", "widget1", ""));
+        configs.put("<attribute2>", new AttributeConfiguration("label", "help", "widget2", ""));
+        ContentDefinition definition = new ContentDefinition("", configs, Collections.<String, Type> emptyMap());
+        service.init(definition);
+        service.registerWidgetFactory("widget1", new I_WidgetFactory() {
+
+            public I_EditWidget createWidget(String configuration) {
+
+                return widget1;
+            }
+        });
+        service.registerWidgetFactory("widget2", new I_WidgetFactory() {
+
+            @Override
+            public I_EditWidget createWidget(String configuration) {
+
+                return new StringWidget();
+            }
+        });
+        assertEquals(widget1, service.getAttributeWidget("<attribute1>"));
+        assertTrue(
+            "Should be instance of StringWidget",
+            service.getAttributeWidget("<attribute2>") instanceof StringWidget);
+        assertTrue(
+            "Should be instance of StringWidget as the default widget",
+            service.getAttributeWidget("<some other>") instanceof StringWidget);
     }
 
     /**
@@ -219,6 +200,14 @@ public class TestForms extends GWTTestCase {
     protected int getChangeCount() {
 
         return m_changeCount;
+    }
+
+    /**
+     * Increments the change counter.<p>
+     */
+    protected void incrementChangeCount() {
+
+        m_changeCount++;
     }
 
     /**
@@ -237,6 +226,17 @@ public class TestForms extends GWTTestCase {
     private void resetChangeCount() {
 
         m_changeCount = 0;
+    }
+
+    /**
+     * Triggers a change event on the given element.<p>
+     * 
+     * @param element the element
+     */
+    private void triggerChangeEvent(Element element) {
+
+        NativeEvent nativeEvent = Document.get().createBlurEvent();
+        element.dispatchEvent(nativeEvent);
     }
 
 }
