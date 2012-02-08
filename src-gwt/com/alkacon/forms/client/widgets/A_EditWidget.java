@@ -29,6 +29,7 @@ package com.alkacon.forms.client.widgets;
 
 import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerManager;
@@ -49,6 +50,11 @@ public abstract class A_EditWidget extends UIObject implements I_EditWidget, Eve
 
     /** The previous value. */
     private String m_previousValue;
+
+    /**
+     * @see com.google.gwt.event.logical.shared.HasValueChangeHandlers#addValueChangeHandler(com.google.gwt.event.logical.shared.ValueChangeHandler)
+     */
+    public abstract HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> handler);
 
     /**
      * Adds a native event handler to the widget and sinks the corresponding

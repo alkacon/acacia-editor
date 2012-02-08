@@ -52,6 +52,7 @@ public class StringWidget extends A_EditWidget {
     /**
      * @see com.google.gwt.event.logical.shared.HasValueChangeHandlers#addValueChangeHandler(com.google.gwt.event.logical.shared.ValueChangeHandler)
      */
+    @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> handler) {
 
         // Initialization code
