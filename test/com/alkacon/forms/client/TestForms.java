@@ -177,7 +177,6 @@ public class TestForms extends GWTTestCase {
         });
         service.registerWidgetFactory("widget2", new I_WidgetFactory() {
 
-            @Override
             public I_EditWidget createWidget(String configuration) {
 
                 return new StringWidget();

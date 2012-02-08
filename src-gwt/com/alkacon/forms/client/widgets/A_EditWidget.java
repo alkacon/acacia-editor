@@ -27,7 +27,6 @@
 
 package com.alkacon.forms.client.widgets;
 
-
 import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.EventHandler;
@@ -101,7 +100,6 @@ public abstract class A_EditWidget extends UIObject implements I_EditWidget, Eve
     /**
      * @see com.google.gwt.user.client.ui.HasValue#getValue()
      */
-    @Override
     public String getValue() {
 
         return getElement().getInnerText();

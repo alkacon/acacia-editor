@@ -59,7 +59,6 @@ public class StringWidget extends A_EditWidget {
             m_valueChangeHandlerInitialized = true;
             addDomHandler(new KeyPressHandler() {
 
-                @Override
                 public void onKeyPress(KeyPressEvent event) {
 
                     fireValueChange();
@@ -68,7 +67,6 @@ public class StringWidget extends A_EditWidget {
             }, KeyPressEvent.getType());
             addDomHandler(new ChangeHandler() {
 
-                @Override
                 public void onChange(ChangeEvent event) {
 
                     fireValueChange();
@@ -77,7 +75,6 @@ public class StringWidget extends A_EditWidget {
             }, ChangeEvent.getType());
             addDomHandler(new BlurHandler() {
 
-                @Override
                 public void onBlur(BlurEvent event) {
 
                     fireValueChange();

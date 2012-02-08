@@ -46,8 +46,10 @@ public interface I_ContentService extends RemoteService {
      * @param locale the entity content locale
      * 
      * @return the entity
+     * 
+     * @throws Exception if something goes wrong processing the request 
      */
-    Entity loadEntity(String entityId, String locale);
+    Entity loadEntity(String entityId, String locale) throws Exception;
 
     /**
      * Loads the content definition for a given type.<p>
@@ -55,14 +57,18 @@ public interface I_ContentService extends RemoteService {
      * @param typeName the type name
      * 
      * @return the content type definition
+     * 
+     * @throws Exception if something goes wrong processing the request
      */
-    ContentDefinition loadContentDefinition(String typeName);
+    ContentDefinition loadContentDefinition(String typeName) throws Exception;
 
     /**
      * Saves the given entity.<p>
      * 
      * @param entity the entity to save
      * @param locale the entity content locale
+     * 
+     * @throws Exception if something goes wrong processing the request
      */
-    void saveEntity(Entity entity, String locale);
+    void saveEntity(Entity entity, String locale) throws Exception;
 }

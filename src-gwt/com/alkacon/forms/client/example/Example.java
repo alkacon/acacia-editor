@@ -119,7 +119,6 @@ public class Example implements EntryPoint {
 
         ((Entity)person).addValueChangeHandler(new ValueChangeHandler<I_Entity>() {
 
-            @Override
             public void onValueChange(ValueChangeEvent<I_Entity> event) {
 
                 RootPanel.get().getElement().getStyle().setBackgroundColor("#77f3f3");
