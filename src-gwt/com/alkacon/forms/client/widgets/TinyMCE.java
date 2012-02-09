@@ -29,6 +29,7 @@ package com.alkacon.forms.client.widgets;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.GwtEvent;
@@ -182,7 +183,7 @@ public final class TinyMCE implements HasValue<String> {
                         } catch (e) {
                            var handler = @com.google.gwt.core.client.GWT::getUncaughtExceptionHandler()();
                            handler.@com.google.gwt.core.client.GWT.UncaughtExceptionHandler::onUncaughtException(Ljava/lang/Throwable;)(e);
-                           throw e; 
+                           throw e;
                         }
                      }, 1);
       };
@@ -203,6 +204,11 @@ public final class TinyMCE implements HasValue<String> {
                            var domHelper = new $wnd.goog.dom.DomHelper(doc);
                            var savedCss = instance.@com.alkacon.forms.client.widgets.TinyMCE::m_savedCss;
                            $wnd.goog.cssom.addCssText(savedCss, domHelper);
+
+                        });
+                  ed.onClick
+                        .add(function() {
+                           instance.@com.alkacon.forms.client.widgets.TinyMCE::fixToolbar()();
                         });
                },
                // General options
@@ -320,6 +326,30 @@ public final class TinyMCE implements HasValue<String> {
             ValueChangeEvent.fire(this, newContent);
         }
     }
+
+    /**
+     * Fixes the layout when the toolbar's top is above the body's top.<p>
+     */
+    protected void fixToolbar() {
+
+        Element element = getToolbarElement();
+        int top = element.getAbsoluteTop();
+        if (top < 0) {
+            Element parent = (Element)(element.getParentNode());
+            parent.getStyle().setMarginTop(-top, Unit.PX);
+        }
+    }
+
+    /**
+     * Gets the toolbar element.<p>
+     * 
+     * @return the toolbar element 
+     */
+    protected native Element getToolbarElement() /*-{
+      var elementId = this.@com.alkacon.forms.client.widgets.TinyMCE::m_id;
+      var toolbarId = elementId + "_external";
+      return $doc.getElementById(toolbarId);
+    }-*/;
 
     /**
      * Removes the editor instance.<p>
