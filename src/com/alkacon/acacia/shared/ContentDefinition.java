@@ -36,11 +36,11 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class ContentDefinition implements IsSerializable {
 
-    /** The base type name. */
-    private String m_baseType;
-
     /** The attribute configurations. */
     private Map<String, AttributeConfiguration> m_configurations;
+
+    /** The entity. */
+    private Entity m_entity;
 
     /** The types defining the entity. */
     private Map<String, Type> m_types;
@@ -48,16 +48,13 @@ public class ContentDefinition implements IsSerializable {
     /**
      * Constructor.<p>
      * 
-     * @param baseType the base type name
+     * @param entity the entity
      * @param configurations the attribute configurations
      * @param types the types
      */
-    public ContentDefinition(
-        String baseType,
-        Map<String, AttributeConfiguration> configurations,
-        Map<String, Type> types) {
+    public ContentDefinition(Entity entity, Map<String, AttributeConfiguration> configurations, Map<String, Type> types) {
 
-        m_baseType = baseType;
+        m_entity = entity;
         m_configurations = configurations;
         m_types = types;
     }
@@ -71,16 +68,6 @@ public class ContentDefinition implements IsSerializable {
     }
 
     /**
-     * Returns the base type.<p>
-     *
-     * @return the base type
-     */
-    public String getBaseType() {
-
-        return m_baseType;
-    }
-
-    /**
      * Returns the attribute configurations.<p>
      *
      * @return the attribute configurations
@@ -88,6 +75,16 @@ public class ContentDefinition implements IsSerializable {
     public Map<String, AttributeConfiguration> getConfigurations() {
 
         return m_configurations;
+    }
+
+    /**
+     * Returns the entity.<p>
+     *
+     * @return the entity
+     */
+    public Entity getEntity() {
+
+        return m_entity;
     }
 
     /**

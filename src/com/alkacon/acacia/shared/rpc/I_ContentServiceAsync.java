@@ -40,21 +40,13 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public interface I_ContentServiceAsync {
 
     /**
-     * Loads the entity from the server.<p>
+     * Loads the content definition for a given type.<p>
      * 
      * @param entityId the entity id/URI
      * @param locale the entity content locale
      * @param callback the asynchronous callback
      */
-    void loadEntity(String entityId, String locale, AsyncCallback<Entity> callback);
-
-    /**
-     * Loads the content definition for a given type.<p>
-     * 
-     * @param typeName the type name
-     * @param callback the asynchronous callback
-     */
-    void loadContentDefinition(String typeName, AsyncCallback<ContentDefinition> callback);
+    void loadContentDefinition(String entityId, String locale, AsyncCallback<ContentDefinition> callback);
 
     /**
      * Saves the given entity.<p>

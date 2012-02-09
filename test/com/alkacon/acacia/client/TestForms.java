@@ -27,10 +27,6 @@
 
 package com.alkacon.acacia.client;
 
-import com.alkacon.acacia.client.ComplexTypeRenderer;
-import com.alkacon.acacia.client.I_EntityRenderer;
-import com.alkacon.acacia.client.I_WidgetFactory;
-import com.alkacon.acacia.client.WidgetService;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
 import com.alkacon.acacia.client.widgets.StringWidget;
 import com.alkacon.acacia.shared.AttributeConfiguration;
@@ -72,7 +68,7 @@ public class TestForms extends GWTTestCase {
     @Override
     public String getModuleName() {
 
-        return "com.alkacon.forms.Forms";
+        return "com.alkacon.acacia.Acacia";
     }
 
     /**
@@ -170,7 +166,7 @@ public class TestForms extends GWTTestCase {
         Map<String, AttributeConfiguration> configs = new HashMap<String, AttributeConfiguration>();
         configs.put("<attribute1>", new AttributeConfiguration("label", "help", "widget1", ""));
         configs.put("<attribute2>", new AttributeConfiguration("label", "help", "widget2", ""));
-        ContentDefinition definition = new ContentDefinition("", configs, Collections.<String, Type> emptyMap());
+        ContentDefinition definition = new ContentDefinition(null, configs, Collections.<String, Type> emptyMap());
         service.init(definition);
         service.registerWidgetFactory("widget1", new I_WidgetFactory() {
 

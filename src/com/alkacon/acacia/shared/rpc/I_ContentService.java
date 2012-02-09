@@ -40,27 +40,16 @@ import com.google.gwt.user.client.rpc.RemoteService;
 public interface I_ContentService extends RemoteService {
 
     /**
-     * Loads the entity from the server.<p>
+     * Loads the content definition for a given entity.<p>
      * 
      * @param entityId the entity id/URI
      * @param locale the entity content locale
-     * 
-     * @return the entity
-     * 
-     * @throws Exception if something goes wrong processing the request 
-     */
-    Entity loadEntity(String entityId, String locale) throws Exception;
-
-    /**
-     * Loads the content definition for a given type.<p>
-     * 
-     * @param typeName the type name
      * 
      * @return the content type definition
      * 
      * @throws Exception if something goes wrong processing the request
      */
-    ContentDefinition loadContentDefinition(String typeName) throws Exception;
+    ContentDefinition loadContentDefinition(String entityId, String locale) throws Exception;
 
     /**
      * Saves the given entity.<p>

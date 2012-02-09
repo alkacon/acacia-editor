@@ -42,6 +42,7 @@ import com.alkacon.vie.client.Entity;
 import com.alkacon.vie.client.I_Vie;
 import com.alkacon.vie.client.Vie;
 import com.alkacon.vie.shared.I_Entity;
+import com.alkacon.vie.shared.I_EntityAttribute;
 import com.alkacon.vie.shared.I_Type;
 
 import java.util.HashMap;
@@ -93,16 +94,8 @@ public class Example implements EntryPoint {
 
         I_Vie vie = Vie.getInstance();
         ContentDefinition definition = generateContentDefinition();
-        registerTypes(vie, definition);
-        I_Entity address = vie.createEntity("<myAdress>", addressTypeName);
+        I_Entity person = register(vie, definition);
 
-        address.setAttributeValue(cityAttribute, "Hamburg");
-        address.setAttributeValue(countryAttribute, "fr");
-
-        I_Entity person = vie.createEntity("<myPerson>", personTypeName);
-        person.setAttributeValue(firstnameAttribute, "Hans");
-        person.setAttributeValue(lastNameAttribute, "Albers");
-        person.setAttributeValue(addressAttribute, address);
         WidgetService service = new WidgetService();
         service.init(definition);
         service.registerWidgetFactory("string", new I_WidgetFactory() {
@@ -165,7 +158,21 @@ public class Example implements EntryPoint {
             "The country",
             "select",
             "de=Deustchland|fr=Frankreich|it=Italien"));
-        return new ContentDefinition(personTypeName, attributes, types);
+
+        com.alkacon.acacia.shared.Entity addressEntity = new com.alkacon.acacia.shared.Entity(
+            "<myAdress>",
+            addressTypeName);
+
+        addressEntity.setAttributeValue(cityAttribute, "Hamburg");
+        addressEntity.setAttributeValue(countryAttribute, "fr");
+
+        com.alkacon.acacia.shared.Entity personEntity = new com.alkacon.acacia.shared.Entity(
+            "<myPerson>",
+            personTypeName);
+        personEntity.setAttributeValue(firstnameAttribute, "Hans");
+        personEntity.setAttributeValue(lastNameAttribute, "Albers");
+        personEntity.setAttributeValue(addressAttribute, addressEntity);
+        return new ContentDefinition(personEntity, attributes, types);
     }
 
     /**
@@ -202,13 +209,42 @@ public class Example implements EntryPoint {
      * 
      * @param vie the VIE instance
      * @param definition the content definition
+     * 
+     * @return the registered content entity 
      */
-    private void registerTypes(I_Vie vie, ContentDefinition definition) {
+    private I_Entity register(I_Vie vie, ContentDefinition definition) {
 
-        Set<String> registered = new HashSet<String>();
+        Set<String> registeredTypes = new HashSet<String>();
         Map<String, Type> types = definition.getTypes();
-        Type base = types.get(definition.getBaseType());
-        registerType(vie, base, types, registered);
+        Type base = types.get(definition.getEntity().getTypeName());
+        registerType(vie, base, types, registeredTypes);
+        return registerEntity(vie, definition.getEntity());
     }
 
+    /**
+     * Registers the given entity within the VIE model.<p>
+     * 
+     * @param vie the VIE instance
+     * @param entity the entity to register
+     * 
+     * @return the new registered entity object
+     */
+    private I_Entity registerEntity(I_Vie vie, com.alkacon.acacia.shared.Entity entity) {
+
+        I_Entity result = vie.createEntity(entity.getId(), entity.getTypeName());
+        for (I_EntityAttribute attribute : entity.getAttributes()) {
+            if (attribute.isSimpleValue()) {
+                for (String value : attribute.getSimpleValues()) {
+                    result.addAttributeValue(attribute.getAttributeName(), value);
+                }
+            } else {
+                for (I_Entity value : attribute.getComplexValues()) {
+                    result.addAttributeValue(
+                        attribute.getAttributeName(),
+                        registerEntity(vie, (com.alkacon.acacia.shared.Entity)value));
+                }
+            }
+        }
+        return result;
+    }
 }
