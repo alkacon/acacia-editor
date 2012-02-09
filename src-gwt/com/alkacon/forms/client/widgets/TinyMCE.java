@@ -163,6 +163,8 @@ public final class TinyMCE implements HasValue<String> {
       var iframeId = elementId + "_ifr";
       var mainElement = $wnd.document.getElementById(elementId);
       instance.@com.alkacon.forms.client.widgets.TinyMCE::m_originalContent = mainElement.innerHTML;
+      instance.@com.alkacon.forms.client.widgets.TinyMCE::m_currentContent = mainElement.innerHTML;
+
       $wnd.goog.cssom.iframe.style.resetDomCache();
       instance.@com.alkacon.forms.client.widgets.TinyMCE::m_savedCss = $wnd.goog.cssom.iframe.style
             .getElementContext(mainElement);
@@ -172,9 +174,17 @@ public final class TinyMCE implements HasValue<String> {
 
       var fireChangeDelayed = function() {
          // delay because we want TinyMCE to process the event first 
-         $wnd.setTimeout(function() {
-            instance.@com.alkacon.forms.client.widgets.TinyMCE::fireChange()();
-         }, 1);
+         $wnd
+               .setTimeout(
+                     function() {
+                        try {
+                           instance.@com.alkacon.forms.client.widgets.TinyMCE::fireChange()();
+                        } catch (e) {
+                           var handler = @com.google.gwt.core.client.GWT::getUncaughtExceptionHandler()();
+                           handler.@com.google.gwt.core.client.GWT.UncaughtExceptionHandler::onUncaughtException(Ljava/lang/Throwable;)(e);
+                           throw e; 
+                        }
+                     }, 1);
       };
 
       $wnd.tinyMCE
@@ -183,7 +193,7 @@ public final class TinyMCE implements HasValue<String> {
                   instance.@com.alkacon.forms.client.widgets.TinyMCE::m_editor = ed;
 
                   ed.onChange.add(fireChange);
-                  ed.onKeyPress.add(fireChangeDelayed);
+                  ed.onKeyDown.add(fireChangeDelayed);
                   ed.onLoad
                         .add(function() {
                            $wnd.document.getElementById(iframeId).style.minHeight = "400px";
@@ -192,8 +202,6 @@ public final class TinyMCE implements HasValue<String> {
                                  .getFrameContentDocument(iframe);
                            var domHelper = new $wnd.goog.dom.DomHelper(doc);
                            var savedCss = instance.@com.alkacon.forms.client.widgets.TinyMCE::m_savedCss;
-                           instance.@com.alkacon.forms.client.widgets.TinyMCE::m_currentContent = ed
-                                 .getContent();
                            $wnd.goog.cssom.addCssText(savedCss, domHelper);
                         });
                },
