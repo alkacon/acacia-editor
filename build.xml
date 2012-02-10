@@ -1,58 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="Forms" basedir=".">
-	<property name="forms.input" location="${basedir}" />
-	<property name="forms.output" location="$forms.input/../BuildForms" />
-	<property name="forms.input.libs" location="${forms.input}/lib" />
-	<property name="forms.build" location="${forms.output}/build" />
-	<property name="forms.output.jars" location="${forms.build}/jars" />
-	<property name="forms.output.classes" location="${forms.build}/classes" />
-	<property name="forms.output.classes.gwt" location="${forms.build}/classes-gwt" />
+<project name="Acacia" basedir=".">
+	<property name="acacia.input" location="${basedir}" />
+	<property name="acacia.output" location="$acacia.input/../BuildAcacia" />
+	<property name="acacia.input.libs" location="${acacia.input}/lib" />
+	<property name="acacia.build" location="${acacia.output}/build" />
+	<property name="acacia.output.jars" location="${acacia.build}/jars" />
+	<property name="acacia.output.classes" location="${acacia.build}/classes" />
+	<property name="acacia.output.classes.gwt" location="${acacia.build}/classes-gwt" />
 	<property name="java.target.version" value="1.5" />
 	<property name="excludes" value="**/.nbattrs,**/.project,**/.classpath,**/.gitignore" />
 
 	<target name="clean" description="Deletes outputs">
-		<delete dir="${forms.output.classes}" />
-		<delete dir="${forms.output.classes.gwt}" />
-		<delete dir="${forms.output.jars}" />
+		<delete dir="${acacia.output.classes}" />
+		<delete dir="${acacia.output.classes.gwt}" />
+		<delete dir="${acacia.output.jars}" />
 	</target>
 	
-	<target name="compile-server" description="Compiles VIE Forms server-side classes">
-		<mkdir dir="${forms.output.classes}" />
-		<javac srcdir="${forms.input}/src" destdir="${forms.output.classes}" debug="on" optimize="on" deprecation="on" source="1.5" target="${java.target.version}">
+	<target name="compile-server" description="Compiles VIE Acacia server-side classes">
+		<mkdir dir="${acacia.output.classes}" />
+		<javac srcdir="${acacia.input}/src" destdir="${acacia.output.classes}" debug="on" optimize="on" deprecation="on" source="1.5" target="${java.target.version}">
 			<classpath>
-				<fileset dir="${forms.input.libs}">
+				<fileset dir="${acacia.input.libs}">
 					<include name="**/*.jar" />
 					<exclude name="**/gwt-user*.jar" />
 					<exclude name="**/gwt-dev*.jar" />
 				</fileset>
 			</classpath>
 		</javac>
-		<copy todir="${forms.output.classes}">
-			<fileset dir="${forms.input}/src" includes="**/*.properties,**/*.txt,**/*.xml,**/*.xsd,**/*.dtd,**/*.sql" excludes="${excludes}" />
+		<copy todir="${acacia.output.classes}">
+			<fileset dir="${acacia.input}/src" includes="**/*.properties,**/*.txt,**/*.xml,**/*.xsd,**/*.dtd,**/*.sql" excludes="${excludes}" />
 		</copy>
 	</target>
 
-	<target name="compile-client" description="Compiles VIE Forms client-side classes">
-		<mkdir dir="${forms.output.classes.gwt}" />
-		<javac destdir="${forms.output.classes.gwt}" debug="on" optimize="on" deprecation="on" source="1.5" target="${java.target.version}">
-			<src path="${forms.input}/src" />
-			<src path="${forms.input}/src-gwt" />
+	<target name="compile-client" description="Compiles VIE Acacia client-side classes">
+		<mkdir dir="${acacia.output.classes.gwt}" />
+		<javac destdir="${acacia.output.classes.gwt}" debug="on" optimize="on" deprecation="on" source="1.5" target="${java.target.version}">
+			<src path="${acacia.input}/src" />
+			<src path="${acacia.input}/src-gwt" />
 			<classpath>
-				<fileset dir="${forms.input.libs}">
+				<fileset dir="${acacia.input.libs}">
 					<include name="**/*.jar" />
 				</fileset>
 			</classpath>
 		</javac>
-		<copy todir="${forms.output.classes.gwt}">
-			<fileset dir="${forms.input}/src" includes="**/*.java,**/*.properties,**/*.txt,**/*.xml,**/*.xsd,**/*.dtd,**/*.sql" excludes="${excludes}" />
-			<fileset dir="${forms.input}/src-gwt" includes="**/*.java,**/*.properties,**/*.txt,**/*.xml,**/*.xsd,**/*.dtd,**/*.sql" excludes="${excludes}" />
+		<copy todir="${acacia.output.classes.gwt}">
+			<fileset dir="${acacia.input}/src" includes="**/*.java,**/*.properties,**/*.txt,**/*.xml,**/*.xsd,**/*.dtd,**/*.sql" excludes="${excludes}" />
+			<fileset dir="${acacia.input}/src-gwt" includes="**/*.java,**/*.properties,**/*.css,**/*.txt,**/*.xml,**/*.xsd,**/*.dtd,**/*.sql" excludes="${excludes}" />
 		</copy>
 	</target>
 
-	<target name="jars" depends="clean,compile-server,compile-client" description="Generate the VIE Forms .jar files">
-		<mkdir dir="${forms.output.jars}" />
-		<jar jarfile="${forms.output.jars}/forms.jar" basedir="${forms.output.classes}" includes="com/alkacon/**" />
-		<jar jarfile="${forms.output.jars}/forms-client.jar" basedir="${forms.output.classes.gwt}" includes="com/alkacon/**" />
+	<target name="jars" depends="clean,compile-server,compile-client" description="Generate the VIE Acacia .jar files">
+		<mkdir dir="${acacia.output.jars}" />
+		<jar jarfile="${acacia.output.jars}/acacia.jar" basedir="${acacia.output.classes}" includes="com/alkacon/**" />
+		<jar jarfile="${acacia.output.jars}/acacia-client.jar" basedir="${acacia.output.classes.gwt}" includes="com/alkacon/**" />
 	</target>
 
 </project>
