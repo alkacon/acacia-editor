@@ -62,28 +62,28 @@ import com.google.gwt.user.client.ui.RootPanel;
 public class Example implements EntryPoint {
 
     /** Address attribute name. */
-    private static String addressAttribute = "<person:address>";
+    private static String addressAttribute = "person:address";
 
     /** Address type name. */
-    private static String addressTypeName = "<type:address>";
+    private static String addressTypeName = "type:address";
 
     /** City attribute name. */
-    private static String cityAttribute = "<address:city>";
+    private static String cityAttribute = "address:city";
 
     /** Country attribute type name. */
-    private static String countryAttribute = "<address:country>";
+    private static String countryAttribute = "address:country";
 
     /** First name attribute name. */
-    private static String firstnameAttribute = "<person:firstname>";
+    private static String firstnameAttribute = "person:firstname";
 
     /** Last name attribute name. */
-    private static String lastNameAttribute = "<person:lastname>";
+    private static String lastNameAttribute = "person:lastname";
 
     /** Person type name. */
-    private static String personTypeName = "<type:person>";
+    private static String personTypeName = "type:person";
 
     /** String type name. */
-    private static String stringTypeName = "<type:string>";
+    private static String stringTypeName = "type:string";
 
     /**
      * @see com.google.gwt.core.client.EntryPoint#onModuleLoad()
@@ -160,48 +160,17 @@ public class Example implements EntryPoint {
             "de=Deustchland|fr=Frankreich|it=Italien"));
 
         com.alkacon.acacia.shared.Entity addressEntity = new com.alkacon.acacia.shared.Entity(
-            "<myAdress>",
+            "myAdress",
             addressTypeName);
 
         addressEntity.setAttributeValue(cityAttribute, "Hamburg");
         addressEntity.setAttributeValue(countryAttribute, "fr");
 
-        com.alkacon.acacia.shared.Entity personEntity = new com.alkacon.acacia.shared.Entity(
-            "<myPerson>",
-            personTypeName);
+        com.alkacon.acacia.shared.Entity personEntity = new com.alkacon.acacia.shared.Entity("myPerson", personTypeName);
         personEntity.setAttributeValue(firstnameAttribute, "Hans");
         personEntity.setAttributeValue(lastNameAttribute, "Albers");
         personEntity.setAttributeValue(addressAttribute, addressEntity);
         return new ContentDefinition(personEntity, attributes, types, "de");
-    }
-
-    /**
-     * Registers the type and it's sub-types.<p>
-     * 
-     * @param vie the VIE instance
-     * @param type the type to register
-     * @param types the available types
-     * @param registered the already registered types
-     */
-    private void registerType(I_Vie vie, Type type, Map<String, Type> types, Set<String> registered) {
-
-        if (registered.contains(type.getId())) {
-            return;
-        }
-        I_Type regType = vie.createType(type.getId());
-        registered.add(type.getId());
-        if (type.isSimpleType()) {
-            return;
-        }
-        for (String attributeName : type.getAttributeNames()) {
-            String attributeType = type.getAttributeTypeName(attributeName);
-            registerType(vie, types.get(attributeType), types, registered);
-            regType.addAttribute(
-                attributeName,
-                attributeType,
-                type.getAttributeMinOccurrence(attributeName),
-                type.getAttributeMaxOccurrence(attributeName));
-        }
     }
 
     /**
@@ -246,5 +215,34 @@ public class Example implements EntryPoint {
             }
         }
         return result;
+    }
+
+    /**
+     * Registers the type and it's sub-types.<p>
+     * 
+     * @param vie the VIE instance
+     * @param type the type to register
+     * @param types the available types
+     * @param registered the already registered types
+     */
+    private void registerType(I_Vie vie, Type type, Map<String, Type> types, Set<String> registered) {
+
+        if (registered.contains(type.getId())) {
+            return;
+        }
+        I_Type regType = vie.createType(type.getId());
+        registered.add(type.getId());
+        if (type.isSimpleType()) {
+            return;
+        }
+        for (String attributeName : type.getAttributeNames()) {
+            String attributeType = type.getAttributeTypeName(attributeName);
+            registerType(vie, types.get(attributeType), types, registered);
+            regType.addAttribute(
+                attributeName,
+                attributeType,
+                type.getAttributeMinOccurrence(attributeName),
+                type.getAttributeMaxOccurrence(attributeName));
+        }
     }
 }

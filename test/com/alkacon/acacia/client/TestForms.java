@@ -76,14 +76,14 @@ public class TestForms extends GWTTestCase {
      */
     public void testFormRenderer() {
 
-        String simpleTypeId = "<cms:simple>";
-        String complexTypeId = "<cms:complex>";
-        String attributeName = "<http:opencms/simpleAttribute>";
+        String simpleTypeId = "cms:simple";
+        String complexTypeId = "cms:complex";
+        String attributeName = "http:opencms/simpleAttribute";
         I_Vie vie = getVieInstance();
         vie.createType(simpleTypeId);
         I_Type complex = vie.createType(complexTypeId);
         complex.addAttribute(attributeName, simpleTypeId, 1, 1);
-        I_Entity entity = vie.createEntity("<myEntity>", complexTypeId);
+        I_Entity entity = vie.createEntity("myEntity", complexTypeId);
         entity.setAttributeValue(attributeName, "my attribute value");
         WidgetService service = new WidgetService();
         I_EntityRenderer defaultRenderer = new ComplexTypeRenderer(service, vie);
@@ -164,8 +164,8 @@ public class TestForms extends GWTTestCase {
             }
         };
         Map<String, AttributeConfiguration> configs = new HashMap<String, AttributeConfiguration>();
-        configs.put("<attribute1>", new AttributeConfiguration("label", "help", "widget1", ""));
-        configs.put("<attribute2>", new AttributeConfiguration("label", "help", "widget2", ""));
+        configs.put("attribute1", new AttributeConfiguration("label", "help", "widget1", ""));
+        configs.put("attribute2", new AttributeConfiguration("label", "help", "widget2", ""));
         ContentDefinition definition = new ContentDefinition(null, configs, Collections.<String, Type> emptyMap(), "en");
         service.init(definition);
         service.registerWidgetFactory("widget1", new I_WidgetFactory() {
@@ -182,13 +182,13 @@ public class TestForms extends GWTTestCase {
                 return new StringWidget();
             }
         });
-        assertEquals(widget1, service.getAttributeWidget("<attribute1>"));
+        assertEquals(widget1, service.getAttributeWidget("attribute1"));
         assertTrue(
             "Should be instance of StringWidget",
-            service.getAttributeWidget("<attribute2>") instanceof StringWidget);
+            service.getAttributeWidget("attribute2") instanceof StringWidget);
         assertTrue(
             "Should be instance of StringWidget as the default widget",
-            service.getAttributeWidget("<some other>") instanceof StringWidget);
+            service.getAttributeWidget("some other") instanceof StringWidget);
     }
 
     /**
