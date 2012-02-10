@@ -168,7 +168,7 @@ public class Entity implements I_Entity, Serializable {
         for (String name : m_entityAttributes.keySet()) {
             result.add(getAttribute(name));
         }
-        return null;
+        return result;
     }
 
     /**
