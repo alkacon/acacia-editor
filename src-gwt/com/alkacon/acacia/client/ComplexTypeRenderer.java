@@ -29,7 +29,6 @@ package com.alkacon.acacia.client;
 
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.vie.client.I_Vie;
-import com.alkacon.vie.client.Vie;
 import com.alkacon.vie.shared.I_Entity;
 import com.alkacon.vie.shared.I_EntityAttribute;
 import com.alkacon.vie.shared.I_Type;
@@ -78,8 +77,8 @@ public class ComplexTypeRenderer implements I_EntityRenderer {
 
         Element result = DOM.createDiv();
         result.addClassName(ENTITY_CLASS);
-        result.setAttribute("typeof", Vie.removePointyBrackets(entity.getTypeName()));
-        result.setAttribute("about", Vie.removePointyBrackets(entity.getId()));
+        result.setAttribute("typeof", entity.getTypeName());
+        result.setAttribute("about", entity.getId());
         I_Type entityType = m_vie.getType(entity.getTypeName());
         List<String> attributeNames = entityType.getAttributeNames();
         for (String attributeName : attributeNames) {
@@ -111,23 +110,31 @@ public class ComplexTypeRenderer implements I_EntityRenderer {
         int maxOccurrence) {
 
         I_EntityAttribute attribute = parentEntity.getAttribute(attributeName);
-        Element holderDiv = DOM.createDiv();
-        holderDiv.addClassName(WIDGET_HOLDER_CLASS);
-        if (attribute.isSimpleValue()) {
-            for (int i = 0; i < attribute.getSimpleValues().size(); i++) {
-                String value = attribute.getSimpleValues().get(i);
-                Element valueDiv = DOM.createDiv();
-                valueDiv.setAttribute("property", Vie.removePointyBrackets(attributeName));
-                valueDiv.setInnerText(value);
-                holderDiv.appendChild(valueDiv);
-                context.appendChild(holderDiv);
-                m_widgetService.getAttributeWidget(attributeName).initWidget(valueDiv, parentEntity, attributeName, i);
+        if (attribute != null) {
+            Element holderDiv = DOM.createDiv();
+            holderDiv.addClassName(WIDGET_HOLDER_CLASS);
+            if (attribute.isSimpleValue()) {
+                for (int i = 0; i < attribute.getSimpleValues().size(); i++) {
+                    String value = attribute.getSimpleValues().get(i);
+                    Element valueDiv = DOM.createDiv();
+                    valueDiv.setAttribute("property", attributeName);
+                    valueDiv.setInnerText(value);
+                    holderDiv.appendChild(valueDiv);
+                    context.appendChild(holderDiv);
+                    m_widgetService.getAttributeWidget(attributeName).initWidget(
+                        valueDiv,
+                        parentEntity,
+                        attributeName,
+                        i);
+                }
+            } else {
+                for (I_Entity entity : attribute.getComplexValues()) {
+                    holderDiv.setAttribute("rel", attributeName);
+                    render(entity, holderDiv);
+                }
             }
         } else {
-            for (I_Entity entity : attribute.getComplexValues()) {
-                holderDiv.setAttribute("rel", attributeName);
-                render(entity, holderDiv);
-            }
+            //TODO: handle empty attributes
         }
     }
 }
