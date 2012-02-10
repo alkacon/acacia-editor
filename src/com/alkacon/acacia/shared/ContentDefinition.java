@@ -42,6 +42,9 @@ public class ContentDefinition implements IsSerializable {
     /** The entity. */
     private Entity m_entity;
 
+    /** The content locale. */
+    private String m_locale;
+
     /** The types defining the entity. */
     private Map<String, Type> m_types;
 
@@ -51,12 +54,18 @@ public class ContentDefinition implements IsSerializable {
      * @param entity the entity
      * @param configurations the attribute configurations
      * @param types the types
+     * @param locale the content locale
      */
-    public ContentDefinition(Entity entity, Map<String, AttributeConfiguration> configurations, Map<String, Type> types) {
+    public ContentDefinition(
+        Entity entity,
+        Map<String, AttributeConfiguration> configurations,
+        Map<String, Type> types,
+        String locale) {
 
         m_entity = entity;
         m_configurations = configurations;
         m_types = types;
+        m_locale = locale;
     }
 
     /**
@@ -85,6 +94,16 @@ public class ContentDefinition implements IsSerializable {
     public Entity getEntity() {
 
         return m_entity;
+    }
+
+    /**
+     * Returns the locale.<p>
+     *
+     * @return the locale
+     */
+    public String getLocale() {
+
+        return m_locale;
     }
 
     /**

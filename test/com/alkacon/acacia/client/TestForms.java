@@ -166,7 +166,7 @@ public class TestForms extends GWTTestCase {
         Map<String, AttributeConfiguration> configs = new HashMap<String, AttributeConfiguration>();
         configs.put("<attribute1>", new AttributeConfiguration("label", "help", "widget1", ""));
         configs.put("<attribute2>", new AttributeConfiguration("label", "help", "widget2", ""));
-        ContentDefinition definition = new ContentDefinition(null, configs, Collections.<String, Type> emptyMap());
+        ContentDefinition definition = new ContentDefinition(null, configs, Collections.<String, Type> emptyMap(), "en");
         service.init(definition);
         service.registerWidgetFactory("widget1", new I_WidgetFactory() {
 

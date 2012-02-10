@@ -172,7 +172,7 @@ public class Example implements EntryPoint {
         personEntity.setAttributeValue(firstnameAttribute, "Hans");
         personEntity.setAttributeValue(lastNameAttribute, "Albers");
         personEntity.setAttributeValue(addressAttribute, addressEntity);
-        return new ContentDefinition(personEntity, attributes, types);
+        return new ContentDefinition(personEntity, attributes, types, "de");
     }
 
     /**
