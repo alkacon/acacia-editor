@@ -31,10 +31,16 @@ import com.alkacon.acacia.client.widgets.I_EditWidget;
 import com.alkacon.acacia.client.widgets.StringWidget;
 import com.alkacon.acacia.shared.AttributeConfiguration;
 import com.alkacon.acacia.shared.ContentDefinition;
+import com.alkacon.acacia.shared.Type;
+import com.alkacon.vie.client.I_Vie;
+import com.alkacon.vie.shared.I_Entity;
+import com.alkacon.vie.shared.I_EntityAttribute;
 import com.alkacon.vie.shared.I_Type;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Service providing form widget renderer for entity attributes.<p>
@@ -63,6 +69,79 @@ public class WidgetService implements I_WidgetService {
 
         m_rendererByType = new HashMap<String, I_EntityRenderer>();
         m_widgetFactories = new HashMap<String, I_WidgetFactory>();
+    }
+
+    /**
+     * Registers the types within the content definition.<p>
+     * 
+     * @param vie the VIE instance
+     * @param definition the content definition
+     * 
+     * @return the registered content entity 
+     */
+    public static I_Entity register(I_Vie vie, ContentDefinition definition) {
+
+        Set<String> registeredTypes = new HashSet<String>();
+        Map<String, Type> types = definition.getTypes();
+        Type base = types.get(definition.getEntity().getTypeName());
+        registerType(vie, base, types, registeredTypes);
+        return registerEntity(vie, definition.getEntity());
+    }
+
+    /**
+     * Registers the given entity within the VIE model.<p>
+     * 
+     * @param vie the VIE instance
+     * @param entity the entity to register
+     * 
+     * @return the new registered entity object
+     */
+    public static I_Entity registerEntity(I_Vie vie, com.alkacon.acacia.shared.Entity entity) {
+
+        I_Entity result = vie.createEntity(entity.getId(), entity.getTypeName());
+        for (I_EntityAttribute attribute : entity.getAttributes()) {
+            if (attribute.isSimpleValue()) {
+                for (String value : attribute.getSimpleValues()) {
+                    result.addAttributeValue(attribute.getAttributeName(), value);
+                }
+            } else {
+                for (I_Entity value : attribute.getComplexValues()) {
+                    result.addAttributeValue(
+                        attribute.getAttributeName(),
+                        registerEntity(vie, (com.alkacon.acacia.shared.Entity)value));
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Registers the type and it's sub-types.<p>
+     * 
+     * @param vie the VIE instance
+     * @param type the type to register
+     * @param types the available types
+     * @param registered the already registered types
+     */
+    public static void registerType(I_Vie vie, Type type, Map<String, Type> types, Set<String> registered) {
+
+        if (registered.contains(type.getId())) {
+            return;
+        }
+        I_Type regType = vie.createType(type.getId());
+        registered.add(type.getId());
+        if (type.isSimpleType()) {
+            return;
+        }
+        for (String attributeName : type.getAttributeNames()) {
+            String attributeType = type.getAttributeTypeName(attributeName);
+            registerType(vie, types.get(attributeType), types, registered);
+            regType.addAttribute(
+                attributeName,
+                attributeType,
+                type.getAttributeMinOccurrence(attributeName),
+                type.getAttributeMaxOccurrence(attributeName));
+        }
     }
 
     /**
