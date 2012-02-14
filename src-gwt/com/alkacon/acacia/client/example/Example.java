@@ -42,13 +42,10 @@ import com.alkacon.vie.client.Entity;
 import com.alkacon.vie.client.I_Vie;
 import com.alkacon.vie.client.Vie;
 import com.alkacon.vie.shared.I_Entity;
-import com.alkacon.vie.shared.I_EntityAttribute;
 import com.alkacon.vie.shared.I_Type;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -144,7 +141,7 @@ public class Example implements EntryPoint {
         person.addAttribute(firstnameAttribute, stringTypeName, 1, 1);
         person.addAttribute(lastNameAttribute, stringTypeName, 1, 1);
         person.addAttribute(addressAttribute, addressTypeName, 1, 1);
-        Map<String, Type> types = new HashMap<String, Type>();
+        Map<String, I_Type> types = new HashMap<String, I_Type>();
         types.put(stringTypeName, string);
         types.put(addressTypeName, address);
         types.put(personTypeName, person);
@@ -183,66 +180,9 @@ public class Example implements EntryPoint {
      */
     private I_Entity register(I_Vie vie, ContentDefinition definition) {
 
-        Set<String> registeredTypes = new HashSet<String>();
-        Map<String, Type> types = definition.getTypes();
-        Type base = types.get(definition.getEntity().getTypeName());
-        registerType(vie, base, types, registeredTypes);
-        return registerEntity(vie, definition.getEntity());
-    }
-
-    /**
-     * Registers the given entity within the VIE model.<p>
-     * 
-     * @param vie the VIE instance
-     * @param entity the entity to register
-     * 
-     * @return the new registered entity object
-     */
-    private I_Entity registerEntity(I_Vie vie, com.alkacon.acacia.shared.Entity entity) {
-
-        I_Entity result = vie.createEntity(entity.getId(), entity.getTypeName());
-        for (I_EntityAttribute attribute : entity.getAttributes()) {
-            if (attribute.isSimpleValue()) {
-                for (String value : attribute.getSimpleValues()) {
-                    result.addAttributeValue(attribute.getAttributeName(), value);
-                }
-            } else {
-                for (I_Entity value : attribute.getComplexValues()) {
-                    result.addAttributeValue(
-                        attribute.getAttributeName(),
-                        registerEntity(vie, (com.alkacon.acacia.shared.Entity)value));
-                }
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Registers the type and it's sub-types.<p>
-     * 
-     * @param vie the VIE instance
-     * @param type the type to register
-     * @param types the available types
-     * @param registered the already registered types
-     */
-    private void registerType(I_Vie vie, Type type, Map<String, Type> types, Set<String> registered) {
-
-        if (registered.contains(type.getId())) {
-            return;
-        }
-        I_Type regType = vie.createType(type.getId());
-        registered.add(type.getId());
-        if (type.isSimpleType()) {
-            return;
-        }
-        for (String attributeName : type.getAttributeNames()) {
-            String attributeType = type.getAttributeTypeName(attributeName);
-            registerType(vie, types.get(attributeType), types, registered);
-            regType.addAttribute(
-                attributeName,
-                attributeType,
-                type.getAttributeMinOccurrence(attributeName),
-                type.getAttributeMaxOccurrence(attributeName));
-        }
+        Map<String, I_Type> types = definition.getTypes();
+        I_Type base = types.get(definition.getEntity().getTypeName());
+        vie.registerTypes(base, types);
+        return vie.registerEntity(definition.getEntity());
     }
 }
