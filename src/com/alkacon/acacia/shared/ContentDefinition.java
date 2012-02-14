@@ -27,6 +27,8 @@
 
 package com.alkacon.acacia.shared;
 
+import com.alkacon.vie.shared.I_Type;
+
 import java.util.Map;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -46,7 +48,7 @@ public class ContentDefinition implements IsSerializable {
     private String m_locale;
 
     /** The types defining the entity. */
-    private Map<String, Type> m_types;
+    private Map<String, I_Type> m_types;
 
     /**
      * Constructor.<p>
@@ -59,7 +61,7 @@ public class ContentDefinition implements IsSerializable {
     public ContentDefinition(
         Entity entity,
         Map<String, AttributeConfiguration> configurations,
-        Map<String, Type> types,
+        Map<String, I_Type> types,
         String locale) {
 
         m_entity = entity;
@@ -111,7 +113,7 @@ public class ContentDefinition implements IsSerializable {
      *
      * @return the types
      */
-    public Map<String, Type> getTypes() {
+    public Map<String, I_Type> getTypes() {
 
         return m_types;
     }
