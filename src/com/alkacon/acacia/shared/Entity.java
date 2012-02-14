@@ -79,6 +79,32 @@ public class Entity implements I_Entity, Serializable {
     }
 
     /**
+     * Returns a serializable version of the given entity.<p>
+     * 
+     * @param entity the entity
+     * 
+     * @return the serializable version
+     */
+    public static Entity serializeEntity(I_Entity entity) {
+
+        Entity result = new Entity(entity.getId(), entity.getTypeName());
+        for (I_EntityAttribute attribute : entity.getAttributes()) {
+            if (attribute.isSimpleValue()) {
+                List<String> values = attribute.getSimpleValues();
+                for (String value : values) {
+                    result.addAttributeValue(attribute.getAttributeName(), value);
+                }
+            } else {
+                List<I_Entity> values = attribute.getComplexValues();
+                for (I_Entity value : values) {
+                    result.addAttributeValue(attribute.getAttributeName(), serializeEntity(value));
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
      * Transforms into a serializable entity instance.<p>
      * 
      * @param entity the entity to transform
