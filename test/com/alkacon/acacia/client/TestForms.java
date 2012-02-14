@@ -31,8 +31,6 @@ import com.alkacon.acacia.client.widgets.I_EditWidget;
 import com.alkacon.acacia.client.widgets.StringWidget;
 import com.alkacon.acacia.shared.AttributeConfiguration;
 import com.alkacon.acacia.shared.ContentDefinition;
-import com.alkacon.acacia.shared.Type;
-import com.alkacon.vie.client.Entity;
 import com.alkacon.vie.client.I_Vie;
 import com.alkacon.vie.client.Vie;
 import com.alkacon.vie.shared.I_Entity;
@@ -40,13 +38,9 @@ import com.alkacon.vie.shared.I_Type;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -58,9 +52,6 @@ import com.google.gwt.user.client.ui.RootPanel;
  * Tests the forms.<p>
  */
 public class TestForms extends GWTTestCase {
-
-    /** Change counter. */
-    private int m_changeCount;
 
     /**
      * @see com.google.gwt.junit.client.GWTTestCase#getModuleName()
@@ -95,25 +86,8 @@ public class TestForms extends GWTTestCase {
         renderer.render(entity, (com.google.gwt.user.client.Element)context);
         assertEquals(
             "The forms inner HTML should match the exspected.",
-            "<div typeof=\"cms:complex\" about=\"myEntity\" class=\"entity\"><div title=\"\" class=\"label\">&lt;http:opencms/simpleAttribute&gt;</div><div class=\"widgetHolder\"><div style=\"color: red;\" contenteditable=\"true\" property=\"http:opencms/simpleAttribute\">my attribute value</div></div></div>",
+            "<div typeof=\"cms:complex\" about=\"myEntity\" class=\"entity\"><div title=\"\" class=\"label\">http:opencms/simpleAttribute</div><div class=\"widgetHolder\"><div style=\"color: red;\" contenteditable=\"true\" property=\"http:opencms/simpleAttribute\">my attribute value</div></div></div>",
             context.getInnerHTML());
-        // TODO: fix event triggering
-        resetChangeCount();
-        ((Entity)entity).addValueChangeHandler(new ValueChangeHandler<I_Entity>() {
-
-            public void onValueChange(ValueChangeEvent<I_Entity> event) {
-
-                assertNotNull(event.getValue());
-                incrementChangeCount();
-            }
-        });
-        List<com.google.gwt.user.client.Element> inputs = ((Vie)vie).select(
-            "[property='http:opencms/simpleAttribute']",
-            null);
-        Element input = inputs.get(0);
-        input.setInnerText("my new value");
-        triggerChangeEvent(input);
-        assertEquals(1, getChangeCount());
     }
 
     /**
@@ -166,7 +140,11 @@ public class TestForms extends GWTTestCase {
         Map<String, AttributeConfiguration> configs = new HashMap<String, AttributeConfiguration>();
         configs.put("attribute1", new AttributeConfiguration("label", "help", "widget1", ""));
         configs.put("attribute2", new AttributeConfiguration("label", "help", "widget2", ""));
-        ContentDefinition definition = new ContentDefinition(null, configs, Collections.<String, Type> emptyMap(), "en");
+        ContentDefinition definition = new ContentDefinition(
+            null,
+            configs,
+            Collections.<String, I_Type> emptyMap(),
+            "en");
         service.init(definition);
         service.registerWidgetFactory("widget1", new I_WidgetFactory() {
 
@@ -192,24 +170,6 @@ public class TestForms extends GWTTestCase {
     }
 
     /**
-     * Returns the change count.<p>
-     * 
-     * @return the change count
-     */
-    protected int getChangeCount() {
-
-        return m_changeCount;
-    }
-
-    /**
-     * Increments the change counter.<p>
-     */
-    protected void incrementChangeCount() {
-
-        m_changeCount++;
-    }
-
-    /**
      * Returns the {@link Vie} instance.<p>
      * 
      * @return the {@link Vie} instance
@@ -218,24 +178,4 @@ public class TestForms extends GWTTestCase {
 
         return Vie.getInstance();
     }
-
-    /**
-     * Resets the change counter.<p>
-     */
-    private void resetChangeCount() {
-
-        m_changeCount = 0;
-    }
-
-    /**
-     * Triggers a change event on the given element.<p>
-     * 
-     * @param element the element
-     */
-    private void triggerChangeEvent(Element element) {
-
-        NativeEvent nativeEvent = Document.get().createBlurEvent();
-        element.dispatchEvent(nativeEvent);
-    }
-
 }
