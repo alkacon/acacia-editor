@@ -27,7 +27,6 @@
 
 package com.alkacon.acacia.client;
 
-import com.alkacon.acacia.client.widgets.I_EditWidget;
 import com.alkacon.vie.client.I_Vie;
 import com.alkacon.vie.shared.I_Entity;
 import com.alkacon.vie.shared.I_EntityAttribute;
@@ -134,12 +133,7 @@ public class InlineFormRenderer implements I_EntityRenderer {
             List<Element> elements = m_vie.getAttributeElements(parentEntity, attributeName, context);
             for (int i = 0; i < elements.size(); i++) {
                 Element element = elements.get(i);
-                I_EditWidget widget = m_widgetService.getAttributeWidget(attributeName).initWidget(
-                    element,
-                    parentEntity,
-                    attributeName,
-                    i);
-                widget.addValueChangeHandler(new SimpleValueChangeHandler(parentEntity, attributeName, i));
+                m_widgetService.getAttributeWidget(attributeName).initWidget(element, parentEntity, attributeName, i);
             }
         } else {
             for (I_Entity entity : attribute.getComplexValues()) {

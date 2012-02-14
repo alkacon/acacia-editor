@@ -130,7 +130,6 @@ public abstract class A_EditWidget extends UIObject implements I_EditWidget, Eve
                 break;
         }
         DomEvent.fireNativeEvent(event, this, this.getElement());
-
     }
 
     /**

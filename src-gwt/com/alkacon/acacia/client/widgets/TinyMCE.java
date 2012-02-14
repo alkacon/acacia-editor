@@ -36,6 +36,7 @@ import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * This class is used to start TinyMCE for editing the content of an element.<p>
@@ -79,6 +80,9 @@ public final class TinyMCE implements HasValue<String> {
      */
     public TinyMCE(Element element) {
 
+        if (!RootPanel.getBodyElement().isOrHasChild(element)) {
+            throw new RuntimeException("Element is not attached to the DOM!");
+        }
         String id = ensureId(element);
         m_id = id;
         checkLibraries();

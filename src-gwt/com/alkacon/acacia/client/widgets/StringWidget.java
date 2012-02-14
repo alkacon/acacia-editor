@@ -97,13 +97,24 @@ public class StringWidget extends A_EditWidget {
     /**
      * @see com.alkacon.acacia.client.widgets.I_EditWidget#initWidget(com.google.gwt.user.client.Element, com.alkacon.vie.shared.I_Entity, java.lang.String, int)
      */
-    public I_EditWidget initWidget(Element element, I_Entity entity, String attributeName, int valueIndex) {
+    public I_EditWidget initWidget(
+        Element element,
+        final I_Entity entity,
+        final String attributeName,
+        final int valueIndex) {
 
         setElement(element);
         DOM.setEventListener(getElement(), this);
         setPreviousValue(getValue());
         getElement().setAttribute("contenteditable", "true");
         getElement().getStyle().setColor("red");
+        addValueChangeHandler(new ValueChangeHandler<String>() {
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+
+                entity.setAttributeValue(attributeName, event.getValue(), valueIndex);
+            }
+        });
         return this;
     }
 

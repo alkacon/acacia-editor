@@ -76,6 +76,7 @@ public class ComplexTypeRenderer implements I_EntityRenderer {
     public void render(I_Entity entity, Element context) {
 
         Element result = DOM.createDiv();
+        context.appendChild(result);
         result.addClassName(ENTITY_CLASS);
         result.setAttribute("typeof", entity.getTypeName());
         result.setAttribute("about", entity.getId());
@@ -96,7 +97,6 @@ public class ComplexTypeRenderer implements I_EntityRenderer {
                 entityType.getAttributeMinOccurrence(attributeName),
                 entityType.getAttributeMaxOccurrence(attributeName));
         }
-        context.appendChild(result);
     }
 
     /**
@@ -113,14 +113,14 @@ public class ComplexTypeRenderer implements I_EntityRenderer {
         if (attribute != null) {
             Element holderDiv = DOM.createDiv();
             holderDiv.addClassName(WIDGET_HOLDER_CLASS);
+            context.appendChild(holderDiv);
             if (attribute.isSimpleValue()) {
                 for (int i = 0; i < attribute.getSimpleValues().size(); i++) {
                     String value = attribute.getSimpleValues().get(i);
                     Element valueDiv = DOM.createDiv();
                     valueDiv.setAttribute("property", attributeName);
-                    valueDiv.setInnerText(value);
+                    valueDiv.setInnerHTML(value);
                     holderDiv.appendChild(valueDiv);
-                    context.appendChild(holderDiv);
                     m_widgetService.getAttributeWidget(attributeName).initWidget(
                         valueDiv,
                         parentEntity,
