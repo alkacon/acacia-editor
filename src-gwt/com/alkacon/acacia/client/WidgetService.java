@@ -63,6 +63,23 @@ public class WidgetService implements I_WidgetService {
 
         m_rendererByType = new HashMap<String, I_EntityRenderer>();
         m_widgetFactories = new HashMap<String, I_WidgetFactory>();
+        m_attributeConfigurations = new HashMap<String, AttributeConfiguration>();
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.I_WidgetService#addConfigurations(java.util.Map)
+     */
+    public void addConfigurations(Map<String, AttributeConfiguration> configurations) {
+
+        m_attributeConfigurations.putAll(configurations);
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.I_WidgetService#addWidgetFactory(java.lang.String, com.alkacon.acacia.client.I_WidgetFactory)
+     */
+    public void addWidgetFactory(String widgetName, I_WidgetFactory widgetFactory) {
+
+        m_widgetFactories.put(widgetName, widgetFactory);
     }
 
     /**
@@ -163,17 +180,6 @@ public class WidgetService implements I_WidgetService {
     }
 
     /**
-     * Registers the given widget factory with the service.<p>
-     * 
-     * @param widgetName the widget name
-     * @param widgetFactory the widget factory
-     */
-    public void registerWidgetFactory(String widgetName, I_WidgetFactory widgetFactory) {
-
-        m_widgetFactories.put(widgetName, widgetFactory);
-    }
-
-    /**
      * Adds the default complex type renderer.<p>
      * 
      * @param renderer the renderer
@@ -191,6 +197,14 @@ public class WidgetService implements I_WidgetService {
     public void setDefaultSimpleRenderer(I_EntityRenderer renderer) {
 
         m_defaultSimpleTypeRenderer = renderer;
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.I_WidgetService#setWidgetFactories(java.util.Map)
+     */
+    public void setWidgetFactories(Map<String, I_WidgetFactory> widgetFactories) {
+
+        m_widgetFactories = widgetFactories;
     }
 
 }

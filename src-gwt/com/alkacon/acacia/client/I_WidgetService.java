@@ -28,12 +28,30 @@
 package com.alkacon.acacia.client;
 
 import com.alkacon.acacia.client.widgets.I_EditWidget;
+import com.alkacon.acacia.shared.AttributeConfiguration;
 import com.alkacon.vie.shared.I_Type;
+
+import java.util.Map;
 
 /**
  * Provides widget renderer for entity attributes.<p>
  */
 public interface I_WidgetService {
+
+    /**
+     * Adds all configurations.<p>
+     * 
+     * @param configurations the configurations to add
+     */
+    public void addConfigurations(Map<String, AttributeConfiguration> configurations);
+
+    /**
+     * Registers the given widget factory with the service.<p>
+     * 
+     * @param widgetName the widget name
+     * @param widgetFactory the widget factory
+     */
+    void addWidgetFactory(String widgetName, I_WidgetFactory widgetFactory);
 
     /**
      * Returns the attribute help information.<p>
@@ -80,4 +98,11 @@ public interface I_WidgetService {
      * @return the renderer
      */
     I_EntityRenderer getRendererForType(I_Type entityType);
+
+    /**
+     * Sets the widget factories.<p>
+     * 
+     * @param widgetFactories the widget factories
+     */
+    void setWidgetFactories(Map<String, I_WidgetFactory> widgetFactories);
 }
