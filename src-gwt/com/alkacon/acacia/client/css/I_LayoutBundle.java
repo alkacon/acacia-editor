@@ -30,6 +30,7 @@ package com.alkacon.acacia.client.css;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.resources.client.CssResource.Shared;
 
 /**
  * Bundle for CSS resources.<p>
@@ -37,6 +38,7 @@ import com.google.gwt.resources.client.CssResource;
 public interface I_LayoutBundle extends ClientBundle {
 
     /** The style CSS resource. */
+    @Shared
     public interface I_Style extends CssResource {
 
         /**
@@ -76,6 +78,14 @@ public interface I_LayoutBundle extends ClientBundle {
      * 
      * @return the style CSS
      */
-    @Source("style.css")
-    I_Style style();
+    @Source("form.css")
+    I_Style form();
+
+    /**
+     * Returns the style CSS.<p>
+     * 
+     * @return the style CSS
+     */
+    @Source("inline.css")
+    I_Style inline();
 }

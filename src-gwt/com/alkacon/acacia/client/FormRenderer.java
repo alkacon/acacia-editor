@@ -44,13 +44,13 @@ import com.google.gwt.user.client.Element;
 public class FormRenderer implements I_EntityRenderer {
 
     /** The entity CSS class. */
-    public static final String ENTITY_CLASS = I_LayoutBundle.INSTANCE.style().entity();
+    public static final String ENTITY_CLASS = I_LayoutBundle.INSTANCE.form().entity();
 
     /** The attribute label CSS class. */
-    public static final String LABEL_CLASS = I_LayoutBundle.INSTANCE.style().label();
+    public static final String LABEL_CLASS = I_LayoutBundle.INSTANCE.form().label();
 
     /** The widget holder CSS class. */
-    public static final String WIDGET_HOLDER_CLASS = I_LayoutBundle.INSTANCE.style().widgetHolder();
+    public static final String WIDGET_HOLDER_CLASS = I_LayoutBundle.INSTANCE.form().widgetHolder();
 
     /** The VIE instance. */
     private I_Vie m_vie;

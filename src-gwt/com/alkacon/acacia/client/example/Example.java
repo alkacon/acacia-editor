@@ -87,7 +87,7 @@ public class Example implements EntryPoint {
      */
     public void onModuleLoad() {
 
-        I_LayoutBundle.INSTANCE.style().ensureInjected();
+        I_LayoutBundle.INSTANCE.inline().ensureInjected();
 
         I_Vie vie = Vie.getInstance();
         ContentDefinition definition = generateContentDefinition();

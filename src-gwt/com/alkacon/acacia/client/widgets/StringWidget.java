@@ -108,7 +108,7 @@ public class StringWidget extends A_EditWidget {
         DOM.setEventListener(getElement(), this);
         setPreviousValue(getValue());
         getElement().setAttribute("contenteditable", "true");
-        getElement().addClassName(I_LayoutBundle.INSTANCE.style().input());
+        getElement().addClassName(I_LayoutBundle.INSTANCE.form().input());
         addValueChangeHandler(new ValueChangeHandler<String>() {
 
             public void onValueChange(ValueChangeEvent<String> event) {

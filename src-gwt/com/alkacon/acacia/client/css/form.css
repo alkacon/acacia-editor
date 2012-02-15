@@ -11,9 +11,11 @@
 .widgetHolder{}
 
 .input{
-	background: #dddddd;
+	border: 2px solid #cccccc;
+	background: #ffffff;
+	padding: 2px;
 }
 
 .input:hover{
-	background: #bbbbbb;
+	background: #eeeeee;
 }
