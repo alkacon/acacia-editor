@@ -77,7 +77,7 @@ public class TestForms extends GWTTestCase {
         I_Entity entity = vie.createEntity("myEntity", complexTypeId);
         entity.setAttributeValue(attributeName, "my attribute value");
         WidgetService service = new WidgetService();
-        I_EntityRenderer defaultRenderer = new ComplexTypeRenderer(service, vie);
+        I_EntityRenderer defaultRenderer = new FormRenderer(vie, service);
         service.setDefaultComplexRenderer(defaultRenderer);
         service.setDefaultSimpleRenderer(defaultRenderer);
         I_EntityRenderer renderer = service.getRendererForType(complex);
@@ -146,14 +146,14 @@ public class TestForms extends GWTTestCase {
             Collections.<String, I_Type> emptyMap(),
             "en");
         service.init(definition);
-        service.registerWidgetFactory("widget1", new I_WidgetFactory() {
+        service.addWidgetFactory("widget1", new I_WidgetFactory() {
 
             public I_EditWidget createWidget(String configuration) {
 
                 return widget1;
             }
         });
-        service.registerWidgetFactory("widget2", new I_WidgetFactory() {
+        service.addWidgetFactory("widget2", new I_WidgetFactory() {
 
             public I_EditWidget createWidget(String configuration) {
 
