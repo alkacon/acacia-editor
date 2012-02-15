@@ -99,6 +99,26 @@ public class ContentDefinition implements IsSerializable {
     }
 
     /**
+     * Returns the entity id.<p>
+     * 
+     * @return the entity id
+     */
+    public String getEntityId() {
+
+        return m_entity.getId();
+    }
+
+    /**
+     * Returns the entity type name.<p>
+     * 
+     * @return the entity type name
+     */
+    public String getEntityTypeName() {
+
+        return m_entity.getTypeName();
+    }
+
+    /**
      * Returns the locale.<p>
      *
      * @return the locale
