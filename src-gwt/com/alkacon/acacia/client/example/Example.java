@@ -29,7 +29,7 @@ package com.alkacon.acacia.client.example;
 
 import com.alkacon.acacia.client.I_EntityRenderer;
 import com.alkacon.acacia.client.I_WidgetFactory;
-import com.alkacon.acacia.client.InlineFormRenderer;
+import com.alkacon.acacia.client.InlineRenderer;
 import com.alkacon.acacia.client.WidgetService;
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
@@ -95,14 +95,14 @@ public class Example implements EntryPoint {
 
         WidgetService service = new WidgetService();
         service.init(definition);
-        service.registerWidgetFactory("string", new I_WidgetFactory() {
+        service.addWidgetFactory("string", new I_WidgetFactory() {
 
             public I_EditWidget createWidget(String configuration) {
 
                 return new StringWidget();
             }
         });
-        service.registerWidgetFactory("tinymce", new I_WidgetFactory() {
+        service.addWidgetFactory("tinymce", new I_WidgetFactory() {
 
             public I_EditWidget createWidget(String configuration) {
 
@@ -110,7 +110,7 @@ public class Example implements EntryPoint {
             }
         });
 
-        I_EntityRenderer inlineRenderer = new InlineFormRenderer(vie, service);
+        I_EntityRenderer inlineRenderer = new InlineRenderer(vie, service);
         service.setDefaultComplexRenderer(inlineRenderer);
         service.setDefaultSimpleRenderer(inlineRenderer);
         I_EntityRenderer renderer = service.getRendererForType(vie.getType(personTypeName));
