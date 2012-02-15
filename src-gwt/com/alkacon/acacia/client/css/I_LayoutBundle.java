@@ -47,6 +47,13 @@ public interface I_LayoutBundle extends ClientBundle {
         String entity();
 
         /**
+         * Returns the input field CSS class name.<p>
+         * 
+         * @return the input field CSS class name
+         */
+        String input();
+
+        /**
          * Returns the label CSS class name.<p>
          * 
          * @return the label CSS class

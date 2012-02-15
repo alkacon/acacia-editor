@@ -9,3 +9,11 @@
 }
 
 .widgetHolder{}
+
+.input{
+	background: #dddddd;
+}
+
+.input:hover{
+	background: #bbbbbb;
+}
