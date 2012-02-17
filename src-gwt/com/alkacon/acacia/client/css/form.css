@@ -1,21 +1,22 @@
-@external entity, label, widgetHolder;
-
-.entity{
+.entity .entity{
 	margin-left:20px;
 }
 
 .label{
+	margin:4px 0 2px;
 	font-weight: bold;
 }
 
-.widgetHolder{}
-
-.input{
+.widgetHolder .input{
 	border: 2px solid #cccccc;
 	background: #ffffff;
 	padding: 2px;
 }
 
-.input:hover{
+.widgetHolder .input:hover{
 	background: #eeeeee;
+}
+
+.input:hover{
+	background: #dddddd;
 }

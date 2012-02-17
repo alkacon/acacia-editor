@@ -77,13 +77,12 @@ public class TestForms extends GWTTestCase {
         I_Entity entity = vie.createEntity("myEntity", complexTypeId);
         entity.setAttributeValue(attributeName, "my attribute value");
         WidgetService service = new WidgetService();
-        I_EntityRenderer defaultRenderer = new FormRenderer(vie, service);
-        service.setDefaultComplexRenderer(defaultRenderer);
-        service.setDefaultSimpleRenderer(defaultRenderer);
+        I_EntityRenderer defaultRenderer = new Renderer(vie, service);
+        service.setDefaultRenderer(defaultRenderer);
         I_EntityRenderer renderer = service.getRendererForType(complex);
         Element context = DOM.createDiv();
         RootPanel.getBodyElement().appendChild(context);
-        renderer.render(entity, (com.google.gwt.user.client.Element)context);
+        renderer.renderForm(entity, (com.google.gwt.user.client.Element)context);
         assertEquals(
             "The forms inner HTML should match the exspected.",
             "<div typeof=\"cms:complex\" about=\"myEntity\" class=\"entity\"><div title=\"\" class=\"label\">http:opencms/simpleAttribute</div><div class=\"widgetHolder\"><div style=\"color: red;\" contenteditable=\"true\" property=\"http:opencms/simpleAttribute\">my attribute value</div></div></div>",

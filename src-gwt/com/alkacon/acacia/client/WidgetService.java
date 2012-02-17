@@ -44,11 +44,8 @@ public class WidgetService implements I_WidgetService {
     /** The attribute configurations. */
     private Map<String, AttributeConfiguration> m_attributeConfigurations;
 
-    /** The default complex type renderer. */
-    private I_EntityRenderer m_defaultComplexTypeRenderer;
-
-    /** The default simple type renderer. */
-    private I_EntityRenderer m_defaultSimpleTypeRenderer;
+    /** The in-line renderer. */
+    private I_EntityRenderer m_defaultRenderer;
 
     /** Map of renderer by type name. */
     private Map<String, I_EntityRenderer> m_rendererByType;
@@ -72,6 +69,17 @@ public class WidgetService implements I_WidgetService {
     public void addConfigurations(Map<String, AttributeConfiguration> configurations) {
 
         m_attributeConfigurations.putAll(configurations);
+    }
+
+    /**
+     * Adds a renderer for the given type.<p>
+     * 
+     * @param typeName the type name 
+     * @param renderer the renderer
+     */
+    public void addRenderer(String typeName, I_EntityRenderer renderer) {
+
+        m_rendererByType.put(typeName, renderer);
     }
 
     /**
@@ -133,26 +141,7 @@ public class WidgetService implements I_WidgetService {
      */
     public I_EntityRenderer getRendererForAttribute(String attributeName, I_Type attributeType) {
 
-        if (m_attributeConfigurations != null) {
-            AttributeConfiguration config = m_attributeConfigurations.get(attributeName);
-            if (config != null) {
-
-                // TODO: change render mechanism
-
-                //            if (config.getWidgetName().equals("string")) {
-                //                I_EntityRenderer renderer = new StringTypeRenderer(config.getLabel(), config.getHelp());
-                //                return renderer;
-                //            }
-                //            if (config.getWidgetName().equals("select")) {
-                //                I_EntityRenderer renderer = new SelectTypeRenderer(config.getLabel(), config.getHelp());
-                //                return renderer;
-                //            }
-            }
-        }
-        if (attributeType.isSimpleType()) {
-            return m_defaultSimpleTypeRenderer;
-        }
-        return m_defaultComplexTypeRenderer;
+        return getRendererForType(attributeType);
     }
 
     /**
@@ -163,10 +152,7 @@ public class WidgetService implements I_WidgetService {
         if (m_rendererByType.containsKey(entityType.getId())) {
             return m_rendererByType.get(entityType.getId());
         }
-        if (entityType.isSimpleType()) {
-            return m_defaultSimpleTypeRenderer;
-        }
-        return m_defaultComplexTypeRenderer;
+        return m_defaultRenderer;
     }
 
     /**
@@ -184,19 +170,9 @@ public class WidgetService implements I_WidgetService {
      * 
      * @param renderer the renderer
      */
-    public void setDefaultComplexRenderer(I_EntityRenderer renderer) {
+    public void setDefaultRenderer(I_EntityRenderer renderer) {
 
-        m_defaultComplexTypeRenderer = renderer;
-    }
-
-    /**
-     * Sets the default simple type renderer.<p>
-     * 
-     * @param renderer the renderer
-     */
-    public void setDefaultSimpleRenderer(I_EntityRenderer renderer) {
-
-        m_defaultSimpleTypeRenderer = renderer;
+        m_defaultRenderer = renderer;
     }
 
     /**

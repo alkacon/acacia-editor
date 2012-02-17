@@ -48,9 +48,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public class EditorBase {
 
-    /** Flag indicating that the form will be rendered in-line. */
-    private boolean m_renderInline;
-
     /** The content service instance. */
     private I_ContentServiceAsync m_service;
 
@@ -64,22 +61,14 @@ public class EditorBase {
      * Constructor.<p>
      * 
      * @param service the content service 
-     * @param renderInline flag indicating if the form should be rendered in-line
      */
-    public EditorBase(I_ContentServiceAsync service, boolean renderInline) {
+    public EditorBase(I_ContentServiceAsync service) {
 
         m_service = service;
         m_vie = Vie.getInstance();
         m_widgetService = new WidgetService();
-        m_renderInline = renderInline;
-        I_EntityRenderer renderer = null;
-        if (m_renderInline) {
-            renderer = new InlineRenderer(m_vie, m_widgetService);
-        } else {
-            renderer = new FormRenderer(m_vie, m_widgetService);
-        }
-        m_widgetService.setDefaultComplexRenderer(renderer);
-        m_widgetService.setDefaultSimpleRenderer(renderer);
+        I_EntityRenderer renderer = new Renderer(m_vie, m_widgetService);
+        m_widgetService.setDefaultRenderer(renderer);
         m_widgetService.addWidgetFactory("string", new I_WidgetFactory() {
 
             public I_EditWidget createWidget(String configuration) {
@@ -182,13 +171,18 @@ public class EditorBase {
      * 
      * @param entityId the entity id
      * @param context the context element
+     * @param inline <code>true</code> to render the entity for in-line editing, <code>false</code> to render a form
      */
-    public void renderEntity(final String entityId, final Element context) {
+    public void renderEntity(final String entityId, final Element context, boolean inline) {
 
         I_Entity entity = m_vie.getEntity(entityId);
         if (entity != null) {
             I_Type type = m_vie.getType(entity.getTypeName());
-            m_widgetService.getRendererForType(type).render(entity, context);
+            if (inline) {
+                m_widgetService.getRendererForType(type).renderInline(entity, context);
+            } else {
+                m_widgetService.getRendererForType(type).renderForm(entity, context);
+            }
         }
     }
 

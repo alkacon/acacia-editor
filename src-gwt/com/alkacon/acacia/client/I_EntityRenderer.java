@@ -37,15 +37,15 @@ import com.google.gwt.user.client.Element;
 public interface I_EntityRenderer {
 
     /**
-     * Renders the given entity into a widget.<p>
+     * Injects editing widgets into the given DOM context to enable editing of the given entity.<p>
      * 
      * @param entity the entity to render
      * @param context the context DOM element
      */
-    void render(I_Entity entity, Element context);
+    void renderInline(I_Entity entity, Element context);
 
     /**
-     * Renders the attribute values.<p>
+     * Injects editing widgets into the given DOM context to enable editing of the given entity attribute.<p>
      * 
      * @param parentEntity the parent entity 
      * @param attributeName the attribute name
@@ -53,5 +53,24 @@ public interface I_EntityRenderer {
      * @param minOccurrence the minimum occurrence of this attribute
      * @param MaxOccurrence the maximum occurrence of this attribute
      */
-    void render(I_Entity parentEntity, String attributeName, Element context, int minOccurrence, int MaxOccurrence);
+    void renderInline(I_Entity parentEntity, String attributeName, Element context, int minOccurrence, int MaxOccurrence);
+
+    /**
+     * Renders the given entity into a form.<p>
+     * 
+     * @param entity the entity to render
+     * @param context the context DOM element
+     */
+    void renderForm(I_Entity entity, Element context);
+
+    /**
+     * Renders the attribute values editing widgets.<p>
+     * 
+     * @param parentEntity the parent entity 
+     * @param attributeName the attribute name
+     * @param context the context DOM element
+     * @param minOccurrence the minimum occurrence of this attribute
+     * @param MaxOccurrence the maximum occurrence of this attribute
+     */
+    void renderForm(I_Entity parentEntity, String attributeName, Element context, int minOccurrence, int MaxOccurrence);
 }

@@ -80,12 +80,4 @@ public interface I_LayoutBundle extends ClientBundle {
      */
     @Source("form.css")
     I_Style form();
-
-    /**
-     * Returns the style CSS.<p>
-     * 
-     * @return the style CSS
-     */
-    @Source("inline.css")
-    I_Style inline();
 }

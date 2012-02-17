@@ -39,9 +39,9 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 
 /**
- * Widget rendering the form view of an entity.<p>
+ * Renders the widgets for an in-line form.<p>
  */
-public class FormRenderer implements I_EntityRenderer {
+public class Renderer implements I_EntityRenderer {
 
     /** The entity CSS class. */
     public static final String ENTITY_CLASS = I_LayoutBundle.INSTANCE.form().entity();
@@ -62,18 +62,67 @@ public class FormRenderer implements I_EntityRenderer {
      * Constructor.<p>
      * 
      * @param vie the VIE instance
-     * @param widgetService the widget service to use
+     * @param widgetService the widget service
      */
-    public FormRenderer(I_Vie vie, I_WidgetService widgetService) {
+    public Renderer(I_Vie vie, I_WidgetService widgetService) {
 
-        m_widgetService = widgetService;
         m_vie = vie;
+        m_widgetService = widgetService;
     }
 
     /**
-     * @see com.alkacon.acacia.client.I_EntityRenderer#render(com.alkacon.vie.shared.I_Entity, com.google.gwt.user.client.Element)
+     * @see com.alkacon.acacia.client.I_EntityRenderer#renderInline(com.alkacon.vie.shared.I_Entity, com.google.gwt.user.client.Element)
      */
-    public void render(I_Entity entity, Element context) {
+    public void renderInline(I_Entity entity, Element context) {
+
+        I_Type entityType = m_vie.getType(entity.getTypeName());
+        List<String> attributeNames = entityType.getAttributeNames();
+        for (String attributeName : attributeNames) {
+            I_Type attributeType = entityType.getAttributeType(attributeName);
+            I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(attributeName, attributeType);
+            renderer.renderInline(
+                entity,
+                attributeName,
+                context,
+                entityType.getAttributeMinOccurrence(attributeName),
+                entityType.getAttributeMaxOccurrence(attributeName));
+        }
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.I_EntityRenderer#renderInline(com.alkacon.vie.shared.I_Entity, java.lang.String, com.google.gwt.user.client.Element, int, int)
+     */
+    public void renderInline(
+        I_Entity parentEntity,
+        String attributeName,
+        Element context,
+        int minOccurrence,
+        int MaxOccurrence) {
+
+        I_EntityAttribute attribute = parentEntity.getAttribute(attributeName);
+        if (attribute != null) {
+            if (attribute.isSimpleValue()) {
+                List<Element> elements = m_vie.getAttributeElements(parentEntity, attributeName, context);
+                for (int i = 0; i < elements.size(); i++) {
+                    Element element = elements.get(i);
+                    m_widgetService.getAttributeWidget(attributeName).initWidget(
+                        element,
+                        parentEntity,
+                        attributeName,
+                        i);
+                }
+            } else {
+                for (I_Entity entity : attribute.getComplexValues()) {
+                    renderInline(entity, context);
+                }
+            }
+        }
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.I_EntityRenderer#renderForm(com.alkacon.vie.shared.I_Entity, com.google.gwt.user.client.Element)
+     */
+    public void renderForm(I_Entity entity, Element context) {
 
         Element result = DOM.createDiv();
         context.appendChild(result);
@@ -90,7 +139,7 @@ public class FormRenderer implements I_EntityRenderer {
             label.addClassName(LABEL_CLASS);
             label.setTitle(m_widgetService.getAttributeHelp(attributeName));
             result.appendChild(label);
-            renderer.render(
+            renderer.renderForm(
                 entity,
                 attributeName,
                 result,
@@ -100,14 +149,14 @@ public class FormRenderer implements I_EntityRenderer {
     }
 
     /**
-     * @see com.alkacon.acacia.client.I_EntityRenderer#render(com.alkacon.vie.shared.I_Entity, java.lang.String, com.google.gwt.user.client.Element, int, int)
+     * @see com.alkacon.acacia.client.I_EntityRenderer#renderForm(com.alkacon.vie.shared.I_Entity, java.lang.String, com.google.gwt.user.client.Element, int, int)
      */
-    public void render(
+    public void renderForm(
         I_Entity parentEntity,
         String attributeName,
         Element context,
         int minOccurrence,
-        int maxOccurrence) {
+        int MaxOccurrence) {
 
         I_EntityAttribute attribute = parentEntity.getAttribute(attributeName);
         if (attribute != null) {
@@ -126,11 +175,12 @@ public class FormRenderer implements I_EntityRenderer {
                         parentEntity,
                         attributeName,
                         i);
+
                 }
             } else {
                 for (I_Entity entity : attribute.getComplexValues()) {
                     holderDiv.setAttribute("rel", attributeName);
-                    render(entity, holderDiv);
+                    renderForm(entity, holderDiv);
                 }
             }
         } else {
