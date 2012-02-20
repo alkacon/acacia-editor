@@ -28,7 +28,6 @@
 package com.alkacon.acacia.client.widgets;
 
 import com.alkacon.acacia.client.css.I_LayoutBundle;
-import com.alkacon.vie.shared.I_Entity;
 
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
@@ -96,26 +95,15 @@ public class StringWidget extends A_EditWidget {
     }
 
     /**
-     * @see com.alkacon.acacia.client.widgets.I_EditWidget#initWidget(com.google.gwt.user.client.Element, com.alkacon.vie.shared.I_Entity, java.lang.String, int)
+     * @see com.alkacon.acacia.client.widgets.I_EditWidget#initWidget(com.google.gwt.user.client.Element)
      */
-    public I_EditWidget initWidget(
-        Element element,
-        final I_Entity entity,
-        final String attributeName,
-        final int valueIndex) {
+    public I_EditWidget initWidget(Element element) {
 
         setElement(element);
         DOM.setEventListener(getElement(), this);
         setPreviousValue(getValue());
         getElement().setAttribute("contenteditable", "true");
         getElement().addClassName(I_LayoutBundle.INSTANCE.form().input());
-        addValueChangeHandler(new ValueChangeHandler<String>() {
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-
-                entity.setAttributeValue(attributeName, event.getValue(), valueIndex);
-            }
-        });
         return this;
     }
 

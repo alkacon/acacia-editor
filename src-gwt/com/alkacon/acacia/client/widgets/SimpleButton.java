@@ -27,35 +27,32 @@
 
 package com.alkacon.acacia.client.widgets;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.ui.HasValue;
 
 /**
- * The edit widget interface.<p>
+ * A simple button.
  */
-public interface I_EditWidget extends HasValue<String> {
+public class SimpleButton extends WidgetBase implements HasClickHandlers {
 
     /**
-     * Returns the widget element.<p>
+     * Constructor.<p>
      * 
-     * @return the widget element
+     * @param element the button element, needs to be attached to the DOM
      */
-    Element getElement();
+    public SimpleButton(Element element) {
+
+        setElement(element);
+    }
 
     /**
-     * Initializes the widget using the given element.<p>
-     * The element needs to be attached to the DOM containing the current value.<p>
-     * 
-     * @param element the element
-     * 
-     * @return the initialized widget
+     * @see com.google.gwt.event.dom.client.HasClickHandlers#addClickHandler(com.google.gwt.event.dom.client.ClickHandler)
      */
-    I_EditWidget initWidget(Element element);
+    public HandlerRegistration addClickHandler(ClickHandler handler) {
 
-    /**
-     * Sets the configuration for the given widget.<p>
-     * 
-     *  @param confuguration the configuration string
-     */
-    void setConfiguration(String confuguration);
+        return addDomHandler(handler, ClickEvent.getType());
+    }
 }

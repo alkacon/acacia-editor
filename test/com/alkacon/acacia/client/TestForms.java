@@ -112,11 +112,7 @@ public class TestForms extends GWTTestCase {
                 return null;
             }
 
-            public I_EditWidget initWidget(
-                com.google.gwt.user.client.Element element,
-                I_Entity entity,
-                String attributeName,
-                int valueIndex) {
+            public I_EditWidget initWidget(com.google.gwt.user.client.Element element) {
 
                 return null;
             }
@@ -134,6 +130,12 @@ public class TestForms extends GWTTestCase {
             public void setValue(String value, boolean fireEvents) {
 
                 // dummy method
+            }
+
+            public com.google.gwt.user.client.Element getElement() {
+
+                // dummy method
+                return null;
             }
         };
         Map<String, AttributeConfiguration> configs = new HashMap<String, AttributeConfiguration>();

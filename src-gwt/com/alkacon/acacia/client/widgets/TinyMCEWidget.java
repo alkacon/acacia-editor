@@ -27,9 +27,6 @@
 
 package com.alkacon.acacia.client.widgets;
 
-import com.alkacon.vie.shared.I_Entity;
-
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Element;
@@ -62,22 +59,11 @@ public class TinyMCEWidget extends A_EditWidget {
     }
 
     /**
-     * @see com.alkacon.acacia.client.widgets.I_EditWidget#initWidget(com.google.gwt.user.client.Element, com.alkacon.vie.shared.I_Entity, java.lang.String, int)
+     * @see com.alkacon.acacia.client.widgets.I_EditWidget#initWidget(com.google.gwt.user.client.Element)
      */
-    public I_EditWidget initWidget(
-        Element element,
-        final I_Entity entity,
-        final String attributeName,
-        final int valueIndex) {
+    public I_EditWidget initWidget(Element element) {
 
         TinyMCE editor = new TinyMCE(element);
-        editor.addValueChangeHandler(new ValueChangeHandler<String>() {
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-
-                entity.setAttributeValue(attributeName, event.getValue(), valueIndex);
-            }
-        });
         editor.init();
         return new TinyMCEWidget(editor);
     }
@@ -105,5 +91,4 @@ public class TinyMCEWidget extends A_EditWidget {
 
         m_editor.setValue(value, fireEvents);
     }
-
 }
