@@ -77,6 +77,13 @@ public interface I_LayoutBundle extends ClientBundle {
         String removeButton();
 
         /**
+         * Returns the remove entity button CSS class name.<p>
+         * 
+         * @return the remove entity button CSS class
+         */
+        String removeEntityButton();
+
+        /**
          * Returns the widget CSS class name.<p>
          * 
          * @return the widget CSS class

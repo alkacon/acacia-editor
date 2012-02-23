@@ -15,10 +15,25 @@
 	font-weight: bold;
 }
 
-.button{
-	display: inline-block;
-	cursor: pointer;
+.widgetHolder .removeEntityButton{
+	clear: both;
+	float: left;
+	padding: 2px;
+	font-weight: bold;
 }
+
+@if user.agent ie6 {
+	.button{
+		display: inline;
+		cursor: pointer;
+	}
+} @else {
+	.button{
+		display: inline-block;
+		cursor: pointer;
+	}
+}
+
 
 .widgetHolder .widget{
 	margin: 0 20px 4px 0;

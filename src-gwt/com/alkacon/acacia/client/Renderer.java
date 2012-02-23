@@ -89,7 +89,7 @@ public class Renderer implements I_EntityRenderer {
         public void onValueChange(ValueChangeEvent<String> event) {
 
             if (!m_isInline) {
-                m_valueIndex = getWidgetElementIndex((I_EditWidget)event.getSource());
+                m_valueIndex = getWidgetElementIndex(((I_EditWidget)event.getSource()).getElement());
             }
             m_entity.setAttributeValue(m_attributeName, event.getValue(), m_valueIndex);
 
@@ -171,8 +171,8 @@ public class Renderer implements I_EntityRenderer {
      */
     public void renderForm(
         final I_Entity parentEntity,
-        String attributeName,
-        Element context,
+        final String attributeName,
+        final Element context,
         int minOccurrence,
         int maxOccurrence) {
 
@@ -181,20 +181,21 @@ public class Renderer implements I_EntityRenderer {
             attribute = createEmptyAttribute(parentEntity, attributeName, minOccurrence);
         }
         if (attribute != null) {
-
+            boolean needsRemove = (maxOccurrence > minOccurrence) && (attribute.getValueCount() > minOccurrence);
             if (attribute.isSimpleValue()) {
-                boolean needsRemove = (maxOccurrence > minOccurrence) && (attribute.getValueCount() > minOccurrence);
                 for (int i = 0; i < attribute.getSimpleValues().size(); i++) {
                     String value = attribute.getSimpleValues().get(i);
                     addValueWidget(parentEntity, attributeName, context, value, needsRemove);
-
                 }
             } else {
                 context.setAttribute("rel", attributeName);
-                //              boolean needsRemove=maxOccurrence > minOccurrence && attribute.getSimpleValues().size()>minOccurrence;
                 for (I_Entity entity : attribute.getComplexValues()) {
-                    Element entityDiv = DOM.createDiv();
+                    final Element entityDiv = DOM.createDiv();
                     context.appendChild(entityDiv);
+                    if (needsRemove) {
+                        addRemoveButton(parentEntity, attributeName, context, entityDiv, true);
+                    }
+
                     renderForm(entity, entityDiv);
                 }
             }
@@ -271,35 +272,50 @@ public class Renderer implements I_EntityRenderer {
         final I_EditWidget widget = m_widgetService.getAttributeWidget(attributeName).initWidget(valueDiv);
         widget.addValueChangeHandler(new WidgetChangeHandler(parentEntity, attributeName, false, 0));
         if (hasRemoveButton) {
-            Element buttonEl = DOM.createDiv();
-            context.insertBefore(buttonEl, widget.getElement());
-            buttonEl.setInnerText("-");
-            final SimpleButton button = new SimpleButton(buttonEl);
-            button.addStyleName(I_LayoutBundle.INSTANCE.form().removeButton());
-            button.addClickHandler(new ClickHandler() {
-
-                public void onClick(ClickEvent event) {
-
-                    parentEntity.removeAttributeValue(attributeName, getWidgetElementIndex(widget));
-                    rerenderForm(parentEntity, (Element)context.getParentElement());
-                }
-            });
+            addRemoveButton(parentEntity, attributeName, context, valueDiv, false);
         }
+    }
+
+    /**
+     * Creates an empty attribute.<p>
+     * 
+     * @param parentEntity the parent entity
+     * @param attributeName the attribute name
+     * @param minOccurrence the minimum occurrence of the attribute
+     * 
+     * @return the entity attribute
+     */
+    protected I_EntityAttribute createEmptyAttribute(I_Entity parentEntity, String attributeName, int minOccurrence) {
+
+        I_EntityAttribute result = null;
+        I_Type attributeType = m_vie.getType(parentEntity.getTypeName()).getAttributeType(attributeName);
+        if (attributeType.isSimpleType()) {
+            for (int i = 0; i < minOccurrence; i++) {
+                parentEntity.addAttributeValue(attributeName, m_widgetService.getDefaultAttributeValue(attributeName));
+            }
+            result = parentEntity.getAttribute(attributeName);
+        } else {
+            for (int i = 0; i < minOccurrence; i++) {
+                parentEntity.addAttributeValue(attributeName, m_vie.createEntity(null, attributeType.getId()));
+            }
+            result = parentEntity.getAttribute(attributeName);
+        }
+        return result;
     }
 
     /**
      * Returns the index of the widget element.<p>
      * 
-     * @param widget the widget 
+     * @param startElement the widget 
      * 
      * @return the index of the widget element
      */
-    protected int getWidgetElementIndex(I_EditWidget widget) {
+    protected int getWidgetElementIndex(Element startElement) {
 
         int result = 0;
-        Node previousSibling = widget.getElement().getPreviousSibling();
+        Node previousSibling = startElement.getPreviousSibling();
         while (previousSibling != null) {
-            if (((Element)previousSibling).hasAttribute("property")) {
+            if (((Element)previousSibling).hasAttribute("property") || ((Element)previousSibling).hasAttribute("about")) {
                 result++;
             }
             previousSibling = previousSibling.getPreviousSibling();
@@ -320,29 +336,37 @@ public class Renderer implements I_EntityRenderer {
     }
 
     /**
-     * Creates an empty attribute.<p>
+     * Adds an attribute value remove button.<p>
      * 
      * @param parentEntity the parent entity
      * @param attributeName the attribute name
-     * @param minOccurrence the minimum occurrence of the attribute
-     * 
-     * @return the entity attribute
+     * @param context the context element to add the button to
+     * @param widget the value element
+     * @param displayLeft <code>true</code> to display the button on the left hand side
      */
-    I_EntityAttribute createEmptyAttribute(I_Entity parentEntity, String attributeName, int minOccurrence) {
+    private void addRemoveButton(
+        final I_Entity parentEntity,
+        final String attributeName,
+        final Element context,
+        final Element widget,
+        boolean displayLeft) {
 
-        I_EntityAttribute result = null;
-        I_Type attributeType = m_vie.getType(parentEntity.getTypeName()).getAttributeType(attributeName);
-        if (attributeType.isSimpleType()) {
-            for (int i = 0; i < minOccurrence; i++) {
-                parentEntity.addAttributeValue(attributeName, m_widgetService.getDefaultAttributeValue(attributeName));
-            }
-            result = parentEntity.getAttribute(attributeName);
+        Element buttonEl = DOM.createDiv();
+        context.insertBefore(buttonEl, widget);
+        buttonEl.setInnerText("-");
+        final SimpleButton button = new SimpleButton(buttonEl);
+        if (displayLeft) {
+            button.addStyleName(I_LayoutBundle.INSTANCE.form().removeEntityButton());
         } else {
-            for (int i = 0; i < minOccurrence; i++) {
-                parentEntity.addAttributeValue(attributeName, m_vie.createEntity(null, attributeType.getId()));
-            }
-            result = parentEntity.getAttribute(attributeName);
+            button.addStyleName(I_LayoutBundle.INSTANCE.form().removeButton());
         }
-        return result;
+        button.addClickHandler(new ClickHandler() {
+
+            public void onClick(ClickEvent event) {
+
+                parentEntity.removeAttributeValue(attributeName, getWidgetElementIndex(widget));
+                rerenderForm(parentEntity, (Element)context.getParentElement());
+            }
+        });
     }
 }
