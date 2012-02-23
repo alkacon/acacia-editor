@@ -7,10 +7,28 @@
 	font-weight: bold;
 }
 
-.widgetHolder .input{
+.widgetHolder .removeButton{
+	clear: both;
+	float: right;
+	padding: 2px;
+	border: 2px solid transparent;
+	font-weight: bold;
+}
+
+.button{
+	display: inline-block;
+	cursor: pointer;
+}
+
+.widgetHolder .widget{
+	margin: 0 20px 4px 0;
+}
+
+.widgetHolder .widget.input{
 	border: 2px solid #cccccc;
 	background: #ffffff;
 	padding: 2px;
+	min-height: 14px;
 }
 
 .widgetHolder .input:hover{

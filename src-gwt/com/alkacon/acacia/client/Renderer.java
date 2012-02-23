@@ -55,11 +55,11 @@ public class Renderer implements I_EntityRenderer {
      */
     protected class WidgetChangeHandler implements ValueChangeHandler<String> {
 
-        /** The entity. */
-        private I_Entity m_entity;
-
         /** The attribute name. */
         private String m_attributeName;
+
+        /** The entity. */
+        private I_Entity m_entity;
 
         /** Flag indicating if the widget is rendered in-line or form. */
         private boolean m_isInline;
@@ -94,24 +94,6 @@ public class Renderer implements I_EntityRenderer {
             m_entity.setAttributeValue(m_attributeName, event.getValue(), m_valueIndex);
 
         }
-
-        /**
-         * Returns the index of the widget element.<p>
-         * 
-         * @param widget the widget 
-         * 
-         * @return the index of the widget element
-         */
-        private int getWidgetElementIndex(I_EditWidget widget) {
-
-            int result = 0;
-            Node previousSibling = widget.getElement().getPreviousSibling();
-            while (previousSibling != null) {
-                result++;
-                previousSibling = previousSibling.getPreviousSibling();
-            }
-            return result;
-        }
     }
 
     /** The entity CSS class. */
@@ -127,7 +109,7 @@ public class Renderer implements I_EntityRenderer {
     I_Vie m_vie;
 
     /** The widget service. */
-    private I_WidgetService m_widgetService;
+    I_WidgetService m_widgetService;
 
     /**
      * Constructor.<p>
@@ -139,6 +121,84 @@ public class Renderer implements I_EntityRenderer {
 
         m_vie = vie;
         m_widgetService = widgetService;
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.I_EntityRenderer#renderForm(com.alkacon.vie.shared.I_Entity, com.google.gwt.user.client.Element)
+     */
+    public void renderForm(final I_Entity entity, final Element context) {
+
+        context.addClassName(ENTITY_CLASS);
+        context.setAttribute("typeof", entity.getTypeName());
+        context.setAttribute("about", entity.getId());
+        I_Type entityType = m_vie.getType(entity.getTypeName());
+        List<String> attributeNames = entityType.getAttributeNames();
+        for (final String attributeName : attributeNames) {
+            I_Type attributeType = entityType.getAttributeType(attributeName);
+            I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(attributeName, attributeType);
+            Element label = DOM.createDiv();
+            label.setInnerText(m_widgetService.getAttributeLabel(attributeName));
+            label.addClassName(LABEL_CLASS);
+            label.setTitle(m_widgetService.getAttributeHelp(attributeName));
+            context.appendChild(label);
+            final Element holderDiv = DOM.createDiv();
+            holderDiv.addClassName(WIDGET_HOLDER_CLASS);
+            context.appendChild(holderDiv);
+            int minOccurrence = entityType.getAttributeMinOccurrence(attributeName);
+            int maxOccurrence = entityType.getAttributeMaxOccurrence(attributeName);
+            boolean mayHaveMore = (maxOccurrence > minOccurrence)
+                && ((!entity.hasAttribute(attributeName) || (entity.getAttribute(attributeName).getValueCount() < maxOccurrence)));
+            if (mayHaveMore) {
+                Element buttonEl = DOM.createDiv();
+                label.appendChild(buttonEl);
+                buttonEl.setInnerText("+");
+                SimpleButton button = new SimpleButton(buttonEl);
+                button.addClickHandler(new ClickHandler() {
+
+                    public void onClick(ClickEvent event) {
+
+                        createEmptyAttribute(entity, attributeName, 1);
+                        rerenderForm(entity, context);
+                    }
+                });
+            }
+            renderer.renderForm(entity, attributeName, holderDiv, minOccurrence, maxOccurrence);
+        }
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.I_EntityRenderer#renderForm(com.alkacon.vie.shared.I_Entity, java.lang.String, com.google.gwt.user.client.Element, int, int)
+     */
+    public void renderForm(
+        final I_Entity parentEntity,
+        String attributeName,
+        Element context,
+        int minOccurrence,
+        int maxOccurrence) {
+
+        I_EntityAttribute attribute = parentEntity.getAttribute(attributeName);
+        if ((attribute == null) && (minOccurrence > 0)) {
+            attribute = createEmptyAttribute(parentEntity, attributeName, minOccurrence);
+        }
+        if (attribute != null) {
+
+            if (attribute.isSimpleValue()) {
+                boolean needsRemove = (maxOccurrence > minOccurrence) && (attribute.getValueCount() > minOccurrence);
+                for (int i = 0; i < attribute.getSimpleValues().size(); i++) {
+                    String value = attribute.getSimpleValues().get(i);
+                    addValueWidget(parentEntity, attributeName, context, value, needsRemove);
+
+                }
+            } else {
+                context.setAttribute("rel", attributeName);
+                //              boolean needsRemove=maxOccurrence > minOccurrence && attribute.getSimpleValues().size()>minOccurrence;
+                for (I_Entity entity : attribute.getComplexValues()) {
+                    Element entityDiv = DOM.createDiv();
+                    context.appendChild(entityDiv);
+                    renderForm(entity, entityDiv);
+                }
+            }
+        }
     }
 
     /**
@@ -168,7 +228,7 @@ public class Renderer implements I_EntityRenderer {
         String attributeName,
         Element context,
         int minOccurrence,
-        int MaxOccurrence) {
+        int maxOccurrence) {
 
         I_EntityAttribute attribute = parentEntity.getAttribute(attributeName);
         if (attribute != null) {
@@ -188,100 +248,75 @@ public class Renderer implements I_EntityRenderer {
     }
 
     /**
-     * @see com.alkacon.acacia.client.I_EntityRenderer#renderForm(com.alkacon.vie.shared.I_Entity, com.google.gwt.user.client.Element)
-     */
-    public void renderForm(final I_Entity entity, Element context) {
-
-        Element result = DOM.createDiv();
-        context.appendChild(result);
-        result.addClassName(ENTITY_CLASS);
-        result.setAttribute("typeof", entity.getTypeName());
-        result.setAttribute("about", entity.getId());
-        I_Type entityType = m_vie.getType(entity.getTypeName());
-        List<String> attributeNames = entityType.getAttributeNames();
-        for (final String attributeName : attributeNames) {
-            I_Type attributeType = entityType.getAttributeType(attributeName);
-            I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(attributeName, attributeType);
-            Element label = DOM.createDiv();
-            label.setInnerText(m_widgetService.getAttributeLabel(attributeName));
-            label.addClassName(LABEL_CLASS);
-            label.setTitle(m_widgetService.getAttributeHelp(attributeName));
-            result.appendChild(label);
-            final Element holderDiv = DOM.createDiv();
-            holderDiv.addClassName(WIDGET_HOLDER_CLASS);
-            result.appendChild(holderDiv);
-            int minOccurrence = entityType.getAttributeMinOccurrence(attributeName);
-            int maxOccurrence = entityType.getAttributeMaxOccurrence(attributeName);
-            if (maxOccurrence > minOccurrence) {
-                Element buttonEl = DOM.createButton();
-                label.appendChild(buttonEl);
-                buttonEl.setInnerText("+");
-                SimpleButton button = new SimpleButton(buttonEl);
-                button.addClickHandler(new ClickHandler() {
-
-                    public void onClick(ClickEvent event) {
-
-                        I_Type valueType = m_vie.getType(entity.getTypeName()).getAttributeType(attributeName);
-                        if (valueType.isSimpleType()) {
-                            addValueWidget(entity, attributeName, holderDiv, "");
-                        } else {
-                            I_Entity value = m_vie.createEntity("", valueType.getId());
-                            entity.addAttributeValue(attributeName, value);
-                            renderForm(value, holderDiv);
-                        }
-                    }
-                });
-            }
-            renderer.renderForm(entity, attributeName, holderDiv, minOccurrence, maxOccurrence);
-        }
-    }
-
-    /**
-     * @see com.alkacon.acacia.client.I_EntityRenderer#renderForm(com.alkacon.vie.shared.I_Entity, java.lang.String, com.google.gwt.user.client.Element, int, int)
-     */
-    public void renderForm(
-        I_Entity parentEntity,
-        String attributeName,
-        Element context,
-        int minOccurrence,
-        int MaxOccurrence) {
-
-        I_EntityAttribute attribute = parentEntity.getAttribute(attributeName);
-        if ((attribute == null) && (minOccurrence > 0)) {
-            attribute = createEmptyAttribute(parentEntity, attributeName, minOccurrence);
-        }
-        if (attribute != null) {
-
-            if (attribute.isSimpleValue()) {
-                for (int i = 0; i < attribute.getSimpleValues().size(); i++) {
-                    String value = attribute.getSimpleValues().get(i);
-                    addValueWidget(parentEntity, attributeName, context, value);
-                }
-            } else {
-                context.setAttribute("rel", attributeName);
-                for (I_Entity entity : attribute.getComplexValues()) {
-                    renderForm(entity, context);
-                }
-            }
-        }
-    }
-
-    /**
      * Adds a value widget for the given value and attribute to the DOM context element.<p>
      * 
      * @param parentEntity the parent entity
      * @param attributeName the attribute name
      * @param context the DOM context element
      * @param value the attribute value
+     * @param hasRemoveButton <code>true</code> if this attribute should be removable
      */
-    protected void addValueWidget(I_Entity parentEntity, String attributeName, Element context, String value) {
+    protected void addValueWidget(
+        final I_Entity parentEntity,
+        final String attributeName,
+        final Element context,
+        String value,
+        boolean hasRemoveButton) {
 
         Element valueDiv = DOM.createDiv();
         valueDiv.setAttribute("property", attributeName);
         valueDiv.setInnerHTML(value);
+        valueDiv.addClassName(I_LayoutBundle.INSTANCE.form().widget());
         context.appendChild(valueDiv);
-        I_EditWidget widget = m_widgetService.getAttributeWidget(attributeName).initWidget(valueDiv);
+        final I_EditWidget widget = m_widgetService.getAttributeWidget(attributeName).initWidget(valueDiv);
         widget.addValueChangeHandler(new WidgetChangeHandler(parentEntity, attributeName, false, 0));
+        if (hasRemoveButton) {
+            Element buttonEl = DOM.createDiv();
+            context.insertBefore(buttonEl, widget.getElement());
+            buttonEl.setInnerText("-");
+            final SimpleButton button = new SimpleButton(buttonEl);
+            button.addStyleName(I_LayoutBundle.INSTANCE.form().removeButton());
+            button.addClickHandler(new ClickHandler() {
+
+                public void onClick(ClickEvent event) {
+
+                    parentEntity.removeAttributeValue(attributeName, getWidgetElementIndex(widget));
+                    rerenderForm(parentEntity, (Element)context.getParentElement());
+                }
+            });
+        }
+    }
+
+    /**
+     * Returns the index of the widget element.<p>
+     * 
+     * @param widget the widget 
+     * 
+     * @return the index of the widget element
+     */
+    protected int getWidgetElementIndex(I_EditWidget widget) {
+
+        int result = 0;
+        Node previousSibling = widget.getElement().getPreviousSibling();
+        while (previousSibling != null) {
+            if (((Element)previousSibling).hasAttribute("property")) {
+                result++;
+            }
+            previousSibling = previousSibling.getPreviousSibling();
+        }
+        return result;
+    }
+
+    /**
+     * Re-renders the given entity.<p>
+     * 
+     * @param entity the entity
+     * @param context the context DOM element
+     */
+    protected void rerenderForm(final I_Entity entity, final Element context) {
+
+        context.setInnerHTML("");
+        renderForm(entity, context);
     }
 
     /**
@@ -290,20 +325,21 @@ public class Renderer implements I_EntityRenderer {
      * @param parentEntity the parent entity
      * @param attributeName the attribute name
      * @param minOccurrence the minimum occurrence of the attribute
-     * @return
+     * 
+     * @return the entity attribute
      */
-    private I_EntityAttribute createEmptyAttribute(I_Entity parentEntity, String attributeName, int minOccurrence) {
+    I_EntityAttribute createEmptyAttribute(I_Entity parentEntity, String attributeName, int minOccurrence) {
 
         I_EntityAttribute result = null;
         I_Type attributeType = m_vie.getType(parentEntity.getTypeName()).getAttributeType(attributeName);
         if (attributeType.isSimpleType()) {
             for (int i = 0; i < minOccurrence; i++) {
-                parentEntity.addAttributeValue(attributeName, "");
+                parentEntity.addAttributeValue(attributeName, m_widgetService.getDefaultAttributeValue(attributeName));
             }
             result = parentEntity.getAttribute(attributeName);
         } else {
             for (int i = 0; i < minOccurrence; i++) {
-                parentEntity.addAttributeValue(attributeName, m_vie.createEntity("", attributeType.getId()));
+                parentEntity.addAttributeValue(attributeName, m_vie.createEntity(null, attributeType.getId()));
             }
             result = parentEntity.getAttribute(attributeName);
         }

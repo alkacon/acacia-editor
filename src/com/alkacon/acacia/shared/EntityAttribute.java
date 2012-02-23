@@ -134,6 +134,17 @@ public class EntityAttribute implements I_EntityAttribute, Serializable {
     }
 
     /**
+     * @see com.alkacon.vie.shared.I_EntityAttribute#getValueCount()
+     */
+    public int getValueCount() {
+
+        if (isComplexValue()) {
+            return m_entityValues.size();
+        }
+        return m_simpleValues.size();
+    }
+
+    /**
      * @see com.alkacon.vie.shared.I_EntityAttribute#isComplexValue()
      */
     public boolean isComplexValue() {

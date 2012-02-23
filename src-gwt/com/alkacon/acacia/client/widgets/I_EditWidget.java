@@ -55,7 +55,7 @@ public interface I_EditWidget extends HasValue<String> {
     /**
      * Sets the configuration for the given widget.<p>
      * 
-     *  @param confuguration the configuration string
+     *  @param configuration the configuration string
      */
-    void setConfiguration(String confuguration);
+    void setConfiguration(String configuration);
 }

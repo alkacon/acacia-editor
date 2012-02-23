@@ -72,6 +72,15 @@ public interface I_WidgetService {
     String getAttributeLabel(String attributeName);
 
     /**
+     * Returns the default attribute value
+     * 
+     * @param attributeName the attribute name
+     * 
+     * @return the default value
+     */
+    String getDefaultAttributeValue(String attributeName);
+
+    /**
      * Returns the attribute widget.<p>
      * 
      * @param attributeName the attribute name

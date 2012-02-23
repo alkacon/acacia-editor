@@ -71,7 +71,7 @@ public class TinyMCEWidget extends A_EditWidget {
     /**
      * @see com.alkacon.acacia.client.widgets.I_EditWidget#setConfiguration(java.lang.String)
      */
-    public void setConfiguration(String confuguration) {
+    public void setConfiguration(String configuration) {
 
         // do nothing 
     }

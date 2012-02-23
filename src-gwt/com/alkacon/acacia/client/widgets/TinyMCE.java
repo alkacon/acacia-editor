@@ -28,7 +28,11 @@
 package com.alkacon.acacia.client.widgets;
 
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.RepeatingCommand;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
@@ -46,23 +50,8 @@ import com.google.gwt.user.client.ui.RootPanel;
  */
 public final class TinyMCE implements HasValue<String> {
 
-    /** A counter used for generating HTML element IDs. */
-    public static int idCounter;
-
-    /** The prefix used for generated HTML element IDs. */
-    public static final String ID_PREFIX = "cmsInlineEditable_";
-
     /** A flag which indicates whether the editor is currently active. */
     protected boolean m_active;
-
-    /** The DOM ID of the editable element. */
-    protected String m_id;
-
-    /** The saved CSS text of the inline editable element. */
-    protected String m_savedCss;
-
-    /** The original HTML content of the editable element. */
-    protected String m_originalContent;
 
     /** The current content. */
     protected String m_currentContent;
@@ -72,6 +61,15 @@ public final class TinyMCE implements HasValue<String> {
 
     /** The handler manager for dispatching events. */
     protected HandlerManager m_handlerManager = new HandlerManager(this);
+
+    /** The DOM ID of the editable element. */
+    protected String m_id;
+
+    /** The original HTML content of the editable element. */
+    protected String m_originalContent;
+
+    /** The saved CSS text of the inline editable element. */
+    protected String m_savedCss;
 
     /**
      * Creates a new instance for the given element.<p>
@@ -142,8 +140,8 @@ public final class TinyMCE implements HasValue<String> {
      * 
      * @return the editable element 
      */
-    public native JavaScriptObject getMainElement() /*-{
-        var elementId = instance.@com.alkacon.acacia.client.widgets.TinyMCE::m_id;
+    public native Element getMainElement() /*-{
+        var elementId = this.@com.alkacon.acacia.client.widgets.TinyMCE::m_id;
         var mainElement = $wnd.document.getElementById(elementId);
         return mainElement;
     }-*/;
@@ -160,21 +158,21 @@ public final class TinyMCE implements HasValue<String> {
      * Initializes the TinyMCE instance.
      */
     public native void init() /*-{
-        this.@com.alkacon.acacia.client.widgets.TinyMCE::checkNotActive();
+        this.@com.alkacon.acacia.client.widgets.TinyMCE::checkNotActive()();
         this.@com.alkacon.acacia.client.widgets.TinyMCE::m_active = true;
 
-        var instance = this;
-        var elementId = instance.@com.alkacon.acacia.client.widgets.TinyMCE::m_id;
+        var self = this;
+        var elementId = self.@com.alkacon.acacia.client.widgets.TinyMCE::m_id;
         var iframeId = elementId + "_ifr";
         var mainElement = $wnd.document.getElementById(elementId);
-        instance.@com.alkacon.acacia.client.widgets.TinyMCE::m_originalContent = mainElement.innerHTML;
-        instance.@com.alkacon.acacia.client.widgets.TinyMCE::m_currentContent = mainElement.innerHTML;
+        self.@com.alkacon.acacia.client.widgets.TinyMCE::m_originalContent = mainElement.innerHTML;
+        self.@com.alkacon.acacia.client.widgets.TinyMCE::m_currentContent = mainElement.innerHTML;
 
         $wnd.goog.cssom.iframe.style.resetDomCache();
-        instance.@com.alkacon.acacia.client.widgets.TinyMCE::m_savedCss = $wnd.goog.cssom.iframe.style
+        self.@com.alkacon.acacia.client.widgets.TinyMCE::m_savedCss = $wnd.goog.cssom.iframe.style
                 .getElementContext(mainElement);
         var fireChange = function() {
-            instance.@com.alkacon.acacia.client.widgets.TinyMCE::fireChange()();
+            self.@com.alkacon.acacia.client.widgets.TinyMCE::fireChange()();
         };
 
         var fireChangeDelayed = function() {
@@ -183,7 +181,7 @@ public final class TinyMCE implements HasValue<String> {
                     .setTimeout(
                             function() {
                                 try {
-                                    instance.@com.alkacon.acacia.client.widgets.TinyMCE::fireChange()();
+                                    self.@com.alkacon.acacia.client.widgets.TinyMCE::fireChange()();
                                 } catch (e) {
                                     var handler = @com.google.gwt.core.client.GWT::getUncaughtExceptionHandler()();
                                     handler.@com.google.gwt.core.client.GWT.UncaughtExceptionHandler::onUncaughtException(Ljava/lang/Throwable;)(e);
@@ -195,7 +193,7 @@ public final class TinyMCE implements HasValue<String> {
         $wnd.tinyMCE
                 .init({
                     setup : function(ed) {
-                        instance.@com.alkacon.acacia.client.widgets.TinyMCE::m_editor = ed;
+                        self.@com.alkacon.acacia.client.widgets.TinyMCE::m_editor = ed;
 
                         ed.onChange.add(fireChange);
                         ed.onKeyDown.add(fireChangeDelayed);
@@ -208,20 +206,20 @@ public final class TinyMCE implements HasValue<String> {
                                             .getFrameContentDocument(iframe);
                                     var domHelper = new $wnd.goog.dom.DomHelper(
                                             doc);
-                                    var savedCss = instance.@com.alkacon.acacia.client.widgets.TinyMCE::m_savedCss;
+                                    var savedCss = self.@com.alkacon.acacia.client.widgets.TinyMCE::m_savedCss;
                                     $wnd.goog.cssom.addCssText(savedCss,
                                             domHelper);
 
                                 });
                         ed.onClick
                                 .add(function() {
-                                    instance.@com.alkacon.acacia.client.widgets.TinyMCE::fixToolbar()();
+                                    self.@com.alkacon.acacia.client.widgets.TinyMCE::fixToolbar()();
                                 });
                     },
                     // General options
                     mode : "exact",
                     theme : "advanced",
-                    elements : instance.@com.alkacon.acacia.client.widgets.TinyMCE::m_id,
+                    elements : self.@com.alkacon.acacia.client.widgets.TinyMCE::m_id,
                     plugins : "autolink,lists,pagebreak,style,layer,table,advhr,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist,autosave",
                     save_onsavecallback : function() {
                     },
@@ -243,6 +241,7 @@ public final class TinyMCE implements HasValue<String> {
                     media_external_list_url : "lists/media_list.js"
 
                 });
+        self.@com.alkacon.acacia.client.widgets.TinyMCE::fixStyles()();
     }-*/;
 
     /**
@@ -315,9 +314,8 @@ public final class TinyMCE implements HasValue<String> {
 
         String id = element.getId();
         if ((id == null) || "".equals(id)) {
-            id = ID_PREFIX + idCounter;
+            id = Document.get().createUniqueId();
             element.setId(id);
-            idCounter += 1;
         }
         return id;
     }
@@ -335,6 +333,34 @@ public final class TinyMCE implements HasValue<String> {
     }
 
     /**
+     * Fixes the styling of the editor widget.<p>
+     */
+    protected void fixStyles() {
+
+        // it may take some time until the editor has been initialized, repeat until layout fix can be applied
+        Scheduler.get().scheduleFixedDelay(new RepeatingCommand() {
+
+            /**
+             * @see com.google.gwt.core.client.Scheduler.RepeatingCommand#execute()
+             */
+            public boolean execute() {
+
+                Element parent = getEditorParentElement();
+                if (parent != null) {
+                    String cssClass = getMainElement().getClassName();
+                    if ((cssClass != null) && (cssClass.trim().length() > 0)) {
+                        parent.addClassName(cssClass);
+                    }
+                    parent.getStyle().setDisplay(Display.BLOCK);
+                    getEditorTableElement().getStyle().setWidth(100, Unit.PCT);
+                    return false;
+                }
+                return true;
+            }
+        }, 100);
+    }
+
+    /**
      * Fixes the layout when the toolbar's top is above the body's top.<p>
      */
     protected void fixToolbar() {
@@ -346,6 +372,28 @@ public final class TinyMCE implements HasValue<String> {
             parent.getStyle().setMarginTop(-top, Unit.PX);
         }
     }
+
+    /**
+     * Returns the editor parent element.<p>
+     * 
+     * @return the editor parent element
+     */
+    protected native Element getEditorParentElement() /*-{
+        var elementId = this.@com.alkacon.acacia.client.widgets.TinyMCE::m_id;
+        var parentId = elementId + "_parent";
+        return $doc.getElementById(parentId);
+    }-*/;
+
+    /**
+     * Returns the editor table element.<p>
+     * 
+     * @return the editor table element
+     */
+    protected native Element getEditorTableElement() /*-{
+        var elementId = this.@com.alkacon.acacia.client.widgets.TinyMCE::m_id;
+        var tableId = elementId + "_tbl";
+        return $doc.getElementById(tableId);
+    }-*/;
 
     /**
      * Gets the toolbar element.<p>

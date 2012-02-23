@@ -145,15 +145,16 @@ public class Example implements EntryPoint {
         types.put(addressTypeName, address);
         types.put(personTypeName, person);
         Map<String, AttributeConfiguration> attributes = new HashMap<String, AttributeConfiguration>();
-        attributes.put(firstnameAttribute, new AttributeConfiguration("Firstname", "The firtname", "string", null));
-        attributes.put(lastNameAttribute, new AttributeConfiguration("Lastname", "The lastname", "string", null));
+        attributes.put(firstnameAttribute, new AttributeConfiguration("Firstname", "The firtname", "string", null, ""));
+        attributes.put(lastNameAttribute, new AttributeConfiguration("Lastname", "The lastname", "string", null, ""));
 
-        attributes.put(cityAttribute, new AttributeConfiguration("City", "The city", "string", null));
+        attributes.put(cityAttribute, new AttributeConfiguration("City", "The city", "string", null, ""));
         attributes.put(countryAttribute, new AttributeConfiguration(
             "Country",
             "The country",
             "select",
-            "de=Deustchland|fr=Frankreich|it=Italien"));
+            "de=Deustchland|fr=Frankreich|it=Italien",
+            ""));
 
         com.alkacon.acacia.shared.Entity addressEntity = new com.alkacon.acacia.shared.Entity(
             "myAdress",

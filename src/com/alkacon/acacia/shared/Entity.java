@@ -222,12 +222,43 @@ public class Entity implements I_Entity, Serializable {
     }
 
     /**
+     * @see com.alkacon.vie.shared.I_Entity#removeAttribute(java.lang.String)
+     */
+    public void removeAttribute(String attributeName) {
+
+        removeAttributeSilent(attributeName);
+    }
+
+    /**
      * @see com.alkacon.vie.shared.I_Entity#removeAttributeSilent(java.lang.String)
      */
     public void removeAttributeSilent(String attributeName) {
 
         m_simpleAttributes.remove(attributeName);
         m_entityAttributes.remove(attributeName);
+    }
+
+    /**
+     * @see com.alkacon.vie.shared.I_Entity#removeAttributeValue(java.lang.String, int)
+     */
+    public void removeAttributeValue(String attributeName, int index) {
+
+        if (m_simpleAttributes.containsKey(attributeName)) {
+            List<String> values = m_simpleAttributes.get(attributeName);
+            if ((values.size() == 1) && (index == 0)) {
+                removeAttribute(attributeName);
+            } else {
+                values.remove(index);
+            }
+        } else if (m_entityAttributes.containsKey(attributeName)) {
+            List<Entity> values = m_entityAttributes.get(attributeName);
+            if ((values.size() == 1) && (index == 0)) {
+                removeAttribute(attributeName);
+            } else {
+                values.remove(index);
+            }
+        }
+
     }
 
     /**

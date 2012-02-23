@@ -137,6 +137,16 @@ public class WidgetService implements I_WidgetService {
     }
 
     /**
+     * @see com.alkacon.acacia.client.I_WidgetService#getDefaultAttributeValue(java.lang.String)
+     */
+    public String getDefaultAttributeValue(String attributeName) {
+
+        AttributeConfiguration config = m_attributeConfigurations.get(attributeName);
+        return (config != null) && (config.getDefaultValue() != null) ? config.getDefaultValue() : "";
+
+    }
+
+    /**
      * @see com.alkacon.acacia.client.I_WidgetService#getRendererForAttribute(java.lang.String, com.alkacon.vie.shared.I_Type)
      */
     public I_EntityRenderer getRendererForAttribute(String attributeName, I_Type attributeType) {

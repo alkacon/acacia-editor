@@ -42,6 +42,13 @@ public interface I_LayoutBundle extends ClientBundle {
     public interface I_Style extends CssResource {
 
         /**
+         * Returns the button CSS class name.<p>
+         * 
+         * @return the button CSS class
+         */
+        String button();
+
+        /**
          * Returns the entity CSS class name.<p>
          * 
          * @return the entity CSS class
@@ -61,6 +68,20 @@ public interface I_LayoutBundle extends ClientBundle {
          * @return the label CSS class
          */
         String label();
+
+        /**
+         * Returns the remove button CSS class name.<p>
+         * 
+         * @return the remove button CSS class
+         */
+        String removeButton();
+
+        /**
+         * Returns the widget CSS class name.<p>
+         * 
+         * @return the widget CSS class
+         */
+        String widget();
 
         /**
          * Returns the widget holder CSS class name.<p>

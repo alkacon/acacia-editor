@@ -40,6 +40,7 @@ import com.alkacon.vie.shared.I_Type;
 
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -173,7 +174,7 @@ public class EditorBase {
      * @param context the context element
      * @param inline <code>true</code> to render the entity for in-line editing, <code>false</code> to render a form
      */
-    public void renderEntity(final String entityId, final Element context, boolean inline) {
+    public void renderEntity(String entityId, Element context, boolean inline) {
 
         I_Entity entity = m_vie.getEntity(entityId);
         if (entity != null) {
@@ -181,7 +182,9 @@ public class EditorBase {
             if (inline) {
                 m_widgetService.getRendererForType(type).renderInline(entity, context);
             } else {
-                m_widgetService.getRendererForType(type).renderForm(entity, context);
+                Element formElement = DOM.createDiv();
+                context.appendChild(formElement);
+                m_widgetService.getRendererForType(type).renderForm(entity, formElement);
             }
         }
     }

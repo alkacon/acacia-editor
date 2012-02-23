@@ -51,9 +51,9 @@ public interface I_EntityRenderer {
      * @param attributeName the attribute name
      * @param context the context DOM element
      * @param minOccurrence the minimum occurrence of this attribute
-     * @param MaxOccurrence the maximum occurrence of this attribute
+     * @param maxOccurrence the maximum occurrence of this attribute
      */
-    void renderInline(I_Entity parentEntity, String attributeName, Element context, int minOccurrence, int MaxOccurrence);
+    void renderInline(I_Entity parentEntity, String attributeName, Element context, int minOccurrence, int maxOccurrence);
 
     /**
      * Renders the given entity into a form.<p>
@@ -70,7 +70,7 @@ public interface I_EntityRenderer {
      * @param attributeName the attribute name
      * @param context the context DOM element
      * @param minOccurrence the minimum occurrence of this attribute
-     * @param MaxOccurrence the maximum occurrence of this attribute
+     * @param maxOccurrence the maximum occurrence of this attribute
      */
-    void renderForm(I_Entity parentEntity, String attributeName, Element context, int minOccurrence, int MaxOccurrence);
+    void renderForm(I_Entity parentEntity, String attributeName, Element context, int minOccurrence, int maxOccurrence);
 }

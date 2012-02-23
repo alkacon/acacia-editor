@@ -34,6 +34,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class AttributeConfiguration implements IsSerializable {
 
+    /** The attribute default value. */
+    private String m_defaultValue;
+
     /** The attribute help information. */
     private String m_help;
 
@@ -53,13 +56,15 @@ public class AttributeConfiguration implements IsSerializable {
      * @param help the attribute help information
      * @param widgetName the widget name
      * @param widgetConfig the widget configuration
+     * @param defaultValue the attribute default value
      */
-    public AttributeConfiguration(String label, String help, String widgetName, String widgetConfig) {
+    public AttributeConfiguration(String label, String help, String widgetName, String widgetConfig, String defaultValue) {
 
         m_label = label;
         m_help = help;
         m_widgetName = widgetName;
         m_widgetConfig = widgetConfig;
+        m_defaultValue = defaultValue;
     }
 
     /**
@@ -68,6 +73,16 @@ public class AttributeConfiguration implements IsSerializable {
     protected AttributeConfiguration() {
 
         // nothing to do
+    }
+
+    /**
+     * Returns the default value.<p>
+     *
+     * @return the default value
+     */
+    public String getDefaultValue() {
+
+        return m_defaultValue;
     }
 
     /**

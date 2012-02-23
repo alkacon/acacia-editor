@@ -27,6 +27,8 @@
 
 package com.alkacon.acacia.client.widgets;
 
+import com.alkacon.acacia.client.css.I_LayoutBundle;
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -46,6 +48,7 @@ public class SimpleButton extends WidgetBase implements HasClickHandlers {
     public SimpleButton(Element element) {
 
         setElement(element);
+        setStyleName(I_LayoutBundle.INSTANCE.form().button());
     }
 
     /**
