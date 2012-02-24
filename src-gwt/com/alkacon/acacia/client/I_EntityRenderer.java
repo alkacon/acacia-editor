@@ -29,7 +29,7 @@ package com.alkacon.acacia.client;
 
 import com.alkacon.vie.shared.I_Entity;
 
-import com.google.gwt.user.client.Element;
+import com.google.gwt.dom.client.Element;
 
 /**
  * Renders an entity into a widget.<p>
@@ -62,15 +62,4 @@ public interface I_EntityRenderer {
      * @param context the context DOM element
      */
     void renderForm(I_Entity entity, Element context);
-
-    /**
-     * Renders the attribute values editing widgets.<p>
-     * 
-     * @param parentEntity the parent entity 
-     * @param attributeName the attribute name
-     * @param context the context DOM element
-     * @param minOccurrence the minimum occurrence of this attribute
-     * @param maxOccurrence the maximum occurrence of this attribute
-     */
-    void renderForm(I_Entity parentEntity, String attributeName, Element context, int minOccurrence, int maxOccurrence);
 }

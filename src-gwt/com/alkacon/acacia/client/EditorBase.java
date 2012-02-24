@@ -81,7 +81,7 @@ public class EditorBase {
 
             public I_EditWidget createWidget(String configuration) {
 
-                return new TinyMCEWidget(null);
+                return new TinyMCEWidget();
             }
         });
     }

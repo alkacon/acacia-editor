@@ -222,6 +222,30 @@ public class Entity implements I_Entity, Serializable {
     }
 
     /**
+     * @see com.alkacon.vie.shared.I_Entity#insertAttributeValue(java.lang.String, com.alkacon.vie.shared.I_Entity, int)
+     */
+    public void insertAttributeValue(String attributeName, I_Entity value, int index) {
+
+        if (m_entityAttributes.containsKey(attributeName)) {
+            m_entityAttributes.get(attributeName).add(index, (Entity)value);
+        } else {
+            setAttributeValue(attributeName, value);
+        }
+    }
+
+    /**
+     * @see com.alkacon.vie.shared.I_Entity#insertAttributeValue(java.lang.String, java.lang.String, int)
+     */
+    public void insertAttributeValue(String attributeName, String value, int index) {
+
+        if (m_simpleAttributes.containsKey(attributeName)) {
+            m_simpleAttributes.get(attributeName).add(index, value);
+        } else {
+            setAttributeValue(attributeName, value);
+        }
+    }
+
+    /**
      * @see com.alkacon.vie.shared.I_Entity#removeAttribute(java.lang.String)
      */
     public void removeAttribute(String attributeName) {

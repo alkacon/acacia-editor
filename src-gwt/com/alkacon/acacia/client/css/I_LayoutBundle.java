@@ -41,6 +41,20 @@ public interface I_LayoutBundle extends ClientBundle {
     @Shared
     public interface I_Style extends CssResource {
 
+        /** 
+         * Returns the attribute CSS class name.<p>
+         * 
+         * @return the attribute CSS class
+         */
+        String attribute();
+
+        /**
+         * Returns the attribute value CSS class name.<p>
+         * 
+         * @return the attribute value CSS class
+         */
+        String attributeValue();
+
         /**
          * Returns the button CSS class name.<p>
          * 

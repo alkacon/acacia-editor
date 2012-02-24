@@ -1,0 +1,14 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder">
+	<ui:with field="style" type="com.alkacon.acacia.client.css.I_LayoutBundle" />
+	<div class="{style.form.attributeValue}">
+		<div class="{style.form.label}">
+			<span ui:field="m_label"></span>
+			<div ui:field="m_addButtonElement" class="{style.form.button}"></div>
+			<div ui:field="m_removeButtonElement" class="{style.form.button}"></div>
+			<div ui:field="m_upButtonElement" class="{style.form.button}"></div>
+			<div ui:field="m_downButtonElement" class="{style.form.button}"></div>
+		</div>
+		<div ui:field="m_widgetHolder" class="{style.form.widgetHolder}"></div>
+	</div>
+</ui:UiBinder>

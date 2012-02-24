@@ -29,6 +29,7 @@ package com.alkacon.acacia.client.widgets;
 
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -39,7 +40,6 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 
 /**
  * The string edit widget.<p>
@@ -95,7 +95,7 @@ public class StringWidget extends A_EditWidget {
     }
 
     /**
-     * @see com.alkacon.acacia.client.widgets.I_EditWidget#initWidget(com.google.gwt.user.client.Element)
+     * @see com.alkacon.acacia.client.widgets.I_EditWidget#initWidget(com.google.gwt.dom.client.Element)
      */
     public I_EditWidget initWidget(Element element) {
 

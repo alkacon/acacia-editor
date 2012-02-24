@@ -27,9 +27,9 @@
 
 package com.alkacon.acacia.client.widgets;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Element;
 
 /**
  * Widget subclass which uses TinyMCE for editing.<p>
@@ -38,16 +38,6 @@ public class TinyMCEWidget extends A_EditWidget {
 
     /** The TinyMCE wrapper object. */
     protected TinyMCE m_editor;
-
-    /**
-     * Creates a new instance.<p>
-     * 
-     * @param editor the TinyMCE wrapper object 
-     */
-    public TinyMCEWidget(TinyMCE editor) {
-
-        m_editor = editor;
-    }
 
     /**
      * @see com.alkacon.acacia.client.widgets.A_EditWidget#addValueChangeHandler(com.google.gwt.event.logical.shared.ValueChangeHandler)
@@ -59,13 +49,13 @@ public class TinyMCEWidget extends A_EditWidget {
     }
 
     /**
-     * @see com.alkacon.acacia.client.widgets.I_EditWidget#initWidget(com.google.gwt.user.client.Element)
+     * @see com.alkacon.acacia.client.widgets.I_EditWidget#initWidget(com.google.gwt.dom.client.Element)
      */
     public I_EditWidget initWidget(Element element) {
 
-        TinyMCE editor = new TinyMCE(element);
-        editor.init();
-        return new TinyMCEWidget(editor);
+        m_editor = new TinyMCE(element);
+        m_editor.init();
+        return this;
     }
 
     /**

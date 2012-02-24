@@ -82,7 +82,7 @@ public class TestForms extends GWTTestCase {
         I_EntityRenderer renderer = service.getRendererForType(complex);
         Element context = DOM.createDiv();
         RootPanel.getBodyElement().appendChild(context);
-        renderer.renderForm(entity, (com.google.gwt.user.client.Element)context);
+        renderer.renderForm(entity, context);
         assertEquals(
             "The forms inner HTML should match the exspected.",
             "<div typeof=\"cms:complex\" about=\"myEntity\" class=\"entity\"><div title=\"\" class=\"label\">http:opencms/simpleAttribute</div><div class=\"widgetHolder\"><div style=\"color: red;\" contenteditable=\"true\" property=\"http:opencms/simpleAttribute\">my attribute value</div></div></div>",
@@ -112,7 +112,7 @@ public class TestForms extends GWTTestCase {
                 return null;
             }
 
-            public I_EditWidget initWidget(com.google.gwt.user.client.Element element) {
+            public I_EditWidget initWidget(Element element) {
 
                 return null;
             }

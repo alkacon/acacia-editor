@@ -1,10 +1,15 @@
+.attribute, .attributeValue{}
+
 .entity .entity{
 	margin-left:20px;
 }
 
-.label{
+.attributeValue .label{
 	margin:4px 0 2px;
 	font-weight: bold;
+}
+.attributeValue .label span, .attributeValue .label div{
+	font-weight:bold;
 }
 
 .widgetHolder .removeButton{

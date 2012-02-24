@@ -106,7 +106,7 @@ public class Example implements EntryPoint {
 
             public I_EditWidget createWidget(String configuration) {
 
-                return new TinyMCEWidget(null);
+                return new TinyMCEWidget();
             }
         });
 

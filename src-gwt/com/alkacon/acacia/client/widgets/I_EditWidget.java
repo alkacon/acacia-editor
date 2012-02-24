@@ -27,7 +27,7 @@
 
 package com.alkacon.acacia.client.widgets;
 
-import com.google.gwt.user.client.Element;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.HasValue;
 
 /**
