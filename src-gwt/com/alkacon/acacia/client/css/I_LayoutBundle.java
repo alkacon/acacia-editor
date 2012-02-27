@@ -70,6 +70,13 @@ public interface I_LayoutBundle extends ClientBundle {
         String entity();
 
         /**
+         * Returns the highlighting CSS class name.<p>
+         * 
+         * @return the highlighting CSS class
+         */
+        String highlighting();
+
+        /**
          * Returns the input field CSS class name.<p>
          * 
          * @return the input field CSS class name

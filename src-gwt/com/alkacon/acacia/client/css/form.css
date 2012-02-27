@@ -8,6 +8,31 @@
 	margin:4px 0 2px;
 	font-weight: bold;
 }
+
+.attributeValue.highlighting {
+	background: #dddddd;
+}
+
+@if user.agent gecko1_8 gecko{
+	/** firefox **/
+	.entity .attributeValue{
+		-moz-border-radius: 4px;
+	}
+
+} @elif user.agent safari {
+	/** chrome, safari etc. **/
+	.entity .attributeValue{
+		-webkit-border-radius: 4px;
+	}
+
+} @elif user.agent opera ie9 {
+	/** opera, ie9 */
+	.entity .attributeValue{
+		border-radius: 4px;
+	}
+
+}
+
 .attributeValue .label span, .attributeValue .label div{
 	font-weight:bold;
 }

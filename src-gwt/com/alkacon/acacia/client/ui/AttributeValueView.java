@@ -41,17 +41,23 @@ import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasMouseOutHandlers;
+import com.google.gwt.event.dom.client.HasMouseOverHandlers;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.ui.UIObject;
 
 /**
  * UI object holding an attribute value.<p>
  */
-public class AttributeValueView extends UIObject {
+public class AttributeValueView extends WidgetBase implements HasMouseOverHandlers, HasMouseOutHandlers {
 
     /**
      * The widget value change handler.<p>
@@ -107,6 +113,9 @@ public class AttributeValueView extends UIObject {
     /** The down button. */
     private SimpleButton m_downButton;
 
+    /** The attribute handler. */
+    private AttributeHandler m_handler;
+
     /** Flag indicating if there is a value set for this UI object. */
     private boolean m_hasValue;
 
@@ -115,9 +124,6 @@ public class AttributeValueView extends UIObject {
 
     /** The up button. */
     private SimpleButton m_upButton;
-
-    /** The attribute handler. */
-    private AttributeHandler m_handler;
 
     /**
      * Constructor.<p>
@@ -136,13 +142,19 @@ public class AttributeValueView extends UIObject {
     }
 
     /**
-     * Returns the attribute handler.<p>
-     * 
-     * @return the attribute handler
+     * @see com.google.gwt.event.dom.client.HasMouseOutHandlers#addMouseOutHandler(com.google.gwt.event.dom.client.MouseOutHandler)
      */
-    protected AttributeHandler getHandler() {
+    public HandlerRegistration addMouseOutHandler(MouseOutHandler handler) {
 
-        return m_handler;
+        return addDomHandler(handler, MouseOutEvent.getType());
+    }
+
+    /**
+     * @see com.google.gwt.event.dom.client.HasMouseOverHandlers#addMouseOverHandler(com.google.gwt.event.dom.client.MouseOverHandler)
+     */
+    public HandlerRegistration addMouseOverHandler(MouseOverHandler handler) {
+
+        return addDomHandler(handler, MouseOverEvent.getType());
     }
 
     /**
@@ -252,9 +264,23 @@ public class AttributeValueView extends UIObject {
     }
 
     /**
+     * Returns the attribute handler.<p>
+     * 
+     * @return the attribute handler
+     */
+    protected AttributeHandler getHandler() {
+
+        return m_handler;
+    }
+
+    /**
      * Initializes the buttons.<p>
      */
     private void initButtons() {
+
+        addMouseOverHandler(HighlightingHandler.getInstance());
+
+        addMouseOutHandler(HighlightingHandler.getInstance());
 
         m_addButtonElement.setInnerText("+");
         m_addButton = new SimpleButton(m_addButtonElement);
@@ -296,5 +322,19 @@ public class AttributeValueView extends UIObject {
 
             }
         });
+    }
+
+    /**
+     * Toggles the highlighting.<p>
+     * 
+     * @param highlightingOn <code>true</code> to turn the highlighting on
+     */
+    protected void toggleHighlighting(boolean highlightingOn) {
+
+        if (highlightingOn) {
+            getElement().addClassName(I_LayoutBundle.INSTANCE.form().highlighting());
+        } else {
+            getElement().removeClassName(I_LayoutBundle.INSTANCE.form().highlighting());
+        }
     }
 }
