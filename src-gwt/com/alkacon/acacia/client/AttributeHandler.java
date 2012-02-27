@@ -27,11 +27,14 @@
 
 package com.alkacon.acacia.client;
 
-import com.alkacon.acacia.client.ui.AttributeValue;
+import com.alkacon.acacia.client.ui.AttributeValueView;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
 import com.alkacon.vie.client.I_Vie;
 import com.alkacon.vie.shared.I_Entity;
 import com.alkacon.vie.shared.I_Type;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gwt.dom.client.Node;
 
@@ -45,6 +48,9 @@ public class AttributeHandler {
 
     /** The attribute type. */
     private I_Type m_attributeType;
+
+    /** Registered attribute values. */
+    private List<AttributeValueView> m_attributeValueViews;
 
     /** The entity. */
     private I_Entity m_entity;
@@ -72,14 +78,15 @@ public class AttributeHandler {
         m_entity = entity;
         m_attributeName = attributeName;
         m_widgetService = widgetService;
+        m_attributeValueViews = new ArrayList<AttributeValueView>();
     }
 
     /**
-     * Adds a new attribute value below the reference.<p>
+     * Adds a new attribute value below the reference view.<p>
      * 
-     * @param reference the reference value
+     * @param reference the reference value view
      */
-    public void addNewAttributeValue(AttributeValue reference) {
+    public void addNewAttributeValue(AttributeValueView reference) {
 
         if (getAttributeType().isSimpleType()) {
             String value = m_widgetService.getDefaultAttributeValue(m_attributeName);
@@ -90,9 +97,9 @@ public class AttributeHandler {
                 int index = reference.getValueIndex();
                 m_entity.insertAttributeValue(m_attributeName, value, index + 1);
             }
-            AttributeValue valueWidget = reference;
+            AttributeValueView valueWidget = reference;
             if (reference.hasValue()) {
-                valueWidget = new AttributeValue(
+                valueWidget = new AttributeValueView(
                     this,
                     m_widgetService.getAttributeLabel(m_attributeName),
                     m_widgetService.getAttributeHelp(m_attributeName));
@@ -108,9 +115,9 @@ public class AttributeHandler {
                 int index = reference.getValueIndex();
                 m_entity.insertAttributeValue(m_attributeName, value, index + 1);
             }
-            AttributeValue valueWidget = reference;
+            AttributeValueView valueWidget = reference;
             if (reference.hasValue()) {
-                valueWidget = new AttributeValue(
+                valueWidget = new AttributeValueView(
                     this,
                     m_widgetService.getAttributeLabel(m_attributeName),
                     m_widgetService.getAttributeHelp(m_attributeName));
@@ -118,6 +125,7 @@ public class AttributeHandler {
             }
             valueWidget.setValueEntity(renderer, value);
         }
+        updateButtonVisisbility();
     }
 
     /**
@@ -126,7 +134,7 @@ public class AttributeHandler {
      * @param reference the attribute value reference
      * @param value the value
      */
-    public void changeValue(AttributeValue reference, String value) {
+    public void changeValue(AttributeValueView reference, String value) {
 
         m_entity.setAttributeValue(m_attributeName, value, reference.getValueIndex());
     }
@@ -136,7 +144,7 @@ public class AttributeHandler {
      * 
      * @param reference the reference value
      */
-    public void moveAttributeValueDown(AttributeValue reference) {
+    public void moveAttributeValueDown(AttributeValueView reference) {
 
         int index = reference.getValueIndex();
         if (index >= (m_entity.getAttribute(m_attributeName).getValueCount() - 1)) {
@@ -145,11 +153,12 @@ public class AttributeHandler {
         Node sibling = reference.getElement().getNextSibling();
         Node parent = reference.getElement().getParentElement();
         reference.getElement().removeFromParent();
+        m_attributeValueViews.remove(reference);
         if (getAttributeType().isSimpleType()) {
             String value = m_entity.getAttribute(m_attributeName).getSimpleValues().get(index);
             m_entity.removeAttributeValue(m_attributeName, index);
             m_entity.insertAttributeValue(m_attributeName, value, index + 1);
-            AttributeValue valueWidget = new AttributeValue(
+            AttributeValueView valueWidget = new AttributeValueView(
                 this,
                 m_widgetService.getAttributeLabel(m_attributeName),
                 m_widgetService.getAttributeHelp(m_attributeName));
@@ -159,7 +168,7 @@ public class AttributeHandler {
             I_Entity value = m_entity.getAttribute(m_attributeName).getComplexValues().get(index);
             m_entity.removeAttributeValue(m_attributeName, index);
             m_entity.insertAttributeValue(m_attributeName, value, index + 1);
-            AttributeValue valueWidget = new AttributeValue(
+            AttributeValueView valueWidget = new AttributeValueView(
                 this,
                 m_widgetService.getAttributeLabel(m_attributeName),
                 m_widgetService.getAttributeHelp(m_attributeName));
@@ -168,6 +177,7 @@ public class AttributeHandler {
                 m_widgetService.getRendererForAttribute(m_attributeName, getAttributeType()),
                 value);
         }
+        updateButtonVisisbility();
     }
 
     /**
@@ -175,7 +185,7 @@ public class AttributeHandler {
      * 
      * @param reference the reference value
      */
-    public void moveAttributeValueUp(AttributeValue reference) {
+    public void moveAttributeValueUp(AttributeValueView reference) {
 
         int index = reference.getValueIndex();
         if (index == 0) {
@@ -184,11 +194,12 @@ public class AttributeHandler {
         Node sibling = reference.getElement().getPreviousSibling();
         Node parent = reference.getElement().getParentElement();
         reference.getElement().removeFromParent();
+        m_attributeValueViews.remove(reference);
         if (getAttributeType().isSimpleType()) {
             String value = m_entity.getAttribute(m_attributeName).getSimpleValues().get(index);
             m_entity.removeAttributeValue(m_attributeName, index);
             m_entity.insertAttributeValue(m_attributeName, value, index - 1);
-            AttributeValue valueWidget = new AttributeValue(
+            AttributeValueView valueWidget = new AttributeValueView(
                 this,
                 m_widgetService.getAttributeLabel(m_attributeName),
                 m_widgetService.getAttributeHelp(m_attributeName));
@@ -198,7 +209,7 @@ public class AttributeHandler {
             I_Entity value = m_entity.getAttribute(m_attributeName).getComplexValues().get(index);
             m_entity.removeAttributeValue(m_attributeName, index);
             m_entity.insertAttributeValue(m_attributeName, value, index - 1);
-            AttributeValue valueWidget = new AttributeValue(
+            AttributeValueView valueWidget = new AttributeValueView(
                 this,
                 m_widgetService.getAttributeLabel(m_attributeName),
                 m_widgetService.getAttributeHelp(m_attributeName));
@@ -207,14 +218,25 @@ public class AttributeHandler {
                 m_widgetService.getRendererForAttribute(m_attributeName, getAttributeType()),
                 value);
         }
+        updateButtonVisisbility();
     }
 
     /**
-     * Removes the reference attribute value.<p>
+     * Registers an attribute value view.<p>
      * 
-     * @param reference the reference
+     * @param attributeValue the attribute value view
      */
-    public void removeAttributeValue(AttributeValue reference) {
+    public void registerAttributeValue(AttributeValueView attributeValue) {
+
+        m_attributeValueViews.add(attributeValue);
+    }
+
+    /**
+     * Removes the reference attribute value view.<p>
+     * 
+     * @param reference the reference view
+     */
+    public void removeAttributeValue(AttributeValueView reference) {
 
         if (m_entity.getAttribute(m_attributeName).isSingleValue()) {
             m_entity.removeAttribute(m_attributeName);
@@ -223,6 +245,29 @@ public class AttributeHandler {
             int index = reference.getValueIndex();
             m_entity.removeAttributeValue(m_attributeName, index);
             reference.getElement().removeFromParent();
+            m_attributeValueViews.remove(reference);
+        }
+        updateButtonVisisbility();
+    }
+
+    /**
+     * Updates the add, remove and sort button visibility on all registered attribute value views.<p>
+     */
+    public void updateButtonVisisbility() {
+
+        int minOccurrence = getEntityType().getAttributeMinOccurrence(m_attributeName);
+        int maxOccurrence = getEntityType().getAttributeMaxOccurrence(m_attributeName);
+        boolean mayHaveMore = (maxOccurrence > minOccurrence)
+            && ((!m_entity.hasAttribute(m_attributeName) || (m_entity.getAttribute(m_attributeName).getValueCount() < maxOccurrence)));
+        boolean needsRemove = false;
+        boolean needsSort = false;
+        if (m_entity.hasAttribute(m_attributeName)) {
+            int valueCount = m_entity.getAttribute(m_attributeName).getValueCount();
+            needsRemove = (maxOccurrence > minOccurrence) && (valueCount > minOccurrence);
+            needsSort = valueCount > 1;
+        }
+        for (AttributeValueView value : m_attributeValueViews) {
+            value.updateButtonVisibility(mayHaveMore, needsRemove, needsSort);
         }
     }
 

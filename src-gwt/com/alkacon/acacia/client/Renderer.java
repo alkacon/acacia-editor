@@ -28,7 +28,7 @@
 package com.alkacon.acacia.client;
 
 import com.alkacon.acacia.client.css.I_LayoutBundle;
-import com.alkacon.acacia.client.ui.AttributeValue;
+import com.alkacon.acacia.client.ui.AttributeValueView;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
 import com.alkacon.vie.client.I_Vie;
 import com.alkacon.vie.shared.I_Entity;
@@ -126,9 +126,6 @@ public class Renderer implements I_EntityRenderer {
             I_Type attributeType = entityType.getAttributeType(attributeName);
             I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(attributeName, attributeType);
             int minOccurrence = entityType.getAttributeMinOccurrence(attributeName);
-            int maxOccurrence = entityType.getAttributeMaxOccurrence(attributeName);
-            boolean mayHaveMore = (maxOccurrence > minOccurrence)
-                && ((!entity.hasAttribute(attributeName) || (entity.getAttribute(attributeName).getValueCount() < maxOccurrence)));
             String label = m_widgetService.getAttributeLabel(attributeName);
             String help = m_widgetService.getAttributeHelp(attributeName);
             Element attributeElement = DOM.createDiv();
@@ -139,11 +136,8 @@ public class Renderer implements I_EntityRenderer {
                 attribute = createEmptyAttribute(entity, attributeName, minOccurrence);
             }
             if (attribute != null) {
-                int valueCount = attribute.getValueCount();
-                boolean needsRemove = (maxOccurrence > minOccurrence) && (valueCount > minOccurrence);
-                boolean needsSort = valueCount > 1;
                 for (int i = 0; i < attribute.getValueCount(); i++) {
-                    AttributeValue valueWidget = new AttributeValue(handler, label, help);
+                    AttributeValueView valueWidget = new AttributeValueView(handler, label, help);
                     attributeElement.appendChild(valueWidget.getElement());
                     if (attribute.isSimpleValue()) {
                         valueWidget.setValueWidget(
@@ -152,13 +146,12 @@ public class Renderer implements I_EntityRenderer {
                     } else {
                         valueWidget.setValueEntity(renderer, attribute.getComplexValues().get(i));
                     }
-                    valueWidget.updateButtonVisibility(mayHaveMore, needsRemove, needsSort);
                 }
             } else {
-                AttributeValue valueWidget = new AttributeValue(handler, label, help);
+                AttributeValueView valueWidget = new AttributeValueView(handler, label, help);
                 attributeElement.appendChild(valueWidget.getElement());
-                valueWidget.updateButtonVisibility(mayHaveMore, false, false);
             }
+            handler.updateButtonVisisbility();
         }
     }
 

@@ -52,7 +52,7 @@ import com.google.gwt.user.client.ui.UIObject;
 /**
  * UI object holding an attribute value.<p>
  */
-public class AttributeValue extends UIObject {
+public class AttributeValueView extends UIObject {
 
     /**
      * The widget value change handler.<p>
@@ -64,14 +64,14 @@ public class AttributeValue extends UIObject {
          */
         public void onValueChange(ValueChangeEvent<String> event) {
 
-            getHandler().changeValue(AttributeValue.this, event.getValue());
+            getHandler().changeValue(AttributeValueView.this, event.getValue());
         }
     }
 
     /**
      * The UI binder interface.<p>
      */
-    interface AttributeValueUiBinder extends UiBinder<Element, AttributeValue> {
+    interface AttributeValueUiBinder extends UiBinder<Element, AttributeValueView> {
         // nothing to do
     }
 
@@ -127,10 +127,11 @@ public class AttributeValue extends UIObject {
      * @param label the attribute label
      * @param help the attribute help information
      */
-    public AttributeValue(AttributeHandler handler, String label, String help) {
+    public AttributeValueView(AttributeHandler handler, String label, String help) {
 
         setElement(uiBinder.createAndBindUi(this));
         m_handler = handler;
+        m_handler.registerAttributeValue(this);
         m_label.setInnerHTML(label);
         m_label.setTitle(help);
     }
@@ -262,7 +263,7 @@ public class AttributeValue extends UIObject {
 
             public void onClick(ClickEvent event) {
 
-                getHandler().addNewAttributeValue(AttributeValue.this);
+                getHandler().addNewAttributeValue(AttributeValueView.this);
 
             }
         });
@@ -272,7 +273,7 @@ public class AttributeValue extends UIObject {
 
             public void onClick(ClickEvent event) {
 
-                getHandler().removeAttributeValue(AttributeValue.this);
+                getHandler().removeAttributeValue(AttributeValueView.this);
 
             }
         });
@@ -282,7 +283,7 @@ public class AttributeValue extends UIObject {
 
             public void onClick(ClickEvent event) {
 
-                getHandler().moveAttributeValueUp(AttributeValue.this);
+                getHandler().moveAttributeValueUp(AttributeValueView.this);
 
             }
         });
@@ -292,7 +293,7 @@ public class AttributeValue extends UIObject {
 
             public void onClick(ClickEvent event) {
 
-                getHandler().moveAttributeValueDown(AttributeValue.this);
+                getHandler().moveAttributeValueDown(AttributeValueView.this);
 
             }
         });
