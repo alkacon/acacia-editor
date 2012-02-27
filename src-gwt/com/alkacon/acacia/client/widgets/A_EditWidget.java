@@ -27,6 +27,8 @@
 
 package com.alkacon.acacia.client.widgets;
 
+import com.alkacon.acacia.client.ui.WidgetBase;
+
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;

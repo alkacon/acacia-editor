@@ -31,7 +31,6 @@ import com.alkacon.acacia.client.AttributeHandler;
 import com.alkacon.acacia.client.I_EntityRenderer;
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
-import com.alkacon.acacia.client.widgets.SimpleButton;
 import com.alkacon.vie.shared.I_Entity;
 
 import com.google.gwt.core.client.GWT;
