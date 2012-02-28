@@ -70,6 +70,13 @@ public interface I_LayoutBundle extends ClientBundle {
         String entity();
 
         /**
+         * Returns the focused CSS class name.<p>
+         * 
+         * @return the focused CSS class
+         */
+        String focused();
+
+        /**
          * Returns the highlighting CSS class name.<p>
          * 
          * @return the highlighting CSS class
@@ -89,20 +96,6 @@ public interface I_LayoutBundle extends ClientBundle {
          * @return the label CSS class
          */
         String label();
-
-        /**
-         * Returns the remove button CSS class name.<p>
-         * 
-         * @return the remove button CSS class
-         */
-        String removeButton();
-
-        /**
-         * Returns the remove entity button CSS class name.<p>
-         * 
-         * @return the remove entity button CSS class
-         */
-        String removeEntityButton();
 
         /**
          * Returns the widget CSS class name.<p>

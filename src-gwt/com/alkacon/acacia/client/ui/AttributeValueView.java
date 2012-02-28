@@ -41,6 +41,7 @@ import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.dom.client.HasMouseOutHandlers;
 import com.google.gwt.event.dom.client.HasMouseOverHandlers;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -57,7 +58,8 @@ import com.google.gwt.user.client.DOM;
 /**
  * UI object holding an attribute value.<p>
  */
-public class AttributeValueView extends WidgetBase implements HasMouseOverHandlers, HasMouseOutHandlers {
+public class AttributeValueView extends WidgetBase
+implements HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandlers {
 
     /**
      * The widget value change handler.<p>
@@ -139,6 +141,14 @@ public class AttributeValueView extends WidgetBase implements HasMouseOverHandle
         m_handler.registerAttributeValue(this);
         m_label.setInnerHTML(label);
         m_label.setTitle(help);
+    }
+
+    /**
+     * @see com.google.gwt.event.dom.client.HasClickHandlers#addClickHandler(com.google.gwt.event.dom.client.ClickHandler)
+     */
+    public HandlerRegistration addClickHandler(ClickHandler handler) {
+
+        return addDomHandler(handler, ClickEvent.getType());
     }
 
     /**
@@ -274,6 +284,34 @@ public class AttributeValueView extends WidgetBase implements HasMouseOverHandle
     }
 
     /**
+     * Toggles the highlighting.<p>
+     * 
+     * @param highlightingOn <code>true</code> to turn the highlighting on
+     */
+    protected void toggleHoverHighlighting(boolean highlightingOn) {
+
+        if (highlightingOn) {
+            getElement().addClassName(I_LayoutBundle.INSTANCE.form().highlighting());
+        } else {
+            getElement().removeClassName(I_LayoutBundle.INSTANCE.form().highlighting());
+        }
+    }
+
+    /**
+     * Toggles the permanent highlighting.<p>
+     * 
+     * @param highlightingOn <code>true</code> to turn the highlighting on
+     */
+    protected void toggleClickHighlighting(boolean highlightingOn) {
+
+        if (highlightingOn) {
+            getElement().addClassName(I_LayoutBundle.INSTANCE.form().focused());
+        } else {
+            getElement().removeClassName(I_LayoutBundle.INSTANCE.form().focused());
+        }
+    }
+
+    /**
      * Initializes the buttons.<p>
      */
     private void initButtons() {
@@ -281,6 +319,8 @@ public class AttributeValueView extends WidgetBase implements HasMouseOverHandle
         addMouseOverHandler(HighlightingHandler.getInstance());
 
         addMouseOutHandler(HighlightingHandler.getInstance());
+
+        addClickHandler(HighlightingHandler.getInstance());
 
         m_addButtonElement.setInnerText("+");
         m_addButton = new SimpleButton(m_addButtonElement);
@@ -322,19 +362,5 @@ public class AttributeValueView extends WidgetBase implements HasMouseOverHandle
 
             }
         });
-    }
-
-    /**
-     * Toggles the highlighting.<p>
-     * 
-     * @param highlightingOn <code>true</code> to turn the highlighting on
-     */
-    protected void toggleHighlighting(boolean highlightingOn) {
-
-        if (highlightingOn) {
-            getElement().addClassName(I_LayoutBundle.INSTANCE.form().highlighting());
-        } else {
-            getElement().removeClassName(I_LayoutBundle.INSTANCE.form().highlighting());
-        }
     }
 }

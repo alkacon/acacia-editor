@@ -9,8 +9,32 @@
 	font-weight: bold;
 }
 
+.entity .attributeValue .label span{
+	font-size: 16px;
+}
+
+.entity .entity .attributeValue .label span{
+	font-size: 14px;
+}
+
+.entity .entity .entity .attributeValue .label span{
+	font-size: 13px;
+}
+
+.entity .entity .entity .entity .attributeValue .label span{
+	font-size: 12px;
+}
+
 .attributeValue.highlighting {
-	background: #dddddd;
+	background: #eeeeee;
+}
+
+.attributeValue.focused {
+	background: #cccccc;
+}
+
+.attributeValue.focused.highlighting {
+	background: #bbbbbb;
 }
 
 @if user.agent gecko1_8 gecko{
@@ -33,23 +57,12 @@
 
 }
 
+.entity .attributeValue{
+	padding: 2px;
+}
+
 .attributeValue .label span, .attributeValue .label div{
 	font-weight:bold;
-}
-
-.widgetHolder .removeButton{
-	clear: both;
-	float: right;
-	padding: 2px;
-	border: 2px solid transparent;
-	font-weight: bold;
-}
-
-.widgetHolder .removeEntityButton{
-	clear: both;
-	float: left;
-	padding: 2px;
-	font-weight: bold;
 }
 
 @if user.agent ie6 {
@@ -66,7 +79,8 @@
 
 
 .widgetHolder .widget{
-	margin: 0 20px 4px 0;
+	margin: 0 0 4px 0;
+	background: #ffffff;
 }
 
 .widgetHolder .widget.input{
@@ -77,7 +91,7 @@
 }
 
 .widgetHolder .input:hover{
-	background: #eeeeee;
+	background: #ffffff;
 }
 
 .input:hover{

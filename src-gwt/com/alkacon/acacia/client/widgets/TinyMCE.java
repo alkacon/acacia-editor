@@ -32,6 +32,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -71,6 +72,9 @@ public final class TinyMCE implements HasValue<String> {
     /** The saved CSS text of the inline editable element. */
     protected String m_savedCss;
 
+    /** The editor element. */
+    private Element m_element;
+
     /**
      * Creates a new instance for the given element.<p>
      * 
@@ -81,7 +85,8 @@ public final class TinyMCE implements HasValue<String> {
         if (!RootPanel.getBodyElement().isOrHasChild(element)) {
             throw new RuntimeException("Element is not attached to the DOM!");
         }
-        String id = ensureId(element);
+        m_element = element;
+        String id = ensureId(m_element);
         m_id = id;
         checkLibraries();
     }
@@ -214,6 +219,7 @@ public final class TinyMCE implements HasValue<String> {
                         ed.onClick
                                 .add(function() {
                                     self.@com.alkacon.acacia.client.widgets.TinyMCE::fixToolbar()();
+                                    self.@com.alkacon.acacia.client.widgets.TinyMCE::propagateClickEvent()();
                                 });
                     },
                     // General options
@@ -405,6 +411,15 @@ public final class TinyMCE implements HasValue<String> {
         var toolbarId = elementId + "_external";
         return $doc.getElementById(toolbarId);
     }-*/;
+
+    /**
+     * Propagates the click event.<p>
+     */
+    protected void propagateClickEvent() {
+
+        NativeEvent nativeEvent = Document.get().createClickEvent(0, 0, 0, 0, 0, false, false, false, false);
+        m_element.dispatchEvent(nativeEvent);
+    }
 
     /**
      * Removes the editor instance.<p>
