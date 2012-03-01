@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module>
 	<inherits name="com.alkacon.vie.VieGwt" /> 
+	<inherits name="com.alkacon.geranium.Geranium" />
 	<script src="../tiny_mce/tiny_mce_src.js" />
 	<script src="../closure_cssom.js" />
 	<source path="client" />

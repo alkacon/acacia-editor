@@ -1,4 +1,20 @@
-.attribute, .attributeValue{}
+@external mceEditor, mceExternalToolbar, mceStatusbar, mceIframeContainer, mceLayout;
+
+.attribute{}
+
+.attributeValue .buttonBar{
+	display: none;
+	background: #cccccc;
+	border: 1px solid #aaaaaa;
+	position: absolute;
+	top: -12px;
+	right: 2px;
+	border-radius: 4px;
+}
+
+.attributeValue.focused > .label > .buttonBar{
+	display: block;
+}
 
 .entity .entity{
 	margin-left:20px;
@@ -6,35 +22,34 @@
 
 .attributeValue .label{
 	margin:4px 0 2px;
-	font-weight: bold;
 }
 
 .entity .attributeValue .label span{
-	font-size: 16px;
+	font-size: 14px;
+	font-weight: bold;
+	color: #7788aa;
 }
 
 .entity .entity .attributeValue .label span{
-	font-size: 14px;
+	font-weight: normal;
 }
 
 .entity .entity .entity .attributeValue .label span{
-	font-size: 13px;
-}
-
-.entity .entity .entity .entity .attributeValue .label span{
 	font-size: 12px;
 }
 
-.attributeValue.highlighting {
+.entity .attributeValue.highlighting {
 	background: #eeeeee;
+	border: 1px solid #dddddd;
 }
 
-.attributeValue.focused {
+.entity .attributeValue.focused {
 	background: #cccccc;
 }
 
-.attributeValue.focused.highlighting {
-	background: #bbbbbb;
+.entity .attributeValue.focused.highlighting {
+	background: #cccccc;
+	border: 1px solid transparent;
 }
 
 @if user.agent gecko1_8 gecko{
@@ -42,11 +57,17 @@
 	.entity .attributeValue{
 		-moz-border-radius: 4px;
 	}
+	.widgetHolder .widget.input{
+		-moz-border-radius: 2px;
+	}
 
 } @elif user.agent safari {
 	/** chrome, safari etc. **/
 	.entity .attributeValue{
 		-webkit-border-radius: 4px;
+	}
+	.widgetHolder .widget.input{
+		-webkit-border-radius: 2px;
 	}
 
 } @elif user.agent opera ie9 {
@@ -54,11 +75,16 @@
 	.entity .attributeValue{
 		border-radius: 4px;
 	}
-
+	.widgetHolder .widget.input{
+		border-radius: 2px;
+	}
 }
 
 .entity .attributeValue{
-	padding: 2px;
+	position: relative;
+	padding: 2px 2px 2px 4px;
+	border: 1px solid transparent;
+	margin-top: 1px;
 }
 
 .attributeValue .label span, .attributeValue .label div{
@@ -80,20 +106,91 @@
 
 .widgetHolder .widget{
 	margin: 0 0 4px 0;
-	background: #ffffff;
 }
 
 .widgetHolder .widget.input{
-	border: 2px solid #cccccc;
-	background: #ffffff;
+	margin-left: -3px;
+	border: 1px solid transparent;
 	padding: 2px;
 	min-height: 14px;
 }
 
-.widgetHolder .input:hover{
+.attributeValue.focused > .widgetHolder > .widget.input, .attributeValue.focused > .widgetHolder > .widget.input:hover, .attributeValue.focused > .widgetHolder > .mceEditor{
+	border: 1px solid #aaaaaa;
 	background: #ffffff;
 }
+
+.attributeValue > .widgetHolder > .mceEditor{
+	border: 1px solid transparent;
+}
+
+.attributeValue.focused > .widgetHolder > .mceEditor .mceStatusbar{
+	visibility: visible;
+}
+
+.attributeValue > .widgetHolder > .mceEditor .mceStatusbar{
+	visibility: hidden;
+	border: none;
+}
+
+.attributeValue.focused > .widgetHolder > .mceEditor .mceExternalToolbar{
+	z-index: 10;
+}
+
+.attributeValue.focused > .widgetHolder > .mceEditor .mceIframeContainer{
+	border-bottom: 1px solid #aaaaaa;
+}
+
+.attributeValue > .widgetHolder > .mceEditor .mceIframeContainer{
+	border-color: transparent;
+}
+
+.attributeValue > .widgetHolder > .mceEditor > table.mceLayout{
+	border: none;
+}
+
+.attributeValue .mceEditor .mceExternalToolbar{
+	z-index: -1;
+}
+
+.widgetHolder .input, .widgetHolder .input:hover{
+	background: transparent;
+}
+
 
 .input:hover{
 	background: #dddddd;
 }
+
+.helpBubble{
+	position: absolute;
+	background: #666666;
+	color: #ffffff;
+	top: 100%;
+	left: 10px;
+	display: none;
+	padding: 15px 3px 3px 3px;
+	border-radius: 4px;
+	z-index: 10;
+	box-shadow: 2px 2px 6px #666666;
+}
+
+.helpBubble div{
+	color: #ffffff;
+}
+
+.attributeValue.focused > .helpBubble{
+	display: block;
+}
+
+.attributeValue.focused.closedBubble > .helpBubble{
+	display: none;
+}
+
+.helpBubble .helpBubbleClose{
+	position: absolute;
+	top: 2px;
+	right: 2px;
+}
+
+.helpBubbleArrow{}

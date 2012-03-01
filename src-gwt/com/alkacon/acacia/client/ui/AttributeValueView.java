@@ -1,6 +1,6 @@
 /*
- * This library is part of OpenCms -
- * the Open Source Content Management System
+ * This library is part of the Acacia Editor -
+ * an open source inline and form based content editor for GWT.
  *
  * Copyright (c) Alkacon Software GmbH (http://www.alkacon.com)
  *
@@ -16,9 +16,6 @@
  *
  * For further information about Alkacon Software, please see the
  * company website: http://www.alkacon.com
- *
- * For further information about OpenCms, please see the
- * project website: http://www.opencms.org
  * 
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
@@ -31,6 +28,9 @@ import com.alkacon.acacia.client.AttributeHandler;
 import com.alkacon.acacia.client.I_EntityRenderer;
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
+import com.alkacon.geranium.client.ui.I_Button.ButtonStyle;
+import com.alkacon.geranium.client.ui.PushButton;
+import com.alkacon.geranium.client.ui.css.I_ImageBundle;
 import com.alkacon.vie.shared.I_Entity;
 
 import com.google.gwt.core.client.GWT;
@@ -53,12 +53,17 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 
 /**
  * UI object holding an attribute value.<p>
  */
-public class AttributeValueView extends WidgetBase
+public class AttributeValueView extends Composite
 implements HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandlers {
 
     /**
@@ -78,54 +83,50 @@ implements HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandlers {
     /**
      * The UI binder interface.<p>
      */
-    interface AttributeValueUiBinder extends UiBinder<Element, AttributeValueView> {
+    interface AttributeValueUiBinder extends UiBinder<HTMLPanel, AttributeValueView> {
         // nothing to do
     }
 
     /** The UI binder instance. */
     private static AttributeValueUiBinder uiBinder = GWT.create(AttributeValueUiBinder.class);
 
-    /** The add button element. */
+    /** The add button. */
     @UiField
-    protected DivElement m_addButtonElement;
+    protected PushButton m_addButton;
 
-    /** The down button elemenet. */
+    /** The down button. */
     @UiField
-    protected DivElement m_downButtonElement;
+    protected PushButton m_downButton;
+
+    /** The help bubble element. */
+    @UiField
+    protected DivElement m_helpBubble;
+
+    /** The help bubble close button. */
+    @UiField
+    protected PushButton m_helpBubbleClose;
 
     /** The label element. */
     @UiField
     protected SpanElement m_label;
 
-    /** The remove button element. */
+    /** The remove button. */
     @UiField
-    protected DivElement m_removeButtonElement;
+    protected PushButton m_removeButton;
 
-    /** The up button element. */
+    /** The up button. */
     @UiField
-    protected DivElement m_upButtonElement;
+    protected PushButton m_upButton;
 
     /** The widget holder elemenet. */
     @UiField
-    protected DivElement m_widgetHolder;
-
-    /** The add button. */
-    private SimpleButton m_addButton;
-
-    /** The down button. */
-    private SimpleButton m_downButton;
+    protected SimplePanel m_widgetHolder;
 
     /** The attribute handler. */
     private AttributeHandler m_handler;
 
     /** Flag indicating if there is a value set for this UI object. */
     private boolean m_hasValue;
-
-    /** The remove button. */
-    private SimpleButton m_removeButton;
-
-    /** The up button. */
-    private SimpleButton m_upButton;
 
     /**
      * Constructor.<p>
@@ -136,11 +137,14 @@ implements HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandlers {
      */
     public AttributeValueView(AttributeHandler handler, String label, String help) {
 
-        setElement(uiBinder.createAndBindUi(this));
+        initWidget(uiBinder.createAndBindUi(this));
         m_handler = handler;
         m_handler.registerAttributeValue(this);
         m_label.setInnerHTML(label);
         m_label.setTitle(help);
+        m_helpBubble.setInnerHTML(help);
+        initHighlightingHandler();
+        initButtons();
     }
 
     /**
@@ -199,7 +203,8 @@ implements HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandlers {
     public void removeValue() {
 
         m_hasValue = false;
-        m_widgetHolder.setInnerHTML("");
+        m_widgetHolder.clear();
+        m_widgetHolder.getElement().setInnerHTML("");
     }
 
     /**
@@ -214,9 +219,9 @@ implements HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandlers {
             throw new RuntimeException("Value has already been set");
         }
         m_hasValue = true;
-        Element entityDiv = DOM.createDiv();
-        m_widgetHolder.appendChild(entityDiv);
-        renderer.renderForm(value, entityDiv);
+        FlowPanel entityPanel = new FlowPanel();
+        m_widgetHolder.setWidget(entityPanel);
+        renderer.renderForm(value, entityPanel);
     }
 
     /**
@@ -232,11 +237,40 @@ implements HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandlers {
         }
         m_hasValue = true;
         Element valueDiv = DOM.createDiv();
-        m_widgetHolder.appendChild(valueDiv);
+        m_widgetHolder.getElement().appendChild(valueDiv);
         valueDiv.setInnerHTML(value);
         valueDiv.addClassName(I_LayoutBundle.INSTANCE.form().widget());
         widget.initWidget(valueDiv);
         widget.addValueChangeHandler(new ChangeHandler());
+    }
+
+    /**
+     * Toggles the permanent highlighting.<p>
+     * 
+     * @param highlightingOn <code>true</code> to turn the highlighting on
+     */
+    public void toggleClickHighlighting(boolean highlightingOn) {
+
+        if (highlightingOn) {
+            addStyleName(I_LayoutBundle.INSTANCE.form().focused());
+        } else {
+            removeStyleName(I_LayoutBundle.INSTANCE.form().focused());
+            removeStyleName(I_LayoutBundle.INSTANCE.form().closedBubble());
+        }
+    }
+
+    /**
+     * Toggles the highlighting.<p>
+     * 
+     * @param highlightingOn <code>true</code> to turn the highlighting on
+     */
+    public void toggleHoverHighlighting(boolean highlightingOn) {
+
+        if (highlightingOn) {
+            addStyleName(I_LayoutBundle.INSTANCE.form().highlighting());
+        } else {
+            removeStyleName(I_LayoutBundle.INSTANCE.form().highlighting());
+        }
     }
 
     /**
@@ -248,9 +282,6 @@ implements HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandlers {
      */
     public void updateButtonVisibility(boolean hasAddButton, boolean hasRemoveButton, boolean hasSortButtons) {
 
-        if (m_addButton == null) {
-            initButtons();
-        }
         if (hasAddButton) {
             m_addButton.getElement().getStyle().clearDisplay();
         } else {
@@ -274,6 +305,28 @@ implements HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandlers {
     }
 
     /**
+     * Handles the click event to add a new attribute value.<p>
+     * 
+     * @param event the click event
+     */
+    @UiHandler("m_addButton")
+    protected void addNewAttributeValue(ClickEvent event) {
+
+        m_handler.addNewAttributeValue(this);
+    }
+
+    /**
+     * Handles the click event to close the help bubble.<p>
+     * 
+     * @param event the click event
+     */
+    @UiHandler("m_helpBubbleClose")
+    protected void closeHelpBubble(ClickEvent event) {
+
+        addStyleName(I_LayoutBundle.INSTANCE.form().closedBubble());
+    }
+
+    /**
      * Returns the attribute handler.<p>
      * 
      * @return the attribute handler
@@ -284,83 +337,71 @@ implements HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandlers {
     }
 
     /**
-     * Toggles the highlighting.<p>
+     * Handles the click event to move the attribute value down.<p>
      * 
-     * @param highlightingOn <code>true</code> to turn the highlighting on
+     * @param event the click event
      */
-    protected void toggleHoverHighlighting(boolean highlightingOn) {
+    @UiHandler("m_downButton")
+    protected void moveAttributeValueDown(ClickEvent event) {
 
-        if (highlightingOn) {
-            getElement().addClassName(I_LayoutBundle.INSTANCE.form().highlighting());
-        } else {
-            getElement().removeClassName(I_LayoutBundle.INSTANCE.form().highlighting());
-        }
+        m_handler.moveAttributeValueDown(this);
     }
 
     /**
-     * Toggles the permanent highlighting.<p>
+     * Handles the click event to move the attribute value up.<p>
      * 
-     * @param highlightingOn <code>true</code> to turn the highlighting on
+     * @param event the click event
      */
-    protected void toggleClickHighlighting(boolean highlightingOn) {
+    @UiHandler("m_upButton")
+    protected void moveAttributeValueUp(ClickEvent event) {
 
-        if (highlightingOn) {
-            getElement().addClassName(I_LayoutBundle.INSTANCE.form().focused());
-        } else {
-            getElement().removeClassName(I_LayoutBundle.INSTANCE.form().focused());
-        }
+        m_handler.moveAttributeValueUp(this);
     }
 
     /**
-     * Initializes the buttons.<p>
+     * Handles the click event to remove the attribute value.<p>
+     * 
+     * @param event the click event
+     */
+    @UiHandler("m_removeButton")
+    protected void removeAttributeValue(ClickEvent event) {
+
+        m_handler.removeAttributeValue(this);
+    }
+
+    /**
+     * Initializes the button styling.<p>
      */
     private void initButtons() {
 
+        m_addButton.setImageClass(I_ImageBundle.INSTANCE.style().addIcon());
+        m_addButton.setTitle("Add");
+        m_addButton.setButtonStyle(ButtonStyle.TRANSPARENT, null);
+
+        m_removeButton.setImageClass(I_ImageBundle.INSTANCE.style().deleteIcon());
+        m_removeButton.setTitle("Delete");
+        m_removeButton.setButtonStyle(ButtonStyle.TRANSPARENT, null);
+
+        m_upButton.setImageClass(I_ImageBundle.INSTANCE.style().moveIcon());
+        m_upButton.setTitle("Move up");
+        m_upButton.setButtonStyle(ButtonStyle.TRANSPARENT, null);
+
+        m_downButton.setImageClass(I_ImageBundle.INSTANCE.style().moveIcon());
+        m_downButton.setTitle("Move down");
+        m_downButton.setButtonStyle(ButtonStyle.TRANSPARENT, null);
+
+        m_helpBubbleClose.setImageClass(I_ImageBundle.INSTANCE.style().closeIcon());
+        m_helpBubbleClose.setTitle("Close");
+        m_helpBubbleClose.setButtonStyle(ButtonStyle.TRANSPARENT, null);
+    }
+
+    /**
+     * Initializes the highlighting handler.<p>
+     */
+    private void initHighlightingHandler() {
+
         addMouseOverHandler(HighlightingHandler.getInstance());
-
         addMouseOutHandler(HighlightingHandler.getInstance());
-
         addClickHandler(HighlightingHandler.getInstance());
-
-        m_addButtonElement.setInnerText("+");
-        m_addButton = new SimpleButton(m_addButtonElement);
-        m_addButton.addClickHandler(new ClickHandler() {
-
-            public void onClick(ClickEvent event) {
-
-                getHandler().addNewAttributeValue(AttributeValueView.this);
-
-            }
-        });
-        m_removeButtonElement.setInnerText("-");
-        m_removeButton = new SimpleButton(m_removeButtonElement);
-        m_removeButton.addClickHandler(new ClickHandler() {
-
-            public void onClick(ClickEvent event) {
-
-                getHandler().removeAttributeValue(AttributeValueView.this);
-
-            }
-        });
-        m_upButtonElement.setInnerHTML("&uarr;");
-        m_upButton = new SimpleButton(m_upButtonElement);
-        m_upButton.addClickHandler(new ClickHandler() {
-
-            public void onClick(ClickEvent event) {
-
-                getHandler().moveAttributeValueUp(AttributeValueView.this);
-
-            }
-        });
-        m_downButtonElement.setInnerHTML("&darr;");
-        m_downButton = new SimpleButton(m_downButtonElement);
-        m_downButton.addClickHandler(new ClickHandler() {
-
-            public void onClick(ClickEvent event) {
-
-                getHandler().moveAttributeValueDown(AttributeValueView.this);
-
-            }
-        });
     }
 }

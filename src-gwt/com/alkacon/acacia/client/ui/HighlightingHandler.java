@@ -1,6 +1,6 @@
 /*
- * This library is part of OpenCms -
- * the Open Source Content Management System
+ * This library is part of the Acacia Editor -
+ * an open source inline and form based content editor for GWT.
  *
  * Copyright (c) Alkacon Software GmbH (http://www.alkacon.com)
  *
@@ -16,9 +16,6 @@
  *
  * For further information about Alkacon Software, please see the
  * company website: http://www.alkacon.com
- *
- * For further information about OpenCms, please see the
- * project website: http://www.opencms.org
  * 
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
@@ -53,11 +50,11 @@ public class HighlightingHandler implements MouseOverHandler, MouseOutHandler, C
     /** The currently highlighted value view. */
     private AttributeValueView m_currentHover;
 
-    /** The highlighting queue. */
-    private Set<AttributeValueView> m_hoverHighlightingQueue;
-
     /** The handler registration. */
     private HandlerRegistration m_handlerRegistration;
+
+    /** The highlighting queue. */
+    private Set<AttributeValueView> m_hoverHighlightingQueue;
 
     /**
      * Constructor.<p>
@@ -97,6 +94,29 @@ public class HighlightingHandler implements MouseOverHandler, MouseOutHandler, C
         }
         m_handlerRegistration = null;
         INSTANCE = null;
+    }
+
+    /**
+     * @see com.google.gwt.event.dom.client.ClickHandler#onClick(com.google.gwt.event.dom.client.ClickEvent)
+     */
+    public void onClick(ClickEvent event) {
+
+        event.stopPropagation();
+        if (RootPanel.get().equals(event.getSource())) {
+            if (m_currentClick != null) {
+                m_currentClick.toggleClickHighlighting(false);
+                m_currentClick = null;
+            }
+        } else {
+            if (event.getSource().equals(m_currentClick)) {
+                return;
+            }
+            if ((m_currentClick != null)) {
+                m_currentClick.toggleClickHighlighting(false);
+            }
+            m_currentClick = (AttributeValueView)event.getSource();
+            m_currentClick.toggleClickHighlighting(true);
+        }
     }
 
     /**
@@ -151,26 +171,6 @@ public class HighlightingHandler implements MouseOverHandler, MouseOutHandler, C
                 m_currentHover = source;
                 m_currentHover.toggleHoverHighlighting(true);
             }
-        }
-    }
-
-    /**
-     * @see com.google.gwt.event.dom.client.ClickHandler#onClick(com.google.gwt.event.dom.client.ClickEvent)
-     */
-    public void onClick(ClickEvent event) {
-
-        event.stopPropagation();
-        if (RootPanel.get().equals(event.getSource())) {
-            if (m_currentClick != null) {
-                m_currentClick.toggleClickHighlighting(false);
-                m_currentClick = null;
-            }
-        } else {
-            if (m_currentClick != null) {
-                m_currentClick.toggleClickHighlighting(false);
-            }
-            m_currentClick = (AttributeValueView)event.getSource();
-            m_currentClick.toggleClickHighlighting(true);
         }
     }
 

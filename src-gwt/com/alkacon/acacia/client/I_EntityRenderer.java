@@ -1,6 +1,6 @@
 /*
- * This library is part of OpenCms -
- * the Open Source Content Management System
+ * This library is part of the Acacia Editor -
+ * an open source inline and form based content editor for GWT.
  *
  * Copyright (c) Alkacon Software GmbH (http://www.alkacon.com)
  *
@@ -16,9 +16,6 @@
  *
  * For further information about Alkacon Software, please see the
  * company website: http://www.alkacon.com
- *
- * For further information about OpenCms, please see the
- * project website: http://www.opencms.org
  * 
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
@@ -30,6 +27,7 @@ package com.alkacon.acacia.client;
 import com.alkacon.vie.shared.I_Entity;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.ui.Panel;
 
 /**
  * Renders an entity into a widget.<p>
@@ -61,5 +59,5 @@ public interface I_EntityRenderer {
      * @param entity the entity to render
      * @param context the context DOM element
      */
-    void renderForm(I_Entity entity, Element context);
+    void renderForm(I_Entity entity, Panel context);
 }

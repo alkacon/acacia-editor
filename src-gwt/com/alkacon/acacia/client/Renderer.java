@@ -1,6 +1,6 @@
 /*
- * This library is part of OpenCms -
- * the Open Source Content Management System
+ * This library is part of the Acacia Editor -
+ * an open source inline and form based content editor for GWT.
  *
  * Copyright (c) Alkacon Software GmbH (http://www.alkacon.com)
  *
@@ -16,9 +16,6 @@
  *
  * For further information about Alkacon Software, please see the
  * company website: http://www.alkacon.com
- *
- * For further information about OpenCms, please see the
- * project website: http://www.opencms.org
  * 
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
@@ -40,7 +37,8 @@ import java.util.List;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Panel;
 
 /**
  * Renders the widgets for an in-line form.<p>
@@ -112,13 +110,13 @@ public class Renderer implements I_EntityRenderer {
     }
 
     /**
-     * @see com.alkacon.acacia.client.I_EntityRenderer#renderForm(com.alkacon.vie.shared.I_Entity, com.google.gwt.dom.client.Element)
+     * @see com.alkacon.acacia.client.I_EntityRenderer#renderForm(com.alkacon.vie.shared.I_Entity, com.google.gwt.user.client.ui.Panel)
      */
-    public void renderForm(final I_Entity entity, final Element context) {
+    public void renderForm(final I_Entity entity, Panel context) {
 
-        context.addClassName(ENTITY_CLASS);
-        context.setAttribute("typeof", entity.getTypeName());
-        context.setAttribute("about", entity.getId());
+        context.addStyleName(ENTITY_CLASS);
+        context.getElement().setAttribute("typeof", entity.getTypeName());
+        context.getElement().setAttribute("about", entity.getId());
         I_Type entityType = m_vie.getType(entity.getTypeName());
         List<String> attributeNames = entityType.getAttributeNames();
         for (final String attributeName : attributeNames) {
@@ -128,9 +126,9 @@ public class Renderer implements I_EntityRenderer {
             int minOccurrence = entityType.getAttributeMinOccurrence(attributeName);
             String label = m_widgetService.getAttributeLabel(attributeName);
             String help = m_widgetService.getAttributeHelp(attributeName);
-            Element attributeElement = DOM.createDiv();
-            attributeElement.addClassName(I_LayoutBundle.INSTANCE.form().attribute());
-            context.appendChild(attributeElement);
+            FlowPanel attributeElement = new FlowPanel();
+            attributeElement.setStyleName(I_LayoutBundle.INSTANCE.form().attribute());
+            context.add(attributeElement);
             I_EntityAttribute attribute = entity.getAttribute(attributeName);
             if ((attribute == null) && (minOccurrence > 0)) {
                 attribute = createEmptyAttribute(entity, attributeName, minOccurrence);
@@ -138,7 +136,7 @@ public class Renderer implements I_EntityRenderer {
             if (attribute != null) {
                 for (int i = 0; i < attribute.getValueCount(); i++) {
                     AttributeValueView valueWidget = new AttributeValueView(handler, label, help);
-                    attributeElement.appendChild(valueWidget.getElement());
+                    attributeElement.add(valueWidget);
                     if (attribute.isSimpleValue()) {
                         valueWidget.setValueWidget(
                             m_widgetService.getAttributeWidget(attributeName),
@@ -149,7 +147,7 @@ public class Renderer implements I_EntityRenderer {
                 }
             } else {
                 AttributeValueView valueWidget = new AttributeValueView(handler, label, help);
-                attributeElement.appendChild(valueWidget.getElement());
+                attributeElement.add(valueWidget);
             }
             handler.updateButtonVisisbility();
         }
@@ -234,9 +232,9 @@ public class Renderer implements I_EntityRenderer {
      * @param entity the entity
      * @param context the context DOM element
      */
-    protected void rerenderForm(final I_Entity entity, final Element context) {
+    protected void rerenderForm(final I_Entity entity, final Panel context) {
 
-        context.setInnerHTML("");
+        context.clear();
         renderForm(entity, context);
     }
 }

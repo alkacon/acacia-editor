@@ -1,6 +1,6 @@
 /*
- * This library is part of OpenCms -
- * the Open Source Content Management System
+ * This library is part of the Acacia Editor -
+ * an open source inline and form based content editor for GWT.
  *
  * Copyright (c) Alkacon Software GmbH (http://www.alkacon.com)
  *
@@ -16,9 +16,6 @@
  *
  * For further information about Alkacon Software, please see the
  * company website: http://www.alkacon.com
- *
- * For further information about OpenCms, please see the
- * project website: http://www.opencms.org
  * 
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
@@ -27,11 +24,14 @@
 
 package com.alkacon.acacia.client;
 
+import com.alkacon.acacia.client.ui.HighlightingHandler;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
 import com.alkacon.acacia.client.widgets.StringWidget;
 import com.alkacon.acacia.client.widgets.TinyMCEWidget;
 import com.alkacon.acacia.shared.ContentDefinition;
 import com.alkacon.acacia.shared.rpc.I_ContentServiceAsync;
+import com.alkacon.geranium.client.ui.css.I_ImageBundle;
+import com.alkacon.geranium.client.ui.css.I_LayoutBundle;
 import com.alkacon.vie.client.Entity;
 import com.alkacon.vie.client.I_Vie;
 import com.alkacon.vie.client.Vie;
@@ -40,9 +40,10 @@ import com.alkacon.vie.shared.I_Type;
 
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Panel;
 
 /**
  * The content editor base.<p>
@@ -65,6 +66,9 @@ public class EditorBase {
      */
     public EditorBase(I_ContentServiceAsync service) {
 
+        I_ImageBundle.INSTANCE.style().ensureInjected();
+        I_LayoutBundle.INSTANCE.generalCss().ensureInjected();
+        I_LayoutBundle.INSTANCE.buttonCss().ensureInjected();
         m_service = service;
         m_vie = Vie.getInstance();
         m_widgetService = new WidgetService();
@@ -87,16 +91,6 @@ public class EditorBase {
     }
 
     /**
-     * Returns the widget service.<p>
-     * 
-     * @return the widget service
-     */
-    protected I_WidgetService getWidgetService() {
-
-        return m_widgetService;
-    }
-
-    /**
      * Adds the value change handler to the entity with the given id.<p>
      * 
      * @param entityId the entity id
@@ -111,10 +105,11 @@ public class EditorBase {
     }
 
     /**
-     * Clears all entities from VIE.<p>
+     * Destroys the form and related resources. Also clears all entities from VIE<p>
      */
-    public void clearVie() {
+    public void destroyFrom() {
 
+        HighlightingHandler.getInstance().destroy();
         m_vie.clearEntities();
     }
 
@@ -172,20 +167,30 @@ public class EditorBase {
      * 
      * @param entityId the entity id
      * @param context the context element
-     * @param inline <code>true</code> to render the entity for in-line editing, <code>false</code> to render a form
      */
-    public void renderEntity(String entityId, Element context, boolean inline) {
+    public void renderEntityForm(String entityId, Panel context) {
 
         I_Entity entity = m_vie.getEntity(entityId);
         if (entity != null) {
             I_Type type = m_vie.getType(entity.getTypeName());
-            if (inline) {
-                m_widgetService.getRendererForType(type).renderInline(entity, context);
-            } else {
-                Element formElement = DOM.createDiv();
-                context.appendChild(formElement);
-                m_widgetService.getRendererForType(type).renderForm(entity, formElement);
-            }
+            FlowPanel formPanel = new FlowPanel();
+            context.add(formPanel);
+            m_widgetService.getRendererForType(type).renderForm(entity, formPanel);
+        }
+    }
+
+    /**
+     * Renders the entity form within the given context.<p>
+     * 
+     * @param entityId the entity id
+     * @param context the context element
+     */
+    public void renderInlineEntity(String entityId, Element context) {
+
+        I_Entity entity = m_vie.getEntity(entityId);
+        if (entity != null) {
+            I_Type type = m_vie.getType(entity.getTypeName());
+            m_widgetService.getRendererForType(type).renderInline(entity, context);
         }
     }
 
@@ -210,7 +215,7 @@ public class EditorBase {
 
                 callback.execute();
                 if (clearOnSuccess) {
-                    clearVie();
+                    destroyFrom();
                 }
             }
         };
@@ -242,6 +247,16 @@ public class EditorBase {
 
         I_Entity entity = m_vie.getEntity(entityId);
         saveEntity(entity, locale, false, callback);
+    }
+
+    /**
+     * Returns the widget service.<p>
+     * 
+     * @return the widget service
+     */
+    protected I_WidgetService getWidgetService() {
+
+        return m_widgetService;
     }
 
     /**

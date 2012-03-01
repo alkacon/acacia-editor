@@ -1,6 +1,6 @@
 /*
- * This library is part of OpenCms -
- * the Open Source Content Management System
+ * This library is part of the Acacia Editor -
+ * an open source inline and form based content editor for GWT.
  *
  * Copyright (c) Alkacon Software GmbH (http://www.alkacon.com)
  *
@@ -16,9 +16,6 @@
  *
  * For further information about Alkacon Software, please see the
  * company website: http://www.alkacon.com
- *
- * For further information about OpenCms, please see the
- * project website: http://www.opencms.org
  * 
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
@@ -63,6 +60,20 @@ public interface I_LayoutBundle extends ClientBundle {
         String button();
 
         /**
+         * Returns the button bar CSS class name.<p>
+         * 
+         * @return the button bar CSS class
+         */
+        String buttonBar();
+
+        /**
+         * Returns the closed bubble CSS class name.<p>
+         * 
+         * @return the closed bubble CSS class
+         */
+        String closedBubble();
+
+        /**
          * Returns the entity CSS class name.<p>
          * 
          * @return the entity CSS class
@@ -75,6 +86,27 @@ public interface I_LayoutBundle extends ClientBundle {
          * @return the focused CSS class
          */
         String focused();
+
+        /**
+         * Returns the help bubble CSS class name.<p>
+         * 
+         * @return the help bubble CSS class
+         */
+        String helpBubble();
+
+        /**
+         * Returns the help bubble close CSS class name.<p>
+         * 
+         * @return the help bubble close CSS class
+         */
+        String helpBubbleClose();
+
+        /**
+         * Returns the help bubble arrow CSS class name.<p>
+         * 
+         * @return the help bubble arrow CSS class
+         */
+        String helpBubbleArrow();
 
         /**
          * Returns the highlighting CSS class name.<p>

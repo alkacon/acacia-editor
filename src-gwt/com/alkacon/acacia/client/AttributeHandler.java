@@ -1,6 +1,6 @@
 /*
- * This library is part of OpenCms -
- * the Open Source Content Management System
+ * This library is part of the Acacia Editor -
+ * an open source inline and form based content editor for GWT.
  *
  * Copyright (c) Alkacon Software GmbH (http://www.alkacon.com)
  *
@@ -16,9 +16,6 @@
  *
  * For further information about Alkacon Software, please see the
  * company website: http://www.alkacon.com
- *
- * For further information about OpenCms, please see the
- * project website: http://www.opencms.org
  * 
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
@@ -36,7 +33,7 @@ import com.alkacon.vie.shared.I_Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gwt.dom.client.Node;
+import com.google.gwt.user.client.ui.FlowPanel;
 
 /**
  * The attribute handler. Handles value changes, addition of new values, remove and move operations on values.<p> 
@@ -91,11 +88,13 @@ public class AttributeHandler {
         if (getAttributeType().isSimpleType()) {
             String value = m_widgetService.getDefaultAttributeValue(m_attributeName);
             I_EditWidget widget = m_widgetService.getAttributeWidget(m_attributeName);
+            int valueIndex = -1;
             if (reference.getElement().getNextSiblingElement() == null) {
                 m_entity.addAttributeValue(m_attributeName, value);
             } else {
-                int index = reference.getValueIndex();
-                m_entity.insertAttributeValue(m_attributeName, value, index + 1);
+                valueIndex = reference.getValueIndex() + 1;
+                m_entity.insertAttributeValue(m_attributeName, value, valueIndex);
+
             }
             AttributeValueView valueWidget = reference;
             if (reference.hasValue()) {
@@ -103,17 +102,23 @@ public class AttributeHandler {
                     this,
                     m_widgetService.getAttributeLabel(m_attributeName),
                     m_widgetService.getAttributeHelp(m_attributeName));
-                reference.getElement().getParentElement().insertAfter(valueWidget.getElement(), reference.getElement());
+                if (valueIndex == -1) {
+                    ((FlowPanel)reference.getParent()).add(valueWidget);
+                } else {
+                    ((FlowPanel)reference.getParent()).insert(valueWidget, valueIndex);
+                }
+
             }
             valueWidget.setValueWidget(widget, value);
         } else {
             I_Entity value = m_vie.createEntity(null, m_attributeType.getId());
             I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(m_attributeName, m_attributeType);
+            int valueIndex = -1;
             if (reference.getElement().getNextSiblingElement() == null) {
                 m_entity.addAttributeValue(m_attributeName, value);
             } else {
-                int index = reference.getValueIndex();
-                m_entity.insertAttributeValue(m_attributeName, value, index + 1);
+                valueIndex = reference.getValueIndex() + 1;
+                m_entity.insertAttributeValue(m_attributeName, value, valueIndex);
             }
             AttributeValueView valueWidget = reference;
             if (reference.hasValue()) {
@@ -121,7 +126,11 @@ public class AttributeHandler {
                     this,
                     m_widgetService.getAttributeLabel(m_attributeName),
                     m_widgetService.getAttributeHelp(m_attributeName));
-                reference.getElement().getParentElement().insertAfter(valueWidget.getElement(), reference.getElement());
+                if (valueIndex == -1) {
+                    ((FlowPanel)reference.getParent()).add(valueWidget);
+                } else {
+                    ((FlowPanel)reference.getParent()).insert(valueWidget, valueIndex);
+                }
             }
             valueWidget.setValueEntity(renderer, value);
         }
@@ -150,9 +159,9 @@ public class AttributeHandler {
         if (index >= (m_entity.getAttribute(m_attributeName).getValueCount() - 1)) {
             return;
         }
-        Node sibling = reference.getElement().getNextSibling();
-        Node parent = reference.getElement().getParentElement();
-        reference.getElement().removeFromParent();
+        FlowPanel parent = (FlowPanel)reference.getParent();
+
+        reference.removeFromParent();
         m_attributeValueViews.remove(reference);
         if (getAttributeType().isSimpleType()) {
             String value = m_entity.getAttribute(m_attributeName).getSimpleValues().get(index);
@@ -162,8 +171,9 @@ public class AttributeHandler {
                 this,
                 m_widgetService.getAttributeLabel(m_attributeName),
                 m_widgetService.getAttributeHelp(m_attributeName));
-            parent.insertAfter(valueWidget.getElement(), sibling);
+            parent.insert(valueWidget, index + 1);
             valueWidget.setValueWidget(m_widgetService.getAttributeWidget(m_attributeName), value);
+            valueWidget.toggleClickHighlighting(true);
         } else {
             I_Entity value = m_entity.getAttribute(m_attributeName).getComplexValues().get(index);
             m_entity.removeAttributeValue(m_attributeName, index);
@@ -172,10 +182,11 @@ public class AttributeHandler {
                 this,
                 m_widgetService.getAttributeLabel(m_attributeName),
                 m_widgetService.getAttributeHelp(m_attributeName));
-            parent.insertAfter(valueWidget.getElement(), sibling);
+            parent.insert(valueWidget, index + 1);
             valueWidget.setValueEntity(
                 m_widgetService.getRendererForAttribute(m_attributeName, getAttributeType()),
                 value);
+            valueWidget.toggleClickHighlighting(true);
         }
         updateButtonVisisbility();
     }
@@ -191,9 +202,8 @@ public class AttributeHandler {
         if (index == 0) {
             return;
         }
-        Node sibling = reference.getElement().getPreviousSibling();
-        Node parent = reference.getElement().getParentElement();
-        reference.getElement().removeFromParent();
+        FlowPanel parent = (FlowPanel)reference.getParent();
+        reference.removeFromParent();
         m_attributeValueViews.remove(reference);
         if (getAttributeType().isSimpleType()) {
             String value = m_entity.getAttribute(m_attributeName).getSimpleValues().get(index);
@@ -203,8 +213,9 @@ public class AttributeHandler {
                 this,
                 m_widgetService.getAttributeLabel(m_attributeName),
                 m_widgetService.getAttributeHelp(m_attributeName));
-            parent.insertBefore(valueWidget.getElement(), sibling);
+            parent.insert(valueWidget, index - 1);
             valueWidget.setValueWidget(m_widgetService.getAttributeWidget(m_attributeName), value);
+            valueWidget.toggleClickHighlighting(true);
         } else {
             I_Entity value = m_entity.getAttribute(m_attributeName).getComplexValues().get(index);
             m_entity.removeAttributeValue(m_attributeName, index);
@@ -213,10 +224,11 @@ public class AttributeHandler {
                 this,
                 m_widgetService.getAttributeLabel(m_attributeName),
                 m_widgetService.getAttributeHelp(m_attributeName));
-            parent.insertBefore(valueWidget.getElement(), sibling);
+            parent.insert(valueWidget, index - 1);
             valueWidget.setValueEntity(
                 m_widgetService.getRendererForAttribute(m_attributeName, getAttributeType()),
                 value);
+            valueWidget.toggleClickHighlighting(true);
         }
         updateButtonVisisbility();
     }
@@ -244,7 +256,7 @@ public class AttributeHandler {
         } else {
             int index = reference.getValueIndex();
             m_entity.removeAttributeValue(m_attributeName, index);
-            reference.getElement().removeFromParent();
+            reference.removeFromParent();
             m_attributeValueViews.remove(reference);
         }
         updateButtonVisisbility();

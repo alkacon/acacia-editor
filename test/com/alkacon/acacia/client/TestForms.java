@@ -1,6 +1,6 @@
 /*
- * This library is part of OpenCms -
- * the Open Source Content Management System
+ * This library is part of the Acacia Editor -
+ * an open source inline and form based content editor for GWT.
  *
  * Copyright (c) Alkacon Software GmbH (http://www.alkacon.com)
  *
@@ -16,9 +16,6 @@
  *
  * For further information about Alkacon Software, please see the
  * company website: http://www.alkacon.com
- *
- * For further information about OpenCms, please see the
- * project website: http://www.opencms.org
  * 
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
@@ -45,7 +42,7 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.junit.client.GWTTestCase;
-import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 
 /**
@@ -80,13 +77,13 @@ public class TestForms extends GWTTestCase {
         I_EntityRenderer defaultRenderer = new Renderer(vie, service);
         service.setDefaultRenderer(defaultRenderer);
         I_EntityRenderer renderer = service.getRendererForType(complex);
-        Element context = DOM.createDiv();
-        RootPanel.getBodyElement().appendChild(context);
+        FlowPanel context = new FlowPanel();
+        RootPanel.get().add(context);
         renderer.renderForm(entity, context);
         assertEquals(
             "The forms inner HTML should match the exspected.",
             "<div typeof=\"cms:complex\" about=\"myEntity\" class=\"entity\"><div title=\"\" class=\"label\">http:opencms/simpleAttribute</div><div class=\"widgetHolder\"><div style=\"color: red;\" contenteditable=\"true\" property=\"http:opencms/simpleAttribute\">my attribute value</div></div></div>",
-            context.getInnerHTML());
+            context.getElement().getInnerHTML());
     }
 
     /**
