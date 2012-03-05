@@ -28,17 +28,25 @@ import com.alkacon.acacia.client.AttributeHandler;
 import com.alkacon.acacia.client.I_EntityRenderer;
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
+import com.alkacon.geranium.client.dnd.I_DragHandle;
+import com.alkacon.geranium.client.dnd.I_Draggable;
+import com.alkacon.geranium.client.dnd.I_DropTarget;
 import com.alkacon.geranium.client.ui.I_Button.ButtonStyle;
 import com.alkacon.geranium.client.ui.PushButton;
 import com.alkacon.geranium.client.ui.css.I_ImageBundle;
+import com.alkacon.geranium.client.util.DomUtil;
 import com.alkacon.vie.shared.I_Entity;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Display;
+import com.google.gwt.dom.client.Style.Position;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -58,13 +66,14 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 /**
  * UI object holding an attribute value.<p>
  */
 public class AttributeValueView extends Composite
-implements HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandlers {
+implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandlers {
 
     /**
      * The widget value change handler.<p>
@@ -78,6 +87,35 @@ implements HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandlers {
 
             getHandler().changeValue(AttributeValueView.this, event.getValue());
         }
+    }
+
+    /** The move handle. */
+    protected class MoveHandle extends PushButton implements I_DragHandle {
+
+        /** The draggable. */
+        private AttributeValueView m_draggable;
+
+        /**
+         * Constructor.<p>
+         * 
+         * @param draggable the draggable
+         */
+        MoveHandle(AttributeValueView draggable) {
+
+            setImageClass(I_ImageBundle.INSTANCE.style().changeOrderIcon());
+            setButtonStyle(ButtonStyle.TRANSPARENT, null);
+            setTitle("Move");
+            m_draggable = draggable;
+        }
+
+        /**
+         * @see com.alkacon.geranium.client.dnd.I_DragHandle#getDraggable()
+         */
+        public I_Draggable getDraggable() {
+
+            return m_draggable;
+        }
+
     }
 
     /**
@@ -110,6 +148,10 @@ implements HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandlers {
     @UiField
     protected SpanElement m_label;
 
+    /** The move button. */
+    @UiField(provided = true)
+    protected MoveHandle m_moveButton;
+
     /** The remove button. */
     @UiField
     protected PushButton m_removeButton;
@@ -122,11 +164,20 @@ implements HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandlers {
     @UiField
     protected SimplePanel m_widgetHolder;
 
+    /** Drag and drop helper element. */
+    private Element m_dragHelper;
+
     /** The attribute handler. */
     private AttributeHandler m_handler;
 
     /** Flag indicating if there is a value set for this UI object. */
     private boolean m_hasValue;
+
+    /** The drag and drop place holder element. */
+    private Element m_placeHolder;
+
+    /** The provisional drag and drop helper parent. */
+    private Element m_provisionalParent;
 
     /**
      * Constructor.<p>
@@ -137,9 +188,12 @@ implements HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandlers {
      */
     public AttributeValueView(AttributeHandler handler, String label, String help) {
 
+        // important: provide the move button before initializing the widget
+        m_moveButton = new MoveHandle(this);
         initWidget(uiBinder.createAndBindUi(this));
         m_handler = handler;
         m_handler.registerAttributeValue(this);
+        m_moveButton.addMouseDownHandler(m_handler.getDNDHandler());
         m_label.setInnerHTML(label);
         m_label.setTitle(help);
         m_helpBubble.setInnerHTML(help);
@@ -172,6 +226,82 @@ implements HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandlers {
     }
 
     /**
+     * @see com.alkacon.geranium.client.dnd.I_Draggable#getDragHelper(com.alkacon.geranium.client.dnd.I_DropTarget)
+     */
+    public Element getDragHelper(I_DropTarget target) {
+
+        closeHelpBubble(null);
+        m_dragHelper = DomUtil.clone(getElement());
+        // we append the drag helper to the body to prevent any kind of issues 
+        // (ie when the parent is styled with overflow:hidden)
+        // and we put it additionally inside a absolute positioned provisional parent  
+        // ON the original parent for the eventual animation when releasing 
+        Element parentElement = getElement().getParentElement();
+        if (parentElement == null) {
+            parentElement = target.getElement();
+        }
+        int elementTop = getElement().getAbsoluteTop();
+        int parentTop = parentElement.getAbsoluteTop();
+        m_provisionalParent = DOM.createElement(parentElement.getTagName());
+        RootPanel.getBodyElement().appendChild(m_provisionalParent);
+        m_provisionalParent.addClassName(com.alkacon.geranium.client.ui.css.I_LayoutBundle.INSTANCE.generalCss().clearStyles());
+        m_provisionalParent.getStyle().setWidth(parentElement.getOffsetWidth(), Unit.PX);
+        m_provisionalParent.appendChild(m_dragHelper);
+        Style style = m_dragHelper.getStyle();
+        style.setWidth(m_dragHelper.getOffsetWidth(), Unit.PX);
+        // the dragging class will set position absolute
+        style.setTop(elementTop - parentTop, Unit.PX);
+        m_dragHelper.addClassName(I_LayoutBundle.INSTANCE.form().dragHelper());
+        m_provisionalParent.getStyle().setPosition(Position.ABSOLUTE);
+        m_provisionalParent.getStyle().setTop(parentTop, Unit.PX);
+        m_provisionalParent.getStyle().setLeft(parentElement.getAbsoluteLeft(), Unit.PX);
+        m_provisionalParent.getStyle().setZIndex(
+            com.alkacon.geranium.client.ui.css.I_LayoutBundle.INSTANCE.constants().css().zIndexDND());
+        return m_dragHelper;
+    }
+
+    /**
+     * Returns the attribute handler.<p>
+     * 
+     * @return the attribute handler
+     */
+    public AttributeHandler getHandler() {
+
+        return m_handler;
+    }
+
+    /**
+     * @see com.alkacon.geranium.client.dnd.I_Draggable#getId()
+     */
+    public String getId() {
+
+        String id = getElement().getId();
+        if ((id == null) || "".equals(id)) {
+            id = Document.get().createUniqueId();
+            getElement().setId(id);
+        }
+        return id;
+    }
+
+    /**
+     * @see com.alkacon.geranium.client.dnd.I_Draggable#getParentTarget()
+     */
+    public I_DropTarget getParentTarget() {
+
+        return (I_DropTarget)getParent();
+    }
+
+    /**
+     * @see com.alkacon.geranium.client.dnd.I_Draggable#getPlaceholder(com.alkacon.geranium.client.dnd.I_DropTarget)
+     */
+    public Element getPlaceholder(I_DropTarget target) {
+
+        m_placeHolder = DOM.createDiv();
+        m_placeHolder.addClassName(I_LayoutBundle.INSTANCE.form().placeHolder());
+        return m_placeHolder;
+    }
+
+    /**
      * Returns the attribute value index.<p>
      * 
      * @return the attribute value index
@@ -195,6 +325,30 @@ implements HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandlers {
     public boolean hasValue() {
 
         return m_hasValue;
+    }
+
+    /**
+     * @see com.alkacon.geranium.client.dnd.I_Draggable#onDragCancel()
+     */
+    public void onDragCancel() {
+
+        clearDrag();
+    }
+
+    /**
+     * @see com.alkacon.geranium.client.dnd.I_Draggable#onDrop(com.alkacon.geranium.client.dnd.I_DropTarget)
+     */
+    public void onDrop(I_DropTarget target) {
+
+        clearDrag();
+    }
+
+    /**
+     * @see com.alkacon.geranium.client.dnd.I_Draggable#onStartDrag(com.alkacon.geranium.client.dnd.I_DropTarget)
+     */
+    public void onStartDrag(I_DropTarget target) {
+
+        getElement().getStyle().setOpacity(0.5);
     }
 
     /**
@@ -253,6 +407,11 @@ implements HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandlers {
 
         if (highlightingOn) {
             addStyleName(I_LayoutBundle.INSTANCE.form().focused());
+            if (shouldDisplayTooltipAbove()) {
+                addStyleName(I_LayoutBundle.INSTANCE.form().displayAbove());
+            } else {
+                removeStyleName(I_LayoutBundle.INSTANCE.form().displayAbove());
+            }
         } else {
             removeStyleName(I_LayoutBundle.INSTANCE.form().focused());
             removeStyleName(I_LayoutBundle.INSTANCE.form().closedBubble());
@@ -292,15 +451,20 @@ implements HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandlers {
         } else {
             m_removeButton.getElement().getStyle().setDisplay(Display.NONE);
         }
-        if (hasSortButtons && (getValueIndex() != 0)) {
-            m_upButton.getElement().getStyle().clearDisplay();
+        //                if (hasSortButtons && (getValueIndex() != 0)) {
+        //                    m_upButton.getElement().getStyle().clearDisplay();
+        //                } else {
+        m_upButton.getElement().getStyle().setDisplay(Display.NONE);
+        //                }
+        //                if (hasSortButtons && (getElement().getNextSibling() != null)) {
+        //                    m_downButton.getElement().getStyle().clearDisplay();
+        //                } else {
+        m_downButton.getElement().getStyle().setDisplay(Display.NONE);
+        //                }
+        if (hasSortButtons) {
+            m_moveButton.getElement().getStyle().clearDisplay();
         } else {
-            m_upButton.getElement().getStyle().setDisplay(Display.NONE);
-        }
-        if (hasSortButtons && (getElement().getNextSibling() != null)) {
-            m_downButton.getElement().getStyle().clearDisplay();
-        } else {
-            m_downButton.getElement().getStyle().setDisplay(Display.NONE);
+            m_moveButton.getElement().getStyle().setDisplay(Display.NONE);
         }
     }
 
@@ -324,16 +488,6 @@ implements HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandlers {
     protected void closeHelpBubble(ClickEvent event) {
 
         addStyleName(I_LayoutBundle.INSTANCE.form().closedBubble());
-    }
-
-    /**
-     * Returns the attribute handler.<p>
-     * 
-     * @return the attribute handler
-     */
-    protected AttributeHandler getHandler() {
-
-        return m_handler;
     }
 
     /**
@@ -370,6 +524,22 @@ implements HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandlers {
     }
 
     /**
+     * Called when a drag operation for this widget is stopped.<p>
+     */
+    private void clearDrag() {
+
+        if (m_dragHelper != null) {
+            m_dragHelper.removeFromParent();
+            m_dragHelper = null;
+        }
+        if (m_provisionalParent != null) {
+            m_provisionalParent.removeFromParent();
+            m_provisionalParent = null;
+        }
+        getElement().getStyle().clearOpacity();
+    }
+
+    /**
      * Initializes the button styling.<p>
      */
     private void initButtons() {
@@ -403,5 +573,25 @@ implements HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandlers {
         addMouseOverHandler(HighlightingHandler.getInstance());
         addMouseOutHandler(HighlightingHandler.getInstance());
         addClickHandler(HighlightingHandler.getInstance());
+    }
+
+    /**
+     * Returns if the help bubble should be displayed above the value field.<p>
+     * 
+     * @return <code>true</code> if the help bubble should be displayed above
+     */
+    private boolean shouldDisplayTooltipAbove() {
+
+        Element formParent = DomUtil.getAncestor(getElement(), I_LayoutBundle.INSTANCE.form().formParent());
+        if (formParent != null) {
+            int elementTop = getElement().getAbsoluteTop();
+            int elementHeight = getElement().getOffsetHeight();
+            int formTop = formParent.getAbsoluteTop();
+            int formHeight = formParent.getOffsetHeight();
+            if (((elementTop - formTop) + elementHeight) > (formHeight - 100)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

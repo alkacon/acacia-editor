@@ -201,7 +201,7 @@ public final class TinyMCE implements HasValue<String> {
                         ed.onKeyDown.add(fireChangeDelayed);
                         ed.onLoad
                                 .add(function() {
-                                    $wnd.document.getElementById(iframeId).style.minHeight = "400px";
+                                    $wnd.document.getElementById(iframeId).style.minHeight = "200px";
                                     var iframe = $wnd.document
                                             .getElementById(iframeId);
                                     var doc = $wnd.goog.dom

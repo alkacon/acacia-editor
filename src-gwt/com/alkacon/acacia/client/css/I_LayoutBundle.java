@@ -25,18 +25,16 @@
 package com.alkacon.acacia.client.css;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.resources.client.ClientBundle;
-import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.CssResource.Shared;
 
 /**
  * Bundle for CSS resources.<p>
  */
-public interface I_LayoutBundle extends ClientBundle {
+public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_LayoutBundle {
 
     /** The style CSS resource. */
     @Shared
-    public interface I_Style extends CssResource {
+    public interface I_Style extends com.alkacon.geranium.client.ui.css.I_LayoutBundle.I_DragCss {
 
         /** 
          * Returns the attribute CSS class name.<p>
@@ -74,6 +72,20 @@ public interface I_LayoutBundle extends ClientBundle {
         String closedBubble();
 
         /**
+         * Returns the display bubble above CSS class name.<p>
+         * 
+         * @return the display bubble above CSS class
+         */
+        String displayAbove();
+
+        /**
+         * Returns the drag helper CSS class name.<p>
+         *  
+         * @return the drag helper CSS class
+         */
+        String dragHelper();
+
+        /**
          * Returns the entity CSS class name.<p>
          * 
          * @return the entity CSS class
@@ -88,6 +100,13 @@ public interface I_LayoutBundle extends ClientBundle {
         String focused();
 
         /**
+         * Returns the form parent CSS class name.<p>
+         * 
+         * @return the form parent CSS class
+         */
+        String formParent();
+
+        /**
          * Returns the help bubble CSS class name.<p>
          * 
          * @return the help bubble CSS class
@@ -95,18 +114,18 @@ public interface I_LayoutBundle extends ClientBundle {
         String helpBubble();
 
         /**
-         * Returns the help bubble close CSS class name.<p>
-         * 
-         * @return the help bubble close CSS class
-         */
-        String helpBubbleClose();
-
-        /**
          * Returns the help bubble arrow CSS class name.<p>
          * 
          * @return the help bubble arrow CSS class
          */
         String helpBubbleArrow();
+
+        /**
+         * Returns the help bubble close CSS class name.<p>
+         * 
+         * @return the help bubble close CSS class
+         */
+        String helpBubbleClose();
 
         /**
          * Returns the highlighting CSS class name.<p>
@@ -130,6 +149,13 @@ public interface I_LayoutBundle extends ClientBundle {
         String label();
 
         /**
+         * Returns the place holder CSS class name
+         * 
+         * @return the place holder CSS class
+         */
+        String placeHolder();
+
+        /**
          * Returns the widget CSS class name.<p>
          * 
          * @return the widget CSS class
@@ -146,6 +172,13 @@ public interface I_LayoutBundle extends ClientBundle {
 
     /** The bundle instance. */
     I_LayoutBundle INSTANCE = GWT.create(I_LayoutBundle.class);
+
+    /**
+     * Returns the base image bundle.<p>
+     * 
+     * @return the base image bundle
+     */
+    com.alkacon.geranium.client.ui.css.I_ImageBundle baseImages();
 
     /**
      * Returns the style CSS.<p>

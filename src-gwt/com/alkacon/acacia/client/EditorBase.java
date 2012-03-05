@@ -175,6 +175,7 @@ public class EditorBase {
             I_Type type = m_vie.getType(entity.getTypeName());
             FlowPanel formPanel = new FlowPanel();
             context.add(formPanel);
+            context.addStyleName(com.alkacon.acacia.client.css.I_LayoutBundle.INSTANCE.form().formParent());
             m_widgetService.getRendererForType(type).renderForm(entity, formPanel);
         }
     }

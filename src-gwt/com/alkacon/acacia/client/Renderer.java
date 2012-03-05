@@ -26,6 +26,7 @@ package com.alkacon.acacia.client;
 
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.acacia.client.ui.AttributeValueView;
+import com.alkacon.acacia.client.ui.ValuePanel;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
 import com.alkacon.vie.client.I_Vie;
 import com.alkacon.vie.shared.I_Entity;
@@ -37,7 +38,6 @@ import java.util.List;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
 
 /**
@@ -126,8 +126,7 @@ public class Renderer implements I_EntityRenderer {
             int minOccurrence = entityType.getAttributeMinOccurrence(attributeName);
             String label = m_widgetService.getAttributeLabel(attributeName);
             String help = m_widgetService.getAttributeHelp(attributeName);
-            FlowPanel attributeElement = new FlowPanel();
-            attributeElement.setStyleName(I_LayoutBundle.INSTANCE.form().attribute());
+            ValuePanel attributeElement = new ValuePanel();
             context.add(attributeElement);
             I_EntityAttribute attribute = entity.getAttribute(attributeName);
             if ((attribute == null) && (minOccurrence > 0)) {

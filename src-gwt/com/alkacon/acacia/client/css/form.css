@@ -1,6 +1,6 @@
 @external mceEditor, mceExternalToolbar, mceStatusbar, mceIframeContainer, mceLayout;
 
-.attribute{}
+.attribute, .formParent{}
 
 .attributeValue .buttonBar{
 	display: none;
@@ -24,7 +24,7 @@
 	margin:4px 0 2px;
 }
 
-.entity .attributeValue .label span{
+.entity .attributeValue .label span, .dragHelper.attributeValue .label span{
 	font-size: 14px;
 	font-weight: bold;
 	color: #7788aa;
@@ -43,7 +43,7 @@
 	border: 1px solid #dddddd;
 }
 
-.entity .attributeValue.focused {
+.entity .attributeValue.focused,  .dragHelper.attributeValue.focused {
 	background: #cccccc;
 }
 
@@ -54,7 +54,7 @@
 
 @if user.agent gecko1_8 gecko{
 	/** firefox **/
-	.entity .attributeValue{
+	.entity .attributeValue, .dragHelper.attributeValue{
 		-moz-border-radius: 4px;
 	}
 	.widgetHolder .widget.input{
@@ -63,7 +63,7 @@
 
 } @elif user.agent safari {
 	/** chrome, safari etc. **/
-	.entity .attributeValue{
+	.entity .attributeValue, .dragHelper.attributeValue{
 		-webkit-border-radius: 4px;
 	}
 	.widgetHolder .widget.input{
@@ -72,7 +72,7 @@
 
 } @elif user.agent opera ie9 {
 	/** opera, ie9 */
-	.entity .attributeValue{
+	.entity .attributeValue, .dragHelper.attributeValue{
 		border-radius: 4px;
 	}
 	.widgetHolder .widget.input{
@@ -80,6 +80,41 @@
 	}
 }
 
+@sprite .placeHolder{
+	gwt-image: "baseImages.placeholderImage";
+	height: 4px;
+	right: -2px;
+	left: -2px;
+	position: absolute;
+	z-index: value("constants.css.zIndexInline");
+	margin-top: -3px;
+	border-left: solid 5px value("constants.css.borderColorHighlight");
+	border-right: solid 5px value("constants.css.borderColorHighlight");
+}
+
+@if user.agent ie6 {
+	.placeHolder {
+		filter: literal("alpha(opacity = 50)");
+	}
+} @elif user.agent ie8 {
+	.placeHolder {
+		-ms-filter: "alpha(opacity = 50)";
+	}
+} @else {
+	.placeHolder {
+        opacity: 0.5;
+	}
+}
+
+.dragHelper.attributeValue{
+	position: relative;
+	padding: 2px 2px 2px 4px;
+	margin-top: 1px;
+	background: #cccccc;
+	position: absolute;
+}
+
+.dragStarted, .dragPlaceholder{}
 .entity .attributeValue{
 	position: relative;
 	padding: 2px 2px 2px 4px;
@@ -173,6 +208,11 @@
 	border-radius: 4px;
 	z-index: 10;
 	box-shadow: 2px 2px 6px #666666;
+}
+
+.displayAbove .helpBubble{
+	top: auto;
+	bottom: 100%;
 }
 
 .helpBubble div{

@@ -26,6 +26,8 @@ package com.alkacon.acacia.client;
 
 import com.alkacon.acacia.client.ui.AttributeValueView;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
+import com.alkacon.geranium.client.dnd.DNDHandler;
+import com.alkacon.geranium.client.dnd.DNDHandler.Orientation;
 import com.alkacon.vie.client.I_Vie;
 import com.alkacon.vie.shared.I_Entity;
 import com.alkacon.vie.shared.I_Type;
@@ -60,6 +62,9 @@ public class AttributeHandler {
 
     /** The widget service. */
     private I_WidgetService m_widgetService;
+
+    /** The attribute drag and drop handler. */
+    private DNDHandler m_dndHandler;
 
     /**
      * Constructor.<p>
@@ -149,6 +154,20 @@ public class AttributeHandler {
     }
 
     /**
+     * Returns the drag and drop handler.<p>
+     * 
+     * @return the drag and drop handler
+     */
+    public DNDHandler getDNDHandler() {
+
+        if (m_dndHandler == null) {
+            m_dndHandler = new DNDHandler(new AttributeDNDController());
+            m_dndHandler.setOrientation(Orientation.VERTICAL);
+        }
+        return m_dndHandler;
+    }
+
+    /**
      * Moves the reference value down in the value list.<p>
      * 
      * @param reference the reference value
@@ -202,29 +221,45 @@ public class AttributeHandler {
         if (index == 0) {
             return;
         }
-        FlowPanel parent = (FlowPanel)reference.getParent();
-        reference.removeFromParent();
-        m_attributeValueViews.remove(reference);
+        moveAttributeValue(reference, index, index - 1);
+    }
+
+    /**
+     * Moves the give attribute value from one position to another.<p>
+     * 
+     * @param valueView the value to move
+     * @param currentPosition the current position
+     * @param targetPosition the target position
+     */
+    public void moveAttributeValue(AttributeValueView valueView, int currentPosition, int targetPosition) {
+
+        if (currentPosition == targetPosition) {
+            return;
+        }
+        FlowPanel parent = (FlowPanel)valueView.getParent();
+
+        valueView.removeFromParent();
+        m_attributeValueViews.remove(valueView);
         if (getAttributeType().isSimpleType()) {
-            String value = m_entity.getAttribute(m_attributeName).getSimpleValues().get(index);
-            m_entity.removeAttributeValue(m_attributeName, index);
-            m_entity.insertAttributeValue(m_attributeName, value, index - 1);
+            String value = m_entity.getAttribute(m_attributeName).getSimpleValues().get(currentPosition);
+            m_entity.removeAttributeValue(m_attributeName, currentPosition);
+            m_entity.insertAttributeValue(m_attributeName, value, targetPosition);
             AttributeValueView valueWidget = new AttributeValueView(
                 this,
                 m_widgetService.getAttributeLabel(m_attributeName),
                 m_widgetService.getAttributeHelp(m_attributeName));
-            parent.insert(valueWidget, index - 1);
+            parent.insert(valueWidget, targetPosition);
             valueWidget.setValueWidget(m_widgetService.getAttributeWidget(m_attributeName), value);
             valueWidget.toggleClickHighlighting(true);
         } else {
-            I_Entity value = m_entity.getAttribute(m_attributeName).getComplexValues().get(index);
-            m_entity.removeAttributeValue(m_attributeName, index);
-            m_entity.insertAttributeValue(m_attributeName, value, index - 1);
+            I_Entity value = m_entity.getAttribute(m_attributeName).getComplexValues().get(currentPosition);
+            m_entity.removeAttributeValue(m_attributeName, currentPosition);
+            m_entity.insertAttributeValue(m_attributeName, value, targetPosition);
             AttributeValueView valueWidget = new AttributeValueView(
                 this,
                 m_widgetService.getAttributeLabel(m_attributeName),
                 m_widgetService.getAttributeHelp(m_attributeName));
-            parent.insert(valueWidget, index - 1);
+            parent.insert(valueWidget, targetPosition);
             valueWidget.setValueEntity(
                 m_widgetService.getRendererForAttribute(m_attributeName, getAttributeType()),
                 value);
