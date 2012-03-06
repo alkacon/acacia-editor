@@ -9,7 +9,7 @@
 
 .attributeValue .buttonBar{
 	display: none;
-	background: #cccccc;
+	background: literal("-moz-linear-gradient(center top , #F4F4F4 25%, #D4D4D4 75%)");
 	border: 1px solid #aaaaaa;
 	position: absolute;
 	top: -12px;
@@ -28,7 +28,9 @@
 .attributeValue .label{
 	margin:4px 3px 2px;
 }
-
+.entity .attributeValue{
+	padding-bottom:2px;
+}
 .entity .attributeValue .label span, .dragHelper.attributeValue .label span{
 	font-size: 14px;
 	font-weight: bold;
@@ -43,19 +45,19 @@
 	font-size: 12px;
 }
 
-.entity .attributeValue.highlighting {
+.entity .attributeValue.highlighting > div {
 	background-image: literal("-moz-linear-gradient(left , #EEEEEE 0%, #F2F2F2 60%)");
 	border: 1px solid #dddddd;
 }
 
-.entity .attributeValue.focused, .dragHelper.attributeValue.focused, .entity .attributeValue.focused.highlighting{
+.entity .attributeValue.focused > div, .dragHelper.attributeValue.focused > div, .entity .attributeValue.focused.highlighting > div{
 	background-image: literal("-moz-linear-gradient(right , #A3B1CC 0%, #E6EBF7 60%)");
 	border-color: #E6EBF7;
 }
 
 @if user.agent gecko1_8 gecko{
 	/** firefox **/
-	.entity .attributeValue, .dragHelper.attributeValue{
+	.entity .attributeValue > div, .dragHelper.attributeValue > div{
 		-moz-border-radius: 4px;
 	}
 	.widgetHolder .widget.input{
@@ -64,7 +66,7 @@
 
 } @elif user.agent safari {
 	/** chrome, safari etc. **/
-	.entity .attributeValue, .dragHelper.attributeValue{
+	.entity .attributeValue > div, .dragHelper.attributeValue > div{
 		-webkit-border-radius: 4px;
 	}
 	.widgetHolder .widget.input{
@@ -73,7 +75,7 @@
 
 } @elif user.agent opera ie9 {
 	/** opera, ie9 */
-	.entity .attributeValue, .dragHelper.attributeValue{
+	.entity .attributeValue > div, .dragHelper.attributeValue > div{
 		border-radius: 4px;
 	}
 	.widgetHolder .widget.input{
@@ -107,20 +109,19 @@
 	}
 }
 
-.dragHelper.attributeValue{
+.dragHelper.attributeValue > div{
 	position: relative;
 	padding: 2px 2px 2px 4px;
-	margin-top: 1px;
 	background: #cccccc;
 	position: absolute;
+	opacity: 0.5;
 }
 
 .dragStarted, .dragPlaceholder{}
-.entity .attributeValue{
+.entity .attributeValue > div{
 	position: relative;
 	padding: 2px 2px 2px 4px;
 	border: 1px solid transparent;
-	margin-top: 1px;
 }
 
 .attributeValue .label span, .attributeValue .label div{
@@ -152,38 +153,38 @@
 	background: #ffffff;
 }
 
-.attributeValue.focused > .widgetHolder > .widget.input, .attributeValue.focused > .widgetHolder > .widget.input:hover, .attributeValue.focused > .widgetHolder > .mceEditor{
+.attributeValue.focused > div > .widgetHolder > .widget.input, .attributeValue.focused > div > .widgetHolder > .widget.input:hover, .attributeValue.focused > div > .widgetHolder > .mceEditor{
 	border: 1px solid #aaaaaa;
 	background: #ffffff;
 }
 
-.attributeValue > .widgetHolder > .mceEditor{
+.attributeValue > div > .widgetHolder > .mceEditor{
 	border: 1px solid transparent;
 	background: #ffffff;
 }
 
-.attributeValue.focused > .widgetHolder > .mceEditor .mceStatusbar{
+.attributeValue.focused > div > .widgetHolder > .mceEditor .mceStatusbar{
 	visibility: visible;
 }
 
-.attributeValue > .widgetHolder > .mceEditor .mceStatusbar{
+.attributeValue > div > .widgetHolder > .mceEditor .mceStatusbar{
 	visibility: hidden;
 	border: none;
 }
 
-.attributeValue.focused > .widgetHolder > .mceEditor .mceExternalToolbar{
+.attributeValue.focused > div > .widgetHolder > .mceEditor .mceExternalToolbar{
 	z-index: 10;
 }
 
-.attributeValue.focused > .widgetHolder > .mceEditor .mceIframeContainer{
+.attributeValue.focused > div > .widgetHolder > .mceEditor .mceIframeContainer{
 	border-bottom: 1px solid #aaaaaa;
 }
 
-.attributeValue > .widgetHolder > .mceEditor .mceIframeContainer{
+.attributeValue > div > .widgetHolder > .mceEditor .mceIframeContainer{
 	border-color: #ffffff;
 }
 
-.attributeValue > .widgetHolder > .mceEditor > table.mceLayout{
+.attributeValue > div > .widgetHolder > .mceEditor > table.mceLayout{
 	border: none;
 }
 
@@ -231,11 +232,11 @@
 	color: #222222;
 }
 
-.attributeValue.focused.highlighting > .helpBubble{
+.attributeValue.focused.highlighting > div > .helpBubble{
 	display: block;
 }
 
-.attributeValue.focused.highlighting.closedBubble > .helpBubble{
+.attributeValue.focused.highlighting.closedBubble > div > .helpBubble{
 	display: none;
 }
 
