@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -130,6 +131,12 @@ public class TestForms extends GWTTestCase {
             }
 
             public com.google.gwt.user.client.Element getElement() {
+
+                // dummy method
+                return null;
+            }
+
+            public HandlerRegistration addFocusHandler(FocusHandler handler) {
 
                 // dummy method
                 return null;

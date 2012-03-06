@@ -25,12 +25,13 @@
 package com.alkacon.acacia.client.widgets;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.HasFocusHandlers;
 import com.google.gwt.user.client.ui.HasValue;
 
 /**
  * The edit widget interface.<p>
  */
-public interface I_EditWidget extends HasValue<String> {
+public interface I_EditWidget extends HasValue<String>, HasFocusHandlers {
 
     /**
      * Returns the widget element.<p>

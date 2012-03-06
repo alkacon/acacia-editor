@@ -104,7 +104,7 @@ public class HighlightingHandler implements MouseOverHandler, MouseOutHandler, C
         event.stopPropagation();
         if (RootPanel.get().equals(event.getSource())) {
             if (m_currentClick != null) {
-                m_currentClick.toggleClickHighlighting(false);
+                m_currentClick.toggleFocusHighlighting(false);
                 m_currentClick = null;
             }
         } else {
@@ -112,10 +112,10 @@ public class HighlightingHandler implements MouseOverHandler, MouseOutHandler, C
                 return;
             }
             if ((m_currentClick != null)) {
-                m_currentClick.toggleClickHighlighting(false);
+                m_currentClick.toggleFocusHighlighting(false);
             }
             m_currentClick = (AttributeValueView)event.getSource();
-            m_currentClick.toggleClickHighlighting(true);
+            m_currentClick.toggleFocusHighlighting(true);
         }
     }
 
@@ -172,6 +172,20 @@ public class HighlightingHandler implements MouseOverHandler, MouseOutHandler, C
                 m_currentHover.toggleHoverHighlighting(true);
             }
         }
+    }
+
+    /**
+     * Sets the given attribute value view focused.<p>
+     * 
+     * @param target the target attribute value view
+     */
+    public void setFocusHighlighted(AttributeValueView target) {
+
+        if ((m_currentClick != null)) {
+            m_currentClick.toggleFocusHighlighting(false);
+        }
+        m_currentClick = target;
+        m_currentClick.toggleFocusHighlighting(true);
     }
 
 }

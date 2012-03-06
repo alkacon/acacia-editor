@@ -201,7 +201,7 @@ public final class TinyMCE implements HasValue<String> {
                         ed.onKeyDown.add(fireChangeDelayed);
                         ed.onLoad
                                 .add(function() {
-                                    $wnd.document.getElementById(iframeId).style.minHeight = "200px";
+                                    $wnd.document.getElementById(iframeId).style.minHeight = "300px";
                                     var iframe = $wnd.document
                                             .getElementById(iframeId);
                                     var doc = $wnd.goog.dom
@@ -218,6 +218,15 @@ public final class TinyMCE implements HasValue<String> {
                                     self.@com.alkacon.acacia.client.widgets.TinyMCE::fixToolbar()();
                                     self.@com.alkacon.acacia.client.widgets.TinyMCE::propagateClickEvent()();
                                 });
+                    },
+                    init_instance_callback : function(ed) {
+                        $wnd.tinyMCE.dom.Event
+                                .add(
+                                        ed.getWin(),
+                                        'focus',
+                                        function(event) {
+                                            self.@com.alkacon.acacia.client.widgets.TinyMCE::propagateFocusEvent()();
+                                        });
                     },
                     // General options
                     mode : "exact",
@@ -415,6 +424,15 @@ public final class TinyMCE implements HasValue<String> {
     protected void propagateClickEvent() {
 
         NativeEvent nativeEvent = Document.get().createClickEvent(0, 0, 0, 0, 0, false, false, false, false);
+        m_element.dispatchEvent(nativeEvent);
+    }
+
+    /**
+     * Propagates the focus event.<p>
+     */
+    protected void propagateFocusEvent() {
+
+        NativeEvent nativeEvent = Document.get().createFocusEvent();
         m_element.dispatchEvent(nativeEvent);
     }
 

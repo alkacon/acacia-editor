@@ -31,12 +31,16 @@ import com.alkacon.geranium.client.dnd.I_DropTarget;
 import com.alkacon.geranium.client.util.DomUtil;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.HasMouseOverHandlers;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.FlowPanel;
 
 /**
  * The attribute values panel.<p>
  */
-public class ValuePanel extends FlowPanel implements I_DropTarget {
+public class ValuePanel extends FlowPanel implements I_DropTarget, HasMouseOverHandlers {
 
     /** The current place holder. */
     protected Element m_placeholder;
@@ -50,6 +54,22 @@ public class ValuePanel extends FlowPanel implements I_DropTarget {
     public ValuePanel() {
 
         setStyleName(I_LayoutBundle.INSTANCE.form().attribute());
+        // to stop propagation of mouse over events, this is done to stop flickering effect during highlighting
+        addMouseOverHandler(new MouseOverHandler() {
+
+            public void onMouseOver(MouseOverEvent event) {
+
+                event.stopPropagation();
+            }
+        });
+    }
+
+    /**
+     * @see com.google.gwt.event.dom.client.HasMouseOverHandlers#addMouseOverHandler(com.google.gwt.event.dom.client.MouseOverHandler)
+     */
+    public HandlerRegistration addMouseOverHandler(MouseOverHandler handler) {
+
+        return addDomHandler(handler, MouseOverEvent.getType());
     }
 
     /**

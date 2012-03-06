@@ -50,6 +50,7 @@ public class TinyMCEWidget extends A_EditWidget {
      */
     public I_EditWidget initWidget(Element element) {
 
+        setElement(element);
         m_editor = new TinyMCE(element);
         m_editor.init();
         return this;

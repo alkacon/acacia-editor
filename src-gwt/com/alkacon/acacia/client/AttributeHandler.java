@@ -25,6 +25,7 @@
 package com.alkacon.acacia.client;
 
 import com.alkacon.acacia.client.ui.AttributeValueView;
+import com.alkacon.acacia.client.ui.HighlightingHandler;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
 import com.alkacon.geranium.client.dnd.DNDHandler;
 import com.alkacon.geranium.client.dnd.DNDHandler.Orientation;
@@ -178,36 +179,7 @@ public class AttributeHandler {
         if (index >= (m_entity.getAttribute(m_attributeName).getValueCount() - 1)) {
             return;
         }
-        FlowPanel parent = (FlowPanel)reference.getParent();
-
-        reference.removeFromParent();
-        m_attributeValueViews.remove(reference);
-        if (getAttributeType().isSimpleType()) {
-            String value = m_entity.getAttribute(m_attributeName).getSimpleValues().get(index);
-            m_entity.removeAttributeValue(m_attributeName, index);
-            m_entity.insertAttributeValue(m_attributeName, value, index + 1);
-            AttributeValueView valueWidget = new AttributeValueView(
-                this,
-                m_widgetService.getAttributeLabel(m_attributeName),
-                m_widgetService.getAttributeHelp(m_attributeName));
-            parent.insert(valueWidget, index + 1);
-            valueWidget.setValueWidget(m_widgetService.getAttributeWidget(m_attributeName), value);
-            valueWidget.toggleClickHighlighting(true);
-        } else {
-            I_Entity value = m_entity.getAttribute(m_attributeName).getComplexValues().get(index);
-            m_entity.removeAttributeValue(m_attributeName, index);
-            m_entity.insertAttributeValue(m_attributeName, value, index + 1);
-            AttributeValueView valueWidget = new AttributeValueView(
-                this,
-                m_widgetService.getAttributeLabel(m_attributeName),
-                m_widgetService.getAttributeHelp(m_attributeName));
-            parent.insert(valueWidget, index + 1);
-            valueWidget.setValueEntity(
-                m_widgetService.getRendererForAttribute(m_attributeName, getAttributeType()),
-                value);
-            valueWidget.toggleClickHighlighting(true);
-        }
-        updateButtonVisisbility();
+        moveAttributeValue(reference, index, index + 1);
     }
 
     /**
@@ -250,7 +222,7 @@ public class AttributeHandler {
                 m_widgetService.getAttributeHelp(m_attributeName));
             parent.insert(valueWidget, targetPosition);
             valueWidget.setValueWidget(m_widgetService.getAttributeWidget(m_attributeName), value);
-            valueWidget.toggleClickHighlighting(true);
+            HighlightingHandler.getInstance().setFocusHighlighted(valueWidget);
         } else {
             I_Entity value = m_entity.getAttribute(m_attributeName).getComplexValues().get(currentPosition);
             m_entity.removeAttributeValue(m_attributeName, currentPosition);
@@ -263,7 +235,7 @@ public class AttributeHandler {
             valueWidget.setValueEntity(
                 m_widgetService.getRendererForAttribute(m_attributeName, getAttributeType()),
                 value);
-            valueWidget.toggleClickHighlighting(true);
+            HighlightingHandler.getInstance().setFocusHighlighted(valueWidget);
         }
         updateButtonVisisbility();
     }

@@ -35,6 +35,7 @@ import com.alkacon.geranium.client.ui.I_Button.ButtonStyle;
 import com.alkacon.geranium.client.ui.PushButton;
 import com.alkacon.geranium.client.ui.css.I_ImageBundle;
 import com.alkacon.geranium.client.util.DomUtil;
+import com.alkacon.geranium.client.util.FadeAnimation;
 import com.alkacon.vie.shared.I_Entity;
 
 import com.google.gwt.core.client.GWT;
@@ -49,6 +50,8 @@ import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.dom.client.HasMouseOutHandlers;
 import com.google.gwt.event.dom.client.HasMouseOverHandlers;
@@ -62,6 +65,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -144,6 +148,10 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandl
     @UiField
     protected PushButton m_helpBubbleClose;
 
+    /** The help bubble text element. */
+    @UiField
+    protected DivElement m_helpBubbleText;
+
     /** The label element. */
     @UiField
     protected SpanElement m_label;
@@ -173,6 +181,9 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandl
     /** Flag indicating if there is a value set for this UI object. */
     private boolean m_hasValue;
 
+    /** Flag indicating that this view represents a simple value. */
+    private boolean m_isSimpleValue;
+
     /** The drag and drop place holder element. */
     private Element m_placeHolder;
 
@@ -196,7 +207,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandl
         m_moveButton.addMouseDownHandler(m_handler.getDNDHandler());
         m_label.setInnerHTML(label);
         m_label.setTitle(help);
-        m_helpBubble.setInnerHTML(help);
+        m_helpBubbleText.setInnerHTML(help);
         initHighlightingHandler();
         initButtons();
     }
@@ -328,6 +339,16 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandl
     }
 
     /**
+     * Returns if this view represents a simple value.<p>
+     * 
+     * @return <code>true</code> if this view represents a simple value
+     */
+    public boolean isSimpleValue() {
+
+        return m_isSimpleValue;
+    }
+
+    /**
      * @see com.alkacon.geranium.client.dnd.I_Draggable#onDragCancel()
      */
     public void onDragCancel() {
@@ -373,6 +394,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandl
             throw new RuntimeException("Value has already been set");
         }
         m_hasValue = true;
+        m_isSimpleValue = false;
         FlowPanel entityPanel = new FlowPanel();
         m_widgetHolder.setWidget(entityPanel);
         renderer.renderForm(value, entityPanel);
@@ -390,46 +412,20 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandl
             throw new RuntimeException("Value has already been set");
         }
         m_hasValue = true;
+        m_isSimpleValue = true;
         Element valueDiv = DOM.createDiv();
         m_widgetHolder.getElement().appendChild(valueDiv);
         valueDiv.setInnerHTML(value);
         valueDiv.addClassName(I_LayoutBundle.INSTANCE.form().widget());
         widget.initWidget(valueDiv);
         widget.addValueChangeHandler(new ChangeHandler());
-    }
+        widget.addFocusHandler(new FocusHandler() {
 
-    /**
-     * Toggles the permanent highlighting.<p>
-     * 
-     * @param highlightingOn <code>true</code> to turn the highlighting on
-     */
-    public void toggleClickHighlighting(boolean highlightingOn) {
+            public void onFocus(FocusEvent event) {
 
-        if (highlightingOn) {
-            addStyleName(I_LayoutBundle.INSTANCE.form().focused());
-            if (shouldDisplayTooltipAbove()) {
-                addStyleName(I_LayoutBundle.INSTANCE.form().displayAbove());
-            } else {
-                removeStyleName(I_LayoutBundle.INSTANCE.form().displayAbove());
+                HighlightingHandler.getInstance().setFocusHighlighted(AttributeValueView.this);
             }
-        } else {
-            removeStyleName(I_LayoutBundle.INSTANCE.form().focused());
-            removeStyleName(I_LayoutBundle.INSTANCE.form().closedBubble());
-        }
-    }
-
-    /**
-     * Toggles the highlighting.<p>
-     * 
-     * @param highlightingOn <code>true</code> to turn the highlighting on
-     */
-    public void toggleHoverHighlighting(boolean highlightingOn) {
-
-        if (highlightingOn) {
-            addStyleName(I_LayoutBundle.INSTANCE.form().highlighting());
-        } else {
-            removeStyleName(I_LayoutBundle.INSTANCE.form().highlighting());
-        }
+        });
     }
 
     /**
@@ -524,6 +520,54 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandl
     }
 
     /**
+     * Toggles the permanent highlighting.<p>
+     * 
+     * @param highlightingOn <code>true</code> to turn the highlighting on
+     */
+    protected void toggleFocusHighlighting(boolean highlightingOn) {
+
+        if (highlightingOn) {
+            addStyleName(I_LayoutBundle.INSTANCE.form().focused());
+            if (shouldDisplayTooltipAbove()) {
+                addStyleName(I_LayoutBundle.INSTANCE.form().displayAbove());
+            } else {
+                removeStyleName(I_LayoutBundle.INSTANCE.form().displayAbove());
+            }
+            FadeAnimation.fadeIn(m_helpBubble, null, 200);
+        } else {
+            removeStyleName(I_LayoutBundle.INSTANCE.form().focused());
+        }
+    }
+
+    /**
+     * Toggles the highlighting.<p>
+     * 
+     * @param highlightingOn <code>true</code> to turn the highlighting on
+     */
+    protected void toggleHoverHighlighting(boolean highlightingOn) {
+
+        boolean focused = DomUtil.hasClass(I_LayoutBundle.INSTANCE.form().focused(), getElement());
+        if (highlightingOn) {
+            addStyleName(I_LayoutBundle.INSTANCE.form().highlighting());
+            if (focused) {
+                FadeAnimation.fadeIn(m_helpBubble, null, 200);
+            }
+        } else {
+            if (focused) {
+                FadeAnimation.fadeOut(m_helpBubble, new Command() {
+
+                    public void execute() {
+
+                        removeStyleName(I_LayoutBundle.INSTANCE.form().highlighting());
+                    }
+                }, 200);
+            } else {
+                removeStyleName(I_LayoutBundle.INSTANCE.form().highlighting());
+            }
+        }
+    }
+
+    /**
      * Called when a drag operation for this widget is stopped.<p>
      */
     private void clearDrag() {
@@ -536,7 +580,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandl
             m_provisionalParent.removeFromParent();
             m_provisionalParent = null;
         }
-        getElement().getStyle().clearOpacity();
+        DomUtil.clearOpacity(getElement());
     }
 
     /**
@@ -594,4 +638,26 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandl
         }
         return false;
     }
+    //
+    //    public AttributeValueView findFirstSimpleValue() {
+    //
+    //        if (!m_hasValue) {
+    //            return null;
+    //        }
+    //        if (m_isSimpleValue) {
+    //            return this;
+    //        } else {
+    //            FlowPanel entityPanel = (FlowPanel)m_widgetHolder.getWidget();
+    //            for (Widget child : entityPanel) {
+    //                ValuePanel valuePanel = (ValuePanel)child;
+    //                for (Widget valueWidget : valuePanel) {
+    //                    AttributeValueView attributeValue = ((AttributeValueView)valueWidget).findFirstSimpleValue();
+    //                    if (attributeValue != null) {
+    //                        return attributeValue;
+    //                    }
+    //                }
+    //            }
+    //        }
+    //        return null;
+    //    }
 }

@@ -26,6 +26,7 @@ package com.alkacon.acacia.client.css;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.CssResource.Shared;
+import com.google.gwt.resources.client.ImageResource;
 
 /**
  * Bundle for CSS resources.<p>
@@ -187,4 +188,20 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
      */
     @Source("form.css")
     I_Style form();
+
+    /**
+     * Access method.<p>
+     * 
+     * @return the image resource 
+     */
+    @Source("top-left-corner.png")
+    ImageResource topLeftCorner();
+
+    /**
+     * Access method.<p>
+     * 
+     * @return the image resource 
+     */
+    @Source("bottom-left-corner.png")
+    ImageResource bottomLeftCorner();
 }
