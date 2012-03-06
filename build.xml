@@ -45,7 +45,7 @@
 		</javac>
 		<copy todir="${acacia.output.classes.gwt}">
 			<fileset dir="${acacia.input}/src" includes="**/*.java,**/*.properties,**/*.txt,**/*.xml,**/*.xsd,**/*.dtd,**/*.sql" excludes="${excludes}" />
-			<fileset dir="${acacia.input}/src-gwt" includes="**/*.java,**/*.properties,**/*.css,**/*.txt,**/*.xml,**/*.xsd,**/*.dtd,**/*.sql" excludes="${excludes}" />
+			<fileset dir="${acacia.input}/src-gwt" includes="**/*" excludes="${excludes}" />
 		</copy>
 	</target>
 
