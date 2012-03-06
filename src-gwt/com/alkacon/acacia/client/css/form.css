@@ -17,7 +17,7 @@
 	border-radius: 4px;
 }
 
-.attributeValue.focused > .label > .buttonBar{
+.attributeValue.focused > div > .label > .buttonBar{
 	display: block;
 }
 
@@ -109,12 +109,15 @@
 	}
 }
 
+.dragHelper.attributeValue{
+	position: absolute;
+	opacity: 0.8;
+}
+
 .dragHelper.attributeValue > div{
 	position: relative;
 	padding: 2px 2px 2px 4px;
 	background: #cccccc;
-	position: absolute;
-	opacity: 0.5;
 }
 
 .dragStarted, .dragPlaceholder{}

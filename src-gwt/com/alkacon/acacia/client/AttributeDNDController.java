@@ -35,7 +35,7 @@ import com.alkacon.geranium.client.dnd.I_DropTarget;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.dom.client.Style.Display;
+import com.google.gwt.dom.client.Style.Visibility;
 
 /**
  * The drag and drop controller for attribute value sorting.<p>
@@ -108,9 +108,9 @@ public class AttributeDNDController implements I_DNDController {
         int distance = m_startPosition - target.getPlaceholderIndex();
         Style placeholderStyle = handler.getPlaceholder().getStyle();
         if ((distance > 0) || (distance < -1)) {
-            placeholderStyle.clearDisplay();
+            placeholderStyle.clearVisibility();
         } else {
-            placeholderStyle.setDisplay(Display.NONE);
+            placeholderStyle.setVisibility(Visibility.HIDDEN);
         }
     }
 
