@@ -99,7 +99,7 @@ public class StringWidget extends A_EditWidget {
         setElement(element);
         DOM.setEventListener(getElement(), this);
         setPreviousValue(getValue());
-        getElement().setAttribute("contenteditable", "true");
+        getElement().setAttribute("contentEditable", "true");
         getElement().addClassName(I_LayoutBundle.INSTANCE.form().input());
         return this;
     }
