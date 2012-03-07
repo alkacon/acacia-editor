@@ -69,8 +69,8 @@ public abstract class A_EditWidget extends WidgetBase implements I_EditWidget {
         String currentValue = getValue();
         if (!currentValue.equals(m_previousValue)) {
             m_previousValue = currentValue;
+            ValueChangeEvent.fire(this, currentValue);
         }
-        ValueChangeEvent.fire(this, currentValue);
     }
 
     /**

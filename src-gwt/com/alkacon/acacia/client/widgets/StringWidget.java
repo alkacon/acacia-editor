@@ -26,6 +26,8 @@ package com.alkacon.acacia.client.widgets;
 
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
@@ -59,8 +61,14 @@ public class StringWidget extends A_EditWidget {
 
                 public void onKeyPress(KeyPressEvent event) {
 
-                    fireValueChange();
+                    // schedule the change event, so the key press can take effect
+                    Scheduler.get().scheduleDeferred(new ScheduledCommand() {
 
+                        public void execute() {
+
+                            fireValueChange();
+                        }
+                    });
                 }
             }, KeyPressEvent.getType());
             addDomHandler(new ChangeHandler() {
