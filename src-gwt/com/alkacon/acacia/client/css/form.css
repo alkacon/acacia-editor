@@ -1,15 +1,17 @@
 @external mceEditor, mceExternalToolbar, mceStatusbar, mceIframeContainer, mceLayout;
 
+@def PARENT_GRADIENT literal("left , #DDDDDD 0%, #EEEEEE 60%");
+@def HIGHLIGHTING_GRADIENT literal("left , #EEEEEE 0%, #F2F2F2 60%");
+@def FOCUS_GRADIENT literal("right , #A3B1CC 0%, #E6EBF7 60%");
+@def BUTTONBAR_GRADIENT literal("top , #F4F4F4 25%, #D4D4D4 75%");
+ 
 .attribute{}
 .formParent{
-	background-image: literal("-moz-linear-gradient(left , #DDDDDD 0%, #EEEEEE 60%)") !important;
 	background-color: transparent !important;
-	
 }
 
 .attributeValue .buttonBar{
 	display: none;
-	background: literal("-moz-linear-gradient(center top , #F4F4F4 25%, #D4D4D4 75%)");
 	border: 1px solid #aaaaaa;
 	position: absolute;
 	top: -12px;
@@ -46,12 +48,10 @@
 }
 
 .entity .attributeValue.highlighting > div {
-	background-image: literal("-moz-linear-gradient(left , #EEEEEE 0%, #F2F2F2 60%)");
 	border: 1px solid #dddddd;
 }
 
 .entity .attributeValue.focused > div, .dragHelper.attributeValue.focused > div, .entity .attributeValue.focused.highlighting > div{
-	background-image: literal("-moz-linear-gradient(right , #A3B1CC 0%, #E6EBF7 60%)");
 	border-color: #E6EBF7;
 }
 
@@ -63,7 +63,18 @@
 	.widgetHolder .widget.input{
 		-moz-border-radius: 2px;
 	}
-
+	.formParent{
+		background-image: literal("-moz-linear-gradient(")PARENT_GRADIENT literal(")") !important;
+	}
+	.attributeValue .buttonBar{
+		background-image: literal("-moz-linear-gradient(")BUTTONBAR_GRADIENT literal(")");
+	}
+	.entity .attributeValue.highlighting > div {
+		background-image: literal("-moz-linear-gradient(")HIGHLIGHTING_GRADIENT literal(")");
+	}
+	.entity .attributeValue.focused > div, .dragHelper.attributeValue.focused > div, .entity .attributeValue.focused.highlighting > div{
+		background-image: literal("-moz-linear-gradient(")FOCUS_GRADIENT literal(")");
+	}
 } @elif user.agent safari {
 	/** chrome, safari etc. **/
 	.entity .attributeValue > div, .dragHelper.attributeValue > div{
@@ -72,14 +83,57 @@
 	.widgetHolder .widget.input{
 		-webkit-border-radius: 2px;
 	}
-
-} @elif user.agent opera ie9 {
-	/** opera, ie9 */
+	.formParent{
+		background-image: literal("-webkit-linear-gradient(")PARENT_GRADIENT literal(")") !important;
+	}
+	.attributeValue .buttonBar{
+		background-image: literal("-webkit-linear-gradient(")BUTTONBAR_GRADIENT literal(")");
+	}
+	.entity .attributeValue.highlighting > div {
+		background-image: literal("-webkit-linear-gradient(")HIGHLIGHTING_GRADIENT literal(")");
+	}
+	.entity .attributeValue.focused > div, .dragHelper.attributeValue.focused > div, .entity .attributeValue.focused.highlighting > div{
+		background-image: literal("-webkit-linear-gradient(")FOCUS_GRADIENT literal(")");
+	}
+} @elif user.agent opera {
+	/** opera */
 	.entity .attributeValue > div, .dragHelper.attributeValue > div{
 		border-radius: 4px;
 	}
 	.widgetHolder .widget.input{
 		border-radius: 2px;
+	}
+	.formParent{
+		background-image: literal("-o-linear-gradient(")PARENT_GRADIENT literal(")") !important;
+	}
+	.attributeValue .buttonBar{
+		background-image: literal("-o-linear-gradient(")BUTTONBAR_GRADIENT literal(")");
+	}
+	.entity .attributeValue.highlighting > div {
+		background-image: literal("-o-linear-gradient(")HIGHLIGHTING_GRADIENT literal(")");
+	}
+	.entity .attributeValue.focused > div, .dragHelper.attributeValue.focused > div, .entity .attributeValue.focused.highlighting > div{
+		background-image: literal("-o-linear-gradient(")FOCUS_GRADIENT literal(")");
+	}
+} @else {
+	/** ie */
+	.entity .attributeValue > div, .dragHelper.attributeValue > div{
+		border-radius: 4px;
+	}
+	.widgetHolder .widget.input{
+		border-radius: 2px;
+	}
+	div.formParent{
+		background: #EEEEEE !important;
+	}
+	.attributeValue .buttonBar{
+		background: #F4F4F4;
+	}
+	.entity .attributeValue.highlighting > div {
+		background: #F2F2F2;
+	}
+	.entity .attributeValue.focused > div, .dragHelper.attributeValue.focused > div, .entity .attributeValue.focused.highlighting > div{
+		background: #A3B1CC;
 	}
 }
 
