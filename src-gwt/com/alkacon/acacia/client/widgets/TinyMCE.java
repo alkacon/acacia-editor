@@ -69,6 +69,9 @@ public final class TinyMCE implements HasValue<String> {
     /** The saved CSS text of the inline editable element. */
     protected String m_savedCss;
 
+    /** The editor height to set. */
+    private int m_editorHeight;
+
     /** The editor element. */
     private Element m_element;
 
@@ -83,6 +86,7 @@ public final class TinyMCE implements HasValue<String> {
             throw new RuntimeException("Element is not attached to the DOM!");
         }
         m_element = element;
+        m_editorHeight = calculateEditorHeight();
         String id = ensureId(m_element);
         m_id = id;
         checkLibraries();
@@ -167,6 +171,8 @@ public final class TinyMCE implements HasValue<String> {
         var elementId = self.@com.alkacon.acacia.client.widgets.TinyMCE::m_id;
         var iframeId = elementId + "_ifr";
         var mainElement = $wnd.document.getElementById(elementId);
+        var editorHeight = self.@com.alkacon.acacia.client.widgets.TinyMCE::m_editorHeight
+                + "px";
         self.@com.alkacon.acacia.client.widgets.TinyMCE::m_originalContent = mainElement.innerHTML;
         self.@com.alkacon.acacia.client.widgets.TinyMCE::m_currentContent = mainElement.innerHTML;
 
@@ -201,7 +207,7 @@ public final class TinyMCE implements HasValue<String> {
                         ed.onKeyDown.add(fireChangeDelayed);
                         ed.onLoad
                                 .add(function() {
-                                    $wnd.document.getElementById(iframeId).style.minHeight = "300px";
+                                    $wnd.document.getElementById(iframeId).style.minHeight = editorHeight;
                                     var iframe = $wnd.document
                                             .getElementById(iframeId);
                                     var doc = $wnd.goog.dom
@@ -232,7 +238,7 @@ public final class TinyMCE implements HasValue<String> {
                     mode : "exact",
                     theme : "advanced",
                     elements : self.@com.alkacon.acacia.client.widgets.TinyMCE::m_id,
-                    plugins : "autolink,lists,pagebreak,style,layer,table,advhr,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist,autosave",
+                    plugins : "autoresize,autolink,lists,pagebreak,style,layer,table,advhr,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist,autosave",
                     save_onsavecallback : function() {
                     },
 
@@ -408,6 +414,17 @@ public final class TinyMCE implements HasValue<String> {
     }-*/;
 
     /**
+     * Returns the editor parent element.<p>
+     * 
+     * @return the editor parent element
+     */
+    protected native int getFrameContentHeight() /*-{
+        var elementId = this.@com.alkacon.acacia.client.widgets.TinyMCE::m_id;
+        var parentId = elementId + "_parent";
+        return $doc.getElementById(parentId);
+    }-*/;
+
+    /**
      * Gets the toolbar element.<p>
      * 
      * @return the toolbar element 
@@ -455,4 +472,15 @@ public final class TinyMCE implements HasValue<String> {
         var mainElement = $wnd.document.getElementById(elementId);
         mainElement.innerHTML = html;
     }-*/;
+
+    /**
+     * Calculates the needed editor height.<p>
+     * 
+     * @return the calculated editor height
+     */
+    private int calculateEditorHeight() {
+
+        int result = m_element.getOffsetHeight() + 30;
+        return result > 100 ? result : 100;
+    }
 }
