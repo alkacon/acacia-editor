@@ -140,8 +140,8 @@
 @sprite .placeHolder{
 	gwt-image: "baseImages.placeholderImage";
 	height: 4px;
-	right: -2px;
-	left: -2px;
+	right: 0px;
+	left: 0px;
 	position: absolute;
 	z-index: value("constants.css.zIndexInline");
 	margin-top: -3px;

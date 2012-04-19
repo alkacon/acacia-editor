@@ -24,79 +24,34 @@
 
 package com.alkacon.acacia.client.widgets;
 
-import com.alkacon.acacia.client.css.I_LayoutBundle;
+import com.alkacon.vie.client.Vie;
 
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.dom.client.BlurEvent;
-import com.google.gwt.event.dom.client.BlurHandler;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.DOM;
 
 /**
- * The string edit widget.<p>
+ * Rich text editor widget based on the hallo editor.<p>
  */
-public class StringWidget extends A_EditWidget {
-
-    /** The value changed handler initialized flag. */
-    private boolean m_valueChangeHandlerInitialized;
+public class HalloWidget extends A_EditWidget {
 
     /**
-     * @see com.google.gwt.event.logical.shared.HasValueChangeHandlers#addValueChangeHandler(com.google.gwt.event.logical.shared.ValueChangeHandler)
+     * @see com.alkacon.acacia.client.widgets.A_EditWidget#addValueChangeHandler(com.google.gwt.event.logical.shared.ValueChangeHandler)
      */
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> handler) {
 
-        // Initialization code
-        if (!m_valueChangeHandlerInitialized) {
-            m_valueChangeHandlerInitialized = true;
-            addDomHandler(new KeyPressHandler() {
-
-                public void onKeyPress(KeyPressEvent event) {
-
-                    // schedule the change event, so the key press can take effect
-                    Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-
-                        public void execute() {
-
-                            fireValueChange();
-                        }
-                    });
-                }
-            }, KeyPressEvent.getType());
-            addDomHandler(new ChangeHandler() {
-
-                public void onChange(ChangeEvent event) {
-
-                    fireValueChange();
-
-                }
-            }, ChangeEvent.getType());
-            addDomHandler(new BlurHandler() {
-
-                public void onBlur(BlurEvent event) {
-
-                    fireValueChange();
-                }
-            }, BlurEvent.getType());
-        }
         return addHandler(handler, ValueChangeEvent.getType());
     }
 
     /**
-     * @see com.google.gwt.user.client.ui.HasValue#getValue()
+     * @see com.alkacon.acacia.client.widgets.A_EditWidget#getValue()
      */
     @Override
     public String getValue() {
 
-        return getElement().getInnerText();
+        return getElement().getInnerHTML();
     }
 
     /**
@@ -105,17 +60,15 @@ public class StringWidget extends A_EditWidget {
     public I_EditWidget initWidget(Element element, boolean inline) {
 
         setElement(element);
-        DOM.setEventListener(getElement(), this);
         setPreviousValue(getValue());
-        getElement().setAttribute("contentEditable", "true");
-        getElement().addClassName(I_LayoutBundle.INSTANCE.form().input());
+        init(element, Vie.getInstance());
         return this;
     }
 
     /**
      * @see com.alkacon.acacia.client.widgets.I_EditWidget#setConfiguration(java.lang.String)
      */
-    public void setConfiguration(String confuguration) {
+    public void setConfiguration(String configuration) {
 
         // TODO: Auto-generated method stub
 
@@ -134,9 +87,36 @@ public class StringWidget extends A_EditWidget {
      */
     public void setValue(String value, boolean fireEvents) {
 
-        getElement().setInnerText(value);
-        if (fireEvents) {
-            fireValueChange();
-        }
+        getElement().setInnerHTML(value);
+        fireValueChange();
     }
+
+    /**
+     * Initializes the native java-script components of the widget.<p>
+     * 
+     * @param element the element
+     * @param vie the VIE instance
+     */
+    private native void init(Element element, Vie vie) /*-{
+        var _self = this;
+        var editable = vie.jQuery(element);
+        editable.hallo({
+            plugins : {
+                'halloformat' : {},
+                'halloblock' : {},
+                'hallojustify' : {},
+                'hallolists' : {},
+                'hallolink' : {},
+                'halloreundo' : {}
+            },
+            editable : true
+        });
+        editable
+                .bind(
+                        'hallomodified',
+                        function(event, data) {
+                            _self.@com.alkacon.acacia.client.widgets.HalloWidget::fireValueChange()();
+                        });
+    }-*/;
+
 }

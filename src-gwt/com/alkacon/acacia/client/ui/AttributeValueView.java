@@ -417,7 +417,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandl
         m_widgetHolder.getElement().appendChild(valueDiv);
         valueDiv.setInnerHTML(value);
         valueDiv.addClassName(I_LayoutBundle.INSTANCE.form().widget());
-        widget.initWidget(valueDiv);
+        widget.initWidget(valueDiv, false);
         widget.addValueChangeHandler(new ChangeHandler());
         widget.addFocusHandler(new FocusHandler() {
 

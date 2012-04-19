@@ -110,7 +110,7 @@ public class TestForms extends GWTTestCase {
                 return null;
             }
 
-            public I_EditWidget initWidget(Element element) {
+            public I_EditWidget initWidget(Element element, boolean inline) {
 
                 return null;
             }

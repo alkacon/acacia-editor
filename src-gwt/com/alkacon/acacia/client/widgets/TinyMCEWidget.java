@@ -46,9 +46,9 @@ public class TinyMCEWidget extends A_EditWidget {
     }
 
     /**
-     * @see com.alkacon.acacia.client.widgets.I_EditWidget#initWidget(com.google.gwt.dom.client.Element)
+     * @see com.alkacon.acacia.client.widgets.I_EditWidget#initWidget(com.google.gwt.dom.client.Element, boolean)
      */
-    public I_EditWidget initWidget(Element element) {
+    public I_EditWidget initWidget(Element element, boolean inline) {
 
         setElement(element);
         m_editor = new TinyMCE(element);

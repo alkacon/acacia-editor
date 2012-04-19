@@ -187,7 +187,7 @@ public class Renderer implements I_EntityRenderer {
                 List<Element> elements = m_vie.getAttributeElements(parentEntity, attributeName, context);
                 for (int i = 0; i < elements.size(); i++) {
                     Element element = elements.get(i);
-                    I_EditWidget widget = m_widgetService.getAttributeWidget(attributeName).initWidget(element);
+                    I_EditWidget widget = m_widgetService.getAttributeWidget(attributeName).initWidget(element, true);
                     widget.addValueChangeHandler(new WidgetChangeHandler(parentEntity, attributeName, i));
                 }
             } else {
