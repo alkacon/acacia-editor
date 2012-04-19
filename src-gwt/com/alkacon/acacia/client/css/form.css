@@ -137,7 +137,22 @@
 	}
 }
 
-@sprite .placeHolder{
+div.entity div.attributeValue.placeHolder.focused.highlighting > div{
+	background: #ffffff;
+	border: 1px solid #aaaaaa !important;
+	opacity: 0.5;
+}
+
+@sprite div.entity div.attributeValue.placeHolder.focused.highlighting.markUnchanged > div {
+	gwt-image: "baseImages.placeholderImage";
+}
+
+.placeHolder > div *{
+	visibility:hidden;
+}
+
+
+@sprite .positionIndicator{
 	gwt-image: "baseImages.placeholderImage";
 	height: 4px;
 	right: 0px;
@@ -147,6 +162,15 @@
 	margin-top: -3px;
 	border-left: solid 5px value("constants.css.borderColorHighlight");
 	border-right: solid 5px value("constants.css.borderColorHighlight");
+	opacity: 0.5;
+}
+
+.positionIndicator *{
+	display: none;
+}
+
+.positionIndicator.markUnchanged {
+	display: none;
 }
 
 @if user.agent ie6 {

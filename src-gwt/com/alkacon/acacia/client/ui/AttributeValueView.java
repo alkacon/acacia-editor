@@ -307,7 +307,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandl
      */
     public Element getPlaceholder(I_DropTarget target) {
 
-        m_placeHolder = DOM.createDiv();
+        m_placeHolder = DomUtil.clone(getElement());
         m_placeHolder.addClassName(I_LayoutBundle.INSTANCE.form().placeHolder());
         return m_placeHolder;
     }
@@ -369,7 +369,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandl
      */
     public void onStartDrag(I_DropTarget target) {
 
-        getElement().getStyle().setOpacity(0.5);
+        addStyleName(I_LayoutBundle.INSTANCE.form().positionIndicator());
     }
 
     /**
@@ -580,7 +580,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandl
             m_provisionalParent.removeFromParent();
             m_provisionalParent = null;
         }
-        DomUtil.clearOpacity(getElement());
+        removeStyleName(I_LayoutBundle.INSTANCE.form().positionIndicator());
     }
 
     /**

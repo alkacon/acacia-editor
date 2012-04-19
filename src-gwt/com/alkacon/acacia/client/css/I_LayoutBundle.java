@@ -149,12 +149,26 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
          */
         String label();
 
+        /** 
+         * Returns the attribute CSS class name.<p>
+         * 
+         * @return the attribute CSS class
+         */
+        String markUnchanged();
+
         /**
          * Returns the place holder CSS class name
          * 
          * @return the place holder CSS class
          */
         String placeHolder();
+
+        /** 
+         * Returns the attribute CSS class name.<p>
+         * 
+         * @return the attribute CSS class
+         */
+        String positionIndicator();
 
         /**
          * Returns the widget CSS class name.<p>
@@ -182,6 +196,14 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
     com.alkacon.geranium.client.ui.css.I_ImageBundle baseImages();
 
     /**
+     * Access method.<p>
+     * 
+     * @return the image resource 
+     */
+    @Source("bottom-left-corner.png")
+    ImageResource bottomLeftCorner();
+
+    /**
      * Returns the style CSS.<p>
      * 
      * @return the style CSS
@@ -196,12 +218,4 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
      */
     @Source("top-left-corner.png")
     ImageResource topLeftCorner();
-
-    /**
-     * Access method.<p>
-     * 
-     * @return the image resource 
-     */
-    @Source("bottom-left-corner.png")
-    ImageResource bottomLeftCorner();
 }
