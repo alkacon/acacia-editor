@@ -70,8 +70,10 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * UI object holding an attribute value.<p>
@@ -473,6 +475,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandl
     protected void addNewAttributeValue(ClickEvent event) {
 
         m_handler.addNewAttributeValue(this);
+        onResize();
     }
 
     /**
@@ -517,6 +520,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandl
     protected void removeAttributeValue(ClickEvent event) {
 
         m_handler.removeAttributeValue(this);
+        onResize();
     }
 
     /**
@@ -638,26 +642,19 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandl
         }
         return false;
     }
-    //
-    //    public AttributeValueView findFirstSimpleValue() {
-    //
-    //        if (!m_hasValue) {
-    //            return null;
-    //        }
-    //        if (m_isSimpleValue) {
-    //            return this;
-    //        } else {
-    //            FlowPanel entityPanel = (FlowPanel)m_widgetHolder.getWidget();
-    //            for (Widget child : entityPanel) {
-    //                ValuePanel valuePanel = (ValuePanel)child;
-    //                for (Widget valueWidget : valuePanel) {
-    //                    AttributeValueView attributeValue = ((AttributeValueView)valueWidget).findFirstSimpleValue();
-    //                    if (attributeValue != null) {
-    //                        return attributeValue;
-    //                    }
-    //                }
-    //            }
-    //        }
-    //        return null;
-    //    }
+
+    /**
+     * Call when content changes.<p>
+     */
+    protected void onResize() {
+
+        Widget parent = getParent();
+        while (parent != null) {
+            if (parent instanceof RequiresResize) {
+                ((RequiresResize)parent).onResize();
+                break;
+            }
+            parent = parent.getParent();
+        }
+    }
 }
