@@ -38,6 +38,10 @@ import com.alkacon.vie.client.Vie;
 import com.alkacon.vie.shared.I_Entity;
 import com.alkacon.vie.shared.I_Type;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Element;
@@ -54,7 +58,7 @@ public class EditorBase {
     private I_ContentServiceAsync m_service;
 
     /** The VIE instance. */
-    private I_Vie m_vie;
+    protected I_Vie m_vie;
 
     /** The widget service. */
     private WidgetService m_widgetService;
@@ -106,11 +110,15 @@ public class EditorBase {
 
     /**
      * Destroys the form and related resources. Also clears all entities from VIE<p>
+     * 
+     * @param clearEntities <code>true</code> to also clear all entities
      */
-    public void destroyFrom() {
+    public void destroyFrom(boolean clearEntities) {
 
         HighlightingHandler.getInstance().destroy();
-        m_vie.clearEntities();
+        if (clearEntities) {
+            m_vie.clearEntities();
+        }
     }
 
     /**
@@ -127,10 +135,9 @@ public class EditorBase {
      * Loads the content definition for the given entity and executes the callback on success.<p>
      * 
      * @param entityId the entity id
-     * @param locale the content locale
      * @param callback the callback
      */
-    public void loadContentDefinition(final String entityId, final String locale, final Command callback) {
+    public void loadContentDefinition(final String entityId, final Command callback) {
 
         AsyncCallback<ContentDefinition> asyncCallback = new AsyncCallback<ContentDefinition>() {
 
@@ -145,7 +152,7 @@ public class EditorBase {
                 callback.execute();
             }
         };
-        getService().loadContentDefinition(entityId, locale, asyncCallback);
+        getService().loadContentDefinition(entityId, asyncCallback);
     }
 
     /**
@@ -195,14 +202,16 @@ public class EditorBase {
     }
 
     /**
-     * Saves the given entity.<p>
+     * Saves the given entities.<p>
      * 
-     * @param entity the entity
-     * @param locale the content locale
-     * @param clearOnSuccess <code>true</code> to clear all entities from VIE on success
-     * @param callback the callback executed on success
+     * @param entities the entities to save
+     * @param clearOnSuccess <code>true</code> to clear the VIE instance on success
+     * @param callback the call back command
      */
-    public void saveEntity(I_Entity entity, String locale, final boolean clearOnSuccess, final Command callback) {
+    public void saveEntities(
+        List<com.alkacon.acacia.shared.Entity> entities,
+        final boolean clearOnSuccess,
+        final Command callback) {
 
         AsyncCallback<Void> asyncCallback = new AsyncCallback<Void>() {
 
@@ -215,38 +224,82 @@ public class EditorBase {
 
                 callback.execute();
                 if (clearOnSuccess) {
-                    destroyFrom();
+                    destroyFrom(true);
                 }
             }
         };
-        getService().saveEntity(com.alkacon.acacia.shared.Entity.serializeEntity(entity), locale, asyncCallback);
+        getService().saveEntities(entities, asyncCallback);
     }
 
     /**
      * Saves the given entity.<p>
      * 
-     * @param entityId the entity id
-     * @param locale the content locale
+     * @param entityIds the entity ids
      * @param clearOnSuccess <code>true</code> to clear all entities from VIE on success
      * @param callback the callback executed on success
      */
-    public void saveEntity(String entityId, String locale, boolean clearOnSuccess, Command callback) {
+    public void saveEntities(Set<String> entityIds, boolean clearOnSuccess, Command callback) {
 
-        I_Entity entity = m_vie.getEntity(entityId);
-        saveEntity(entity, locale, clearOnSuccess, callback);
+        List<com.alkacon.acacia.shared.Entity> entities = new ArrayList<com.alkacon.acacia.shared.Entity>();
+        for (String entityId : entityIds) {
+            I_Entity entity = m_vie.getEntity(entityId);
+            if (entity != null) {
+                entities.add(com.alkacon.acacia.shared.Entity.serializeEntity(entity));
+            }
+        }
+        saveEntities(entities, clearOnSuccess, callback);
+    }
+
+    /**
+     * Saves the given entity.<p>
+     * 
+     * @param entity the entity
+     * @param clearOnSuccess <code>true</code> to clear all entities from VIE on success
+     * @param callback the callback executed on success
+     */
+    public void saveEntity(I_Entity entity, final boolean clearOnSuccess, final Command callback) {
+
+        AsyncCallback<Void> asyncCallback = new AsyncCallback<Void>() {
+
+            public void onFailure(Throwable caught) {
+
+                onRpcError(caught);
+            }
+
+            public void onSuccess(Void result) {
+
+                callback.execute();
+                if (clearOnSuccess) {
+                    destroyFrom(true);
+                }
+            }
+        };
+        getService().saveEntity(com.alkacon.acacia.shared.Entity.serializeEntity(entity), asyncCallback);
     }
 
     /**
      * Saves the given entity.<p>
      * 
      * @param entityId the entity id
-     * @param locale the content locale
+     * @param clearOnSuccess <code>true</code> to clear all entities from VIE on success
      * @param callback the callback executed on success
      */
-    public void saveEntity(String entityId, String locale, Command callback) {
+    public void saveEntity(String entityId, boolean clearOnSuccess, Command callback) {
 
         I_Entity entity = m_vie.getEntity(entityId);
-        saveEntity(entity, locale, false, callback);
+        saveEntity(entity, clearOnSuccess, callback);
+    }
+
+    /**
+     * Saves the given entity.<p>
+     * 
+     * @param entityId the entity id
+     * @param callback the callback executed on success
+     */
+    public void saveEntity(String entityId, Command callback) {
+
+        I_Entity entity = m_vie.getEntity(entityId);
+        saveEntity(entity, false, callback);
     }
 
     /**

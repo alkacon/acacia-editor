@@ -27,6 +27,8 @@ package com.alkacon.acacia.shared.rpc;
 import com.alkacon.acacia.shared.ContentDefinition;
 import com.alkacon.acacia.shared.Entity;
 
+import java.util.List;
+
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
@@ -40,17 +42,23 @@ public interface I_ContentServiceAsync {
      * Loads the content definition for a given type.<p>
      * 
      * @param entityId the entity id/URI
-     * @param locale the entity content locale
      * @param callback the asynchronous callback
      */
-    void loadContentDefinition(String entityId, String locale, AsyncCallback<ContentDefinition> callback);
+    void loadContentDefinition(String entityId, AsyncCallback<ContentDefinition> callback);
+
+    /**
+     * Saves the given entities.<p>
+     * 
+     * @param entities the entities to save
+     * @param callback the asynchronous callback
+     */
+    void saveEntities(List<Entity> entities, AsyncCallback<Void> callback);
 
     /**
      * Saves the given entity.<p>
      * 
      * @param entity the entity to save
-     * @param locale the entity content locale
      * @param callback the asynchronous callback
      */
-    void saveEntity(Entity entity, String locale, AsyncCallback<Void> callback);
+    void saveEntity(Entity entity, AsyncCallback<Void> callback);
 }

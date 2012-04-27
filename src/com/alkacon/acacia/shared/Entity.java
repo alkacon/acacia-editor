@@ -166,6 +166,28 @@ public class Entity implements I_Entity, Serializable {
     }
 
     /**
+     * @see com.alkacon.vie.shared.I_Entity#createDeepCopy(java.lang.String)
+     */
+    public Entity createDeepCopy(String entityId) {
+
+        Entity result = new Entity(entityId, getTypeName());
+        for (I_EntityAttribute attribute : getAttributes()) {
+            if (attribute.isSimpleValue()) {
+                List<String> values = attribute.getSimpleValues();
+                for (String value : values) {
+                    result.addAttributeValue(attribute.getAttributeName(), value);
+                }
+            } else {
+                List<I_Entity> values = attribute.getComplexValues();
+                for (I_Entity value : values) {
+                    result.addAttributeValue(attribute.getAttributeName(), value.createDeepCopy(null));
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
      * @see com.alkacon.vie.shared.I_Entity#getAttribute(java.lang.String)
      */
     public I_EntityAttribute getAttribute(String attributeName) {

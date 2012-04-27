@@ -27,6 +27,8 @@ package com.alkacon.acacia.shared.rpc;
 import com.alkacon.acacia.shared.ContentDefinition;
 import com.alkacon.acacia.shared.Entity;
 
+import java.util.List;
+
 import com.google.gwt.user.client.rpc.RemoteService;
 
 /**
@@ -40,21 +42,28 @@ public interface I_ContentService extends RemoteService {
      * Loads the content definition for a given entity.<p>
      * 
      * @param entityId the entity id/URI
-     * @param locale the entity content locale
      * 
      * @return the content type definition
      * 
      * @throws Exception if something goes wrong processing the request
      */
-    ContentDefinition loadContentDefinition(String entityId, String locale) throws Exception;
+    ContentDefinition loadContentDefinition(String entityId) throws Exception;
+
+    /**
+     * Saves the given entities.<p>
+     * 
+     * @param entities the entities to save
+     * 
+     * @throws Exception if something goes wrong processing the request
+     */
+    void saveEntities(List<Entity> entities) throws Exception;
 
     /**
      * Saves the given entity.<p>
      * 
      * @param entity the entity to save
-     * @param locale the entity content locale
      * 
      * @throws Exception if something goes wrong processing the request
      */
-    void saveEntity(Entity entity, String locale) throws Exception;
+    void saveEntity(Entity entity) throws Exception;
 }
