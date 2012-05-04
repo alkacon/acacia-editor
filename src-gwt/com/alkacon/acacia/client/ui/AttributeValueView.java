@@ -38,6 +38,7 @@ import com.alkacon.geranium.client.util.DomUtil;
 import com.alkacon.geranium.client.util.FadeAnimation;
 import com.alkacon.vie.shared.I_Entity;
 
+import com.google.gwt.animation.client.Animation;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
@@ -49,12 +50,13 @@ import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
-import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.dom.client.HasMouseDownHandlers;
 import com.google.gwt.event.dom.client.HasMouseOutHandlers;
 import com.google.gwt.event.dom.client.HasMouseOverHandlers;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
@@ -67,6 +69,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -79,7 +82,7 @@ import com.google.gwt.user.client.ui.Widget;
  * UI object holding an attribute value.<p>
  */
 public class AttributeValueView extends Composite
-implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandlers {
+implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownHandlers {
 
     /**
      * The widget value change handler.<p>
@@ -138,10 +141,6 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandl
     @UiField
     protected PushButton m_addButton;
 
-    /** The down button. */
-    @UiField
-    protected PushButton m_downButton;
-
     /** The help bubble element. */
     @UiField
     protected DivElement m_helpBubble;
@@ -166,16 +165,18 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandl
     @UiField
     protected PushButton m_removeButton;
 
-    /** The up button. */
-    @UiField
-    protected PushButton m_upButton;
-
     /** The widget holder elemenet. */
     @UiField
     protected SimplePanel m_widgetHolder;
 
+    /** The currently running animation. */
+    Animation m_currentAnimation;
+
     /** Drag and drop helper element. */
     private Element m_dragHelper;
+
+    /** Timer for delayed fades effects. */
+    private Timer m_fadeTimer;
 
     /** The attribute handler. */
     private AttributeHandler m_handler;
@@ -211,15 +212,15 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandl
         m_label.setTitle(help);
         m_helpBubbleText.setInnerHTML(help);
         initHighlightingHandler();
-        initButtons();
+        initButtons(label);
     }
 
     /**
-     * @see com.google.gwt.event.dom.client.HasClickHandlers#addClickHandler(com.google.gwt.event.dom.client.ClickHandler)
+     * @see com.google.gwt.event.dom.client.HasMouseDownHandlers#addMouseDownHandler(com.google.gwt.event.dom.client.MouseDownHandler)
      */
-    public HandlerRegistration addClickHandler(ClickHandler handler) {
+    public HandlerRegistration addMouseDownHandler(MouseDownHandler handler) {
 
-        return addDomHandler(handler, ClickEvent.getType());
+        return addDomHandler(handler, MouseDownEvent.getType());
     }
 
     /**
@@ -449,20 +450,17 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandl
         } else {
             m_removeButton.getElement().getStyle().setDisplay(Display.NONE);
         }
-        //                if (hasSortButtons && (getValueIndex() != 0)) {
-        //                    m_upButton.getElement().getStyle().clearDisplay();
-        //                } else {
-        m_upButton.getElement().getStyle().setDisplay(Display.NONE);
-        //                }
-        //                if (hasSortButtons && (getElement().getNextSibling() != null)) {
-        //                    m_downButton.getElement().getStyle().clearDisplay();
-        //                } else {
-        m_downButton.getElement().getStyle().setDisplay(Display.NONE);
-        //                }
         if (hasSortButtons) {
             m_moveButton.getElement().getStyle().clearDisplay();
         } else {
             m_moveButton.getElement().getStyle().setDisplay(Display.NONE);
+        }
+        if (!hasAddButton && !hasRemoveButton && !hasSortButtons) {
+            // hide the button bar if no button is visible
+            m_addButton.getElement().getParentElement().getStyle().setDisplay(Display.NONE);
+        } else {
+            // show the button bar
+            m_addButton.getElement().getParentElement().getStyle().clearDisplay();
         }
     }
 
@@ -490,25 +488,18 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandl
     }
 
     /**
-     * Handles the click event to move the attribute value down.<p>
-     * 
-     * @param event the click event
+     * Call when content changes.<p>
      */
-    @UiHandler("m_downButton")
-    protected void moveAttributeValueDown(ClickEvent event) {
+    protected void onResize() {
 
-        m_handler.moveAttributeValueDown(this);
-    }
-
-    /**
-     * Handles the click event to move the attribute value up.<p>
-     * 
-     * @param event the click event
-     */
-    @UiHandler("m_upButton")
-    protected void moveAttributeValueUp(ClickEvent event) {
-
-        m_handler.moveAttributeValueUp(this);
+        Widget parent = getParent();
+        while (parent != null) {
+            if (parent instanceof RequiresResize) {
+                ((RequiresResize)parent).onResize();
+                break;
+            }
+            parent = parent.getParent();
+        }
     }
 
     /**
@@ -537,7 +528,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandl
             } else {
                 removeStyleName(I_LayoutBundle.INSTANCE.form().displayAbove());
             }
-            FadeAnimation.fadeIn(m_helpBubble, null, 200);
+            fadeBubbleIn();
         } else {
             removeStyleName(I_LayoutBundle.INSTANCE.form().focused());
         }
@@ -554,17 +545,11 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandl
         if (highlightingOn) {
             addStyleName(I_LayoutBundle.INSTANCE.form().highlighting());
             if (focused) {
-                FadeAnimation.fadeIn(m_helpBubble, null, 200);
+                fadeBubbleIn();
             }
         } else {
             if (focused) {
-                FadeAnimation.fadeOut(m_helpBubble, new Command() {
-
-                    public void execute() {
-
-                        removeStyleName(I_LayoutBundle.INSTANCE.form().highlighting());
-                    }
-                }, 200);
+                fadeHelpBubbleOut();
             } else {
                 removeStyleName(I_LayoutBundle.INSTANCE.form().highlighting());
             }
@@ -588,28 +573,68 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandl
     }
 
     /**
-     * Initializes the button styling.<p>
+     * Fades the help bubble into view.<p>
      */
-    private void initButtons() {
+    private void fadeBubbleIn() {
+
+        if (m_fadeTimer != null) {
+            m_fadeTimer.cancel();
+            m_fadeTimer = null;
+        }
+        if (m_currentAnimation != null) {
+            m_currentAnimation.cancel();
+            m_currentAnimation = null;
+        }
+        m_currentAnimation = FadeAnimation.fadeIn(m_helpBubble, null, 200);
+    }
+
+    /**
+     * Fades the help bubble out of view.<p>
+     */
+    private void fadeHelpBubbleOut() {
+
+        if (m_fadeTimer != null) {
+            m_fadeTimer.cancel();
+            m_fadeTimer = null;
+        }
+        m_fadeTimer = new Timer() {
+
+            @Override
+            public void run() {
+
+                if (m_currentAnimation != null) {
+                    m_currentAnimation.cancel();
+                    m_currentAnimation = null;
+                }
+                m_currentAnimation = FadeAnimation.fadeOut(m_helpBubble, new Command() {
+
+                    public void execute() {
+
+                        removeStyleName(I_LayoutBundle.INSTANCE.form().highlighting());
+                    }
+                }, 200);
+            }
+        };
+        m_fadeTimer.schedule(500);
+    }
+
+    /**
+     * Initializes the button styling.<p>
+     * 
+     * @param label the attribute label 
+     */
+    private void initButtons(String label) {
 
         m_addButton.setImageClass(I_ImageBundle.INSTANCE.style().addIcon());
-        m_addButton.setTitle("Add");
+        m_addButton.setTitle("Add " + label);
         m_addButton.setButtonStyle(ButtonStyle.TRANSPARENT, null);
 
         m_removeButton.setImageClass(I_ImageBundle.INSTANCE.style().deleteIcon());
-        m_removeButton.setTitle("Delete");
+        m_removeButton.setTitle("Delete " + label);
         m_removeButton.setButtonStyle(ButtonStyle.TRANSPARENT, null);
 
-        m_upButton.setImageClass(I_ImageBundle.INSTANCE.style().moveIcon());
-        m_upButton.setTitle("Move up");
-        m_upButton.setButtonStyle(ButtonStyle.TRANSPARENT, null);
-
-        m_downButton.setImageClass(I_ImageBundle.INSTANCE.style().moveIcon());
-        m_downButton.setTitle("Move down");
-        m_downButton.setButtonStyle(ButtonStyle.TRANSPARENT, null);
-
         m_helpBubbleClose.setImageClass(I_ImageBundle.INSTANCE.style().closeIcon());
-        m_helpBubbleClose.setTitle("Close");
+        m_helpBubbleClose.setTitle("Close " + label);
         m_helpBubbleClose.setButtonStyle(ButtonStyle.TRANSPARENT, null);
     }
 
@@ -620,7 +645,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandl
 
         addMouseOverHandler(HighlightingHandler.getInstance());
         addMouseOutHandler(HighlightingHandler.getInstance());
-        addClickHandler(HighlightingHandler.getInstance());
+        addMouseDownHandler(HighlightingHandler.getInstance());
     }
 
     /**
@@ -641,20 +666,5 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasClickHandl
             }
         }
         return false;
-    }
-
-    /**
-     * Call when content changes.<p>
-     */
-    protected void onResize() {
-
-        Widget parent = getParent();
-        while (parent != null) {
-            if (parent instanceof RequiresResize) {
-                ((RequiresResize)parent).onResize();
-                break;
-            }
-            parent = parent.getParent();
-        }
     }
 }

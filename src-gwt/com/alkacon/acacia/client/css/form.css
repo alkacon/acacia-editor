@@ -1,9 +1,7 @@
 @external mceEditor, mceExternalToolbar, mceStatusbar, mceIframeContainer, mceLayout;
 
-@def PARENT_GRADIENT literal("left , #DDDDDD 0%, #EEEEEE 60%");
-@def HIGHLIGHTING_GRADIENT literal("left , #EEEEEE 0%, #F2F2F2 60%");
-@def FOCUS_GRADIENT literal("right , #A3B1CC 0%, #E6EBF7 60%");
-@def BUTTONBAR_GRADIENT literal("top , #F4F4F4 25%, #D4D4D4 75%");
+@def PARENT_GRADIENT literal("left, #FFFFFF 0%, #F4F7F9 80%, #E1E4E8 100%");  
+@def FOCUS_GRADIENT literal("left, #E1E4E8 0%, #EAEDEF 80%, #F4F7F9 100%");  
  
 .attribute{}
 .formParent{
@@ -11,15 +9,12 @@
 }
 
 .attributeValue .buttonBar{
-	display: none;
-	border: 1px solid #aaaaaa;
 	position: absolute;
-	top: -12px;
+	top: 2px;
 	right: 2px;
-	border-radius: 4px;
 }
 
-.attributeValue.focused > div > .label > .buttonBar{
+.attributeValue.highlighting > div > .label > .buttonBar{
 	display: block;
 }
 
@@ -47,14 +42,6 @@
 	font-size: 12px;
 }
 
-.entity .attributeValue.highlighting > div {
-	border: 1px solid #dddddd;
-}
-
-.entity .attributeValue.focused > div, .dragHelper.attributeValue.focused > div, .entity .attributeValue.focused.highlighting > div{
-	border-color: #E6EBF7;
-}
-
 @if user.agent gecko1_8 gecko{
 	/** firefox **/
 	.entity .attributeValue > div, .dragHelper.attributeValue > div{
@@ -66,13 +53,7 @@
 	.formParent{
 		background-image: literal("-moz-linear-gradient(")PARENT_GRADIENT literal(")") !important;
 	}
-	.attributeValue .buttonBar{
-		background-image: literal("-moz-linear-gradient(")BUTTONBAR_GRADIENT literal(")");
-	}
-	.entity .attributeValue.highlighting > div {
-		background-image: literal("-moz-linear-gradient(")HIGHLIGHTING_GRADIENT literal(")");
-	}
-	.entity .attributeValue.focused > div, .dragHelper.attributeValue.focused > div, .entity .attributeValue.focused.highlighting > div{
+	.entity .attributeValue.focused > div, .dragHelper.attributeValue > div{
 		background-image: literal("-moz-linear-gradient(")FOCUS_GRADIENT literal(")");
 	}
 } @elif user.agent safari {
@@ -86,13 +67,7 @@
 	.formParent{
 		background-image: literal("-webkit-linear-gradient(")PARENT_GRADIENT literal(")") !important;
 	}
-	.attributeValue .buttonBar{
-		background-image: literal("-webkit-linear-gradient(")BUTTONBAR_GRADIENT literal(")");
-	}
-	.entity .attributeValue.highlighting > div {
-		background-image: literal("-webkit-linear-gradient(")HIGHLIGHTING_GRADIENT literal(")");
-	}
-	.entity .attributeValue.focused > div, .dragHelper.attributeValue.focused > div, .entity .attributeValue.focused.highlighting > div{
+	.entity .attributeValue.focused > div, .dragHelper.attributeValue > div{
 		background-image: literal("-webkit-linear-gradient(")FOCUS_GRADIENT literal(")");
 	}
 } @elif user.agent opera {
@@ -106,13 +81,7 @@
 	.formParent{
 		background-image: literal("-o-linear-gradient(")PARENT_GRADIENT literal(")") !important;
 	}
-	.attributeValue .buttonBar{
-		background-image: literal("-o-linear-gradient(")BUTTONBAR_GRADIENT literal(")");
-	}
-	.entity .attributeValue.highlighting > div {
-		background-image: literal("-o-linear-gradient(")HIGHLIGHTING_GRADIENT literal(")");
-	}
-	.entity .attributeValue.focused > div, .dragHelper.attributeValue.focused > div, .entity .attributeValue.focused.highlighting > div{
+	.entity .attributeValue.focused > div, .dragHelper.attributeValue > div{
 		background-image: literal("-o-linear-gradient(")FOCUS_GRADIENT literal(")");
 	}
 } @else {
@@ -126,24 +95,18 @@
 	div.formParent{
 		background: #EEEEEE !important;
 	}
-	.attributeValue .buttonBar{
-		background: #F4F4F4;
-	}
-	.entity .attributeValue.highlighting > div {
-		background: #F2F2F2;
-	}
-	.entity .attributeValue.focused > div, .dragHelper.attributeValue.focused > div, .entity .attributeValue.focused.highlighting > div{
+	.entity .attributeValue.focused > div, .dragHelper.attributeValue > div{
 		background: #A3B1CC;
 	}
 }
 
-div.entity div.attributeValue.placeHolder.focused.highlighting > div{
-	background: #ffffff !important;
-	border: 1px solid #aaaaaa !important;
-	opacity: 0.5;
+div.entity div.attributeValue.placeHolder > div{
+	background-image: none;
+	background-color: #ffffff !important;
+	opacity: 0.8;
 }
 
-@sprite div.entity div.attributeValue.placeHolder.focused.highlighting.markUnchanged > div {
+@sprite div.entity div.attributeValue.placeHolder.markUnchanged > div {
 	gwt-image: "baseImages.placeholderImage";
 }
 
@@ -194,15 +157,13 @@ div.entity div.attributeValue.placeHolder.focused.highlighting > div{
 
 .dragHelper.attributeValue > div{
 	position: relative;
-	padding: 2px 2px 2px 4px;
-	background: #cccccc;
+	padding: 2px 0px 2px 4px;
 }
 
 .dragStarted, .dragPlaceholder{}
 .entity .attributeValue > div{
 	position: relative;
-	padding: 2px 2px 2px 4px;
-	border: 1px solid transparent;
+	padding: 2px 0px 2px 4px;
 }
 
 .attributeValue .label span, .attributeValue .label div{
@@ -228,19 +189,12 @@ div.entity div.attributeValue.placeHolder.focused.highlighting > div{
 
 .widgetHolder .widget.input{
 	margin-left: -3px;
-	border: 1px solid transparent;
 	padding: 2px 5px;
 	min-height: 14px;
-	background: #ffffff;
 }
 
-.attributeValue.focused > div > .widgetHolder > .widget.input, .attributeValue.focused > div > .widgetHolder > .widget.input:hover, .attributeValue.focused > div > .widgetHolder > .mceEditor{
-	border: 1px solid #aaaaaa;
-	background: #ffffff;
-}
-
-.attributeValue > div > .widgetHolder > .mceEditor{
-	border: 1px solid transparent;
+.widgetHolder > .widget.input, .attributeValue .widgetHolder  .mceEditor{
+	border: 1px solid #C5CCD4;
 	background: #ffffff;
 }
 
@@ -271,15 +225,6 @@ div.entity div.attributeValue.placeHolder.focused.highlighting > div{
 
 .attributeValue .mceEditor .mceExternalToolbar{
 	z-index: -1;
-}
-
-.widgetHolder .input, .widgetHolder .input:hover{
-	background: #ffffff;
-}
-
-
-.input:hover{
-	background: #dddddd;
 }
 
 .helpBubble{

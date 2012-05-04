@@ -27,8 +27,8 @@ package com.alkacon.acacia.client.ui;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
@@ -39,7 +39,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 /**
  * The attribute value view highlighting handler.<p>
  */
-public class HighlightingHandler implements MouseOverHandler, MouseOutHandler, ClickHandler {
+public class HighlightingHandler implements MouseOverHandler, MouseOutHandler, MouseDownHandler {
 
     /** The handler instance. */
     private static HighlightingHandler INSTANCE;
@@ -62,7 +62,7 @@ public class HighlightingHandler implements MouseOverHandler, MouseOutHandler, C
     private HighlightingHandler() {
 
         m_hoverHighlightingQueue = new HashSet<AttributeValueView>();
-        m_handlerRegistration = RootPanel.get().addDomHandler(this, ClickEvent.getType());
+        m_handlerRegistration = RootPanel.get().addDomHandler(this, MouseDownEvent.getType());
     }
 
     /**
@@ -97,9 +97,9 @@ public class HighlightingHandler implements MouseOverHandler, MouseOutHandler, C
     }
 
     /**
-     * @see com.google.gwt.event.dom.client.ClickHandler#onClick(com.google.gwt.event.dom.client.ClickEvent)
+     * @see com.google.gwt.event.dom.client.MouseDownHandler#onMouseDown(com.google.gwt.event.dom.client.MouseDownEvent)
      */
-    public void onClick(ClickEvent event) {
+    public void onMouseDown(MouseDownEvent event) {
 
         event.stopPropagation();
         if (RootPanel.get().equals(event.getSource())) {
