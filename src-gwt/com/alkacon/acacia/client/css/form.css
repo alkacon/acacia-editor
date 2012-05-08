@@ -14,10 +14,6 @@
 	right: 2px;
 }
 
-.attributeValue.highlighting > div > .label > .buttonBar{
-	display: block;
-}
-
 .entity .entity{
 	margin-left:20px;
 }
@@ -184,13 +180,17 @@ div.entity div.attributeValue.placeHolder > div{
 
 
 .widgetHolder .widget{
-	margin: 0 0 4px 0;
+	margin: 0 2px 4px 2px;
 }
 
 .widgetHolder .widget.input{
-	margin-left: -3px;
+	margin: 0px 2px;
 	padding: 2px 5px;
 	min-height: 14px;
+}
+
+.input:focus{
+	outline:none;
 }
 
 .widgetHolder > .widget.input, .attributeValue .widgetHolder  .mceEditor{
@@ -258,11 +258,11 @@ div.entity div.attributeValue.placeHolder > div{
 	color: #222222;
 }
 
-.attributeValue.focused.highlighting > div > .helpBubble{
+.attributeValue.focused > div > .helpBubble{
 	display: block;
 }
 
-.attributeValue.focused.highlighting.closedBubble > div > .helpBubble{
+.attributeValue.focused.closedBubble > div > .helpBubble{
 	display: none;
 }
 

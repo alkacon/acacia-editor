@@ -129,13 +129,6 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
         String helpBubbleClose();
 
         /**
-         * Returns the highlighting CSS class name.<p>
-         * 
-         * @return the highlighting CSS class
-         */
-        String highlighting();
-
-        /**
          * Returns the input field CSS class name.<p>
          * 
          * @return the input field CSS class name

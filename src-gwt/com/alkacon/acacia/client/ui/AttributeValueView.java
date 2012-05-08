@@ -31,11 +31,11 @@ import com.alkacon.acacia.client.widgets.I_EditWidget;
 import com.alkacon.geranium.client.dnd.I_DragHandle;
 import com.alkacon.geranium.client.dnd.I_Draggable;
 import com.alkacon.geranium.client.dnd.I_DropTarget;
+import com.alkacon.geranium.client.ui.HoverPanel;
 import com.alkacon.geranium.client.ui.I_Button.ButtonStyle;
 import com.alkacon.geranium.client.ui.PushButton;
 import com.alkacon.geranium.client.ui.css.I_ImageBundle;
 import com.alkacon.geranium.client.util.DomUtil;
-import com.alkacon.geranium.client.util.FadeAnimation;
 import com.alkacon.vie.shared.I_Entity;
 
 import com.google.gwt.animation.client.Animation;
@@ -67,9 +67,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -141,6 +139,10 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     @UiField
     protected PushButton m_addButton;
 
+    /** The button bar. */
+    @UiField
+    protected HoverPanel m_buttonBar;
+
     /** The help bubble element. */
     @UiField
     protected DivElement m_helpBubble;
@@ -174,9 +176,6 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
 
     /** Drag and drop helper element. */
     private Element m_dragHelper;
-
-    /** Timer for delayed fades effects. */
-    private Timer m_fadeTimer;
 
     /** The attribute handler. */
     private AttributeHandler m_handler;
@@ -457,10 +456,10 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         }
         if (!hasAddButton && !hasRemoveButton && !hasSortButtons) {
             // hide the button bar if no button is visible
-            m_addButton.getElement().getParentElement().getStyle().setDisplay(Display.NONE);
+            m_buttonBar.getElement().getStyle().setDisplay(Display.NONE);
         } else {
             // show the button bar
-            m_addButton.getElement().getParentElement().getStyle().clearDisplay();
+            m_buttonBar.getElement().getStyle().clearDisplay();
         }
     }
 
@@ -528,31 +527,8 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
             } else {
                 removeStyleName(I_LayoutBundle.INSTANCE.form().displayAbove());
             }
-            fadeBubbleIn();
         } else {
             removeStyleName(I_LayoutBundle.INSTANCE.form().focused());
-        }
-    }
-
-    /**
-     * Toggles the highlighting.<p>
-     * 
-     * @param highlightingOn <code>true</code> to turn the highlighting on
-     */
-    protected void toggleHoverHighlighting(boolean highlightingOn) {
-
-        boolean focused = DomUtil.hasClass(I_LayoutBundle.INSTANCE.form().focused(), getElement());
-        if (highlightingOn) {
-            addStyleName(I_LayoutBundle.INSTANCE.form().highlighting());
-            if (focused) {
-                fadeBubbleIn();
-            }
-        } else {
-            if (focused) {
-                fadeHelpBubbleOut();
-            } else {
-                removeStyleName(I_LayoutBundle.INSTANCE.form().highlighting());
-            }
         }
     }
 
@@ -573,52 +549,6 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     }
 
     /**
-     * Fades the help bubble into view.<p>
-     */
-    private void fadeBubbleIn() {
-
-        if (m_fadeTimer != null) {
-            m_fadeTimer.cancel();
-            m_fadeTimer = null;
-        }
-        if (m_currentAnimation != null) {
-            m_currentAnimation.cancel();
-            m_currentAnimation = null;
-        }
-        m_currentAnimation = FadeAnimation.fadeIn(m_helpBubble, null, 200);
-    }
-
-    /**
-     * Fades the help bubble out of view.<p>
-     */
-    private void fadeHelpBubbleOut() {
-
-        if (m_fadeTimer != null) {
-            m_fadeTimer.cancel();
-            m_fadeTimer = null;
-        }
-        m_fadeTimer = new Timer() {
-
-            @Override
-            public void run() {
-
-                if (m_currentAnimation != null) {
-                    m_currentAnimation.cancel();
-                    m_currentAnimation = null;
-                }
-                m_currentAnimation = FadeAnimation.fadeOut(m_helpBubble, new Command() {
-
-                    public void execute() {
-
-                        removeStyleName(I_LayoutBundle.INSTANCE.form().highlighting());
-                    }
-                }, 200);
-            }
-        };
-        m_fadeTimer.schedule(500);
-    }
-
-    /**
      * Initializes the button styling.<p>
      * 
      * @param label the attribute label 
@@ -629,7 +559,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         m_addButton.setTitle("Add " + label);
         m_addButton.setButtonStyle(ButtonStyle.TRANSPARENT, null);
 
-        m_removeButton.setImageClass(I_ImageBundle.INSTANCE.style().deleteIcon());
+        m_removeButton.setImageClass(I_ImageBundle.INSTANCE.style().removeIcon());
         m_removeButton.setTitle("Delete " + label);
         m_removeButton.setButtonStyle(ButtonStyle.TRANSPARENT, null);
 
@@ -646,6 +576,8 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         addMouseOverHandler(HighlightingHandler.getInstance());
         addMouseOutHandler(HighlightingHandler.getInstance());
         addMouseDownHandler(HighlightingHandler.getInstance());
+        m_buttonBar.addMouseOverHandler(HighlightingHandler.getInstance());
+        m_buttonBar.addMouseOutHandler(HighlightingHandler.getInstance());
     }
 
     /**

@@ -24,9 +24,6 @@
 
 package com.alkacon.acacia.client.ui;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -35,6 +32,7 @@ import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * The attribute value view highlighting handler.<p>
@@ -44,24 +42,20 @@ public class HighlightingHandler implements MouseOverHandler, MouseOutHandler, M
     /** The handler instance. */
     private static HighlightingHandler INSTANCE;
 
-    /** The currently selected value view. */
-    private AttributeValueView m_currentClick;
+    /** The on button hover highlighted element. */
+    private AttributeValueView m_currentButtonFocus;
 
-    /** The currently highlighted value view. */
-    private AttributeValueView m_currentHover;
+    /** The currently selected value view. */
+    private AttributeValueView m_currentFocus;
 
     /** The handler registration. */
     private HandlerRegistration m_handlerRegistration;
-
-    /** The highlighting queue. */
-    private Set<AttributeValueView> m_hoverHighlightingQueue;
 
     /**
      * Constructor.<p>
      */
     private HighlightingHandler() {
 
-        m_hoverHighlightingQueue = new HashSet<AttributeValueView>();
         m_handlerRegistration = RootPanel.get().addDomHandler(this, MouseDownEvent.getType());
     }
 
@@ -83,12 +77,7 @@ public class HighlightingHandler implements MouseOverHandler, MouseOutHandler, M
      */
     public void destroy() {
 
-        m_currentClick = null;
-        m_currentHover = null;
-        if (m_hoverHighlightingQueue != null) {
-            m_hoverHighlightingQueue.clear();
-        }
-        m_hoverHighlightingQueue = null;
+        m_currentFocus = null;
         if (m_handlerRegistration != null) {
             m_handlerRegistration.removeHandler();
         }
@@ -103,19 +92,19 @@ public class HighlightingHandler implements MouseOverHandler, MouseOutHandler, M
 
         event.stopPropagation();
         if (RootPanel.get().equals(event.getSource())) {
-            if (m_currentClick != null) {
-                m_currentClick.toggleFocusHighlighting(false);
-                m_currentClick = null;
+            if (m_currentFocus != null) {
+                m_currentFocus.toggleFocusHighlighting(false);
+                m_currentFocus = null;
             }
         } else {
-            if (event.getSource().equals(m_currentClick)) {
+            if (event.getSource().equals(m_currentFocus)) {
                 return;
             }
-            if ((m_currentClick != null)) {
-                m_currentClick.toggleFocusHighlighting(false);
+            if ((m_currentFocus != null)) {
+                m_currentFocus.toggleFocusHighlighting(false);
             }
-            m_currentClick = (AttributeValueView)event.getSource();
-            m_currentClick.toggleFocusHighlighting(true);
+            m_currentFocus = (AttributeValueView)event.getSource();
+            m_currentFocus.toggleFocusHighlighting(true);
         }
     }
 
@@ -124,19 +113,15 @@ public class HighlightingHandler implements MouseOverHandler, MouseOutHandler, M
      */
     public void onMouseOut(MouseOutEvent event) {
 
-        AttributeValueView source = (AttributeValueView)event.getSource();
-        m_hoverHighlightingQueue.remove(source);
-        source.toggleHoverHighlighting(false);
-        if (source.equals(m_currentHover)) {
-            m_currentHover = null;
-            if (!m_hoverHighlightingQueue.isEmpty()) {
-                for (AttributeValueView queued : m_hoverHighlightingQueue) {
-                    if ((m_currentHover == null) || m_currentHover.getElement().isOrHasChild(queued.getElement())) {
-                        m_currentHover = queued;
-                    }
+        if (!(event.getSource() instanceof AttributeValueView)) {
+            if ((m_currentButtonFocus != null)
+                && m_currentButtonFocus.getElement().isOrHasChild(((Widget)event.getSource()).getElement())) {
+                if (!m_currentButtonFocus.equals(m_currentFocus)) {
+                    m_currentButtonFocus.toggleFocusHighlighting(false);
                 }
-                m_currentHover.toggleHoverHighlighting(true);
+                m_currentButtonFocus = null;
             }
+            return;
         }
     }
 
@@ -145,32 +130,26 @@ public class HighlightingHandler implements MouseOverHandler, MouseOutHandler, M
      */
     public void onMouseOver(MouseOverEvent event) {
 
-        if (m_currentHover == null) {
-            m_currentHover = (AttributeValueView)event.getSource();
-            m_currentHover.toggleHoverHighlighting(true);
-        } else {
-            AttributeValueView source = (AttributeValueView)event.getSource();
-            if (source.equals(m_currentHover)) {
-                // already highlighted
-                return;
+        if (!(event.getSource() instanceof AttributeValueView)) {
+            AttributeValueView parentView = null;
+            Widget source = ((Widget)event.getSource()).getParent();
+            while (parentView == null) {
+                if (source instanceof AttributeValueView) {
+                    parentView = (AttributeValueView)source;
+                } else {
+                    source = source.getParent();
+                }
             }
-            if (m_currentHover.getElement().isOrHasChild(source.getElement())) {
-                // cursor moved from parent to child, highlight the child and queue the parent
-                m_hoverHighlightingQueue.add(m_currentHover);
-                m_currentHover.toggleHoverHighlighting(false);
-                m_currentHover = source;
-                m_currentHover.toggleHoverHighlighting(true);
-            } else if (source.getElement().isOrHasChild(m_currentHover.getElement())) {
-                // cursor is within parent and child, keep highlighting the child and queue the parent
-                m_hoverHighlightingQueue.add(source);
-            } else {
-                // current is neither child nor parent of event source, 
-                // switch highlighting to the event source and remove current from the queue
-                m_hoverHighlightingQueue.remove(m_currentHover);
-                m_currentHover.toggleHoverHighlighting(false);
-                m_currentHover = source;
-                m_currentHover.toggleHoverHighlighting(true);
+            if (m_currentButtonFocus != null) {
+                if (m_currentButtonFocus.equals(parentView)) {
+                    return;
+                } else if (!m_currentButtonFocus.equals(m_currentFocus)) {
+                    m_currentButtonFocus.toggleFocusHighlighting(false);
+                }
             }
+            m_currentButtonFocus = parentView;
+            m_currentButtonFocus.toggleFocusHighlighting(true);
+            return;
         }
     }
 
@@ -181,11 +160,11 @@ public class HighlightingHandler implements MouseOverHandler, MouseOutHandler, M
      */
     public void setFocusHighlighted(AttributeValueView target) {
 
-        if ((m_currentClick != null)) {
-            m_currentClick.toggleFocusHighlighting(false);
+        if ((m_currentFocus != null)) {
+            m_currentFocus.toggleFocusHighlighting(false);
         }
-        m_currentClick = target;
-        m_currentClick.toggleFocusHighlighting(true);
+        m_currentFocus = target;
+        m_currentFocus.toggleFocusHighlighting(true);
     }
 
 }

@@ -7,11 +7,11 @@
 		<div>
 			<div class="{style.form.label}">
 				<span ui:field="m_label"></span>
-				<div class="{style.form.buttonBar}">
-					<aui:PushButton ui:field="m_addButton" addStyleNames="{style.form.button}" />
+				<aui:HoverPanel ui:field="m_buttonBar" addStyleNames="{style.form.buttonBar}">
 					<aui:PushButton ui:field="m_removeButton" addStyleNames="{style.form.button}" />
+					<aui:PushButton ui:field="m_addButton" addStyleNames="{style.form.button}" />
 					<aui:PushButton ui:field="m_moveButton" addStyleNames="{style.form.button}" />
-				</div>
+				</aui:HoverPanel>
 			</div>
 			<g:SimplePanel ui:field="m_widgetHolder" styleName="{style.form.widgetHolder}" />
 			<div ui:field="m_helpBubble" class="{style.form.helpBubble}">

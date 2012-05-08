@@ -24,6 +24,7 @@
 
 package com.alkacon.acacia.client.widgets;
 
+import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.vie.client.Vie;
 
 import com.google.gwt.dom.client.Element;
@@ -61,6 +62,7 @@ public class HalloWidget extends A_EditWidget {
 
         setElement(element);
         setPreviousValue(getValue());
+        element.addClassName(I_LayoutBundle.INSTANCE.form().input());
         init(element, Vie.getInstance());
         return this;
     }
