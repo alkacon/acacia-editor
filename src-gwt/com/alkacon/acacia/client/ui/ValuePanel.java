@@ -28,10 +28,13 @@ import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.geranium.client.dnd.DNDHandler.Orientation;
 import com.alkacon.geranium.client.dnd.I_Draggable;
 import com.alkacon.geranium.client.dnd.I_DropTarget;
+import com.alkacon.geranium.client.ui.HighlightingBorder;
 import com.alkacon.geranium.client.util.DomUtil;
+import com.alkacon.geranium.client.util.PositionBean;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * The attribute values panel.<p>
@@ -43,6 +46,9 @@ public class ValuePanel extends FlowPanel implements I_DropTarget {
 
     /** The placeholder position index. */
     protected int m_placeholderIndex = -1;
+
+    /** The highlighting border. */
+    private HighlightingBorder m_highlighting;
 
     /**
      * Constructor.<p>
@@ -69,6 +75,18 @@ public class ValuePanel extends FlowPanel implements I_DropTarget {
     }
 
     /**
+     * Highlights the outline of this panel.<p>
+     */
+    public void highlightOutline() {
+
+        m_highlighting = new HighlightingBorder(
+            PositionBean.getInnerDimensions(getElement()),
+            HighlightingBorder.BorderColor.red);
+        m_highlighting.getElement().getStyle().setZIndex(2000000);
+        RootPanel.get().add(m_highlighting);
+    }
+
+    /**
      * @see com.alkacon.geranium.client.dnd.I_DropTarget#insertPlaceholder(com.google.gwt.dom.client.Element, int, int, com.alkacon.geranium.client.dnd.DNDHandler.Orientation)
      */
     public void insertPlaceholder(Element placeholder, int x, int y, Orientation orientation) {
@@ -83,6 +101,17 @@ public class ValuePanel extends FlowPanel implements I_DropTarget {
     public void onDrop(I_Draggable draggable) {
 
         // nothing to do
+    }
+
+    /**
+     * Removes the highlighting border.<p>
+     */
+    public void removeHighlighting() {
+
+        if (m_highlighting != null) {
+            m_highlighting.removeFromParent();
+            m_highlighting = null;
+        }
     }
 
     /**
@@ -129,6 +158,16 @@ public class ValuePanel extends FlowPanel implements I_DropTarget {
                     x,
                     y);
                 break;
+        }
+    }
+
+    /**
+     * Updates the highlighting position if present.<p>
+     */
+    public void updateHighlightingPosition() {
+
+        if (m_highlighting != null) {
+            m_highlighting.setPosition(PositionBean.getInnerDimensions(getElement()));
         }
     }
 }

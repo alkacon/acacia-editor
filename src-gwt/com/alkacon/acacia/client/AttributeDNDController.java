@@ -87,6 +87,7 @@ public class AttributeDNDController implements I_DNDController {
             target.getElement().insertBefore(handler.getPlaceholder(), draggable.getElement());
             draggable.getElement().addClassName(I_LayoutBundle.INSTANCE.form().markUnchanged());
             handler.getPlaceholder().addClassName(I_LayoutBundle.INSTANCE.form().markUnchanged());
+            ((ValuePanel)target).highlightOutline();
             return true;
         }
         return false;
@@ -127,6 +128,7 @@ public class AttributeDNDController implements I_DNDController {
             }
             m_lastPosition = currentPosition;
         }
+        ((ValuePanel)target).updateHighlightingPosition();
     }
 
     /**
@@ -152,6 +154,7 @@ public class AttributeDNDController implements I_DNDController {
      */
     private void clearTargets(final DNDHandler handler) {
 
+        ((ValuePanel)handler.getCurrentTarget()).removeHighlighting();
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
 
             /**
