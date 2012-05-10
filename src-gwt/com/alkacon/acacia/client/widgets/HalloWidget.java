@@ -37,6 +37,9 @@ import com.google.gwt.event.shared.HandlerRegistration;
  */
 public class HalloWidget extends A_EditWidget {
 
+    /** Indicating if the widget is active. */
+    private boolean m_active;
+
     /**
      * @see com.alkacon.acacia.client.widgets.A_EditWidget#addValueChangeHandler(com.google.gwt.event.logical.shared.ValueChangeHandler)
      */
@@ -68,6 +71,34 @@ public class HalloWidget extends A_EditWidget {
     }
 
     /**
+     * @see com.alkacon.acacia.client.widgets.I_EditWidget#isActive()
+     */
+    public boolean isActive() {
+
+        return m_active;
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.widgets.I_EditWidget#setActive(boolean)
+     */
+    public void setActive(boolean active) {
+
+        if (m_active == active) {
+            return;
+        }
+        m_active = active;
+        if (m_active) {
+            getElement().setAttribute("contentEditable", "true");
+            getElement().removeClassName(I_LayoutBundle.INSTANCE.form().inActive());
+            getElement().focus();
+            fireValueChange(true);
+        } else {
+            getElement().setAttribute("contentEditable", "false");
+            getElement().addClassName(I_LayoutBundle.INSTANCE.form().inActive());
+        }
+    }
+
+    /**
      * @see com.alkacon.acacia.client.widgets.I_EditWidget#setConfiguration(java.lang.String)
      */
     public void setConfiguration(String configuration) {
@@ -90,7 +121,7 @@ public class HalloWidget extends A_EditWidget {
     public void setValue(String value, boolean fireEvents) {
 
         getElement().setInnerHTML(value);
-        fireValueChange();
+        fireValueChange(false);
     }
 
     /**
@@ -117,7 +148,7 @@ public class HalloWidget extends A_EditWidget {
                 .bind(
                         'hallomodified',
                         function(event, data) {
-                            _self.@com.alkacon.acacia.client.widgets.HalloWidget::fireValueChange()();
+                            _self.@com.alkacon.acacia.client.widgets.HalloWidget::fireValueChange(Z)(false);
                         });
     }-*/;
 

@@ -45,6 +45,9 @@ import com.google.gwt.user.client.DOM;
  */
 public class StringWidget extends A_EditWidget {
 
+    /** Indicating if the widget is active. */
+    private boolean m_active;
+
     /** The value changed handler initialized flag. */
     private boolean m_valueChangeHandlerInitialized;
 
@@ -66,7 +69,7 @@ public class StringWidget extends A_EditWidget {
 
                         public void execute() {
 
-                            fireValueChange();
+                            fireValueChange(false);
                         }
                     });
                 }
@@ -75,7 +78,7 @@ public class StringWidget extends A_EditWidget {
 
                 public void onChange(ChangeEvent event) {
 
-                    fireValueChange();
+                    fireValueChange(false);
 
                 }
             }, ChangeEvent.getType());
@@ -83,7 +86,7 @@ public class StringWidget extends A_EditWidget {
 
                 public void onBlur(BlurEvent event) {
 
-                    fireValueChange();
+                    fireValueChange(false);
                 }
             }, BlurEvent.getType());
         }
@@ -109,7 +112,36 @@ public class StringWidget extends A_EditWidget {
         setPreviousValue(getValue());
         getElement().setAttribute("contentEditable", "true");
         getElement().addClassName(I_LayoutBundle.INSTANCE.form().input());
+        m_active = true;
         return this;
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.widgets.I_EditWidget#isActive()
+     */
+    public boolean isActive() {
+
+        return m_active;
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.widgets.I_EditWidget#setActive(boolean)
+     */
+    public void setActive(boolean active) {
+
+        if (m_active == active) {
+            return;
+        }
+        m_active = active;
+        if (m_active) {
+            getElement().setAttribute("contentEditable", "true");
+            getElement().removeClassName(I_LayoutBundle.INSTANCE.form().inActive());
+            getElement().focus();
+            fireValueChange(true);
+        } else {
+            getElement().setAttribute("contentEditable", "false");
+            getElement().addClassName(I_LayoutBundle.INSTANCE.form().inActive());
+        }
     }
 
     /**
@@ -136,7 +168,7 @@ public class StringWidget extends A_EditWidget {
 
         getElement().setInnerText(value);
         if (fireEvents) {
-            fireValueChange();
+            fireValueChange(false);
         }
     }
 }

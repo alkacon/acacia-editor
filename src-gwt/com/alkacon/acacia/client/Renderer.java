@@ -120,7 +120,7 @@ public class Renderer implements I_EntityRenderer {
         I_Type entityType = m_vie.getType(entity.getTypeName());
         List<String> attributeNames = entityType.getAttributeNames();
         for (final String attributeName : attributeNames) {
-            AttributeHandler handler = new AttributeHandler(m_vie, entity, attributeName, m_widgetService);
+            final AttributeHandler handler = new AttributeHandler(m_vie, entity, attributeName, m_widgetService);
             I_Type attributeType = entityType.getAttributeType(attributeName);
             I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(attributeName, attributeType);
             int minOccurrence = entityType.getAttributeMinOccurrence(attributeName);
@@ -139,7 +139,8 @@ public class Renderer implements I_EntityRenderer {
                     if (attribute.isSimpleValue()) {
                         valueWidget.setValueWidget(
                             m_widgetService.getAttributeWidget(attributeName),
-                            attribute.getSimpleValues().get(i));
+                            attribute.getSimpleValues().get(i),
+                            true);
                     } else {
                         valueWidget.setValueEntity(renderer, attribute.getComplexValues().get(i));
                     }
@@ -147,6 +148,13 @@ public class Renderer implements I_EntityRenderer {
             } else {
                 AttributeValueView valueWidget = new AttributeValueView(handler, label, help);
                 attributeElement.add(valueWidget);
+                if (attributeType.isSimpleType()) {
+                    // create a deactivated widget, to add the attribute on click
+                    valueWidget.setValueWidget(
+                        m_widgetService.getAttributeWidget(attributeName),
+                        m_widgetService.getDefaultAttributeValue(attributeName),
+                        false);
+                }
             }
             handler.updateButtonVisisbility();
         }

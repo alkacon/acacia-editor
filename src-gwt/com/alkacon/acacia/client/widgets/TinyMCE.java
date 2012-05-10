@@ -180,7 +180,7 @@ public final class TinyMCE implements HasValue<String> {
         self.@com.alkacon.acacia.client.widgets.TinyMCE::m_savedCss = $wnd.goog.cssom.iframe.style
                 .getElementContext(mainElement);
         var fireChange = function() {
-            self.@com.alkacon.acacia.client.widgets.TinyMCE::fireChange()();
+            self.@com.alkacon.acacia.client.widgets.TinyMCE::fireChange(Z)(false);
         };
 
         var fireChangeDelayed = function() {
@@ -189,7 +189,7 @@ public final class TinyMCE implements HasValue<String> {
                     .setTimeout(
                             function() {
                                 try {
-                                    self.@com.alkacon.acacia.client.widgets.TinyMCE::fireChange()();
+                                    self.@com.alkacon.acacia.client.widgets.TinyMCE::fireChange(Z)(false);
                                 } catch (e) {
                                     var handler = @com.google.gwt.core.client.GWT::getUncaughtExceptionHandler()();
                                     handler.@com.google.gwt.core.client.GWT.UncaughtExceptionHandler::onUncaughtException(Ljava/lang/Throwable;)(e);
@@ -287,7 +287,7 @@ public final class TinyMCE implements HasValue<String> {
 
         setValue(value);
         if (fireEvents) {
-            fireChange();
+            fireChange(false);
         }
     }
 
@@ -340,11 +340,13 @@ public final class TinyMCE implements HasValue<String> {
 
     /**
      * Fires a change event.<p>
+     * 
+     * @param force <code>true</code> to force firing the event, even if the value has not changed 
      */
-    protected void fireChange() {
+    protected void fireChange(boolean force) {
 
         String newContent = getContent();
-        if (!newContent.equals(m_currentContent)) {
+        if (force || !newContent.equals(m_currentContent)) {
             m_currentContent = newContent;
             ValueChangeEvent.fire(this, newContent);
         }

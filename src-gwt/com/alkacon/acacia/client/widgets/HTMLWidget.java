@@ -96,6 +96,22 @@ public class HTMLWidget implements I_EditWidget {
     }
 
     /**
+     * @see com.alkacon.acacia.client.widgets.I_EditWidget#isActive()
+     */
+    public boolean isActive() {
+
+        return m_widget.isActive();
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.widgets.I_EditWidget#setActive(boolean)
+     */
+    public void setActive(boolean active) {
+
+        m_widget.setActive(active);
+    }
+
+    /**
      * @see com.alkacon.acacia.client.widgets.I_EditWidget#setConfiguration(java.lang.String)
      */
     public void setConfiguration(String configuration) {

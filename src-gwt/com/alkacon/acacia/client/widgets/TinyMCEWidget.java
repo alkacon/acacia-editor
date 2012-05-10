@@ -24,6 +24,8 @@
 
 package com.alkacon.acacia.client.widgets;
 
+import com.alkacon.acacia.client.css.I_LayoutBundle;
+
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -35,6 +37,9 @@ public class TinyMCEWidget extends A_EditWidget {
 
     /** The TinyMCE wrapper object. */
     protected TinyMCE m_editor;
+
+    /** Indicating if the widget is active. */
+    private boolean m_active;
 
     /**
      * @see com.alkacon.acacia.client.widgets.A_EditWidget#addValueChangeHandler(com.google.gwt.event.logical.shared.ValueChangeHandler)
@@ -53,7 +58,34 @@ public class TinyMCEWidget extends A_EditWidget {
         setElement(element);
         m_editor = new TinyMCE(element);
         m_editor.init();
+        m_active = true;
         return this;
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.widgets.I_EditWidget#isActive()
+     */
+    public boolean isActive() {
+
+        return m_active;
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.widgets.I_EditWidget#setActive(boolean)
+     */
+    public void setActive(boolean active) {
+
+        if (m_active == active) {
+            return;
+        }
+        m_active = active;
+        if (m_active) {
+            m_editor.getEditorParentElement().removeClassName(I_LayoutBundle.INSTANCE.form().inActive());
+            // getElement().focus();
+            fireValueChange(true);
+        } else {
+            m_editor.getEditorParentElement().addClassName(I_LayoutBundle.INSTANCE.form().inActive());
+        }
     }
 
     /**
@@ -78,5 +110,14 @@ public class TinyMCEWidget extends A_EditWidget {
     public void setValue(String value, boolean fireEvents) {
 
         m_editor.setValue(value, fireEvents);
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.widgets.A_EditWidget#fireValueChange(boolean)
+     */
+    @Override
+    protected void fireValueChange(boolean force) {
+
+        m_editor.fireChange(force);
     }
 }

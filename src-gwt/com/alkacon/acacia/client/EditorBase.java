@@ -73,6 +73,7 @@ public class EditorBase {
         I_ImageBundle.INSTANCE.style().ensureInjected();
         I_LayoutBundle.INSTANCE.generalCss().ensureInjected();
         I_LayoutBundle.INSTANCE.buttonCss().ensureInjected();
+        I_LayoutBundle.INSTANCE.highlightCss().ensureInjected();
         m_service = service;
         m_vie = Vie.getInstance();
         m_widgetService = new WidgetService();

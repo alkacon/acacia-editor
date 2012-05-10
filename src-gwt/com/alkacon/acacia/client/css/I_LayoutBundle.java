@@ -87,6 +87,13 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
         String dragHelper();
 
         /**
+         * Returns the drag helper CSS class name.<p>
+         *  
+         * @return the drag helper CSS class
+         */
+        String emptyValue();
+
+        /**
          * Returns the entity CSS class name.<p>
          * 
          * @return the entity CSS class
@@ -127,6 +134,13 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
          * @return the help bubble close CSS class
          */
         String helpBubbleClose();
+
+        /**
+         * Returns the help bubble close CSS class name.<p>
+         * 
+         * @return the help bubble close CSS class
+         */
+        String inActive();
 
         /**
          * Returns the input field CSS class name.<p>

@@ -20,6 +20,7 @@
 
 .attributeValue .label{
 	margin:4px 3px 2px;
+	color: #7788aa;
 }
 .entity .attributeValue{
 	padding-bottom:2px;
@@ -27,7 +28,11 @@
 .entity .attributeValue .label span, .dragHelper.attributeValue .label span{
 	font-size: 14px;
 	font-weight: bold;
-	color: #7788aa;
+}
+
+.attributeValue.emptyValue .label{
+	color: #B1B4B8;
+	font-style: italic;
 }
 
 .entity .entity .attributeValue .label span{
@@ -43,7 +48,7 @@
 	.entity .attributeValue > div, .dragHelper.attributeValue > div{
 		-moz-border-radius: 4px;
 	}
-	.widgetHolder .widget.input{
+	.widgetHolder .widget.input, .attributeValue .widgetHolder  .mceEditor{
 		-moz-border-radius: 2px;
 	}
 	.formParent{
@@ -57,7 +62,7 @@
 	.entity .attributeValue > div, .dragHelper.attributeValue > div{
 		-webkit-border-radius: 4px;
 	}
-	.widgetHolder .widget.input{
+	.widgetHolder .widget.input, .attributeValue .widgetHolder  .mceEditor{
 		-webkit-border-radius: 2px;
 	}
 	.formParent{
@@ -71,7 +76,7 @@
 	.entity .attributeValue > div, .dragHelper.attributeValue > div{
 		border-radius: 4px;
 	}
-	.widgetHolder .widget.input{
+	.widgetHolder .widget.input, .attributeValue .widgetHolder  .mceEditor{
 		border-radius: 2px;
 	}
 	.formParent{
@@ -85,7 +90,7 @@
 	.entity .attributeValue > div, .dragHelper.attributeValue > div{
 		border-radius: 4px;
 	}
-	.widgetHolder .widget.input{
+	.widgetHolder .widget.input, .attributeValue .widgetHolder  .mceEditor{
 		border-radius: 2px;
 	}
 	div.formParent{
@@ -196,6 +201,14 @@ div.entity div.attributeValue.placeHolder > div{
 .widgetHolder > .widget.input, .attributeValue .widgetHolder  .mceEditor{
 	border: 1px solid #C5CCD4;
 	background: #ffffff;
+}
+
+.attributeValue .widgetHolder  .mceEditor.inActive *{
+	visibility: hidden;
+}
+
+.widgetHolder > .widget.input.inActive{
+	color: transparent;
 }
 
 .attributeValue.focused > div > .widgetHolder > .mceEditor .mceStatusbar{

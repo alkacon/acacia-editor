@@ -192,6 +192,12 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     /** The provisional drag and drop helper parent. */
     private Element m_provisionalParent;
 
+    /** The editing widget. */
+    private I_EditWidget m_widget;
+
+    /** The activation mouse down handler registration. */
+    private HandlerRegistration m_activationHandlerRegistration;
+
     /**
      * Constructor.<p>
      * 
@@ -210,6 +216,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         m_label.setInnerHTML(label);
         m_label.setTitle(help);
         m_helpBubbleText.setInnerHTML(help);
+        addStyleName(I_LayoutBundle.INSTANCE.form().emptyValue());
         initHighlightingHandler();
         initButtons(label);
     }
@@ -331,6 +338,16 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     }
 
     /**
+     * Returns the editing widget.<p>
+     * 
+     * @return the editing widget or <code>null</code> if not available
+     */
+    public I_EditWidget getValueWidget() {
+
+        return m_widget;
+    }
+
+    /**
      * Returns if there is a value set for this attribute.<p>
      * 
      * @return <code>true</code> if there is a value set for this attribute
@@ -382,6 +399,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         m_hasValue = false;
         m_widgetHolder.clear();
         m_widgetHolder.getElement().setInnerHTML("");
+        addStyleName(I_LayoutBundle.INSTANCE.form().emptyValue());
     }
 
     /**
@@ -400,6 +418,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         FlowPanel entityPanel = new FlowPanel();
         m_widgetHolder.setWidget(entityPanel);
         renderer.renderForm(value, entityPanel);
+        removeStyleName(I_LayoutBundle.INSTANCE.form().emptyValue());
     }
 
     /**
@@ -407,8 +426,9 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
      * 
      * @param widget the widget
      * @param value the value
+     * @param active <code>true</code> if the widget should be activated
      */
-    public void setValueWidget(I_EditWidget widget, String value) {
+    public void setValueWidget(I_EditWidget widget, String value, boolean active) {
 
         if (m_hasValue) {
             throw new RuntimeException("Value has already been set");
@@ -419,15 +439,56 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         m_widgetHolder.getElement().appendChild(valueDiv);
         valueDiv.setInnerHTML(value);
         valueDiv.addClassName(I_LayoutBundle.INSTANCE.form().widget());
-        widget.initWidget(valueDiv, false);
-        widget.addValueChangeHandler(new ChangeHandler());
-        widget.addFocusHandler(new FocusHandler() {
+        m_widget = widget.initWidget(valueDiv, false);
+        m_widget.addValueChangeHandler(new ChangeHandler());
+        m_widget.addFocusHandler(new FocusHandler() {
 
             public void onFocus(FocusEvent event) {
 
                 HighlightingHandler.getInstance().setFocusHighlighted(AttributeValueView.this);
             }
         });
+        m_widget.setActive(active);
+        if (!active) {
+            addActivationHandler();
+        } else {
+            removeStyleName(I_LayoutBundle.INSTANCE.form().emptyValue());
+        }
+    }
+
+    /**
+     * Adds a mouse down handler to activate the editing widget.<p>
+     */
+    private void addActivationHandler() {
+
+        if (m_activationHandlerRegistration == null) {
+            m_activationHandlerRegistration = addMouseDownHandler(new MouseDownHandler() {
+
+                public void onMouseDown(MouseDownEvent event) {
+
+                    // only act on click outside the button bar
+                    if (!DomUtil.checkPositionInside(m_buttonBar.getElement(), event.getClientX(), event.getClientY())) {
+                        activateWidget();
+                    }
+                }
+            });
+        }
+    }
+
+    /**
+     * Activates the value widget if present.<p>
+     */
+    void activateWidget() {
+
+        if (m_activationHandlerRegistration != null) {
+            m_activationHandlerRegistration.removeHandler();
+            m_activationHandlerRegistration = null;
+        }
+        if ((m_widget != null) && !m_widget.isActive()) {
+            m_widget.setActive(true);
+            m_handler.updateButtonVisisbility();
+            removeStyleName(I_LayoutBundle.INSTANCE.form().emptyValue());
+        }
     }
 
     /**
@@ -471,7 +532,11 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     @UiHandler("m_addButton")
     protected void addNewAttributeValue(ClickEvent event) {
 
-        m_handler.addNewAttributeValue(this);
+        if ((m_widget != null) && !m_widget.isActive()) {
+            activateWidget();
+        } else {
+            m_handler.addNewAttributeValue(this);
+        }
         onResize();
     }
 

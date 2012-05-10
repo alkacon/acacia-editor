@@ -45,11 +45,25 @@ public interface I_EditWidget extends HasValue<String>, HasFocusHandlers {
      * The element needs to be attached to the DOM containing the current value.<p>
      * 
      * @param element the element
-     * @param inline <ode>true</code> if the widget should be rendered in line
+     * @param inline <code>true</code> if the widget should be rendered in line
      * 
      * @return the initialized widget
      */
     I_EditWidget initWidget(Element element, boolean inline);
+
+    /**
+     * Sets the widget active/inactive.<p>
+     * 
+     * @param active <code>true</code> to activate the widget
+     */
+    void setActive(boolean active);
+
+    /**
+     * Returns if the widget is active.<p>
+     * 
+     * @return <code>true</code> if the widget is active
+     */
+    boolean isActive();
 
     /**
      * Sets the configuration for the given widget.<p>

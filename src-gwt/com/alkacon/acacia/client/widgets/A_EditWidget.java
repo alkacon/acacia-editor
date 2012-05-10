@@ -63,11 +63,13 @@ public abstract class A_EditWidget extends WidgetBase implements I_EditWidget {
 
     /**
      * Fires the value change event, if the value has changed.<p>
+     * 
+     * @param force <code>true</code> to force firing the event, not regarding an actually changed value 
      */
-    protected void fireValueChange() {
+    protected void fireValueChange(boolean force) {
 
         String currentValue = getValue();
-        if (!currentValue.equals(m_previousValue)) {
+        if (force || !currentValue.equals(m_previousValue)) {
             m_previousValue = currentValue;
             ValueChangeEvent.fire(this, currentValue);
         }

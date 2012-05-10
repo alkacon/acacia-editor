@@ -31,6 +31,7 @@ import com.alkacon.geranium.client.dnd.DNDHandler;
 import com.alkacon.geranium.client.dnd.DNDHandler.Orientation;
 import com.alkacon.vie.client.I_Vie;
 import com.alkacon.vie.shared.I_Entity;
+import com.alkacon.vie.shared.I_EntityAttribute;
 import com.alkacon.vie.shared.I_Type;
 
 import java.util.ArrayList;
@@ -115,7 +116,7 @@ public class AttributeHandler {
                 }
 
             }
-            valueWidget.setValueWidget(widget, value);
+            valueWidget.setValueWidget(widget, value, true);
         } else {
             I_Entity value = m_vie.createEntity(null, m_attributeType.getId());
             I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(m_attributeName, m_attributeType);
@@ -221,7 +222,7 @@ public class AttributeHandler {
                 m_widgetService.getAttributeLabel(m_attributeName),
                 m_widgetService.getAttributeHelp(m_attributeName));
             parent.insert(valueWidget, targetPosition);
-            valueWidget.setValueWidget(m_widgetService.getAttributeWidget(m_attributeName), value);
+            valueWidget.setValueWidget(m_widgetService.getAttributeWidget(m_attributeName), value, true);
             HighlightingHandler.getInstance().setFocusHighlighted(valueWidget);
         } else {
             I_Entity value = m_entity.getAttribute(m_attributeName).getComplexValues().get(currentPosition);
@@ -257,9 +258,16 @@ public class AttributeHandler {
      */
     public void removeAttributeValue(AttributeValueView reference) {
 
-        if (m_entity.getAttribute(m_attributeName).isSingleValue()) {
+        I_EntityAttribute attribute = m_entity.getAttribute(m_attributeName);
+        if (attribute.isSingleValue()) {
             m_entity.removeAttribute(m_attributeName);
             reference.removeValue();
+            if (attribute.isSimpleValue()) {
+                reference.setValueWidget(
+                    m_widgetService.getAttributeWidget(m_attributeName),
+                    m_widgetService.getDefaultAttributeValue(m_attributeName),
+                    false);
+            }
         } else {
             int index = reference.getValueIndex();
             m_entity.removeAttributeValue(m_attributeName, index);
@@ -276,8 +284,9 @@ public class AttributeHandler {
 
         int minOccurrence = getEntityType().getAttributeMinOccurrence(m_attributeName);
         int maxOccurrence = getEntityType().getAttributeMaxOccurrence(m_attributeName);
+        I_EntityAttribute attribute = m_entity.getAttribute(m_attributeName);
         boolean mayHaveMore = (maxOccurrence > minOccurrence)
-            && ((!m_entity.hasAttribute(m_attributeName) || (m_entity.getAttribute(m_attributeName).getValueCount() < maxOccurrence)));
+            && (((attribute == null) || (attribute.getValueCount() < maxOccurrence)));
         boolean needsRemove = false;
         boolean needsSort = false;
         if (m_entity.hasAttribute(m_attributeName)) {

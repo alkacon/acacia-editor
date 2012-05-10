@@ -141,6 +141,18 @@ public class TestForms extends GWTTestCase {
                 // dummy method
                 return null;
             }
+
+            public void setActive(boolean active) {
+
+                // TODO: Auto-generated method stub
+
+            }
+
+            public boolean isActive() {
+
+                // TODO: Auto-generated method stub
+                return false;
+            }
         };
         Map<String, AttributeConfiguration> configs = new HashMap<String, AttributeConfiguration>();
         configs.put("attribute1", new AttributeConfiguration("label", "help", "widget1", "", ""));
