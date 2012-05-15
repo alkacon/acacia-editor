@@ -244,14 +244,10 @@
 }
 
 /** Drag and drop styles. */
-div.entity div.attributeValue.dragPlaceholder > div{
-	background-image: none;
-	background-color: #ffffff !important;
-	opacity: 0.8;
-}
-
 @sprite div.entity div.attributeValue.dragPlaceholder > div {
 	gwt-image: "baseImages.placeholderImage";
+	background-color: #ffffff;
+	opacity: 0.8;
 }
 
 .dragPlaceholder > div *{
@@ -284,6 +280,13 @@ div.entity div.attributeValue.dragPlaceholder > div{
 	display: inline-block;
 }
 
+/* Spreading the button bar to cover the hole attribute view element to avoid any iframe issues. */
+.dragStarted .dragHelper.attributeValue .buttonBar {
+	left: 0px;
+	bottom: 0px;
+	text-align: right;
+}
+
 .dragHelper.attributeValue{
 	position: absolute;
 	opacity: 0.8;
@@ -293,6 +296,7 @@ div.entity div.attributeValue.dragPlaceholder > div{
 	position: relative;
 	padding: 2px 0px 2px 4px;
 }
+
 .dragOverlay{
 	position: fixed;
 	z-index: value("constants.css.zIndexPopup");
