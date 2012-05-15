@@ -220,9 +220,9 @@ public final class TinyMCE implements HasValue<String> {
 
                                 });
                         ed.onClick
-                                .add(function() {
+                                .add(function(event) {
                                     self.@com.alkacon.acacia.client.widgets.TinyMCE::fixToolbar()();
-                                    self.@com.alkacon.acacia.client.widgets.TinyMCE::propagateClickEvent()();
+                                    self.@com.alkacon.acacia.client.widgets.TinyMCE::propagateMouseEvent(Lcom/google/gwt/dom/client/NativeEvent;)(event);
                                 });
                     },
                     init_instance_callback : function(ed) {
@@ -232,6 +232,27 @@ public final class TinyMCE implements HasValue<String> {
                                         'focus',
                                         function(event) {
                                             self.@com.alkacon.acacia.client.widgets.TinyMCE::propagateFocusEvent()();
+                                        });
+                        $wnd.tinyMCE.dom.Event
+                                .add(
+                                        ed.getWin(),
+                                        'mousedown',
+                                        function(event) {
+                                            self.@com.alkacon.acacia.client.widgets.TinyMCE::propagateMouseEvent(Lcom/google/gwt/dom/client/NativeEvent;)(event);
+                                        });
+                        $wnd.tinyMCE.dom.Event
+                                .add(
+                                        ed.getWin(),
+                                        'mouseup',
+                                        function(event) {
+                                            self.@com.alkacon.acacia.client.widgets.TinyMCE::propagateMouseEvent(Lcom/google/gwt/dom/client/NativeEvent;)(event);
+                                        });
+                        $wnd.tinyMCE.dom.Event
+                                .add(
+                                        ed.getWin(),
+                                        'mousemove',
+                                        function(event) {
+                                            self.@com.alkacon.acacia.client.widgets.TinyMCE::propagateMouseEvent(Lcom/google/gwt/dom/client/NativeEvent;)(event);
                                         });
                     },
                     // General options
@@ -438,20 +459,21 @@ public final class TinyMCE implements HasValue<String> {
     }-*/;
 
     /**
-     * Propagates the click event.<p>
-     */
-    protected void propagateClickEvent() {
-
-        NativeEvent nativeEvent = Document.get().createClickEvent(0, 0, 0, 0, 0, false, false, false, false);
-        m_element.dispatchEvent(nativeEvent);
-    }
-
-    /**
-     * Propagates the focus event.<p>
+     * Propagates the a focus event.<p>
      */
     protected void propagateFocusEvent() {
 
         NativeEvent nativeEvent = Document.get().createFocusEvent();
+        m_element.dispatchEvent(nativeEvent);
+    }
+
+    /**
+     * Propagates a native mouse event.<p>
+     *
+     * @param nativeEvent the native mouse event 
+     */
+    protected void propagateMouseEvent(NativeEvent nativeEvent) {
+
         m_element.dispatchEvent(nativeEvent);
     }
 

@@ -41,17 +41,17 @@ public abstract class A_EditWidget extends WidgetBase implements I_EditWidget {
     private String m_previousValue;
 
     /**
-     * @see com.google.gwt.event.logical.shared.HasValueChangeHandlers#addValueChangeHandler(com.google.gwt.event.logical.shared.ValueChangeHandler)
-     */
-    public abstract HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> handler);
-
-    /**
      * @see com.google.gwt.event.dom.client.HasFocusHandlers#addFocusHandler(com.google.gwt.event.dom.client.FocusHandler)
      */
     public HandlerRegistration addFocusHandler(FocusHandler handler) {
 
         return addDomHandler(handler, FocusEvent.getType());
     }
+
+    /**
+     * @see com.google.gwt.event.logical.shared.HasValueChangeHandlers#addValueChangeHandler(com.google.gwt.event.logical.shared.ValueChangeHandler)
+     */
+    public abstract HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> handler);
 
     /**
      * @see com.google.gwt.user.client.ui.HasValue#getValue()
