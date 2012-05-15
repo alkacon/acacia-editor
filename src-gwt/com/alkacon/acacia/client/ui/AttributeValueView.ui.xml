@@ -10,7 +10,7 @@
 				<aui:HoverPanel ui:field="m_buttonBar" addStyleNames="{style.form.buttonBar}">
 					<aui:PushButton ui:field="m_removeButton" addStyleNames="{style.form.button}" />
 					<aui:PushButton ui:field="m_addButton" addStyleNames="{style.form.button}" />
-					<aui:PushButton ui:field="m_moveButton" addStyleNames="{style.form.button}" />
+					<aui:PushButton ui:field="m_moveButton" addStyleNames="{style.form.button} {style.form.moveHandle}" />
 				</aui:HoverPanel>
 			</div>
 			<g:SimplePanel ui:field="m_widgetHolder" styleName="{style.form.widgetHolder}" />

@@ -317,7 +317,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     public Element getPlaceholder(I_DropTarget target) {
 
         m_placeHolder = DomUtil.clone(getElement());
-        m_placeHolder.addClassName(I_LayoutBundle.INSTANCE.form().placeHolder());
+        m_placeHolder.addClassName(I_LayoutBundle.INSTANCE.form().dragPlaceholder());
         return m_placeHolder;
     }
 
@@ -388,7 +388,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
      */
     public void onStartDrag(I_DropTarget target) {
 
-        addStyleName(I_LayoutBundle.INSTANCE.form().positionIndicator());
+        addStyleName(I_LayoutBundle.INSTANCE.form().dragElement());
     }
 
     /**
@@ -466,8 +466,8 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
 
                 public void onMouseDown(MouseDownEvent event) {
 
-                    // only act on click outside the button bar
-                    if (!DomUtil.checkPositionInside(m_buttonBar.getElement(), event.getClientX(), event.getClientY())) {
+                    // only act on click inside the widget holder
+                    if (DomUtil.checkPositionInside(m_widgetHolder.getElement(), event.getClientX(), event.getClientY())) {
                         activateWidget();
                     }
                 }
@@ -610,7 +610,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
             m_provisionalParent.removeFromParent();
             m_provisionalParent = null;
         }
-        removeStyleName(I_LayoutBundle.INSTANCE.form().positionIndicator());
+        removeStyleName(I_LayoutBundle.INSTANCE.form().dragElement());
     }
 
     /**
@@ -621,15 +621,15 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     private void initButtons(String label) {
 
         m_addButton.setImageClass(I_ImageBundle.INSTANCE.style().addIcon());
-        m_addButton.setTitle("Add " + label);
+        m_addButton.setTitle("Add");
         m_addButton.setButtonStyle(ButtonStyle.TRANSPARENT, null);
 
         m_removeButton.setImageClass(I_ImageBundle.INSTANCE.style().removeIcon());
-        m_removeButton.setTitle("Delete " + label);
+        m_removeButton.setTitle("Delete");
         m_removeButton.setButtonStyle(ButtonStyle.TRANSPARENT, null);
 
         m_helpBubbleClose.setImageClass(I_ImageBundle.INSTANCE.style().closeIcon());
-        m_helpBubbleClose.setTitle("Close " + label);
+        m_helpBubbleClose.setTitle("Close");
         m_helpBubbleClose.setButtonStyle(ButtonStyle.TRANSPARENT, null);
     }
 
@@ -652,16 +652,6 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
      */
     private boolean shouldDisplayTooltipAbove() {
 
-        Element formParent = DomUtil.getAncestor(getElement(), I_LayoutBundle.INSTANCE.form().formParent());
-        if (formParent != null) {
-            int elementTop = getElement().getAbsoluteTop();
-            int elementHeight = getElement().getOffsetHeight();
-            int formTop = formParent.getAbsoluteTop();
-            int formHeight = formParent.getOffsetHeight();
-            if (((elementTop - formTop) + elementHeight) > (formHeight - 100)) {
-                return true;
-            }
-        }
-        return false;
+        return !isSimpleValue();
     }
 }

@@ -8,19 +8,19 @@
 	background-color: transparent !important;
 }
 
-.attributeValue .buttonBar{
-	position: absolute;
-	top: 2px;
-	right: 2px;
+.entity{
+	margin: 5px;
 }
 
 .entity .entity{
-	margin-left:20px;
+	margin: 0px 0px 0px 20px;
 }
 
+/** Attribute value view styles. */
 .attributeValue .label{
 	margin:4px 3px 2px;
 	color: #7788aa;
+	cursor: default;
 }
 .entity .attributeValue{
 	padding-bottom:2px;
@@ -42,7 +42,149 @@
 .entity .entity .entity .attributeValue .label span{
 	font-size: 12px;
 }
+.entity .attributeValue > div{
+	position: relative;
+	padding: 2px 0px 2px 4px;
+}
 
+.attributeValue .label span, .attributeValue .label div{
+	font-weight:bold;
+}
+
+.attributeValue .buttonBar{
+	position: absolute;
+	top: 2px;
+	right: 2px;
+}
+
+@if user.agent ie6 {
+	.button{
+		display: inline;
+		cursor: pointer;
+	}
+} @else {
+	.button{
+		display: inline-block;
+		cursor: pointer;
+	}
+}
+
+/** Editing widget styles. */
+.widgetHolder .widget{
+	margin: 0 2px 4px 2px;
+}
+
+.widgetHolder .widget.input{
+	margin: 0px 2px;
+	padding: 2px 5px;
+	min-height: 14px;
+}
+
+.input:focus{
+	outline:none;
+}
+
+.widgetHolder > .widget.input, .attributeValue .widgetHolder  .mceEditor{
+	border: 1px solid #7788AA;
+	background: #ffffff;
+}
+.widgetHolder > .widget.input{
+	cursor: text;
+}
+.attributeValue .widgetHolder  .mceEditor.inActive *{
+	visibility: hidden;
+}
+
+.widgetHolder > .widget.input.inActive, .attributeValue .widgetHolder  .mceEditor.inActive{
+	color: transparent;
+	border-color: #B1B4B8;
+}
+
+.attributeValue.focused > div > .widgetHolder > .mceEditor .mceStatusbar{
+	visibility: visible;
+}
+
+.attributeValue > div > .widgetHolder > .mceEditor .mceStatusbar{
+	visibility: hidden;
+	border: none;
+}
+
+.attributeValue.focused > div > .widgetHolder > .mceEditor .mceExternalToolbar{
+	z-index: 10;
+}
+
+.attributeValue.focused > div > .widgetHolder > .mceEditor .mceIframeContainer{
+	border-bottom: 1px solid #aaaaaa;
+}
+
+.attributeValue > div > .widgetHolder > .mceEditor .mceIframeContainer{
+	border-color: #ffffff;
+}
+
+.attributeValue > div > .widgetHolder > .mceEditor > table.mceLayout{
+	border: none;
+}
+
+.attributeValue .mceEditor .mceExternalToolbar{
+	z-index: -1;
+}
+
+/** Help bubble styles. */
+.helpBubble{
+	position: absolute;
+	background: #FFFFCC;
+	color: #222222;
+	top: 100%;
+	left: 2px;
+	display: none;
+	padding: 7px 19px 3px 5px;
+	border-radius:4px;
+	z-index: 10;
+	box-shadow: 2px 2px 6px #666666;
+	opacity: 0.9;
+}
+
+.displayAbove  > div > .helpBubble{
+	top: auto;
+	bottom: 100%;
+}
+@sprite .displayAbove > div > .helpBubble > .helpBubbleArrow{
+	gwt-image: "bottomLeftCorner";
+	height: 10px;
+	width: 10px;
+	position: absolute;
+	top: auto;
+	bottom: -5px;
+	left: 10px;
+}
+.helpBubble div{
+	color: #222222;
+}
+
+.attributeValue.focused > div > .helpBubble{
+	display: block;
+}
+
+.attributeValue.focused.closedBubble > div > .helpBubble{
+	display: none;
+}
+
+.helpBubble .helpBubbleClose{
+	position: absolute;
+	top: 2px;
+	right: 2px;
+}
+
+@sprite .helpBubbleArrow{
+	gwt-image: "topLeftCorner";
+	height: 10px;
+	width: 10px;
+	position: absolute;
+	top: -5px;
+	left: 10px;
+}
+
+/** Browser specific styles. */
 @if user.agent gecko1_8 gecko{
 	/** firefox **/
 	.entity .attributeValue > div, .dragHelper.attributeValue > div{
@@ -101,54 +243,45 @@
 	}
 }
 
-div.entity div.attributeValue.placeHolder > div{
+/** Drag and drop styles. */
+div.entity div.attributeValue.dragPlaceholder > div{
 	background-image: none;
 	background-color: #ffffff !important;
 	opacity: 0.8;
 }
 
-@sprite div.entity div.attributeValue.placeHolder.markUnchanged > div {
+@sprite div.entity div.attributeValue.dragPlaceholder > div {
 	gwt-image: "baseImages.placeholderImage";
 }
 
-.placeHolder > div *{
+.dragPlaceholder > div *{
 	visibility:hidden;
 }
 
-
-@sprite .positionIndicator{
-	gwt-image: "baseImages.placeholderImage";
-	height: 4px;
-	right: 0px;
-	left: 0px;
-	position: absolute;
-	z-index: value("constants.css.zIndexInline");
-	margin-top: -3px;
-	border-left: solid 5px value("constants.css.borderColorHighlight");
-	border-right: solid 5px value("constants.css.borderColorHighlight");
-	opacity: 0.5;
-}
-
-.positionIndicator *{
-	display: none;
-}
-
-.positionIndicator.markUnchanged {
+.dragElement {
 	display: none;
 }
 
 @if user.agent ie6 {
-	.placeHolder {
+	.dragPlaceholder {
 		filter: literal("alpha(opacity = 50)");
 	}
 } @elif user.agent ie8 {
-	.placeHolder {
+	.dragPlaceholder {
 		-ms-filter: "alpha(opacity = 50)";
 	}
 } @else {
-	.placeHolder {
+	.dragPlaceholder {
         opacity: 0.5;
 	}
+}
+
+.dragStarted .attributeValue .buttonBar > div{
+	display: none;
+}
+
+.dragStarted .dragHelper.attributeValue .buttonBar > .moveHandle{
+	display: inline-block;
 }
 
 .dragHelper.attributeValue{
@@ -160,136 +293,14 @@ div.entity div.attributeValue.placeHolder > div{
 	position: relative;
 	padding: 2px 0px 2px 4px;
 }
-
-.dragStarted, .dragPlaceholder{}
-.entity .attributeValue > div{
-	position: relative;
-	padding: 2px 0px 2px 4px;
-}
-
-.attributeValue .label span, .attributeValue .label div{
-	font-weight:bold;
-}
-
-@if user.agent ie6 {
-	.button{
-		display: inline;
-		cursor: pointer;
-	}
-} @else {
-	.button{
-		display: inline-block;
-		cursor: pointer;
-	}
+.dragOverlay{
+	position: fixed;
+	z-index: value("constants.css.zIndexPopup");
+	top: 0px;
+	left: 0px;
+	height: 100%;
+	width: 100%;
+	background: transparent;
 }
 
 
-.widgetHolder .widget{
-	margin: 0 2px 4px 2px;
-}
-
-.widgetHolder .widget.input{
-	margin: 0px 2px;
-	padding: 2px 5px;
-	min-height: 14px;
-}
-
-.input:focus{
-	outline:none;
-}
-
-.widgetHolder > .widget.input, .attributeValue .widgetHolder  .mceEditor{
-	border: 1px solid #C5CCD4;
-	background: #ffffff;
-}
-
-.attributeValue .widgetHolder  .mceEditor.inActive *{
-	visibility: hidden;
-}
-
-.widgetHolder > .widget.input.inActive{
-	color: transparent;
-}
-
-.attributeValue.focused > div > .widgetHolder > .mceEditor .mceStatusbar{
-	visibility: visible;
-}
-
-.attributeValue > div > .widgetHolder > .mceEditor .mceStatusbar{
-	visibility: hidden;
-	border: none;
-}
-
-.attributeValue.focused > div > .widgetHolder > .mceEditor .mceExternalToolbar{
-	z-index: 10;
-}
-
-.attributeValue.focused > div > .widgetHolder > .mceEditor .mceIframeContainer{
-	border-bottom: 1px solid #aaaaaa;
-}
-
-.attributeValue > div > .widgetHolder > .mceEditor .mceIframeContainer{
-	border-color: #ffffff;
-}
-
-.attributeValue > div > .widgetHolder > .mceEditor > table.mceLayout{
-	border: none;
-}
-
-.attributeValue .mceEditor .mceExternalToolbar{
-	z-index: -1;
-}
-
-.helpBubble{
-	position: absolute;
-	background: #FFFFCC;
-	color: #222222;
-	top: 100%;
-	left: 2px;
-	display: none;
-	padding: 7px 19px 3px 5px;
-	border-radius:4px;
-	z-index: 10;
-	box-shadow: 2px 2px 6px #666666;
-	opacity: 0.9;
-}
-
-.displayAbove .helpBubble{
-	top: auto;
-	bottom: 100%;
-}
-@sprite .displayAbove .helpBubbleArrow{
-	gwt-image: "bottomLeftCorner";
-	height: 10px;
-	width: 10px;
-	position: absolute;
-	top: auto;
-	bottom: -5px;
-	left: 10px;
-}
-.helpBubble div{
-	color: #222222;
-}
-
-.attributeValue.focused > div > .helpBubble{
-	display: block;
-}
-
-.attributeValue.focused.closedBubble > div > .helpBubble{
-	display: none;
-}
-
-.helpBubble .helpBubbleClose{
-	position: absolute;
-	top: 2px;
-	right: 2px;
-}
-
-@sprite .helpBubbleArrow{
-	gwt-image: "topLeftCorner";
-	height: 10px;
-	width: 10px;
-	position: absolute;
-	top: -5px;
-	left: 10px;
-}

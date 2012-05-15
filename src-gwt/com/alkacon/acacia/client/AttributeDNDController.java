@@ -35,14 +35,17 @@ import com.alkacon.geranium.client.dnd.I_DropTarget;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.DOM;
 
 /**
  * The drag and drop controller for attribute value sorting.<p>
  */
 public class AttributeDNDController implements I_DNDController {
 
-    /** The last position. */
-    private int m_lastPosition;
+    /** The drag overlay. */
+    private Element m_dragOverlay;
 
     /** The starting position. */
     private int m_startPosition;
@@ -69,7 +72,7 @@ public class AttributeDNDController implements I_DNDController {
      */
     public void onDragCancel(I_Draggable draggable, I_DropTarget target, final DNDHandler handler) {
 
-        draggable.getElement().removeClassName(I_LayoutBundle.INSTANCE.form().markUnchanged());
+        removeDragOverlay();
         clearTargets(handler);
     }
 
@@ -78,15 +81,13 @@ public class AttributeDNDController implements I_DNDController {
      */
     public boolean onDragStart(I_Draggable draggable, I_DropTarget target, DNDHandler handler) {
 
-        m_lastPosition = -1;
+        installDragOverlay();
         handler.setOrientation(Orientation.VERTICAL);
         if ((target instanceof ValuePanel) && (draggable instanceof AttributeValueView)) {
             m_startPosition = ((AttributeValueView)draggable).getValueIndex();
             handler.clearTargets();
             handler.addTarget(target);
             target.getElement().insertBefore(handler.getPlaceholder(), draggable.getElement());
-            draggable.getElement().addClassName(I_LayoutBundle.INSTANCE.form().markUnchanged());
-            handler.getPlaceholder().addClassName(I_LayoutBundle.INSTANCE.form().markUnchanged());
             ((ValuePanel)target).highlightOutline();
             return true;
         }
@@ -104,7 +105,7 @@ public class AttributeDNDController implements I_DNDController {
             targetIndex--;
         }
         attributeValue.getHandler().moveAttributeValue(attributeValue, m_startPosition, targetIndex);
-        draggable.getElement().removeClassName(I_LayoutBundle.INSTANCE.form().markUnchanged());
+        removeDragOverlay();
         clearTargets(handler);
     }
 
@@ -113,21 +114,6 @@ public class AttributeDNDController implements I_DNDController {
      */
     public void onPositionedPlaceholder(I_Draggable draggable, I_DropTarget target, DNDHandler handler) {
 
-        int currentPosition = target.getPlaceholderIndex();
-        if (m_lastPosition != currentPosition) {
-
-            int distance = m_startPosition - currentPosition;
-            if ((distance > 0) || (distance < -1)) {
-                // position changed
-                draggable.getElement().removeClassName(I_LayoutBundle.INSTANCE.form().markUnchanged());
-                handler.getPlaceholder().removeClassName(I_LayoutBundle.INSTANCE.form().markUnchanged());
-            } else {
-                // position has not changed
-                draggable.getElement().addClassName(I_LayoutBundle.INSTANCE.form().markUnchanged());
-                handler.getPlaceholder().addClassName(I_LayoutBundle.INSTANCE.form().markUnchanged());
-            }
-            m_lastPosition = currentPosition;
-        }
         ((ValuePanel)target).updateHighlightingPosition();
     }
 
@@ -165,6 +151,30 @@ public class AttributeDNDController implements I_DNDController {
                 handler.clearTargets();
             }
         });
+    }
+
+    /**
+     * Installs the drag overlay to avoid any mouse over issues or similar.<p>
+     */
+    private void installDragOverlay() {
+
+        if (m_dragOverlay != null) {
+            m_dragOverlay.removeFromParent();
+        }
+        m_dragOverlay = DOM.createDiv();
+        m_dragOverlay.addClassName(I_LayoutBundle.INSTANCE.form().dragOverlay());
+        Document.get().getBody().appendChild(m_dragOverlay);
+    }
+
+    /**
+     * Removes the drag overlay.<p>
+     */
+    private void removeDragOverlay() {
+
+        if (m_dragOverlay != null) {
+            m_dragOverlay.removeFromParent();
+            m_dragOverlay = null;
+        }
     }
 
 }

@@ -79,12 +79,26 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
          */
         String displayAbove();
 
+        /** 
+         * Returns the attribute CSS class name.<p>
+         * 
+         * @return the attribute CSS class
+         */
+        String dragElement();
+
         /**
          * Returns the drag helper CSS class name.<p>
          *  
          * @return the drag helper CSS class
          */
         String dragHelper();
+
+        /**
+         * Returns the drag overlay CSS class name.<p>
+         *  
+         * @return the drag overlay CSS class
+         */
+        String dragOverlay();
 
         /**
          * Returns the drag helper CSS class name.<p>
@@ -157,25 +171,11 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
         String label();
 
         /** 
-         * Returns the attribute CSS class name.<p>
+         * Returns the move handle CSS class name.<p>
          * 
-         * @return the attribute CSS class
+         * @return the move handle CSS class
          */
-        String markUnchanged();
-
-        /**
-         * Returns the place holder CSS class name
-         * 
-         * @return the place holder CSS class
-         */
-        String placeHolder();
-
-        /** 
-         * Returns the attribute CSS class name.<p>
-         * 
-         * @return the attribute CSS class
-         */
-        String positionIndicator();
+        String moveHandle();
 
         /**
          * Returns the widget CSS class name.<p>
