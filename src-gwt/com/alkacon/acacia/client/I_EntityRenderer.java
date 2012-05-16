@@ -54,6 +54,30 @@ public interface I_EntityRenderer {
     void renderInline(I_Entity parentEntity, String attributeName, Element context, int minOccurrence, int maxOccurrence);
 
     /**
+     * Injects editing widgets into the given DOM context to enable editing of the given entity.<p>
+     * 
+     * @param entity the entity to render
+     * @param formParent formParent the form parent widget
+     */
+    void renderInline(I_Entity entity, I_InlineFormParent formParent);
+
+    /**
+     * Injects editing widgets into the given DOM context to enable editing of the given entity attribute.<p>
+     * 
+     * @param parentEntity the parent entity 
+     * @param attributeName the attribute name
+     * @param formParent the form parent widget
+     * @param minOccurrence the minimum occurrence of this attribute
+     * @param maxOccurrence the maximum occurrence of this attribute
+     */
+    void renderInline(
+        I_Entity parentEntity,
+        String attributeName,
+        I_InlineFormParent formParent,
+        int minOccurrence,
+        int maxOccurrence);
+
+    /**
      * Renders the given entity into a form.<p>
      * 
      * @param entity the entity to render

@@ -181,6 +181,25 @@ public class Renderer implements I_EntityRenderer {
     }
 
     /**
+     * @see com.alkacon.acacia.client.I_EntityRenderer#renderInline(com.alkacon.vie.shared.I_Entity, com.alkacon.acacia.client.I_InlineFormParent)
+     */
+    public void renderInline(I_Entity entity, I_InlineFormParent formParent) {
+
+        I_Type entityType = m_vie.getType(entity.getTypeName());
+        List<String> attributeNames = entityType.getAttributeNames();
+        for (String attributeName : attributeNames) {
+            I_Type attributeType = entityType.getAttributeType(attributeName);
+            I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(attributeName, attributeType);
+            renderer.renderInline(
+                entity,
+                attributeName,
+                formParent,
+                entityType.getAttributeMinOccurrence(attributeName),
+                entityType.getAttributeMaxOccurrence(attributeName));
+        }
+    }
+
+    /**
      * @see com.alkacon.acacia.client.I_EntityRenderer#renderInline(com.alkacon.vie.shared.I_Entity, java.lang.String, com.google.gwt.dom.client.Element, int, int)
      */
     public void renderInline(
@@ -209,6 +228,40 @@ public class Renderer implements I_EntityRenderer {
                 }
             }
         }
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.I_EntityRenderer#renderInline(com.alkacon.vie.shared.I_Entity, java.lang.String, com.alkacon.acacia.client.I_InlineFormParent, int, int)
+     */
+    public void renderInline(
+        I_Entity parentEntity,
+        String attributeName,
+        I_InlineFormParent formParent,
+        int minOccurrence,
+        int maxOccurrence) {
+
+        I_EntityAttribute attribute = parentEntity.getAttribute(attributeName);
+        if (attribute != null) {
+            if (attribute.isSimpleValue()) {
+                List<Element> elements = m_vie.getAttributeElements(
+                    parentEntity,
+                    attributeName,
+                    formParent.getElement());
+                for (int i = 0; i < elements.size(); i++) {
+                    Element element = elements.get(i);
+                    I_EditWidget widget = m_widgetService.getAttributeWidget(
+                        attributeName,
+                        (com.google.gwt.user.client.Element)element);
+                    formParent.adoptWidget(widget);
+                    widget.addValueChangeHandler(new WidgetChangeHandler(parentEntity, attributeName, i));
+                }
+            } else {
+                for (I_Entity entity : attribute.getComplexValues()) {
+                    renderInline(entity, formParent);
+                }
+            }
+        }
+
     }
 
     /**
