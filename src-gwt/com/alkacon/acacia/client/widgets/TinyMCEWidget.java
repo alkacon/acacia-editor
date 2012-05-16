@@ -33,6 +33,7 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -311,7 +312,7 @@ public final class TinyMCEWidget extends A_EditWidget {
     protected void propagateFocusEvent() {
 
         NativeEvent nativeEvent = Document.get().createFocusEvent();
-        m_element.dispatchEvent(nativeEvent);
+        DomEvent.fireNativeEvent(nativeEvent, this, this.getElement());
     }
 
     /**
@@ -321,7 +322,7 @@ public final class TinyMCEWidget extends A_EditWidget {
      */
     protected void propagateMouseEvent(NativeEvent nativeEvent) {
 
-        m_element.dispatchEvent(nativeEvent);
+        DomEvent.fireNativeEvent(nativeEvent, this, this.getElement());
     }
 
     /**
