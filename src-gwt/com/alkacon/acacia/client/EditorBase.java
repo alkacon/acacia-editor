@@ -25,9 +25,9 @@
 package com.alkacon.acacia.client;
 
 import com.alkacon.acacia.client.ui.HighlightingHandler;
+import com.alkacon.acacia.client.widgets.HalloWidget;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
 import com.alkacon.acacia.client.widgets.StringWidget;
-import com.alkacon.acacia.client.widgets.TinyMCEWidget;
 import com.alkacon.acacia.shared.ContentDefinition;
 import com.alkacon.acacia.shared.rpc.I_ContentServiceAsync;
 import com.alkacon.geranium.client.ui.css.I_ImageBundle;
@@ -85,12 +85,22 @@ public class EditorBase {
 
                 return new StringWidget();
             }
+
+            public I_EditWidget wrapElement(String configuration, Element element) {
+
+                return new StringWidget(element);
+            }
         });
         m_widgetService.addWidgetFactory("html", new I_WidgetFactory() {
 
             public I_EditWidget createWidget(String configuration) {
 
-                return new TinyMCEWidget();
+                return new HalloWidget();
+            }
+
+            public I_EditWidget wrapElement(String configuration, Element element) {
+
+                return new HalloWidget(element);
             }
         });
     }

@@ -45,6 +45,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.junit.client.GWTTestCase;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Tests the forms.<p>
@@ -110,7 +111,7 @@ public class TestForms extends GWTTestCase {
                 return null;
             }
 
-            public I_EditWidget initWidget(Element element, boolean inline) {
+            public I_EditWidget wrapElement(Element element, boolean inline) {
 
                 return null;
             }
@@ -153,6 +154,18 @@ public class TestForms extends GWTTestCase {
                 // TODO: Auto-generated method stub
                 return false;
             }
+
+            public Widget asWidget() {
+
+                // TODO: Auto-generated method stub
+                return null;
+            }
+
+            public void onAttachWidget() {
+
+                // TODO: Auto-generated method stub
+
+            }
         };
         Map<String, AttributeConfiguration> configs = new HashMap<String, AttributeConfiguration>();
         configs.put("attribute1", new AttributeConfiguration("label", "help", "widget1", "", ""));
@@ -169,12 +182,24 @@ public class TestForms extends GWTTestCase {
 
                 return widget1;
             }
+
+            public I_EditWidget wrapElement(String configuration, com.google.gwt.user.client.Element element) {
+
+                // TODO: Auto-generated method stub
+                return null;
+            }
         });
         service.addWidgetFactory("widget2", new I_WidgetFactory() {
 
             public I_EditWidget createWidget(String configuration) {
 
                 return new StringWidget();
+            }
+
+            public I_EditWidget wrapElement(String configuration, com.google.gwt.user.client.Element element) {
+
+                // TODO: Auto-generated method stub
+                return null;
             }
         });
         assertEquals(widget1, service.getAttributeWidget("attribute1"));

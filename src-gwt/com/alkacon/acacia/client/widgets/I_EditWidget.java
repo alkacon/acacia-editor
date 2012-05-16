@@ -24,32 +24,20 @@
 
 package com.alkacon.acacia.client.widgets;
 
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.HasFocusHandlers;
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.IsWidget;
 
 /**
  * The edit widget interface.<p>
  */
-public interface I_EditWidget extends HasValue<String>, HasFocusHandlers {
+public interface I_EditWidget extends HasValue<String>, HasFocusHandlers, IsWidget {
 
     /**
-     * Returns the widget element.<p>
-     * 
-     * @return the widget element
+     * This method is called when a widget is attached to the browser's document.<p>
+     * It needs to call the {@link com.google.gwt.user.client.ui.Widget#onAttach()} method.<p>
      */
-    Element getElement();
-
-    /**
-     * Initializes the widget using the given element.<p>
-     * The element needs to be attached to the DOM containing the current value.<p>
-     * 
-     * @param element the element
-     * @param inline <code>true</code> if the widget should be rendered in line
-     * 
-     * @return the initialized widget
-     */
-    I_EditWidget initWidget(Element element, boolean inline);
+    public void onAttachWidget();
 
     /**
      * Sets the widget active/inactive.<p>
@@ -64,11 +52,4 @@ public interface I_EditWidget extends HasValue<String>, HasFocusHandlers {
      * @return <code>true</code> if the widget is active
      */
     boolean isActive();
-
-    /**
-     * Sets the configuration for the given widget.<p>
-     * 
-     *  @param configuration the configuration string
-     */
-    void setConfiguration(String configuration);
 }

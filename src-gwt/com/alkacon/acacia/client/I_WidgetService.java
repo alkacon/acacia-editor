@@ -30,6 +30,8 @@ import com.alkacon.vie.shared.I_Type;
 
 import java.util.Map;
 
+import com.google.gwt.user.client.Element;
+
 /**
  * Provides widget renderer for entity attributes.<p>
  */
@@ -85,6 +87,16 @@ public interface I_WidgetService {
      * @return the attribute widget
      */
     I_EditWidget getAttributeWidget(String attributeName);
+
+    /**
+     * Returns the attribute widget wrapping the given DOM element.<p>
+     * 
+     * @param attributeName the attribute name
+     * @param element the DOM element to wrap
+     * 
+     * @return the attribute widget
+     */
+    I_EditWidget getAttributeWidget(String attributeName, Element element);
 
     /**
      * Returns the renderer for the given attribute.<p>

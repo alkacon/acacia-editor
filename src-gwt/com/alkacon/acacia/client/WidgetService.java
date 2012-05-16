@@ -33,6 +33,8 @@ import com.alkacon.vie.shared.I_Type;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.gwt.user.client.Element;
+
 /**
  * Service providing form widget renderer for entity attributes.<p>
  */
@@ -126,6 +128,24 @@ public class WidgetService implements I_WidgetService {
                 I_WidgetFactory factory = m_widgetFactories.get(config.getWidgetName());
                 if (factory != null) {
                     return factory.createWidget(config.getWidgetConfig());
+                }
+            }
+        }
+        // no configuration or widget factory found, return default string widget 
+        return new StringWidget();
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.I_WidgetService#getAttributeWidget(java.lang.String, com.google.gwt.user.client.Element)
+     */
+    public I_EditWidget getAttributeWidget(String attributeName, Element element) {
+
+        if (m_attributeConfigurations != null) {
+            AttributeConfiguration config = m_attributeConfigurations.get(attributeName);
+            if (config != null) {
+                I_WidgetFactory factory = m_widgetFactories.get(config.getWidgetName());
+                if (factory != null) {
+                    return factory.wrapElement(config.getWidgetConfig(), element);
                 }
             }
         }

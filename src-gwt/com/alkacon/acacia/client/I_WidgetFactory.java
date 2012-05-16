@@ -26,6 +26,8 @@ package com.alkacon.acacia.client;
 
 import com.alkacon.acacia.client.widgets.I_EditWidget;
 
+import com.google.gwt.user.client.Element;
+
 /**
  * Generates an editing widget with the given configuration.<p>
  */
@@ -39,4 +41,14 @@ public interface I_WidgetFactory {
      * @return the widget
      */
     I_EditWidget createWidget(String configuration);
+
+    /**
+     * Wraps an existing DOM element.<p>
+     * 
+     * @param configuration the widget configuration
+     * @param element the element to wrap
+     * 
+     * @return the widget instance
+     */
+    I_EditWidget wrapElement(String configuration, Element element);
 }

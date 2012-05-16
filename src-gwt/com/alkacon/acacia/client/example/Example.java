@@ -29,9 +29,9 @@ import com.alkacon.acacia.client.I_WidgetFactory;
 import com.alkacon.acacia.client.Renderer;
 import com.alkacon.acacia.client.WidgetService;
 import com.alkacon.acacia.client.css.I_LayoutBundle;
+import com.alkacon.acacia.client.widgets.HalloWidget;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
 import com.alkacon.acacia.client.widgets.StringWidget;
-import com.alkacon.acacia.client.widgets.TinyMCEWidget;
 import com.alkacon.acacia.shared.AttributeConfiguration;
 import com.alkacon.acacia.shared.ContentDefinition;
 import com.alkacon.acacia.shared.Type;
@@ -47,6 +47,7 @@ import java.util.Map;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -98,15 +99,24 @@ public class Example implements EntryPoint {
 
                 return new StringWidget();
             }
+
+            public I_EditWidget wrapElement(String configuration, Element element) {
+
+                return new StringWidget(element);
+            }
         });
-        service.addWidgetFactory("tinymce", new I_WidgetFactory() {
+        service.addWidgetFactory("html", new I_WidgetFactory() {
 
             public I_EditWidget createWidget(String configuration) {
 
-                return new TinyMCEWidget();
+                return new HalloWidget();
+            }
+
+            public I_EditWidget wrapElement(String configuration, Element element) {
+
+                return new HalloWidget(element);
             }
         });
-
         I_EntityRenderer defaultRenderer = new Renderer(vie, service);
         service.setDefaultRenderer(defaultRenderer);
         I_EntityRenderer renderer = service.getRendererForType(vie.getType(personTypeName));

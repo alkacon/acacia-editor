@@ -24,28 +24,36 @@
 
 package com.alkacon.acacia.client.widgets;
 
-import com.alkacon.acacia.client.ui.WidgetBase;
-
-import com.google.gwt.event.dom.client.FocusEvent;
-import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.ui.FocusWidget;
 
 /**
  * Abstract editing widget class.<p>
  */
-public abstract class A_EditWidget extends WidgetBase implements I_EditWidget {
+public abstract class A_EditWidget extends FocusWidget implements I_EditWidget {
 
     /** The previous value. */
     private String m_previousValue;
 
     /**
-     * @see com.google.gwt.event.dom.client.HasFocusHandlers#addFocusHandler(com.google.gwt.event.dom.client.FocusHandler)
+     * Constructor wrapping a specific DOM element.<p>
+     * 
+     * @param element the element to wrap
      */
-    public HandlerRegistration addFocusHandler(FocusHandler handler) {
+    protected A_EditWidget(Element element) {
 
-        return addDomHandler(handler, FocusEvent.getType());
+        super(element);
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.widgets.I_EditWidget#onAttachWidget()
+     */
+    public void onAttachWidget() {
+
+        super.onAttach();
     }
 
     /**

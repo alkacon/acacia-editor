@@ -28,7 +28,6 @@ import com.alkacon.acacia.client.css.I_LayoutBundle;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -39,6 +38,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 
 /**
  * The string edit widget.<p>
@@ -50,6 +50,25 @@ public class StringWidget extends A_EditWidget {
 
     /** The value changed handler initialized flag. */
     private boolean m_valueChangeHandlerInitialized;
+
+    /**
+     * Constructor.<p>
+     */
+    public StringWidget() {
+
+        this(DOM.createDiv());
+    }
+
+    /**
+     * Constructor wrapping a specific DOM element.<p>
+     * 
+     * @param element the element to wrap
+     */
+    public StringWidget(Element element) {
+
+        super(element);
+        init();
+    }
 
     /**
      * @see com.google.gwt.event.logical.shared.HasValueChangeHandlers#addValueChangeHandler(com.google.gwt.event.logical.shared.ValueChangeHandler)
@@ -103,20 +122,6 @@ public class StringWidget extends A_EditWidget {
     }
 
     /**
-     * @see com.alkacon.acacia.client.widgets.I_EditWidget#initWidget(com.google.gwt.dom.client.Element, boolean)
-     */
-    public I_EditWidget initWidget(Element element, boolean inline) {
-
-        setElement(element);
-        DOM.setEventListener(getElement(), this);
-        setPreviousValue(getValue());
-        getElement().setAttribute("contentEditable", "true");
-        getElement().addClassName(I_LayoutBundle.INSTANCE.form().input());
-        m_active = true;
-        return this;
-    }
-
-    /**
      * @see com.alkacon.acacia.client.widgets.I_EditWidget#isActive()
      */
     public boolean isActive() {
@@ -145,15 +150,6 @@ public class StringWidget extends A_EditWidget {
     }
 
     /**
-     * @see com.alkacon.acacia.client.widgets.I_EditWidget#setConfiguration(java.lang.String)
-     */
-    public void setConfiguration(String confuguration) {
-
-        // TODO: Auto-generated method stub
-
-    }
-
-    /**
      * @see com.google.gwt.user.client.ui.HasValue#setValue(java.lang.Object)
      */
     public void setValue(String value) {
@@ -170,5 +166,15 @@ public class StringWidget extends A_EditWidget {
         if (fireEvents) {
             fireValueChange(false);
         }
+    }
+
+    /**
+     * Initializes the widget.<p>
+     */
+    private void init() {
+
+        getElement().setAttribute("contentEditable", "true");
+        addStyleName(I_LayoutBundle.INSTANCE.form().input());
+        m_active = true;
     }
 }

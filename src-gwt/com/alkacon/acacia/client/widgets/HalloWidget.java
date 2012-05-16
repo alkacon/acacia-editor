@@ -27,10 +27,11 @@ package com.alkacon.acacia.client.widgets;
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.vie.client.Vie;
 
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 
 /**
  * Rich text editor widget based on the hallo editor.<p>
@@ -39,6 +40,24 @@ public class HalloWidget extends A_EditWidget {
 
     /** Indicating if the widget is active. */
     private boolean m_active;
+
+    /**
+     * Constructor.<p>
+     */
+    public HalloWidget() {
+
+        this(DOM.createDiv());
+    }
+
+    /**
+     * Constructor wrapping a specific DOM element.<p>
+     * 
+     * @param element the element to wrap
+     */
+    public HalloWidget(Element element) {
+
+        super(element);
+    }
 
     /**
      * @see com.alkacon.acacia.client.widgets.A_EditWidget#addValueChangeHandler(com.google.gwt.event.logical.shared.ValueChangeHandler)
@@ -59,15 +78,21 @@ public class HalloWidget extends A_EditWidget {
     }
 
     /**
-     * @see com.alkacon.acacia.client.widgets.I_EditWidget#initWidget(com.google.gwt.dom.client.Element, boolean)
+     * Initializes the widget.<p>
      */
-    public I_EditWidget initWidget(Element element, boolean inline) {
+    private void init() {
 
-        setElement(element);
-        setPreviousValue(getValue());
-        element.addClassName(I_LayoutBundle.INSTANCE.form().input());
-        init(element, Vie.getInstance());
-        return this;
+        addStyleName(I_LayoutBundle.INSTANCE.form().input());
+    }
+
+    /**
+     * @see com.google.gwt.user.client.ui.FocusWidget#onAttach()
+     */
+    @Override
+    protected void onAttach() {
+
+        super.onAttach();
+        initNative(getElement(), Vie.getInstance());
     }
 
     /**
@@ -99,15 +124,6 @@ public class HalloWidget extends A_EditWidget {
     }
 
     /**
-     * @see com.alkacon.acacia.client.widgets.I_EditWidget#setConfiguration(java.lang.String)
-     */
-    public void setConfiguration(String configuration) {
-
-        // TODO: Auto-generated method stub
-
-    }
-
-    /**
      * @see com.google.gwt.user.client.ui.HasValue#setValue(java.lang.Object)
      */
     public void setValue(String value) {
@@ -130,7 +146,7 @@ public class HalloWidget extends A_EditWidget {
      * @param element the element
      * @param vie the VIE instance
      */
-    private native void init(Element element, Vie vie) /*-{
+    private native void initNative(Element element, Vie vie) /*-{
         var _self = this;
         var editable = vie.jQuery(element);
         editable.hallo({
@@ -151,5 +167,4 @@ public class HalloWidget extends A_EditWidget {
                             _self.@com.alkacon.acacia.client.widgets.HalloWidget::fireValueChange(Z)(false);
                         });
     }-*/;
-
 }

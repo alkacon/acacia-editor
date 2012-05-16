@@ -435,11 +435,10 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         }
         m_hasValue = true;
         m_isSimpleValue = true;
-        Element valueDiv = DOM.createDiv();
-        m_widgetHolder.getElement().appendChild(valueDiv);
-        valueDiv.setInnerHTML(value);
-        valueDiv.addClassName(I_LayoutBundle.INSTANCE.form().widget());
-        m_widget = widget.initWidget(valueDiv, false);
+        m_widget = widget;
+        widget.setValue(value, false);
+        m_widget.asWidget().addStyleName(I_LayoutBundle.INSTANCE.form().widget());
+        m_widgetHolder.setWidget(m_widget);
         m_widget.addValueChangeHandler(new ChangeHandler());
         m_widget.addFocusHandler(new FocusHandler() {
 
