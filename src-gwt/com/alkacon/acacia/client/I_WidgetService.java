@@ -42,7 +42,7 @@ public interface I_WidgetService {
      * 
      * @param configurations the configurations to add
      */
-    public void addConfigurations(Map<String, AttributeConfiguration> configurations);
+    void addConfigurations(Map<String, AttributeConfiguration> configurations);
 
     /**
      * Registers the given widget factory with the service.<p>
@@ -71,15 +71,6 @@ public interface I_WidgetService {
     String getAttributeLabel(String attributeName);
 
     /**
-     * Returns the default attribute value
-     * 
-     * @param attributeName the attribute name
-     * 
-     * @return the default value
-     */
-    String getDefaultAttributeValue(String attributeName);
-
-    /**
      * Returns the attribute widget.<p>
      * 
      * @param attributeName the attribute name
@@ -97,6 +88,15 @@ public interface I_WidgetService {
      * @return the attribute widget
      */
     I_EditWidget getAttributeWidget(String attributeName, Element element);
+
+    /**
+     * Returns the default attribute value
+     * 
+     * @param attributeName the attribute name
+     * 
+     * @return the default value
+     */
+    String getDefaultAttributeValue(String attributeName);
 
     /**
      * Returns the renderer for the given attribute.<p>

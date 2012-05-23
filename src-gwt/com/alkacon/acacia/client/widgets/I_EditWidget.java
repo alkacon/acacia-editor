@@ -25,6 +25,8 @@
 package com.alkacon.acacia.client.widgets;
 
 import com.google.gwt.event.dom.client.HasFocusHandlers;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 
@@ -37,6 +39,7 @@ public interface I_EditWidget extends HasValue<String>, HasFocusHandlers, IsWidg
      * This method is called when a widget is attached to the browser's document.<p>
      * It needs to call the {@link com.google.gwt.user.client.ui.Widget#onAttach()} method.<p>
      */
+    @SuppressWarnings("javadoc")
     public void onAttachWidget();
 
     /**
@@ -52,4 +55,14 @@ public interface I_EditWidget extends HasValue<String>, HasFocusHandlers, IsWidg
      * @return <code>true</code> if the widget is active
      */
     boolean isActive();
+
+    /**
+     * @see com.google.gwt.user.client.ui.HasValue#setValue(java.lang.Object, boolean)
+     */
+    void setValue(String value, boolean fireEvent);
+
+    /**
+     * @see com.google.gwt.event.logical.shared.HasValueChangeHandlers#addValueChangeHandler(com.google.gwt.event.logical.shared.ValueChangeHandler)
+     */
+    HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> handler);
 }

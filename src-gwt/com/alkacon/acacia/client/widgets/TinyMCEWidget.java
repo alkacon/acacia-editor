@@ -72,9 +72,6 @@ public final class TinyMCEWidget extends A_EditWidget {
     /** The editor height to set. */
     private int m_editorHeight;
 
-    /** The editor element. */
-    private Element m_element;
-
     /**
      * Constructor.<p>
      */
@@ -352,7 +349,7 @@ public final class TinyMCEWidget extends A_EditWidget {
      */
     private int calculateEditorHeight() {
 
-        int result = m_element.getOffsetHeight() + 30;
+        int result = getElement().getOffsetHeight() + 30;
         return result > MIN_EDITOR_HEIGHT ? result : MIN_EDITOR_HEIGHT;
     }
 
