@@ -26,6 +26,7 @@ package com.alkacon.acacia.shared;
 
 import com.alkacon.vie.shared.I_Type;
 
+import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -44,6 +45,9 @@ public class ContentDefinition implements IsSerializable {
     /** The content locale. */
     private String m_locale;
 
+    /** The tab information beans. */
+    private List<TabInfo> m_tabInfos;
+
     /** The types defining the entity. */
     private Map<String, I_Type> m_types;
 
@@ -53,17 +57,20 @@ public class ContentDefinition implements IsSerializable {
      * @param entity the entity
      * @param configurations the attribute configurations
      * @param types the types
+     * @param tabInfos the tab information beans
      * @param locale the content locale
      */
     public ContentDefinition(
         Entity entity,
         Map<String, AttributeConfiguration> configurations,
         Map<String, I_Type> types,
+        List<TabInfo> tabInfos,
         String locale) {
 
         m_entity = entity;
         m_configurations = configurations;
         m_types = types;
+        m_tabInfos = tabInfos;
         m_locale = locale;
     }
 
@@ -123,6 +130,16 @@ public class ContentDefinition implements IsSerializable {
     public String getLocale() {
 
         return m_locale;
+    }
+
+    /**
+     * Returns the tab information beans.<p>
+     *
+     * @return the tab information beans
+     */
+    public List<TabInfo> getTabInfos() {
+
+        return m_tabInfos;
     }
 
     /**

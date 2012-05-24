@@ -24,7 +24,10 @@
 
 package com.alkacon.acacia.client;
 
+import com.alkacon.acacia.shared.TabInfo;
 import com.alkacon.vie.shared.I_Entity;
+
+import java.util.List;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.Panel;
@@ -35,12 +38,37 @@ import com.google.gwt.user.client.ui.Panel;
 public interface I_EntityRenderer {
 
     /**
+     * Renders the given entity into a form with tabs.<p>
+     * 
+     * @param entity the entity to render
+     * @param tabInfos the tab infos
+     * @param context the context widget panel
+     */
+    public void renderForm(I_Entity entity, List<TabInfo> tabInfos, Panel context);
+
+    /**
+     * Renders the given entity into a form.<p>
+     * 
+     * @param entity the entity to render
+     * @param context the context widget panel
+     */
+    void renderForm(I_Entity entity, Panel context);
+
+    /**
      * Injects editing widgets into the given DOM context to enable editing of the given entity.<p>
      * 
      * @param entity the entity to render
      * @param context the context DOM element
      */
     void renderInline(I_Entity entity, Element context);
+
+    /**
+     * Injects editing widgets into the given DOM context to enable editing of the given entity.<p>
+     * 
+     * @param entity the entity to render
+     * @param formParent formParent the form parent widget
+     */
+    void renderInline(I_Entity entity, I_InlineFormParent formParent);
 
     /**
      * Injects editing widgets into the given DOM context to enable editing of the given entity attribute.<p>
@@ -52,14 +80,6 @@ public interface I_EntityRenderer {
      * @param maxOccurrence the maximum occurrence of this attribute
      */
     void renderInline(I_Entity parentEntity, String attributeName, Element context, int minOccurrence, int maxOccurrence);
-
-    /**
-     * Injects editing widgets into the given DOM context to enable editing of the given entity.<p>
-     * 
-     * @param entity the entity to render
-     * @param formParent formParent the form parent widget
-     */
-    void renderInline(I_Entity entity, I_InlineFormParent formParent);
 
     /**
      * Injects editing widgets into the given DOM context to enable editing of the given entity attribute.<p>
@@ -76,12 +96,4 @@ public interface I_EntityRenderer {
         I_InlineFormParent formParent,
         int minOccurrence,
         int maxOccurrence);
-
-    /**
-     * Renders the given entity into a form.<p>
-     * 
-     * @param entity the entity to render
-     * @param context the context DOM element
-     */
-    void renderForm(I_Entity entity, Panel context);
 }

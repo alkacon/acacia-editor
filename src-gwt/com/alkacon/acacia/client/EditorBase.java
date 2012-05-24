@@ -29,6 +29,7 @@ import com.alkacon.acacia.client.widgets.HalloWidget;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
 import com.alkacon.acacia.client.widgets.StringWidget;
 import com.alkacon.acacia.shared.ContentDefinition;
+import com.alkacon.acacia.shared.TabInfo;
 import com.alkacon.acacia.shared.rpc.I_ContentServiceAsync;
 import com.alkacon.geranium.client.ui.css.I_ImageBundle;
 import com.alkacon.geranium.client.ui.css.I_LayoutBundle;
@@ -54,11 +55,11 @@ import com.google.gwt.user.client.ui.Panel;
  */
 public class EditorBase {
 
-    /** The content service instance. */
-    private I_ContentServiceAsync m_service;
-
     /** The VIE instance. */
     protected I_Vie m_vie;
+
+    /** The content service instance. */
+    private I_ContentServiceAsync m_service;
 
     /** The widget service. */
     private WidgetService m_widgetService;
@@ -74,6 +75,7 @@ public class EditorBase {
         I_LayoutBundle.INSTANCE.generalCss().ensureInjected();
         I_LayoutBundle.INSTANCE.buttonCss().ensureInjected();
         I_LayoutBundle.INSTANCE.highlightCss().ensureInjected();
+        I_LayoutBundle.INSTANCE.tabbedPanelCss().ensureInjected();
         m_service = service;
         m_vie = Vie.getInstance();
         m_widgetService = new WidgetService();
@@ -178,6 +180,24 @@ public class EditorBase {
         m_vie.registerTypes(baseType, definition.getTypes());
         m_vie.registerTypes(baseType, definition.getTypes());
         m_vie.registerEntity(definition.getEntity());
+    }
+
+    /**
+     * Renders the entity form within the given context.<p>
+     * 
+     * @param entityId the entity id
+     * @param tabInfos the tab informations
+     * @param context the context element
+     */
+    public void renderEntityForm(String entityId, List<TabInfo> tabInfos, Panel context) {
+
+        I_Entity entity = m_vie.getEntity(entityId);
+        if (entity != null) {
+            I_Type type = m_vie.getType(entity.getTypeName());
+            FlowPanel formPanel = new FlowPanel();
+            context.add(formPanel);
+            m_widgetService.getRendererForType(type).renderForm(entity, tabInfos, formPanel);
+        }
     }
 
     /**

@@ -28,14 +28,25 @@ import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.acacia.client.ui.AttributeValueView;
 import com.alkacon.acacia.client.ui.ValuePanel;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
+import com.alkacon.acacia.shared.TabInfo;
+import com.alkacon.geranium.client.ui.FlowPanel;
+import com.alkacon.geranium.client.ui.TabbedPanel;
+import com.alkacon.geranium.client.util.PositionBean;
 import com.alkacon.vie.client.I_Vie;
 import com.alkacon.vie.shared.I_Entity;
 import com.alkacon.vie.shared.I_EntityAttribute;
 import com.alkacon.vie.shared.I_Type;
 
+import java.util.Iterator;
 import java.util.List;
 
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.Panel;
@@ -45,6 +56,70 @@ import com.google.gwt.user.client.ui.RootPanel;
  * Renders the widgets for an in-line form.<p>
  */
 public class Renderer implements I_EntityRenderer {
+
+    /**
+     * Handles the size of a tabbed panel.<p>
+     */
+    protected class TabSizeHandler implements SelectionHandler<Integer>, ValueChangeHandler<I_Entity> {
+
+        /** The context panel. */
+        private Panel m_context;
+
+        /** The tabbed panel. */
+        private TabbedPanel<FlowPanel> m_tabbedPanel;
+
+        /**
+         * Constructor.<p>
+         * 
+         * @param tabbedPanel the tabbed panel
+         * @param context the context panel
+         */
+        public TabSizeHandler(TabbedPanel<FlowPanel> tabbedPanel, Panel context) {
+
+            m_tabbedPanel = tabbedPanel;
+            m_context = context;
+        }
+
+        /**
+         * @see com.google.gwt.event.logical.shared.SelectionHandler#onSelection(com.google.gwt.event.logical.shared.SelectionEvent)
+         */
+        public void onSelection(SelectionEvent<Integer> event) {
+
+            Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+
+                public void execute() {
+
+                    adjustContextHeight();
+                }
+            });
+
+        }
+
+        /**
+         * @see com.google.gwt.event.logical.shared.ValueChangeHandler#onValueChange(com.google.gwt.event.logical.shared.ValueChangeEvent)
+         */
+        public void onValueChange(ValueChangeEvent<I_Entity> event) {
+
+            Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+
+                public void execute() {
+
+                    adjustContextHeight();
+                }
+            });
+        }
+
+        /**
+         * 
+         */
+        protected void adjustContextHeight() {
+
+            int tabIndex = m_tabbedPanel.getSelectedIndex();
+            FlowPanel tab = m_tabbedPanel.getWidget(tabIndex);
+            int height = PositionBean.getInnerDimensions(tab.getElement()).getHeight();
+            m_context.getElement().getStyle().setHeight(50 + height, Unit.PX);
+        }
+    }
 
     /**
      * The widget value change handler.<p>
@@ -111,9 +186,109 @@ public class Renderer implements I_EntityRenderer {
     }
 
     /**
+     * @see com.alkacon.acacia.client.I_EntityRenderer#renderForm(com.alkacon.vie.shared.I_Entity, java.util.List, com.google.gwt.user.client.ui.Panel)
+     */
+    @SuppressWarnings("unchecked")
+    public void renderForm(I_Entity entity, List<TabInfo> tabInfos, Panel context) {
+
+        if ((tabInfos == null) || (tabInfos.size() < 2)) {
+            renderForm(entity, context);
+        } else {
+
+            context.getElement().getStyle().setHeight(600, Unit.PX);
+            context.getElement().setAttribute("typeof", entity.getTypeName());
+            context.getElement().setAttribute("about", entity.getId());
+            context.getElement().getStyle().setPadding(0, Unit.PX);
+            TabbedPanel<FlowPanel> tabbedPanel = new TabbedPanel<FlowPanel>();
+            TabSizeHandler tabSizeHandler = new TabSizeHandler(tabbedPanel, context);
+            tabbedPanel.addSelectionHandler(tabSizeHandler);
+            if (entity instanceof HasValueChangeHandlers) {
+                ((HasValueChangeHandlers<I_Entity>)entity).addValueChangeHandler(tabSizeHandler);
+            }
+            tabbedPanel.getElement().getStyle().setBorderWidth(0, Unit.PX);
+            Iterator<TabInfo> tabIt = tabInfos.iterator();
+            TabInfo currentTab = tabIt.next();
+            TabInfo nextTab = tabIt.next();
+            FlowPanel tabPanel = new FlowPanel();
+            tabPanel.addStyleName(ENTITY_CLASS);
+            tabPanel.addStyleName(I_LayoutBundle.INSTANCE.form().formParent());
+            tabPanel.getElement().getStyle().setMargin(0, Unit.PX);
+            tabbedPanel.addNamed(tabPanel, currentTab.getTabName(), currentTab.getTabId());
+            I_Type entityType = m_vie.getType(entity.getTypeName());
+            List<String> attributeNames = entityType.getAttributeNames();
+            for (final String attributeName : attributeNames) {
+                boolean collapsed = false;
+                if ((nextTab != null) && attributeName.endsWith("/" + nextTab.getStartName())) {
+                    currentTab = nextTab;
+                    nextTab = tabIt.hasNext() ? tabIt.next() : null;
+                    tabPanel = new FlowPanel();
+                    tabPanel.addStyleName(ENTITY_CLASS);
+                    tabPanel.addStyleName(I_LayoutBundle.INSTANCE.form().formParent());
+                    tabPanel.getElement().getStyle().setMargin(0, Unit.PX);
+                    tabbedPanel.addNamed(tabPanel, currentTab.getTabName(), currentTab.getTabId());
+                    // check if the tab content may be collapsed
+                    if (currentTab.isCollapsed()) {
+                        int currentIndex = attributeNames.indexOf(attributeName);
+                        collapsed = ((currentIndex + 1) == attributeNames.size())
+                            || ((nextTab != null) && attributeNames.get(currentIndex + 1).endsWith(
+                                "/" + nextTab.getStartName()));
+                    }
+                }
+                AttributeHandler handler = new AttributeHandler(m_vie, entity, attributeName, m_widgetService);
+                I_Type attributeType = entityType.getAttributeType(attributeName);
+                I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(attributeName, attributeType);
+                int minOccurrence = entityType.getAttributeMinOccurrence(attributeName);
+                I_EntityAttribute attribute = entity.getAttribute(attributeName);
+                // only single complex values may be collapsed
+                if (collapsed
+                    && (attribute != null)
+                    && !attributeType.isSimpleType()
+                    && (minOccurrence == 1)
+                    && (entityType.getAttributeMaxOccurrence(attributeName) == 1)) {
+                    renderer.renderForm(attribute.getComplexValue(), tabPanel);
+                } else {
+                    String label = m_widgetService.getAttributeLabel(attributeName);
+                    String help = m_widgetService.getAttributeHelp(attributeName);
+                    ValuePanel attributeElement = new ValuePanel();
+                    tabPanel.add(attributeElement);
+                    if ((attribute == null) && (minOccurrence > 0)) {
+                        attribute = createEmptyAttribute(entity, attributeName, minOccurrence);
+                    }
+                    if (attribute != null) {
+                        for (int i = 0; i < attribute.getValueCount(); i++) {
+                            AttributeValueView valueWidget = new AttributeValueView(handler, label, help);
+                            attributeElement.add(valueWidget);
+                            if (attribute.isSimpleValue()) {
+                                valueWidget.setValueWidget(
+                                    m_widgetService.getAttributeWidget(attributeName),
+                                    attribute.getSimpleValues().get(i),
+                                    true);
+                            } else {
+                                valueWidget.setValueEntity(renderer, attribute.getComplexValues().get(i));
+                            }
+                        }
+                    } else {
+                        AttributeValueView valueWidget = new AttributeValueView(handler, label, help);
+                        attributeElement.add(valueWidget);
+                        if (attributeType.isSimpleType()) {
+                            // create a deactivated widget, to add the attribute on click
+                            valueWidget.setValueWidget(
+                                m_widgetService.getAttributeWidget(attributeName),
+                                m_widgetService.getDefaultAttributeValue(attributeName),
+                                false);
+                        }
+                    }
+                }
+                handler.updateButtonVisisbility();
+            }
+            context.add(tabbedPanel);
+        }
+    }
+
+    /**
      * @see com.alkacon.acacia.client.I_EntityRenderer#renderForm(com.alkacon.vie.shared.I_Entity, com.google.gwt.user.client.ui.Panel)
      */
-    public void renderForm(final I_Entity entity, Panel context) {
+    public void renderForm(I_Entity entity, Panel context) {
 
         context.addStyleName(ENTITY_CLASS);
         context.getElement().setAttribute("typeof", entity.getTypeName());
@@ -121,7 +296,7 @@ public class Renderer implements I_EntityRenderer {
         I_Type entityType = m_vie.getType(entity.getTypeName());
         List<String> attributeNames = entityType.getAttributeNames();
         for (final String attributeName : attributeNames) {
-            final AttributeHandler handler = new AttributeHandler(m_vie, entity, attributeName, m_widgetService);
+            AttributeHandler handler = new AttributeHandler(m_vie, entity, attributeName, m_widgetService);
             I_Type attributeType = entityType.getAttributeType(attributeName);
             I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(attributeName, attributeType);
             int minOccurrence = entityType.getAttributeMinOccurrence(attributeName);

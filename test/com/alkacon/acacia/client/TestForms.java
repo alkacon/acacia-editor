@@ -37,7 +37,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.GwtEvent;
@@ -111,16 +110,6 @@ public class TestForms extends GWTTestCase {
                 return null;
             }
 
-            public I_EditWidget wrapElement(Element element, boolean inline) {
-
-                return null;
-            }
-
-            public void setConfiguration(String confuguration) {
-
-                // dummy method
-            }
-
             public void setValue(String value) {
 
                 // dummy method
@@ -129,12 +118,6 @@ public class TestForms extends GWTTestCase {
             public void setValue(String value, boolean fireEvents) {
 
                 // dummy method
-            }
-
-            public com.google.gwt.user.client.Element getElement() {
-
-                // dummy method
-                return null;
             }
 
             public HandlerRegistration addFocusHandler(FocusHandler handler) {
@@ -174,6 +157,7 @@ public class TestForms extends GWTTestCase {
             null,
             configs,
             Collections.<String, I_Type> emptyMap(),
+            null,
             "en");
         service.init(definition);
         service.addWidgetFactory("widget1", new I_WidgetFactory() {
