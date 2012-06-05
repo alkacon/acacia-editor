@@ -31,6 +31,7 @@ import com.alkacon.acacia.client.widgets.I_EditWidget;
 import com.alkacon.acacia.shared.TabInfo;
 import com.alkacon.geranium.client.ui.FlowPanel;
 import com.alkacon.geranium.client.ui.TabbedPanel;
+import com.alkacon.geranium.client.ui.TabbedPanel.CmsTabbedPanelStyle;
 import com.alkacon.geranium.client.util.PositionBean;
 import com.alkacon.vie.client.I_Vie;
 import com.alkacon.vie.shared.I_Entity;
@@ -199,7 +200,7 @@ public class Renderer implements I_EntityRenderer {
             context.getElement().setAttribute("typeof", entity.getTypeName());
             context.getElement().setAttribute("about", entity.getId());
             context.getElement().getStyle().setPadding(0, Unit.PX);
-            TabbedPanel<FlowPanel> tabbedPanel = new TabbedPanel<FlowPanel>();
+            TabbedPanel<FlowPanel> tabbedPanel = new TabbedPanel<FlowPanel>(CmsTabbedPanelStyle.classicTabs);
             TabSizeHandler tabSizeHandler = new TabSizeHandler(tabbedPanel, context);
             tabbedPanel.addSelectionHandler(tabSizeHandler);
             if (entity instanceof HasValueChangeHandlers) {

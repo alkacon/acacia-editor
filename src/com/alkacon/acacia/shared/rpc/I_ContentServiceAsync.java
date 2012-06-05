@@ -28,6 +28,7 @@ import com.alkacon.acacia.shared.ContentDefinition;
 import com.alkacon.acacia.shared.Entity;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -61,4 +62,12 @@ public interface I_ContentServiceAsync {
      * @param callback the asynchronous callback
      */
     void saveEntity(Entity entity, AsyncCallback<Void> callback);
+
+    /**
+     * Validates the given entities and returns maps of error messages in case of invalid attributes.<p>
+     * 
+     * @param changedEntities the entities to validate
+     * @param callback the asynchronous callback
+     */
+    void validateEntities(List<Entity> changedEntities, AsyncCallback<Map<String, Map<String, String>>> callback);
 }

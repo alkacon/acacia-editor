@@ -25,7 +25,6 @@
 package com.alkacon.acacia.client;
 
 import com.alkacon.acacia.client.ui.AttributeValueView;
-import com.alkacon.acacia.client.ui.HighlightingHandler;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
 import com.alkacon.geranium.client.dnd.DNDHandler;
 import com.alkacon.geranium.client.dnd.DNDHandler.Orientation;
@@ -35,7 +34,9 @@ import com.alkacon.vie.shared.I_EntityAttribute;
 import com.alkacon.vie.shared.I_Type;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.user.client.ui.FlowPanel;
 
@@ -43,6 +44,9 @@ import com.google.gwt.user.client.ui.FlowPanel;
  * The attribute handler. Handles value changes, addition of new values, remove and move operations on values.<p> 
  */
 public class AttributeHandler {
+
+    /** Map of all attribute handlers. */
+    private static final Map<String, AttributeHandler> m_attributeHandlers = new HashMap<String, AttributeHandler>();
 
     /** The attribute name. */
     private String m_attributeName;
@@ -52,6 +56,9 @@ public class AttributeHandler {
 
     /** Registered attribute values. */
     private List<AttributeValueView> m_attributeValueViews;
+
+    /** The attribute drag and drop handler. */
+    private DNDHandler m_dndHandler;
 
     /** The entity. */
     private I_Entity m_entity;
@@ -64,9 +71,6 @@ public class AttributeHandler {
 
     /** The widget service. */
     private I_WidgetService m_widgetService;
-
-    /** The attribute drag and drop handler. */
-    private DNDHandler m_dndHandler;
 
     /**
      * Constructor.<p>
@@ -83,6 +87,19 @@ public class AttributeHandler {
         m_attributeName = attributeName;
         m_widgetService = widgetService;
         m_attributeValueViews = new ArrayList<AttributeValueView>();
+        m_attributeHandlers.put(attributeName, this);
+    }
+
+    /**
+     * Returns the attribute handler for the given attribute name.<p>
+     * 
+     * @param attributeName the attribute name
+     * 
+     * @return the attribute handler
+     */
+    public static AttributeHandler getAttributeHandler(String attributeName) {
+
+        return m_attributeHandlers.get(attributeName);
     }
 
     /**
@@ -153,6 +170,34 @@ public class AttributeHandler {
     public void changeValue(AttributeValueView reference, String value) {
 
         m_entity.setAttributeValue(m_attributeName, value, reference.getValueIndex());
+
+    }
+
+    /**
+     * Destroys the attribute handler instance.<p>
+     */
+    public void destroy() {
+
+        m_attributeHandlers.remove(m_attributeName);
+        m_attributeName = null;
+        m_attributeType = null;
+        m_attributeValueViews.clear();
+        m_attributeValueViews = null;
+        m_dndHandler = null;
+        m_entity = null;
+        m_entityType = null;
+        m_vie = null;
+        m_widgetService = null;
+    }
+
+    /**
+     * Returns the attribute name.<p>
+     * 
+     * @return the attribute name
+     */
+    public String getAttributeName() {
+
+        return m_attributeName;
     }
 
     /**
@@ -167,34 +212,6 @@ public class AttributeHandler {
             m_dndHandler.setOrientation(Orientation.VERTICAL);
         }
         return m_dndHandler;
-    }
-
-    /**
-     * Moves the reference value down in the value list.<p>
-     * 
-     * @param reference the reference value
-     */
-    public void moveAttributeValueDown(AttributeValueView reference) {
-
-        int index = reference.getValueIndex();
-        if (index >= (m_entity.getAttribute(m_attributeName).getValueCount() - 1)) {
-            return;
-        }
-        moveAttributeValue(reference, index, index + 1);
-    }
-
-    /**
-     * Moves the reference value up in the value list.<p>
-     * 
-     * @param reference the reference value
-     */
-    public void moveAttributeValueUp(AttributeValueView reference) {
-
-        int index = reference.getValueIndex();
-        if (index == 0) {
-            return;
-        }
-        moveAttributeValue(reference, index, index - 1);
     }
 
     /**
@@ -242,6 +259,34 @@ public class AttributeHandler {
     }
 
     /**
+     * Moves the reference value down in the value list.<p>
+     * 
+     * @param reference the reference value
+     */
+    public void moveAttributeValueDown(AttributeValueView reference) {
+
+        int index = reference.getValueIndex();
+        if (index >= (m_entity.getAttribute(m_attributeName).getValueCount() - 1)) {
+            return;
+        }
+        moveAttributeValue(reference, index, index + 1);
+    }
+
+    /**
+     * Moves the reference value up in the value list.<p>
+     * 
+     * @param reference the reference value
+     */
+    public void moveAttributeValueUp(AttributeValueView reference) {
+
+        int index = reference.getValueIndex();
+        if (index == 0) {
+            return;
+        }
+        moveAttributeValue(reference, index, index - 1);
+    }
+
+    /**
      * Registers an attribute value view.<p>
      * 
      * @param attributeValue the attribute value view
@@ -275,6 +320,21 @@ public class AttributeHandler {
             m_attributeValueViews.remove(reference);
         }
         updateButtonVisisbility();
+    }
+
+    /**
+     * Sets the error message for the given value index.<p>
+     * 
+     * @param valueIndex the value index
+     * @param message the error message
+     */
+    public void setErrorMessage(int valueIndex, String message) {
+
+        if (!m_attributeValueViews.isEmpty()) {
+            FlowPanel parent = (FlowPanel)m_attributeValueViews.get(0).getParent();
+            AttributeValueView valueView = (AttributeValueView)parent.getWidget(valueIndex);
+            valueView.setErrorMessage(message);
+        }
     }
 
     /**
@@ -324,5 +384,4 @@ public class AttributeHandler {
         }
         return m_entityType;
     }
-
 }

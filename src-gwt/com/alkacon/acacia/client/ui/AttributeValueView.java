@@ -25,6 +25,7 @@
 package com.alkacon.acacia.client.ui;
 
 import com.alkacon.acacia.client.AttributeHandler;
+import com.alkacon.acacia.client.HighlightingHandler;
 import com.alkacon.acacia.client.I_EntityRenderer;
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
@@ -93,6 +94,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         public void onValueChange(ValueChangeEvent<String> event) {
 
             getHandler().changeValue(AttributeValueView.this, event.getValue());
+            removeErrorMessage();
         }
     }
 
@@ -174,11 +176,17 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     /** The currently running animation. */
     Animation m_currentAnimation;
 
+    /** The activation mouse down handler registration. */
+    private HandlerRegistration m_activationHandlerRegistration;
+
     /** Drag and drop helper element. */
     private Element m_dragHelper;
 
     /** The attribute handler. */
     private AttributeHandler m_handler;
+
+    /** Flag indicating a validation error. */
+    private boolean m_hasError;
 
     /** Flag indicating if there is a value set for this UI object. */
     private boolean m_hasValue;
@@ -194,9 +202,6 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
 
     /** The editing widget. */
     private I_EditWidget m_widget;
-
-    /** The activation mouse down handler registration. */
-    private HandlerRegistration m_activationHandlerRegistration;
 
     /**
      * Constructor.<p>
@@ -392,6 +397,17 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     }
 
     /**
+     * Removes any present error message.<p>
+     */
+    public void removeErrorMessage() {
+
+        if (m_hasError) {
+            m_helpBubbleText.setInnerHTML(m_label.getTitle());
+            m_hasError = false;
+        }
+    }
+
+    /**
      * Removes the value.<p>
      */
     public void removeValue() {
@@ -400,6 +416,17 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         m_widgetHolder.clear();
         m_widgetHolder.getElement().setInnerHTML("");
         addStyleName(I_LayoutBundle.INSTANCE.form().emptyValue());
+    }
+
+    /**
+     * Shows a validation error message.<p>
+     * 
+     * @param message the error message
+     */
+    public void setErrorMessage(String message) {
+
+        m_helpBubbleText.setInnerHTML(message);
+        m_hasError = true;
     }
 
     /**
@@ -456,37 +483,21 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     }
 
     /**
-     * Adds a mouse down handler to activate the editing widget.<p>
+     * Toggles the permanent highlighting.<p>
+     * 
+     * @param highlightingOn <code>true</code> to turn the highlighting on
      */
-    private void addActivationHandler() {
+    public void toggleFocusHighlighting(boolean highlightingOn) {
 
-        if (m_activationHandlerRegistration == null) {
-            m_activationHandlerRegistration = addMouseDownHandler(new MouseDownHandler() {
-
-                public void onMouseDown(MouseDownEvent event) {
-
-                    // only act on click inside the widget holder
-                    if (DomUtil.checkPositionInside(m_widgetHolder.getElement(), event.getClientX(), event.getClientY())) {
-                        activateWidget();
-                    }
-                }
-            });
-        }
-    }
-
-    /**
-     * Activates the value widget if present.<p>
-     */
-    void activateWidget() {
-
-        if (m_activationHandlerRegistration != null) {
-            m_activationHandlerRegistration.removeHandler();
-            m_activationHandlerRegistration = null;
-        }
-        if ((m_widget != null) && !m_widget.isActive()) {
-            m_widget.setActive(true);
-            m_handler.updateButtonVisisbility();
-            removeStyleName(I_LayoutBundle.INSTANCE.form().emptyValue());
+        if (highlightingOn) {
+            addStyleName(I_LayoutBundle.INSTANCE.form().focused());
+            if (shouldDisplayTooltipAbove()) {
+                addStyleName(I_LayoutBundle.INSTANCE.form().displayAbove());
+            } else {
+                removeStyleName(I_LayoutBundle.INSTANCE.form().displayAbove());
+            }
+        } else {
+            removeStyleName(I_LayoutBundle.INSTANCE.form().focused());
         }
     }
 
@@ -578,21 +589,37 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     }
 
     /**
-     * Toggles the permanent highlighting.<p>
-     * 
-     * @param highlightingOn <code>true</code> to turn the highlighting on
+     * Activates the value widget if present.<p>
      */
-    protected void toggleFocusHighlighting(boolean highlightingOn) {
+    void activateWidget() {
 
-        if (highlightingOn) {
-            addStyleName(I_LayoutBundle.INSTANCE.form().focused());
-            if (shouldDisplayTooltipAbove()) {
-                addStyleName(I_LayoutBundle.INSTANCE.form().displayAbove());
-            } else {
-                removeStyleName(I_LayoutBundle.INSTANCE.form().displayAbove());
-            }
-        } else {
-            removeStyleName(I_LayoutBundle.INSTANCE.form().focused());
+        if (m_activationHandlerRegistration != null) {
+            m_activationHandlerRegistration.removeHandler();
+            m_activationHandlerRegistration = null;
+        }
+        if ((m_widget != null) && !m_widget.isActive()) {
+            m_widget.setActive(true);
+            m_handler.updateButtonVisisbility();
+            removeStyleName(I_LayoutBundle.INSTANCE.form().emptyValue());
+        }
+    }
+
+    /**
+     * Adds a mouse down handler to activate the editing widget.<p>
+     */
+    private void addActivationHandler() {
+
+        if (m_activationHandlerRegistration == null) {
+            m_activationHandlerRegistration = addMouseDownHandler(new MouseDownHandler() {
+
+                public void onMouseDown(MouseDownEvent event) {
+
+                    // only act on click inside the widget holder
+                    if (DomUtil.checkPositionInside(m_widgetHolder.getElement(), event.getClientX(), event.getClientY())) {
+                        activateWidget();
+                    }
+                }
+            });
         }
     }
 

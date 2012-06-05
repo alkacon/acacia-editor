@@ -28,6 +28,7 @@ import com.alkacon.acacia.shared.ContentDefinition;
 import com.alkacon.acacia.shared.Entity;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 
@@ -66,4 +67,15 @@ public interface I_ContentService extends RemoteService {
      * @throws Exception if something goes wrong processing the request
      */
     void saveEntity(Entity entity) throws Exception;
+
+    /**
+     * Validates the given entities and returns maps of error messages in case of invalid attributes.<p>
+     * 
+     * @param changedEntities the entities to validate
+     * 
+     * @return the error messages
+     * 
+     * @throws Exception if something goes wrong processing the request
+     */
+    Map<String, Map<String, String>> validateEntities(List<Entity> changedEntities) throws Exception;
 }

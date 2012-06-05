@@ -24,7 +24,6 @@
 
 package com.alkacon.acacia.client;
 
-import com.alkacon.acacia.client.ui.HighlightingHandler;
 import com.alkacon.acacia.client.widgets.HalloWidget;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
 import com.alkacon.acacia.client.widgets.StringWidget;
@@ -197,6 +196,8 @@ public class EditorBase {
             FlowPanel formPanel = new FlowPanel();
             context.add(formPanel);
             m_widgetService.getRendererForType(type).renderForm(entity, tabInfos, formPanel);
+            ValidationHandler.getInstance().setContentService(m_service);
+            ValidationHandler.getInstance().registerEntity(entity);
         }
     }
 
@@ -214,6 +215,8 @@ public class EditorBase {
             FlowPanel formPanel = new FlowPanel();
             context.add(formPanel);
             m_widgetService.getRendererForType(type).renderForm(entity, formPanel);
+            ValidationHandler.getInstance().setContentService(m_service);
+            ValidationHandler.getInstance().registerEntity(entity);
         }
     }
 

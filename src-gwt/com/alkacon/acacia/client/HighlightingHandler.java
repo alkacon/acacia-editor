@@ -22,7 +22,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package com.alkacon.acacia.client.ui;
+package com.alkacon.acacia.client;
+
+import com.alkacon.acacia.client.ui.AttributeValueView;
 
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
