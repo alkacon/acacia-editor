@@ -161,6 +161,10 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     @UiField
     protected SpanElement m_label;
 
+    /** The message text element. */
+    @UiField
+    protected SpanElement m_messageText;
+
     /** The move button. */
     @UiField(provided = true)
     protected MoveHandle m_moveButton;
@@ -402,7 +406,8 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     public void removeErrorMessage() {
 
         if (m_hasError) {
-            m_helpBubbleText.setInnerHTML(m_label.getTitle());
+            m_messageText.setInnerText("");
+            removeStyleName(I_LayoutBundle.INSTANCE.form().hasError());
             m_hasError = false;
         }
     }
@@ -425,7 +430,8 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
      */
     public void setErrorMessage(String message) {
 
-        m_helpBubbleText.setInnerHTML(message);
+        m_messageText.setInnerText(message);
+        addStyleName(I_LayoutBundle.INSTANCE.form().hasError());
         m_hasError = true;
     }
 

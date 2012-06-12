@@ -25,6 +25,8 @@
 package com.alkacon.acacia.client;
 
 import com.alkacon.acacia.shared.TabInfo;
+import com.alkacon.geranium.client.ui.FlowPanel;
+import com.alkacon.geranium.client.ui.TabbedPanel;
 import com.alkacon.vie.shared.I_Entity;
 
 import java.util.List;
@@ -43,8 +45,10 @@ public interface I_EntityRenderer {
      * @param entity the entity to render
      * @param tabInfos the tab infos
      * @param context the context widget panel
+     * 
+     * @return the tabbed panel 
      */
-    public void renderForm(I_Entity entity, List<TabInfo> tabInfos, Panel context);
+    public TabbedPanel<FlowPanel> renderForm(I_Entity entity, List<TabInfo> tabInfos, Panel context);
 
     /**
      * Renders the given entity into a form.<p>

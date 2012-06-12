@@ -16,6 +16,7 @@
 			<g:SimplePanel ui:field="m_widgetHolder" styleName="{style.form.widgetHolder}" />
 			<div ui:field="m_helpBubble" class="{style.form.helpBubble}">
 				<div ui:field="m_helpBubbleText"></div>
+				<div class="{style.form.helpMessage}"><span class="{style.form.helpMessageIcon}"></span><span ui:field="m_messageText"></span></div>
 				<aui:PushButton ui:field="m_helpBubbleClose" addStyleNames="{style.form.helpBubbleClose}" />
 				<div class="{style.form.helpBubbleArrow}"></div>
 			</div>

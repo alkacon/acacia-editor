@@ -24,10 +24,12 @@
 
 package com.alkacon.acacia.client;
 
+import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.acacia.client.ui.AttributeValueView;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
 import com.alkacon.geranium.client.dnd.DNDHandler;
 import com.alkacon.geranium.client.dnd.DNDHandler.Orientation;
+import com.alkacon.geranium.client.ui.TabbedPanel;
 import com.alkacon.vie.client.I_Vie;
 import com.alkacon.vie.shared.I_Entity;
 import com.alkacon.vie.shared.I_EntityAttribute;
@@ -39,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * The attribute handler. Handles value changes, addition of new values, remove and move operations on values.<p> 
@@ -88,6 +91,20 @@ public class AttributeHandler {
         m_widgetService = widgetService;
         m_attributeValueViews = new ArrayList<AttributeValueView>();
         m_attributeHandlers.put(attributeName, this);
+    }
+
+    /**
+     * Clears the error styles on the given tabbed panel.<p>
+     * 
+     * @param tabbedPanel the tabbed panel
+     */
+    public static void clearErrorStyles(TabbedPanel<?> tabbedPanel) {
+
+        for (int i = 0; i < tabbedPanel.getTabCount(); i++) {
+            Widget tab = tabbedPanel.getTabWidget(i);
+            tab.setTitle(null);
+            tab.getParent().removeStyleName(I_LayoutBundle.INSTANCE.form().hasError());
+        }
     }
 
     /**
@@ -327,13 +344,23 @@ public class AttributeHandler {
      * 
      * @param valueIndex the value index
      * @param message the error message
+     * @param tabbedPanel the forms tabbed panel if available
      */
-    public void setErrorMessage(int valueIndex, String message) {
+    public void setErrorMessage(int valueIndex, String message, TabbedPanel<?> tabbedPanel) {
 
         if (!m_attributeValueViews.isEmpty()) {
             FlowPanel parent = (FlowPanel)m_attributeValueViews.get(0).getParent();
             AttributeValueView valueView = (AttributeValueView)parent.getWidget(valueIndex);
             valueView.setErrorMessage(message);
+            if (tabbedPanel != null) {
+                int tabIndex = tabbedPanel.getTabIndex(valueView.getElement());
+                if (tabIndex > -1) {
+                    Widget tab = tabbedPanel.getTabWidget(tabIndex);
+                    tab.setTitle("This tab has errors.");
+                    tab.getParent().addStyleName(I_LayoutBundle.INSTANCE.form().hasError());
+                }
+
+            }
         }
     }
 

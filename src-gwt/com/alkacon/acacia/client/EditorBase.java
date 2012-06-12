@@ -29,7 +29,9 @@ import com.alkacon.acacia.client.widgets.I_EditWidget;
 import com.alkacon.acacia.client.widgets.StringWidget;
 import com.alkacon.acacia.shared.ContentDefinition;
 import com.alkacon.acacia.shared.TabInfo;
+import com.alkacon.acacia.shared.ValidationResult;
 import com.alkacon.acacia.shared.rpc.I_ContentServiceAsync;
+import com.alkacon.geranium.client.ui.TabbedPanel;
 import com.alkacon.geranium.client.ui.css.I_ImageBundle;
 import com.alkacon.geranium.client.ui.css.I_LayoutBundle;
 import com.alkacon.vie.client.Entity;
@@ -195,9 +197,10 @@ public class EditorBase {
             I_Type type = m_vie.getType(entity.getTypeName());
             FlowPanel formPanel = new FlowPanel();
             context.add(formPanel);
-            m_widgetService.getRendererForType(type).renderForm(entity, tabInfos, formPanel);
+            TabbedPanel<?> formTabs = m_widgetService.getRendererForType(type).renderForm(entity, tabInfos, formPanel);
             ValidationHandler.getInstance().setContentService(m_service);
             ValidationHandler.getInstance().registerEntity(entity);
+            ValidationHandler.getInstance().setFormTabPanel(formTabs);
         }
     }
 
@@ -262,16 +265,19 @@ public class EditorBase {
         final boolean clearOnSuccess,
         final Command callback) {
 
-        AsyncCallback<Void> asyncCallback = new AsyncCallback<Void>() {
+        AsyncCallback<ValidationResult> asyncCallback = new AsyncCallback<ValidationResult>() {
 
             public void onFailure(Throwable caught) {
 
                 onRpcError(caught);
             }
 
-            public void onSuccess(Void result) {
+            public void onSuccess(ValidationResult result) {
 
                 callback.execute();
+                if ((result != null) && result.hasErrors()) {
+                    //   ValidationHandler.getInstance().displayErrors(null, result)
+                }
                 if (clearOnSuccess) {
                     destroyFrom(true);
                 }
@@ -308,14 +314,14 @@ public class EditorBase {
      */
     public void saveEntity(I_Entity entity, final boolean clearOnSuccess, final Command callback) {
 
-        AsyncCallback<Void> asyncCallback = new AsyncCallback<Void>() {
+        AsyncCallback<ValidationResult> asyncCallback = new AsyncCallback<ValidationResult>() {
 
             public void onFailure(Throwable caught) {
 
                 onRpcError(caught);
             }
 
-            public void onSuccess(Void result) {
+            public void onSuccess(ValidationResult result) {
 
                 callback.execute();
                 if (clearOnSuccess) {

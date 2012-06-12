@@ -46,6 +46,7 @@ public abstract class A_EditWidget extends FocusWidget implements I_EditWidget {
     protected A_EditWidget(Element element) {
 
         super(element);
+        m_previousValue = element.getInnerHTML();
     }
 
     /**

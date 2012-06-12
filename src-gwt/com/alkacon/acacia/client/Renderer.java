@@ -31,7 +31,7 @@ import com.alkacon.acacia.client.widgets.I_EditWidget;
 import com.alkacon.acacia.shared.TabInfo;
 import com.alkacon.geranium.client.ui.FlowPanel;
 import com.alkacon.geranium.client.ui.TabbedPanel;
-import com.alkacon.geranium.client.ui.TabbedPanel.CmsTabbedPanelStyle;
+import com.alkacon.geranium.client.ui.TabbedPanel.TabbedPanelStyle;
 import com.alkacon.geranium.client.util.PositionBean;
 import com.alkacon.vie.client.I_Vie;
 import com.alkacon.vie.shared.I_Entity;
@@ -42,6 +42,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Unit;
@@ -111,7 +112,7 @@ public class Renderer implements I_EntityRenderer {
         }
 
         /**
-         * 
+         * Adjusts the tabbed panel height to the height of the current tab content.<p> 
          */
         protected void adjustContextHeight() {
 
@@ -190,22 +191,39 @@ public class Renderer implements I_EntityRenderer {
      * @see com.alkacon.acacia.client.I_EntityRenderer#renderForm(com.alkacon.vie.shared.I_Entity, java.util.List, com.google.gwt.user.client.ui.Panel)
      */
     @SuppressWarnings("unchecked")
-    public void renderForm(I_Entity entity, List<TabInfo> tabInfos, Panel context) {
+    public TabbedPanel<FlowPanel> renderForm(I_Entity entity, List<TabInfo> tabInfos, Panel context) {
 
         if ((tabInfos == null) || (tabInfos.size() < 2)) {
             renderForm(entity, context);
+            return null;
         } else {
 
             context.getElement().getStyle().setHeight(600, Unit.PX);
             context.getElement().setAttribute("typeof", entity.getTypeName());
             context.getElement().setAttribute("about", entity.getId());
             context.getElement().getStyle().setPadding(0, Unit.PX);
-            TabbedPanel<FlowPanel> tabbedPanel = new TabbedPanel<FlowPanel>(CmsTabbedPanelStyle.classicTabs);
-            TabSizeHandler tabSizeHandler = new TabSizeHandler(tabbedPanel, context);
+            TabbedPanel<FlowPanel> tabbedPanel = new TabbedPanel<FlowPanel>(TabbedPanelStyle.classicTabs);
+            final TabSizeHandler tabSizeHandler = new TabSizeHandler(tabbedPanel, context);
             tabbedPanel.addSelectionHandler(tabSizeHandler);
             if (entity instanceof HasValueChangeHandlers) {
                 ((HasValueChangeHandlers<I_Entity>)entity).addValueChangeHandler(tabSizeHandler);
             }
+            // adjust the tab panel height after a delay as some widgets may need time to initialize
+            Scheduler.get().scheduleFixedDelay(new RepeatingCommand() {
+
+                private int counter = 0;
+
+                /**
+                 * @see com.google.gwt.core.client.Scheduler.RepeatingCommand#execute()
+                 */
+                public boolean execute() {
+
+                    tabSizeHandler.adjustContextHeight();
+                    counter++;
+                    return counter < 6;
+                }
+            }, 200);
+
             tabbedPanel.getElement().getStyle().setBorderWidth(0, Unit.PX);
             Iterator<TabInfo> tabIt = tabInfos.iterator();
             TabInfo currentTab = tabIt.next();
@@ -283,6 +301,7 @@ public class Renderer implements I_EntityRenderer {
                 handler.updateButtonVisisbility();
             }
             context.add(tabbedPanel);
+            return tabbedPanel;
         }
     }
 

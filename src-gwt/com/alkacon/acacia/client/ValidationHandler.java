@@ -25,11 +25,12 @@
 package com.alkacon.acacia.client;
 
 import com.alkacon.acacia.shared.Entity;
+import com.alkacon.acacia.shared.ValidationResult;
 import com.alkacon.acacia.shared.rpc.I_ContentServiceAsync;
+import com.alkacon.geranium.client.ui.TabbedPanel;
 import com.alkacon.vie.shared.I_Entity;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
@@ -84,6 +85,9 @@ public final class ValidationHandler implements ValueChangeHandler<I_Entity> {
 
     /** The content service use for validation. */
     private I_ContentServiceAsync m_contentService;
+
+    /** The forms tabbed panel. */
+    private TabbedPanel<?> m_formTabPanel;
 
     /** The handler registration. */
     private HandlerRegistration m_handlerRegistration;
@@ -160,6 +164,16 @@ public final class ValidationHandler implements ValueChangeHandler<I_Entity> {
     }
 
     /**
+     * Sets the form tabbed panel.<p>
+     * 
+     * @param tabPanel the tabbed panel
+     */
+    public void setFormTabPanel(TabbedPanel<?> tabPanel) {
+
+        m_formTabPanel = tabPanel;
+    }
+
+    /**
      * Validates the given entity.<p>
      * 
      * @param entity the entity
@@ -170,7 +184,7 @@ public final class ValidationHandler implements ValueChangeHandler<I_Entity> {
             m_validating = true;
             m_contentService.validateEntities(
                 Collections.singletonList(Entity.serializeEntity(entity)),
-                new AsyncCallback<Map<String, Map<String, String>>>() {
+                new AsyncCallback<ValidationResult>() {
 
                     public void onFailure(Throwable caught) {
 
@@ -178,21 +192,47 @@ public final class ValidationHandler implements ValueChangeHandler<I_Entity> {
 
                     }
 
-                    public void onSuccess(Map<String, Map<String, String>> result) {
+                    public void onSuccess(ValidationResult result) {
 
-                        if (result.containsKey(entity.getId())) {
-                            for (Entry<String, String> error : result.get(entity.getId()).entrySet()) {
-                                String attributeName = error.getKey();
-                                AttributeHandler handler = AttributeHandler.getAttributeHandler(attributeName);
-                                if (handler != null) {
-                                    handler.setErrorMessage(0, error.getValue());
-                                }
-                            }
-                        }
-                        m_validating = false;
-
+                        displayErrors(entity.getId(), result);
                     }
                 });
         }
+    }
+
+    /**
+     * Displays the given error messages within the form.<p>
+     * 
+     * @param entityId the entity id
+     * @param validationResult the validationResult
+     */
+    void displayErrors(String entityId, ValidationResult validationResult) {
+
+        if (m_formTabPanel != null) {
+            AttributeHandler.clearErrorStyles(m_formTabPanel);
+        }
+        if (validationResult.hasErrors(entityId)) {
+            for (Entry<String, String> error : validationResult.getErrors(entityId).entrySet()) {
+                String attributeName = error.getKey();
+                int index = 0;
+                // check if the value index is appended to the attribute name
+                if (attributeName.endsWith("]") && attributeName.contains("[")) {
+                    try {
+                        String temp = attributeName.substring(
+                            attributeName.lastIndexOf("[") + 1,
+                            attributeName.length() - 1);
+                        attributeName = attributeName.substring(0, attributeName.lastIndexOf("["));
+                        index = Integer.parseInt(temp);
+                    } catch (NumberFormatException e) {
+                        // ignore
+                    }
+                }
+                AttributeHandler handler = AttributeHandler.getAttributeHandler(attributeName);
+                if (handler != null) {
+                    handler.setErrorMessage(index, error.getValue(), m_formTabPanel);
+                }
+            }
+        }
+        m_validating = false;
     }
 }

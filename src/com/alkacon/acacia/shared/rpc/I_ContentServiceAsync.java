@@ -26,9 +26,9 @@ package com.alkacon.acacia.shared.rpc;
 
 import com.alkacon.acacia.shared.ContentDefinition;
 import com.alkacon.acacia.shared.Entity;
+import com.alkacon.acacia.shared.ValidationResult;
 
 import java.util.List;
-import java.util.Map;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -48,26 +48,26 @@ public interface I_ContentServiceAsync {
     void loadContentDefinition(String entityId, AsyncCallback<ContentDefinition> callback);
 
     /**
-     * Saves the given entities.<p>
+     * Saves the given entities and returns a validation result in case of invalid entities.<p>
      * 
      * @param entities the entities to save
      * @param callback the asynchronous callback
      */
-    void saveEntities(List<Entity> entities, AsyncCallback<Void> callback);
+    void saveEntities(List<Entity> entities, AsyncCallback<ValidationResult> callback);
 
     /**
-     * Saves the given entity.<p>
+     * Saves the given entity and returns a validation result in case of invalid entities.<p>
      * 
      * @param entity the entity to save
      * @param callback the asynchronous callback
      */
-    void saveEntity(Entity entity, AsyncCallback<Void> callback);
+    void saveEntity(Entity entity, AsyncCallback<ValidationResult> callback);
 
     /**
-     * Validates the given entities and returns maps of error messages in case of invalid attributes.<p>
+     * Validates the given entities and returns maps of error and warning messages in case of invalid attributes.<p>
      * 
      * @param changedEntities the entities to validate
      * @param callback the asynchronous callback
      */
-    void validateEntities(List<Entity> changedEntities, AsyncCallback<Map<String, Map<String, String>>> callback);
+    void validateEntities(List<Entity> changedEntities, AsyncCallback<ValidationResult> callback);
 }

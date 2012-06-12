@@ -129,6 +129,20 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
         String formParent();
 
         /**
+         * Returns the has error CSS class name.<p>
+         * 
+         * @return the has error CSS class
+         */
+        String hasError();
+
+        /**
+         * Returns the has warning CSS class name.<p>
+         * 
+         * @return the has warning CSS class
+         */
+        String hasWarning();
+
+        /**
          * Returns the help bubble CSS class name.<p>
          * 
          * @return the help bubble CSS class
@@ -148,6 +162,20 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
          * @return the help bubble close CSS class
          */
         String helpBubbleClose();
+
+        /**
+         * Returns the help message CSS class name.<p>
+         * 
+         * @return the help message CSS class
+         */
+        String helpMessage();
+
+        /**
+         * Returns the help message icon CSS class name.<p>
+         * 
+         * @return the help message icon CSS class
+         */
+        String helpMessageIcon();
 
         /**
          * Returns the help bubble close CSS class name.<p>
@@ -209,6 +237,14 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
      */
     @Source("bottom-left-corner.png")
     ImageResource bottomLeftCorner();
+
+    /**
+     * Access method.<p>
+     * 
+     * @return the image resource 
+     */
+    @Source("errorImageSmall.png")
+    ImageResource errorImageSmall();
 
     /**
      * Returns the style CSS.<p>
