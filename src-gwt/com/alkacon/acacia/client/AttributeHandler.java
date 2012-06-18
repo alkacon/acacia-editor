@@ -26,7 +26,7 @@ package com.alkacon.acacia.client;
 
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.acacia.client.ui.AttributeValueView;
-import com.alkacon.acacia.client.widgets.I_EditWidget;
+import com.alkacon.acacia.client.widgets.I_FormEditWidget;
 import com.alkacon.geranium.client.dnd.DNDHandler;
 import com.alkacon.geranium.client.dnd.DNDHandler.Orientation;
 import com.alkacon.geranium.client.ui.TabbedPanel;
@@ -128,7 +128,7 @@ public class AttributeHandler {
 
         if (getAttributeType().isSimpleType()) {
             String value = m_widgetService.getDefaultAttributeValue(m_attributeName);
-            I_EditWidget widget = m_widgetService.getAttributeWidget(m_attributeName);
+            I_FormEditWidget widget = m_widgetService.getAttributeFormWidget(m_attributeName);
             int valueIndex = -1;
             if (reference.getElement().getNextSiblingElement() == null) {
                 m_entity.addAttributeValue(m_attributeName, value);
@@ -256,7 +256,7 @@ public class AttributeHandler {
                 m_widgetService.getAttributeLabel(m_attributeName),
                 m_widgetService.getAttributeHelp(m_attributeName));
             parent.insert(valueWidget, targetPosition);
-            valueWidget.setValueWidget(m_widgetService.getAttributeWidget(m_attributeName), value, true);
+            valueWidget.setValueWidget(m_widgetService.getAttributeFormWidget(m_attributeName), value, true);
             HighlightingHandler.getInstance().setFocusHighlighted(valueWidget);
         } else {
             I_Entity value = m_entity.getAttribute(m_attributeName).getComplexValues().get(currentPosition);
@@ -326,7 +326,7 @@ public class AttributeHandler {
             reference.removeValue();
             if (attribute.isSimpleValue()) {
                 reference.setValueWidget(
-                    m_widgetService.getAttributeWidget(m_attributeName),
+                    m_widgetService.getAttributeFormWidget(m_attributeName),
                     m_widgetService.getDefaultAttributeValue(m_attributeName),
                     false);
             }

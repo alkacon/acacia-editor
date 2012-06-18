@@ -24,7 +24,9 @@
 
 package com.alkacon.acacia.client;
 
+import com.alkacon.acacia.client.widgets.FormWidgetWrapper;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
+import com.alkacon.acacia.client.widgets.I_FormEditWidget;
 import com.alkacon.acacia.client.widgets.StringWidget;
 import com.alkacon.acacia.shared.AttributeConfiguration;
 import com.alkacon.acacia.shared.ContentDefinition;
@@ -93,7 +95,7 @@ public class TestForms extends GWTTestCase {
     public void testWidgetService() {
 
         WidgetService service = new WidgetService();
-        final I_EditWidget widget1 = new I_EditWidget() {
+        final I_FormEditWidget widget1 = new I_FormEditWidget() {
 
             public HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> handler) {
 
@@ -149,6 +151,12 @@ public class TestForms extends GWTTestCase {
                 // TODO: Auto-generated method stub
 
             }
+
+            public void setWidgetInfo(String label, String help) {
+
+                // TODO: Auto-generated method stub
+
+            }
         };
         Map<String, AttributeConfiguration> configs = new HashMap<String, AttributeConfiguration>();
         configs.put("attribute1", new AttributeConfiguration("label", "help", "widget1", "", ""));
@@ -162,12 +170,12 @@ public class TestForms extends GWTTestCase {
         service.init(definition);
         service.addWidgetFactory("widget1", new I_WidgetFactory() {
 
-            public I_EditWidget createWidget(String configuration) {
+            public I_FormEditWidget createFormWidget(String configuration) {
 
                 return widget1;
             }
 
-            public I_EditWidget wrapElement(String configuration, com.google.gwt.user.client.Element element) {
+            public I_EditWidget createInlineWidget(String configuration, com.google.gwt.user.client.Element element) {
 
                 // TODO: Auto-generated method stub
                 return null;
@@ -175,24 +183,24 @@ public class TestForms extends GWTTestCase {
         });
         service.addWidgetFactory("widget2", new I_WidgetFactory() {
 
-            public I_EditWidget createWidget(String configuration) {
+            public I_FormEditWidget createFormWidget(String configuration) {
 
-                return new StringWidget();
+                return new FormWidgetWrapper(new StringWidget());
             }
 
-            public I_EditWidget wrapElement(String configuration, com.google.gwt.user.client.Element element) {
+            public I_EditWidget createInlineWidget(String configuration, com.google.gwt.user.client.Element element) {
 
                 // TODO: Auto-generated method stub
                 return null;
             }
         });
-        assertEquals(widget1, service.getAttributeWidget("attribute1"));
+        assertEquals(widget1, service.getAttributeFormWidget("attribute1"));
         assertTrue(
-            "Should be instance of StringWidget",
-            service.getAttributeWidget("attribute2") instanceof StringWidget);
+            "Should be instance of FormWidgetWrapper",
+            service.getAttributeFormWidget("attribute2") instanceof FormWidgetWrapper);
         assertTrue(
-            "Should be instance of StringWidget as the default widget",
-            service.getAttributeWidget("some other") instanceof StringWidget);
+            "Should be instance of FormWidgetWrapper as the default widget",
+            service.getAttributeFormWidget("some other") instanceof FormWidgetWrapper);
     }
 
     /**

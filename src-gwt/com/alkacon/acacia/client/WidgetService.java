@@ -24,7 +24,9 @@
 
 package com.alkacon.acacia.client;
 
+import com.alkacon.acacia.client.widgets.FormWidgetWrapper;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
+import com.alkacon.acacia.client.widgets.I_FormEditWidget;
 import com.alkacon.acacia.client.widgets.StringWidget;
 import com.alkacon.acacia.shared.AttributeConfiguration;
 import com.alkacon.acacia.shared.ContentDefinition;
@@ -118,39 +120,39 @@ public class WidgetService implements I_WidgetService {
     }
 
     /**
-     * @see com.alkacon.acacia.client.I_WidgetService#getAttributeWidget(java.lang.String)
+     * @see com.alkacon.acacia.client.I_WidgetService#getAttributeFormWidget(java.lang.String)
      */
-    public I_EditWidget getAttributeWidget(String attributeName) {
+    public I_FormEditWidget getAttributeFormWidget(String attributeName) {
 
         if (m_attributeConfigurations != null) {
             AttributeConfiguration config = m_attributeConfigurations.get(attributeName);
             if (config != null) {
                 I_WidgetFactory factory = m_widgetFactories.get(config.getWidgetName());
                 if (factory != null) {
-                    return factory.createWidget(config.getWidgetConfig());
+                    return factory.createFormWidget(config.getWidgetConfig());
                 }
             }
         }
         // no configuration or widget factory found, return default string widget 
-        return new StringWidget();
+        return new FormWidgetWrapper(new StringWidget());
     }
 
     /**
-     * @see com.alkacon.acacia.client.I_WidgetService#getAttributeWidget(java.lang.String, com.google.gwt.user.client.Element)
+     * @see com.alkacon.acacia.client.I_WidgetService#getAttributeInlineWidget(java.lang.String, com.google.gwt.user.client.Element)
      */
-    public I_EditWidget getAttributeWidget(String attributeName, Element element) {
+    public I_EditWidget getAttributeInlineWidget(String attributeName, Element element) {
 
         if (m_attributeConfigurations != null) {
             AttributeConfiguration config = m_attributeConfigurations.get(attributeName);
             if (config != null) {
                 I_WidgetFactory factory = m_widgetFactories.get(config.getWidgetName());
                 if (factory != null) {
-                    return factory.wrapElement(config.getWidgetConfig(), element);
+                    return factory.createInlineWidget(config.getWidgetConfig(), element);
                 }
             }
         }
         // no configuration or widget factory found, return default string widget 
-        return new StringWidget();
+        return new StringWidget(element);
     }
 
     /**

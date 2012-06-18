@@ -29,6 +29,7 @@ import com.alkacon.acacia.client.HighlightingHandler;
 import com.alkacon.acacia.client.I_EntityRenderer;
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
+import com.alkacon.acacia.client.widgets.I_FormEditWidget;
 import com.alkacon.geranium.client.dnd.I_DragHandle;
 import com.alkacon.geranium.client.dnd.I_Draggable;
 import com.alkacon.geranium.client.dnd.I_DropTarget;
@@ -71,10 +72,10 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -157,10 +158,6 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     @UiField
     protected DivElement m_helpBubbleText;
 
-    /** The label element. */
-    @UiField
-    protected SpanElement m_label;
-
     /** The message text element. */
     @UiField
     protected SpanElement m_messageText;
@@ -175,7 +172,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
 
     /** The widget holder elemenet. */
     @UiField
-    protected SimplePanel m_widgetHolder;
+    protected FlowPanel m_widgetHolder;
 
     /** The currently running animation. */
     Animation m_currentAnimation;
@@ -195,8 +192,14 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     /** Flag indicating if there is a value set for this UI object. */
     private boolean m_hasValue;
 
+    /** The help text. */
+    private String m_help;
+
     /** Flag indicating that this view represents a simple value. */
     private boolean m_isSimpleValue;
+
+    /** The label text. */
+    private String m_label;
 
     /** The drag and drop place holder element. */
     private Element m_placeHolder;
@@ -205,7 +208,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     private Element m_provisionalParent;
 
     /** The editing widget. */
-    private I_EditWidget m_widget;
+    private I_FormEditWidget m_widget;
 
     /**
      * Constructor.<p>
@@ -222,9 +225,10 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         m_handler = handler;
         m_handler.registerAttributeValue(this);
         m_moveButton.addMouseDownHandler(m_handler.getDNDHandler());
-        m_label.setInnerHTML(label);
-        m_label.setTitle(help);
-        m_helpBubbleText.setInnerHTML(help);
+        m_label = label;
+        m_help = help;
+        generateLabel();
+        m_helpBubbleText.setInnerHTML(m_help);
         addStyleName(I_LayoutBundle.INSTANCE.form().emptyValue());
         initHighlightingHandler();
         initButtons(label);
@@ -419,8 +423,8 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
 
         m_hasValue = false;
         m_widgetHolder.clear();
-        m_widgetHolder.getElement().setInnerHTML("");
         addStyleName(I_LayoutBundle.INSTANCE.form().emptyValue());
+        generateLabel();
     }
 
     /**
@@ -449,7 +453,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         m_hasValue = true;
         m_isSimpleValue = false;
         FlowPanel entityPanel = new FlowPanel();
-        m_widgetHolder.setWidget(entityPanel);
+        m_widgetHolder.add(entityPanel);
         renderer.renderForm(value, entityPanel);
         removeStyleName(I_LayoutBundle.INSTANCE.form().emptyValue());
     }
@@ -461,7 +465,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
      * @param value the value
      * @param active <code>true</code> if the widget should be activated
      */
-    public void setValueWidget(I_EditWidget widget, String value, boolean active) {
+    public void setValueWidget(I_FormEditWidget widget, String value, boolean active) {
 
         if (m_hasValue) {
             throw new RuntimeException("Value has already been set");
@@ -469,9 +473,11 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         m_hasValue = true;
         m_isSimpleValue = true;
         m_widget = widget;
-        widget.setValue(value, false);
+        m_widgetHolder.clear();
+        m_widget.setWidgetInfo(m_label, m_help);
+        m_widget.setValue(value, false);
         m_widget.asWidget().addStyleName(I_LayoutBundle.INSTANCE.form().widget());
-        m_widgetHolder.setWidget(m_widget);
+        m_widgetHolder.add(m_widget);
         m_widget.addValueChangeHandler(new ChangeHandler());
         m_widget.addFocusHandler(new FocusHandler() {
 
@@ -643,6 +649,21 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
             m_provisionalParent = null;
         }
         removeStyleName(I_LayoutBundle.INSTANCE.form().dragElement());
+    }
+
+    /**
+     * Generates the attribute label.<p>
+     */
+    private void generateLabel() {
+
+        HTML labelWidget = new HTML("<div title=\""
+            + m_help
+            + "\" class=\""
+            + I_LayoutBundle.INSTANCE.form().label()
+            + "\">"
+            + m_label
+            + "</div>");
+        m_widgetHolder.add(labelWidget);
     }
 
     /**

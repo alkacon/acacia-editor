@@ -22,34 +22,18 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package com.alkacon.acacia.client;
-
-import com.alkacon.acacia.client.widgets.I_EditWidget;
-import com.alkacon.acacia.client.widgets.I_FormEditWidget;
-
-import com.google.gwt.user.client.Element;
+package com.alkacon.acacia.client.widgets;
 
 /**
- * Generates an editing widget with the given configuration.<p>
+ * An editing widget including the label. To be used for form based editing only.<p>
  */
-public interface I_WidgetFactory {
+public interface I_FormEditWidget extends I_EditWidget {
 
     /**
-     * Creates the from editing widget.<p>
+     * Sets the widget label and help text.<p>
      * 
-     * @param configuration the widget configuration
-     * 
-     * @return the widget
+     * @param label the widget label text
+     * @param help the widget help text
      */
-    I_FormEditWidget createFormWidget(String configuration);
-
-    /**
-     * Wraps an existing DOM element to create an inline editing widget.<p>
-     * 
-     * @param configuration the widget configuration
-     * @param element the element to wrap
-     * 
-     * @return the widget
-     */
-    I_EditWidget createInlineWidget(String configuration, Element element);
+    void setWidgetInfo(String label, String help);
 }

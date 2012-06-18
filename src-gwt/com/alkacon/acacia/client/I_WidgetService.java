@@ -25,6 +25,7 @@
 package com.alkacon.acacia.client;
 
 import com.alkacon.acacia.client.widgets.I_EditWidget;
+import com.alkacon.acacia.client.widgets.I_FormEditWidget;
 import com.alkacon.acacia.shared.AttributeConfiguration;
 import com.alkacon.vie.shared.I_Type;
 
@@ -71,23 +72,23 @@ public interface I_WidgetService {
     String getAttributeLabel(String attributeName);
 
     /**
-     * Returns the attribute widget.<p>
+     * Returns the attribute form editing widget.<p>
      * 
      * @param attributeName the attribute name
      * 
      * @return the attribute widget
      */
-    I_EditWidget getAttributeWidget(String attributeName);
+    I_FormEditWidget getAttributeFormWidget(String attributeName);
 
     /**
-     * Returns the attribute widget wrapping the given DOM element.<p>
+     * Returns the attribute inline editing widget wrapping the given DOM element.<p>
      * 
      * @param attributeName the attribute name
      * @param element the DOM element to wrap
      * 
      * @return the attribute widget
      */
-    I_EditWidget getAttributeWidget(String attributeName, Element element);
+    I_EditWidget getAttributeInlineWidget(String attributeName, Element element);
 
     /**
      * Returns the default attribute value

@@ -40,14 +40,12 @@ public interface I_EditWidget extends HasValue<String>, HasFocusHandlers, IsWidg
      * It needs to call the {@link com.google.gwt.user.client.ui.Widget#onAttach()} method.<p>
      */
     @SuppressWarnings("javadoc")
-    public void onAttachWidget();
+    void onAttachWidget();
 
     /**
-     * Sets the widget active/inactive.<p>
-     * 
-     * @param active <code>true</code> to activate the widget
+     * @see com.google.gwt.event.logical.shared.HasValueChangeHandlers#addValueChangeHandler(com.google.gwt.event.logical.shared.ValueChangeHandler)
      */
-    void setActive(boolean active);
+    HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> handler);
 
     /**
      * Returns if the widget is active.<p>
@@ -57,12 +55,14 @@ public interface I_EditWidget extends HasValue<String>, HasFocusHandlers, IsWidg
     boolean isActive();
 
     /**
+     * Sets the widget active/inactive.<p>
+     * 
+     * @param active <code>true</code> to activate the widget
+     */
+    void setActive(boolean active);
+
+    /**
      * @see com.google.gwt.user.client.ui.HasValue#setValue(java.lang.Object, boolean)
      */
     void setValue(String value, boolean fireEvent);
-
-    /**
-     * @see com.google.gwt.event.logical.shared.HasValueChangeHandlers#addValueChangeHandler(com.google.gwt.event.logical.shared.ValueChangeHandler)
-     */
-    HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> handler);
 }

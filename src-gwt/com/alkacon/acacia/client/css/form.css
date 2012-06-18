@@ -28,8 +28,9 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 }
 .entity .attributeValue{
 	padding-bottom:2px;
+	position: relative;
 }
-.entity .attributeValue .label span, .dragHelper.attributeValue .label span{
+.entity .attributeValue .label, .dragHelper.attributeValue .label{
 	font-size: 14px;
 	font-weight: bold;
 }
@@ -39,19 +40,19 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 	font-style: italic;
 }
 
-.entity .entity .attributeValue .label span{
+.entity .entity .attributeValue .label{
 	font-weight: normal;
 }
 
-.entity .entity .entity .attributeValue .label span{
+.entity .entity .entity .attributeValue .label{
 	font-size: 12px;
 }
-.entity .attributeValue > div{
+.entity .attributeValue > div.widgetHolder{
 	position: relative;
 	padding: 2px 0px 2px 4px;
 }
 
-.attributeValue .label span, .attributeValue .label div{
+.attributeValue .label{
 	font-weight:bold;
 }
 
@@ -88,48 +89,48 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 	outline:none;
 }
 
-.widgetHolder > .widget.input, .attributeValue .widgetHolder  .mceEditor{
+.widgetHolder > div > .widget.input, .attributeValue .widgetHolder  .mceEditor{
 	border: 1px solid #7788AA;
 	background: #ffffff;
 }
 
-.hasError .widgetHolder > .widget.input, .attributeValue.hasError .widgetHolder  .mceEditor, .gwt-TabLayoutPanel .gwt-TabLayoutPanelTabBar .gwt-TabLayoutPanelTab.hasError{
+.hasError .widgetHolder > div > .widget.input, .attributeValue.hasError .widgetHolder  .mceEditor, .gwt-TabLayoutPanel .gwt-TabLayoutPanelTabBar .gwt-TabLayoutPanelTab.hasError{
 	border-color: value("constants.css.borderColorHighlight");
 }
-.widgetHolder > .widget.input{
+.widgetHolder > div > .widget.input{
 	cursor: text;
 }
 .attributeValue .widgetHolder  .mceEditor.inActive *{
 	visibility: hidden;
 }
 
-.widgetHolder > .widget.input.inActive, .attributeValue .widgetHolder  .mceEditor.inActive{
+.widgetHolder > div > .widget.input.inActive, .attributeValue .widgetHolder  .mceEditor.inActive{
 	color: transparent;
 	border-color: #B1B4B8;
 }
 
-.attributeValue.focused > div > .widgetHolder > .mceEditor .mceStatusbar{
+.attributeValue.focused > .widgetHolder > div > .mceEditor .mceStatusbar{
 	visibility: visible;
 }
 
-.attributeValue > div > .widgetHolder > .mceEditor .mceStatusbar{
+.attributeValue > .widgetHolder > div > .mceEditor .mceStatusbar{
 	visibility: hidden;
 	border: none;
 }
 
-.attributeValue.focused > div > .widgetHolder > .mceEditor .mceExternalToolbar{
+.attributeValue.focused > .widgetHolder > div > .mceEditor .mceExternalToolbar{
 	z-index: 10;
 }
 
-.attributeValue.focused > div > .widgetHolder > .mceEditor .mceIframeContainer{
+.attributeValue.focused > .widgetHolder > div > .mceEditor .mceIframeContainer{
 	border-bottom: 1px solid #aaaaaa;
 }
 
-.attributeValue > div > .widgetHolder > .mceEditor .mceIframeContainer{
+.attributeValue > .widgetHolder > div > .mceEditor .mceIframeContainer{
 	border-color: #ffffff;
 }
 
-.attributeValue > div > .widgetHolder > .mceEditor > table.mceLayout{
+.attributeValue > .widgetHolder > div > .mceEditor > table.mceLayout{
 	border: none;
 }
 
@@ -171,11 +172,11 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 	display:none;
 }
 
-.displayAbove  > div > .helpBubble{
+.displayAbove > .helpBubble{
 	top: auto;
 	bottom: 100%;
 }
-@sprite .displayAbove > div > .helpBubble > .helpBubbleArrow{
+@sprite .displayAbove > .helpBubble > .helpBubbleArrow{
 	gwt-image: "bottomLeftCorner";
 	height: 10px;
 	width: 10px;
@@ -188,11 +189,11 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 	color: #222222;
 }
 
-.attributeValue.focused > div > .helpBubble{
+.attributeValue.focused > .helpBubble{
 	display: block;
 }
 
-.attributeValue.focused.closedBubble > div > .helpBubble{
+.attributeValue.focused.closedBubble > .helpBubble{
 	display: none;
 }
 
@@ -223,12 +224,12 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 	.formParent{
 		background-image: literal("-moz-linear-gradient(")PARENT_GRADIENT literal(")") !important;
 	}
-	.entity .attributeValue.focused > div, .dragHelper.attributeValue > div{
+	.entity .attributeValue.focused > .widgetHolder, .dragHelper.attributeValue > .widgetHolder{
 		background-image: literal("-moz-linear-gradient(")FOCUS_GRADIENT literal(")");
 	}
 } @elif user.agent safari {
 	/** chrome, safari etc. **/
-	.entity .attributeValue > div, .dragHelper.attributeValue > div{
+	.entity .attributeValue > .widgetHolder, .dragHelper.attributeValue > .widgetHolder{
 		-webkit-border-radius: 4px;
 	}
 	.widgetHolder .widget.input, .attributeValue .widgetHolder  .mceEditor{
@@ -237,12 +238,12 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 	.formParent{
 		background-image: literal("-webkit-linear-gradient(")PARENT_GRADIENT literal(")") !important;
 	}
-	.entity .attributeValue.focused > div, .dragHelper.attributeValue > div{
+	.entity .attributeValue.focused > .widgetHolder, .dragHelper.attributeValue > .widgetHolder{
 		background-image: literal("-webkit-linear-gradient(")FOCUS_GRADIENT literal(")");
 	}
 } @elif user.agent opera {
 	/** opera */
-	.entity .attributeValue > div, .dragHelper.attributeValue > div{
+	.entity .attributeValue > .widgetHolder, .dragHelper.attributeValue > .widgetHolder{
 		border-radius: 4px;
 	}
 	.widgetHolder .widget.input, .attributeValue .widgetHolder  .mceEditor{
@@ -251,12 +252,12 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 	.formParent{
 		background-image: literal("-o-linear-gradient(")PARENT_GRADIENT literal(")") !important;
 	}
-	.entity .attributeValue.focused > div, .dragHelper.attributeValue > div{
+	.entity .attributeValue.focused > .widgetHolder, .dragHelper.attributeValue > .widgetHolder{
 		background-image: literal("-o-linear-gradient(")FOCUS_GRADIENT literal(")");
 	}
 } @else {
 	/** ie */
-	.entity .attributeValue > div, .dragHelper.attributeValue > div{
+	.entity .attributeValue > .widgetHolder, .dragHelper.attributeValue > .widgetHolder{
 		border-radius: 4px;
 	}
 	.widgetHolder .widget.input, .attributeValue .widgetHolder  .mceEditor{
@@ -265,7 +266,7 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 	div.formParent{
 		background: #EEEEEE !important;
 	}
-	.entity .attributeValue.focused > div, .dragHelper.attributeValue > div{
+	.entity .attributeValue.focused > .widgetHolder, .dragHelper.attributeValue > .widgetHolder{
 		background: #A3B1CC;
 	}
 }
@@ -319,8 +320,7 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 	opacity: 0.8;
 }
 
-.dragHelper.attributeValue > div{
-	position: relative;
+.dragHelper.attributeValue > .widgetHolder{
 	padding: 2px 0px 2px 4px;
 }
 

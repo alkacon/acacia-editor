@@ -279,7 +279,7 @@ public class Renderer implements I_EntityRenderer {
                             attributeElement.add(valueWidget);
                             if (attribute.isSimpleValue()) {
                                 valueWidget.setValueWidget(
-                                    m_widgetService.getAttributeWidget(attributeName),
+                                    m_widgetService.getAttributeFormWidget(attributeName),
                                     attribute.getSimpleValues().get(i),
                                     true);
                             } else {
@@ -292,7 +292,7 @@ public class Renderer implements I_EntityRenderer {
                         if (attributeType.isSimpleType()) {
                             // create a deactivated widget, to add the attribute on click
                             valueWidget.setValueWidget(
-                                m_widgetService.getAttributeWidget(attributeName),
+                                m_widgetService.getAttributeFormWidget(attributeName),
                                 m_widgetService.getDefaultAttributeValue(attributeName),
                                 false);
                         }
@@ -334,7 +334,7 @@ public class Renderer implements I_EntityRenderer {
                     attributeElement.add(valueWidget);
                     if (attribute.isSimpleValue()) {
                         valueWidget.setValueWidget(
-                            m_widgetService.getAttributeWidget(attributeName),
+                            m_widgetService.getAttributeFormWidget(attributeName),
                             attribute.getSimpleValues().get(i),
                             true);
                     } else {
@@ -347,7 +347,7 @@ public class Renderer implements I_EntityRenderer {
                 if (attributeType.isSimpleType()) {
                     // create a deactivated widget, to add the attribute on click
                     valueWidget.setValueWidget(
-                        m_widgetService.getAttributeWidget(attributeName),
+                        m_widgetService.getAttributeFormWidget(attributeName),
                         m_widgetService.getDefaultAttributeValue(attributeName),
                         false);
                 }
@@ -410,7 +410,7 @@ public class Renderer implements I_EntityRenderer {
                 List<Element> elements = m_vie.getAttributeElements(parentEntity, attributeName, context);
                 for (int i = 0; i < elements.size(); i++) {
                     Element element = elements.get(i);
-                    I_EditWidget widget = m_widgetService.getAttributeWidget(
+                    I_EditWidget widget = m_widgetService.getAttributeInlineWidget(
                         attributeName,
                         (com.google.gwt.user.client.Element)element);
                     widget.onAttachWidget();
@@ -444,7 +444,7 @@ public class Renderer implements I_EntityRenderer {
                     formParent.getElement());
                 for (int i = 0; i < elements.size(); i++) {
                     Element element = elements.get(i);
-                    I_EditWidget widget = m_widgetService.getAttributeWidget(
+                    I_EditWidget widget = m_widgetService.getAttributeInlineWidget(
                         attributeName,
                         (com.google.gwt.user.client.Element)element);
                     formParent.adoptWidget(widget);
