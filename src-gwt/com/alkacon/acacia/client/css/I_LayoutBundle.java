@@ -25,6 +25,7 @@
 package com.alkacon.acacia.client.css;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.CssResource.Shared;
 import com.google.gwt.resources.client.ImageResource;
 
@@ -33,9 +34,56 @@ import com.google.gwt.resources.client.ImageResource;
  */
 public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_LayoutBundle {
 
+    /** The widget CSS classes. */
+    @Shared
+    public interface I_Widgets extends CssResource {
+
+        /**
+         * Returns the drag helper CSS class name.<p>
+         *  
+         * @return the drag helper CSS class
+         */
+        String emptyValue();
+
+        /**
+         * Returns the has error CSS class name.<p>
+         * 
+         * @return the has error CSS class
+         */
+        String hasError();
+
+        /**
+         * Returns the has warning CSS class name.<p>
+         * 
+         * @return the has warning CSS class
+         */
+        String hasWarning();
+
+        /**
+         * Returns the label CSS class name.<p>
+         * 
+         * @return the label CSS class
+         */
+        String label();
+
+        /**
+         * Returns the help bubble close CSS class name.<p>
+         * 
+         * @return the help bubble close CSS class
+         */
+        String inActive();
+
+        /**
+         * Returns the widget holder CSS class name.<p>
+         * 
+         * @return the widget holder CSS class
+         */
+        String widgetHolder();
+    }
+
     /** The style CSS resource. */
     @Shared
-    public interface I_Style extends com.alkacon.geranium.client.ui.css.I_LayoutBundle.I_DragCss {
+    public interface I_Style extends com.alkacon.geranium.client.ui.css.I_LayoutBundle.I_DragCss, I_Widgets {
 
         /** 
          * Returns the attribute CSS class name.<p>
@@ -101,13 +149,6 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
         String dragOverlay();
 
         /**
-         * Returns the drag helper CSS class name.<p>
-         *  
-         * @return the drag helper CSS class
-         */
-        String emptyValue();
-
-        /**
          * Returns the entity CSS class name.<p>
          * 
          * @return the entity CSS class
@@ -127,20 +168,6 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
          * @return the form parent CSS class
          */
         String formParent();
-
-        /**
-         * Returns the has error CSS class name.<p>
-         * 
-         * @return the has error CSS class
-         */
-        String hasError();
-
-        /**
-         * Returns the has warning CSS class name.<p>
-         * 
-         * @return the has warning CSS class
-         */
-        String hasWarning();
 
         /**
          * Returns the help bubble CSS class name.<p>
@@ -178,25 +205,11 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
         String helpMessageIcon();
 
         /**
-         * Returns the help bubble close CSS class name.<p>
-         * 
-         * @return the help bubble close CSS class
-         */
-        String inActive();
-
-        /**
          * Returns the input field CSS class name.<p>
          * 
          * @return the input field CSS class name
          */
         String input();
-
-        /**
-         * Returns the label CSS class name.<p>
-         * 
-         * @return the label CSS class
-         */
-        String label();
 
         /** 
          * Returns the move handle CSS class name.<p>
@@ -211,13 +224,6 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
          * @return the widget CSS class
          */
         String widget();
-
-        /**
-         * Returns the widget holder CSS class name.<p>
-         * 
-         * @return the widget holder CSS class
-         */
-        String widgetHolder();
     }
 
     /** The bundle instance. */
