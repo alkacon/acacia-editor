@@ -155,10 +155,10 @@ public class HalloWidget extends A_EditWidget {
                 'halloblock' : {},
                 'hallojustify' : {},
                 'hallolists' : {},
-                'hallolink' : {},
                 'halloreundo' : {}
             },
-            editable : true
+            editable : true,
+            showAlways : true
         });
         editable
                 .bind(
@@ -166,5 +166,15 @@ public class HalloWidget extends A_EditWidget {
                         function(event, data) {
                             _self.@com.alkacon.acacia.client.widgets.HalloWidget::fireValueChange(Z)(false);
                         });
+        var selection = $wnd.rangy.getSelection();
+        var range = null;
+        if (selection.rangeCount > 0) {
+            range = selection.getRangeAt(0);
+        } else {
+            range = rangy.createRange();
+        }
+        if (editable.hallo("containsSelection")) {
+            editable.hallo("turnOn");
+        }
     }-*/;
 }
