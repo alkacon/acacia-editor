@@ -1587,10 +1587,10 @@
           return _this.refresh();
         };
         editableElement.bind('halloenabled', function() {
-          return editableElement.bind('keyup paste change mouseup hallomodified', updateState);
+          return editableElement.bind('keyup paste change mouseup hallomodified halloactivated', updateState);
         });
         return editableElement.bind('hallodisabled', function() {
-          return editableElement.unbind('keyup paste change mouseup hallomodified', updateState);
+          return editableElement.unbind('keyup paste change mouseup hallomodified halloactivated', updateState);
         });
       },
       enable: function() {
@@ -1832,6 +1832,11 @@
       },
       activate: function() {
         return this.element.focus();
+      },
+      containsSelection: function() {
+        var range;
+        range = this.getSelection();
+        return this.element.has(range.startContainer).length > 0;
       },
       getSelection: function() {
         var range, sel;
