@@ -94,8 +94,20 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 	background: #ffffff;
 }
 
+.attributeValue.hasError .label{
+	color: value("constants.css.borderColorHighlight");
+}
+
+.attributeValue.hasWarning .label{
+	color: #FFAA00;
+}
+
 .hasError .widgetHolder > div > .widget.input, .attributeValue.hasError .widgetHolder  .mceEditor, .gwt-TabLayoutPanel .gwt-TabLayoutPanelTabBar .gwt-TabLayoutPanelTab.hasError{
 	border-color: value("constants.css.borderColorHighlight");
+}
+
+.hasWarning .widgetHolder > div > .widget.input, .attributeValue.hasWarning .widgetHolder  .mceEditor, .gwt-TabLayoutPanel .gwt-TabLayoutPanelTabBar .gwt-TabLayoutPanelTab.hasWarning{
+	border-color: #FFAA00;
 }
 .widgetHolder > div > .widget.input{
 	cursor: text;
@@ -185,6 +197,13 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 	bottom: -5px;
 	left: 10px;
 }
+
+@sprite .hasError.displayAbove > .helpBubble > .helpBubbleArrow{
+	gwt-image: "bottomLeftCornerError";
+	height: 10px;
+	width: 10px;
+}
+
 .helpBubble div{
 	color: #222222;
 }
@@ -210,6 +229,12 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 	position: absolute;
 	top: -5px;
 	left: 10px;
+}
+
+@sprite .hasError .helpBubbleArrow{
+	gwt-image: "topLeftCornerError";
+	height: 10px;
+	width: 10px;
 }
 
 /** Browser specific styles. */

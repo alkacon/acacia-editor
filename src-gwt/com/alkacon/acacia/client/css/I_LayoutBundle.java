@@ -34,53 +34,6 @@ import com.google.gwt.resources.client.ImageResource;
  */
 public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_LayoutBundle {
 
-    /** The widget CSS classes. */
-    @Shared
-    public interface I_Widgets extends CssResource {
-
-        /**
-         * Returns the drag helper CSS class name.<p>
-         *  
-         * @return the drag helper CSS class
-         */
-        String emptyValue();
-
-        /**
-         * Returns the has error CSS class name.<p>
-         * 
-         * @return the has error CSS class
-         */
-        String hasError();
-
-        /**
-         * Returns the has warning CSS class name.<p>
-         * 
-         * @return the has warning CSS class
-         */
-        String hasWarning();
-
-        /**
-         * Returns the label CSS class name.<p>
-         * 
-         * @return the label CSS class
-         */
-        String label();
-
-        /**
-         * Returns the help bubble close CSS class name.<p>
-         * 
-         * @return the help bubble close CSS class
-         */
-        String inActive();
-
-        /**
-         * Returns the widget holder CSS class name.<p>
-         * 
-         * @return the widget holder CSS class
-         */
-        String widgetHolder();
-    }
-
     /** The style CSS resource. */
     @Shared
     public interface I_Style extends com.alkacon.geranium.client.ui.css.I_LayoutBundle.I_DragCss, I_Widgets {
@@ -226,6 +179,53 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
         String widget();
     }
 
+    /** The widget CSS classes. */
+    @Shared
+    public interface I_Widgets extends CssResource {
+
+        /**
+         * Returns the drag helper CSS class name.<p>
+         *  
+         * @return the drag helper CSS class
+         */
+        String emptyValue();
+
+        /**
+         * Returns the has error CSS class name.<p>
+         * 
+         * @return the has error CSS class
+         */
+        String hasError();
+
+        /**
+         * Returns the has warning CSS class name.<p>
+         * 
+         * @return the has warning CSS class
+         */
+        String hasWarning();
+
+        /**
+         * Returns the help bubble close CSS class name.<p>
+         * 
+         * @return the help bubble close CSS class
+         */
+        String inActive();
+
+        /**
+         * Returns the label CSS class name.<p>
+         * 
+         * @return the label CSS class
+         */
+        String label();
+
+        /**
+         * Returns the widget holder CSS class name.<p>
+         * 
+         * @return the widget holder CSS class
+         */
+        String widgetHolder();
+    }
+
     /** The bundle instance. */
     I_LayoutBundle INSTANCE = GWT.create(I_LayoutBundle.class);
 
@@ -243,6 +243,14 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
      */
     @Source("bottom-left-corner.png")
     ImageResource bottomLeftCorner();
+
+    /**
+     * Access method.<p>
+     * 
+     * @return the image resource 
+     */
+    @Source("bottom-left-corner-error.png")
+    ImageResource bottomLeftCornerError();
 
     /**
      * Access method.<p>
@@ -267,4 +275,12 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
      */
     @Source("top-left-corner.png")
     ImageResource topLeftCorner();
+
+    /**
+     * Access method.<p>
+     * 
+     * @return the image resource 
+     */
+    @Source("top-left-corner-error.png")
+    ImageResource topLeftCornerError();
 }
