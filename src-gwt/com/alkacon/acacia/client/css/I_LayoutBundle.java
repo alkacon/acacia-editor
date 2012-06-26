@@ -34,53 +34,6 @@ import com.google.gwt.resources.client.ImageResource;
  */
 public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_LayoutBundle {
 
-    /** The widget CSS classes. */
-    @Shared
-    public interface I_Widgets extends CssResource {
-
-        /**
-         * Returns the drag helper CSS class name.<p>
-         *  
-         * @return the drag helper CSS class
-         */
-        String emptyValue();
-
-        /**
-         * Returns the has error CSS class name.<p>
-         * 
-         * @return the has error CSS class
-         */
-        String hasError();
-
-        /**
-         * Returns the has warning CSS class name.<p>
-         * 
-         * @return the has warning CSS class
-         */
-        String hasWarning();
-
-        /**
-         * Returns the label CSS class name.<p>
-         * 
-         * @return the label CSS class
-         */
-        String label();
-
-        /**
-         * Returns the help bubble close CSS class name.<p>
-         * 
-         * @return the help bubble close CSS class
-         */
-        String inActive();
-
-        /**
-         * Returns the widget holder CSS class name.<p>
-         * 
-         * @return the widget holder CSS class
-         */
-        String widgetHolder();
-    }
-
     /** The style CSS resource. */
     @Shared
     public interface I_Style extends com.alkacon.geranium.client.ui.css.I_LayoutBundle.I_DragCss, I_Widgets {
@@ -91,13 +44,6 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
          * @return the attribute CSS class
          */
         String attribute();
-
-        /**
-         * Returns the attribute value CSS class name.<p>
-         * 
-         * @return the attribute value CSS class
-         */
-        String attributeValue();
 
         /**
          * Returns the button CSS class name.<p>
@@ -127,33 +73,12 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
          */
         String displayAbove();
 
-        /** 
-         * Returns the attribute CSS class name.<p>
-         * 
-         * @return the attribute CSS class
-         */
-        String dragElement();
-
-        /**
-         * Returns the drag helper CSS class name.<p>
-         *  
-         * @return the drag helper CSS class
-         */
-        String dragHelper();
-
         /**
          * Returns the drag overlay CSS class name.<p>
          *  
          * @return the drag overlay CSS class
          */
         String dragOverlay();
-
-        /**
-         * Returns the entity CSS class name.<p>
-         * 
-         * @return the entity CSS class
-         */
-        String entity();
 
         /**
          * Returns the focused CSS class name.<p>
@@ -218,12 +143,88 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
          */
         String moveHandle();
 
+        /** 
+         * Returns the attribute CSS class name.<p>
+         * 
+         * @return the attribute CSS class
+         */
+        String dragElement();
+
+    }
+
+    /** The widget CSS classes. */
+    @Shared
+    public interface I_Widgets extends CssResource {
+
+        /**
+         * Returns the drag helper CSS class name.<p>
+         *  
+         * @return the drag helper CSS class
+         */
+        String dragHelper();
+
+        /**
+         * Returns the attribute value CSS class name.<p>
+         * 
+         * @return the attribute value CSS class
+         */
+        String attributeValue();
+
+        /**
+         * Returns the drag helper CSS class name.<p>
+         *  
+         * @return the drag helper CSS class
+         */
+        String emptyValue();
+
+        /**
+         * Returns the entity CSS class name.<p>
+         * 
+         * @return the entity CSS class
+         */
+        String entity();
+
+        /**
+         * Returns the has error CSS class name.<p>
+         * 
+         * @return the has error CSS class
+         */
+        String hasError();
+
+        /**
+         * Returns the has warning CSS class name.<p>
+         * 
+         * @return the has warning CSS class
+         */
+        String hasWarning();
+
+        /**
+         * Returns the help bubble close CSS class name.<p>
+         * 
+         * @return the help bubble close CSS class
+         */
+        String inActive();
+
+        /**
+         * Returns the label CSS class name.<p>
+         * 
+         * @return the label CSS class
+         */
+        String label();
+
         /**
          * Returns the widget CSS class name.<p>
          * 
          * @return the widget CSS class
          */
         String widget();
+
+        /**
+         * Returns the widget holder CSS class name.<p>
+         * 
+         * @return the widget holder CSS class
+         */
+        String widgetHolder();
     }
 
     /** The bundle instance. */
