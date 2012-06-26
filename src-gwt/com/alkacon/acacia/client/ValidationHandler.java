@@ -194,7 +194,7 @@ public final class ValidationHandler implements ValueChangeHandler<I_Entity> {
 
                     public void onSuccess(ValidationResult result) {
 
-                        displayErrors(entity.getId(), result);
+                        displayValidation(entity.getId(), result);
                     }
                 });
         }
@@ -206,10 +206,36 @@ public final class ValidationHandler implements ValueChangeHandler<I_Entity> {
      * @param entityId the entity id
      * @param validationResult the validationResult
      */
-    void displayErrors(String entityId, ValidationResult validationResult) {
+    void displayValidation(String entityId, ValidationResult validationResult) {
 
         if (m_formTabPanel != null) {
             AttributeHandler.clearErrorStyles(m_formTabPanel);
+        }
+        if (validationResult.hasWarnings(entityId)) {
+            for (Entry<String, String> warning : validationResult.getWarnings(entityId).entrySet()) {
+                String attributeName = warning.getKey();
+                // check if there are no errors for this attribute
+                if (!validationResult.hasErrors(entityId)
+                    || !validationResult.getErrors(entityId).containsKey(attributeName)) {
+                    int index = 0;
+                    // check if the value index is appended to the attribute name
+                    if (attributeName.endsWith("]") && attributeName.contains("[")) {
+                        try {
+                            String temp = attributeName.substring(
+                                attributeName.lastIndexOf("[") + 1,
+                                attributeName.length() - 1);
+                            attributeName = attributeName.substring(0, attributeName.lastIndexOf("["));
+                            index = Integer.parseInt(temp);
+                        } catch (NumberFormatException e) {
+                            // ignore
+                        }
+                    }
+                    AttributeHandler handler = AttributeHandler.getAttributeHandler(attributeName);
+                    if (handler != null) {
+                        handler.setWarningMessage(index, warning.getValue(), m_formTabPanel);
+                    }
+                }
+            }
         }
         if (validationResult.hasErrors(entityId)) {
             for (Entry<String, String> error : validationResult.getErrors(entityId).entrySet()) {

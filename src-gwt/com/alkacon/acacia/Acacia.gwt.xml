@@ -7,6 +7,7 @@
 	<stylesheet src="../hallo/fontawesome/css/font-awesome.css" />
 	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" />
 	<script src="../hallo/hallo.js" />
+	<script src="../hallo/rangy-core-1.2.3.js" />
 	<script src="../tiny_mce/tiny_mce_src.js" />
 	<script src="../closure_cssom.js" />
 	<source path="client" />

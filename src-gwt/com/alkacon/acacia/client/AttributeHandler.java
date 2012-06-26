@@ -104,6 +104,7 @@ public class AttributeHandler {
             Widget tab = tabbedPanel.getTabWidget(i);
             tab.setTitle(null);
             tab.getParent().removeStyleName(I_LayoutBundle.INSTANCE.form().hasError());
+            tab.getParent().removeStyleName(I_LayoutBundle.INSTANCE.form().hasWarning());
         }
     }
 
@@ -357,7 +358,33 @@ public class AttributeHandler {
                 if (tabIndex > -1) {
                     Widget tab = tabbedPanel.getTabWidget(tabIndex);
                     tab.setTitle("This tab has errors.");
+                    tab.getParent().removeStyleName(I_LayoutBundle.INSTANCE.form().hasWarning());
                     tab.getParent().addStyleName(I_LayoutBundle.INSTANCE.form().hasError());
+                }
+
+            }
+        }
+    }
+
+    /**
+     * Sets the warning message for the given value index.<p>
+     * 
+     * @param valueIndex the value index
+     * @param message the warning message
+     * @param tabbedPanel the forms tabbed panel if available
+     */
+    public void setWarningMessage(int valueIndex, String message, TabbedPanel<?> tabbedPanel) {
+
+        if (!m_attributeValueViews.isEmpty()) {
+            FlowPanel parent = (FlowPanel)m_attributeValueViews.get(0).getParent();
+            AttributeValueView valueView = (AttributeValueView)parent.getWidget(valueIndex);
+            valueView.setWarningMessage(message);
+            if (tabbedPanel != null) {
+                int tabIndex = tabbedPanel.getTabIndex(valueView.getElement());
+                if (tabIndex > -1) {
+                    Widget tab = tabbedPanel.getTabWidget(tabIndex);
+                    tab.setTitle("This tab has warnings.");
+                    tab.getParent().addStyleName(I_LayoutBundle.INSTANCE.form().hasWarning());
                 }
 
             }

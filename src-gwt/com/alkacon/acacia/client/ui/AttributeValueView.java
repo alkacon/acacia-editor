@@ -95,7 +95,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         public void onValueChange(ValueChangeEvent<String> event) {
 
             getHandler().changeValue(AttributeValueView.this, event.getValue());
-            removeErrorMessage();
+            removeValidationMessage();
         }
     }
 
@@ -407,13 +407,15 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     /**
      * Removes any present error message.<p>
      */
-    public void removeErrorMessage() {
+    public void removeValidationMessage() {
 
         if (m_hasError) {
             m_messageText.setInnerText("");
             removeStyleName(I_LayoutBundle.INSTANCE.form().hasError());
+            removeStyleName(I_LayoutBundle.INSTANCE.form().hasWarning());
             m_hasError = false;
         }
+
     }
 
     /**
@@ -492,6 +494,18 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         } else {
             removeStyleName(I_LayoutBundle.INSTANCE.form().emptyValue());
         }
+    }
+
+    /**
+     * Shows a validation warning message.<p>
+     * 
+     * @param message the warning message
+     */
+    public void setWarningMessage(String message) {
+
+        m_messageText.setInnerText(message);
+        addStyleName(I_LayoutBundle.INSTANCE.form().hasWarning());
+        m_hasError = true;
     }
 
     /**
