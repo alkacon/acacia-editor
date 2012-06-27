@@ -227,53 +227,6 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
         String widgetHolder();
     }
 
-    /** The widget CSS classes. */
-    @Shared
-    public interface I_Widgets extends CssResource {
-
-        /**
-         * Returns the drag helper CSS class name.<p>
-         *  
-         * @return the drag helper CSS class
-         */
-        String emptyValue();
-
-        /**
-         * Returns the has error CSS class name.<p>
-         * 
-         * @return the has error CSS class
-         */
-        String hasError();
-
-        /**
-         * Returns the has warning CSS class name.<p>
-         * 
-         * @return the has warning CSS class
-         */
-        String hasWarning();
-
-        /**
-         * Returns the help bubble close CSS class name.<p>
-         * 
-         * @return the help bubble close CSS class
-         */
-        String inActive();
-
-        /**
-         * Returns the label CSS class name.<p>
-         * 
-         * @return the label CSS class
-         */
-        String label();
-
-        /**
-         * Returns the widget holder CSS class name.<p>
-         * 
-         * @return the widget holder CSS class
-         */
-        String widgetHolder();
-    }
-
     /** The bundle instance. */
     I_LayoutBundle INSTANCE = GWT.create(I_LayoutBundle.class);
 
