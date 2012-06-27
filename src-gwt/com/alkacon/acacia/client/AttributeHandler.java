@@ -127,54 +127,60 @@ public class AttributeHandler {
      */
     public void addNewAttributeValue(AttributeValueView reference) {
 
-        if (getAttributeType().isSimpleType()) {
-            String value = m_widgetService.getDefaultAttributeValue(m_attributeName);
-            I_FormEditWidget widget = m_widgetService.getAttributeFormWidget(m_attributeName);
-            int valueIndex = -1;
-            if (reference.getElement().getNextSiblingElement() == null) {
-                m_entity.addAttributeValue(m_attributeName, value);
-            } else {
-                valueIndex = reference.getValueIndex() + 1;
-                m_entity.insertAttributeValue(m_attributeName, value, valueIndex);
-
-            }
-            AttributeValueView valueWidget = reference;
-            if (reference.hasValue()) {
-                valueWidget = new AttributeValueView(
-                    this,
-                    m_widgetService.getAttributeLabel(m_attributeName),
-                    m_widgetService.getAttributeHelp(m_attributeName));
-                if (valueIndex == -1) {
-                    ((FlowPanel)reference.getParent()).add(valueWidget);
+        // make sure not to add more values than allowed
+        int maxOccurrence = getEntityType().getAttributeMaxOccurrence(m_attributeName);
+        I_EntityAttribute attribute = m_entity.getAttribute(m_attributeName);
+        boolean mayHaveMore = ((attribute == null) || (attribute.getValueCount() < maxOccurrence));
+        if (mayHaveMore) {
+            if (getAttributeType().isSimpleType()) {
+                String value = m_widgetService.getDefaultAttributeValue(m_attributeName);
+                I_FormEditWidget widget = m_widgetService.getAttributeFormWidget(m_attributeName);
+                int valueIndex = -1;
+                if (reference.getElement().getNextSiblingElement() == null) {
+                    m_entity.addAttributeValue(m_attributeName, value);
                 } else {
-                    ((FlowPanel)reference.getParent()).insert(valueWidget, valueIndex);
-                }
+                    valueIndex = reference.getValueIndex() + 1;
+                    m_entity.insertAttributeValue(m_attributeName, value, valueIndex);
 
-            }
-            valueWidget.setValueWidget(widget, value, true);
-        } else {
-            I_Entity value = m_vie.createEntity(null, m_attributeType.getId());
-            I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(m_attributeName, m_attributeType);
-            int valueIndex = -1;
-            if (reference.getElement().getNextSiblingElement() == null) {
-                m_entity.addAttributeValue(m_attributeName, value);
-            } else {
-                valueIndex = reference.getValueIndex() + 1;
-                m_entity.insertAttributeValue(m_attributeName, value, valueIndex);
-            }
-            AttributeValueView valueWidget = reference;
-            if (reference.hasValue()) {
-                valueWidget = new AttributeValueView(
-                    this,
-                    m_widgetService.getAttributeLabel(m_attributeName),
-                    m_widgetService.getAttributeHelp(m_attributeName));
-                if (valueIndex == -1) {
-                    ((FlowPanel)reference.getParent()).add(valueWidget);
-                } else {
-                    ((FlowPanel)reference.getParent()).insert(valueWidget, valueIndex);
                 }
+                AttributeValueView valueWidget = reference;
+                if (reference.hasValue()) {
+                    valueWidget = new AttributeValueView(
+                        this,
+                        m_widgetService.getAttributeLabel(m_attributeName),
+                        m_widgetService.getAttributeHelp(m_attributeName));
+                    if (valueIndex == -1) {
+                        ((FlowPanel)reference.getParent()).add(valueWidget);
+                    } else {
+                        ((FlowPanel)reference.getParent()).insert(valueWidget, valueIndex);
+                    }
+
+                }
+                valueWidget.setValueWidget(widget, value, true);
+            } else {
+                I_Entity value = m_vie.createEntity(null, m_attributeType.getId());
+                I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(m_attributeName, m_attributeType);
+                int valueIndex = -1;
+                if (reference.getElement().getNextSiblingElement() == null) {
+                    m_entity.addAttributeValue(m_attributeName, value);
+                } else {
+                    valueIndex = reference.getValueIndex() + 1;
+                    m_entity.insertAttributeValue(m_attributeName, value, valueIndex);
+                }
+                AttributeValueView valueWidget = reference;
+                if (reference.hasValue()) {
+                    valueWidget = new AttributeValueView(
+                        this,
+                        m_widgetService.getAttributeLabel(m_attributeName),
+                        m_widgetService.getAttributeHelp(m_attributeName));
+                    if (valueIndex == -1) {
+                        ((FlowPanel)reference.getParent()).add(valueWidget);
+                    } else {
+                        ((FlowPanel)reference.getParent()).insert(valueWidget, valueIndex);
+                    }
+                }
+                valueWidget.setValueEntity(renderer, value);
             }
-            valueWidget.setValueEntity(renderer, value);
         }
         updateButtonVisisbility();
     }
