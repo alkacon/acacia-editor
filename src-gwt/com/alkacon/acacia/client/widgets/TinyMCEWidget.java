@@ -73,23 +73,31 @@ public final class TinyMCEWidget extends A_EditWidget {
     /** The editor height to set. */
     int m_editorHeight;
 
-    /**
-     * Constructor.<p>
-     */
-    public TinyMCEWidget() {
-
-        this(DOM.createDiv());
-    }
+    /** The editor options. */
+    private JavaScriptObject m_options;
 
     /**
      * Creates a new instance for the given element.<p>
      * 
      * @param element the DOM element
+     * @param options the tinyMCE editor options to extend the default settings
      */
-    public TinyMCEWidget(Element element) {
+    public TinyMCEWidget(Element element, JavaScriptObject options) {
 
         super(element);
+        m_options = options;
         m_active = true;
+    }
+
+    /**
+     * Constructor.<p>
+     * 
+     * @param options the tinyMCE editor options to extend the default settings
+     */
+    public TinyMCEWidget(JavaScriptObject options) {
+
+        this(DOM.createDiv(), options);
+
     }
 
     /**
@@ -366,16 +374,6 @@ public final class TinyMCEWidget extends A_EditWidget {
     }
 
     /**
-     * Returns the editor content.<p>
-     * 
-     * @return the editor content
-     */
-    private native String getContent() /*-{
-        var editor = this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_editor;
-        return editor.getContent();
-    }-*/;
-
-    /**
      * Initializes the TinyMCE instance.
      */
     native void initNative() /*-{
@@ -415,89 +413,100 @@ public final class TinyMCEWidget extends A_EditWidget {
                             }, 1);
         };
 
-        $wnd.tinyMCE
-                .init({
-                    setup : function(ed) {
-                        self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_editor = ed;
+        // default options:
+        var defaults = {
+            relative_urls : false,
+            remove_script_host : false,
+            skin_variant : 'ocms',
+            mode : "exact",
+            theme : "advanced",
+            plugins : "autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist",
+            theme_advanced_toolbar_location : "external",
+            theme_advanced_toolbar_align : "right",
+            theme_advanced_statusbar_location : "bottom",
+            width : '100%',
 
-                        ed.onChange.add(fireChange);
-                        ed.onKeyDown.add(fireChangeDelayed);
-                        ed.onLoad
-                                .add(function() {
-                                    $wnd.document.getElementById(iframeId).style.minHeight = editorHeight;
-                                    var iframe = $wnd.document
-                                            .getElementById(iframeId);
-                                    var doc = $wnd.goog.dom
-                                            .getFrameContentDocument(iframe);
-                                    var domHelper = new $wnd.goog.dom.DomHelper(
-                                            doc);
-                                    var savedCss = self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_savedCss;
-                                    $wnd.goog.cssom.addCssText(savedCss,
-                                            domHelper);
+            theme_advanced_resizing : true,
+            theme_advanced_resizing_use_cookie : false
+        };
+        var options = this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_options;
+        // extend the defaults with any given options
+        if (options != null) {
+            var vie = @com.alkacon.vie.client.Vie::getInstance()();
+            vie.jQuery.extend(defaults, options);
+        }
 
-                                });
-                        ed.onClick
-                                .add(function(event) {
-                                    self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::fixToolbar()();
-                                    self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Lcom/google/gwt/dom/client/NativeEvent;)(event);
-                                });
-                    },
-                    init_instance_callback : function(ed) {
-                        $wnd.tinyMCE.dom.Event
-                                .add(
-                                        ed.getWin(),
-                                        'focus',
-                                        function(event) {
-                                            self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateFocusEvent()();
-                                        });
-                        $wnd.tinyMCE.dom.Event
-                                .add(
-                                        ed.getWin(),
-                                        'mousedown',
-                                        function(event) {
-                                            self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Lcom/google/gwt/dom/client/NativeEvent;)(event);
-                                        });
-                        $wnd.tinyMCE.dom.Event
-                                .add(
-                                        ed.getWin(),
-                                        'mouseup',
-                                        function(event) {
-                                            self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Lcom/google/gwt/dom/client/NativeEvent;)(event);
-                                        });
-                        $wnd.tinyMCE.dom.Event
-                                .add(
-                                        ed.getWin(),
-                                        'mousemove',
-                                        function(event) {
-                                            self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Lcom/google/gwt/dom/client/NativeEvent;)(event);
-                                        });
-                    },
-                    // General options
-                    mode : "exact",
-                    theme : "advanced",
-                    elements : self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_id,
-                    plugins : "autoresize,autolink,lists,pagebreak,style,layer,table,advhr,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist",
-                    save_onsavecallback : function() {
-                    },
+        // add the setup function
+        defaults.setup = function(ed) {
+            self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_editor = ed;
 
-                    // Theme options
-                    theme_advanced_buttons1 : "bold,italic,underline,strikethrough",
-                    theme_advanced_buttons2 : "",
-                    theme_advanced_buttons3 : "",
-                    theme_advanced_buttons4 : "",
-                    theme_advanced_toolbar_location : "external",
-                    theme_advanced_toolbar_align : "right",
-                    theme_advanced_statusbar_location : "bottom",
-                    theme_advanced_resizing : true,
+            ed.onChange.add(fireChange);
+            ed.onKeyDown.add(fireChangeDelayed);
+            ed.onLoad
+                    .add(function() {
+                        $wnd.document.getElementById(iframeId).style.minHeight = editorHeight;
+                        var iframe = $wnd.document.getElementById(iframeId);
+                        var doc = $wnd.goog.dom.getFrameContentDocument(iframe);
+                        var domHelper = new $wnd.goog.dom.DomHelper(doc);
+                        var savedCss = self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_savedCss;
+                        $wnd.goog.cssom.addCssText(savedCss, domHelper);
 
-                    // Drop lists for link/image/media/template dialogs
-                    template_external_list_url : "lists/template_list.js",
-                    external_link_list_url : "lists/link_list.js",
-                    external_image_list_url : "lists/image_list.js",
-                    media_external_list_url : "lists/media_list.js"
+                    });
+            ed.onClick
+                    .add(function(event) {
+                        self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::fixToolbar()();
+                        self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Lcom/google/gwt/dom/client/NativeEvent;)(event);
+                    });
+        };
 
-                });
+        // add event handlers
+        defaults.init_instance_callback = function(ed) {
+            $wnd.tinyMCE.dom.Event
+                    .add(
+                            ed.getWin(),
+                            'focus',
+                            function(event) {
+                                self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateFocusEvent()();
+                            });
+            $wnd.tinyMCE.dom.Event
+                    .add(
+                            ed.getWin(),
+                            'mousedown',
+                            function(event) {
+                                self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Lcom/google/gwt/dom/client/NativeEvent;)(event);
+                            });
+            $wnd.tinyMCE.dom.Event
+                    .add(
+                            ed.getWin(),
+                            'mouseup',
+                            function(event) {
+                                self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Lcom/google/gwt/dom/client/NativeEvent;)(event);
+                            });
+            $wnd.tinyMCE.dom.Event
+                    .add(
+                            ed.getWin(),
+                            'mousemove',
+                            function(event) {
+                                self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Lcom/google/gwt/dom/client/NativeEvent;)(event);
+                            });
+        };
+
+        // set the edited element id
+        defaults.elements = self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_id;
+
+        // initialize tinyMCE
+        $wnd.tinyMCE.init(defaults);
         self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::fixStyles()();
+    }-*/;
+
+    /**
+     * Returns the editor content.<p>
+     * 
+     * @return the editor content
+     */
+    private native String getContent() /*-{
+        var editor = this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_editor;
+        return editor.getContent();
     }-*/;
 
     /**

@@ -1,4 +1,4 @@
-@external mceEditor, mceExternalToolbar, mceStatusbar, mceIframeContainer, mceLayout, gwt-TabLayoutPanelTabBar, gwt-TabLayoutPanel, gwt-TabLayoutPanelTab;
+@external mceEditor, mceExternalToolbar, mceStatusbar, mceIframeContainer, mceLayout, mceToolbar, gwt-TabLayoutPanelTabBar, gwt-TabLayoutPanel, gwt-TabLayoutPanelTab;
 
 @def PARENT_GRADIENT literal("left, #FFFFFF 0%, #F4F7F9 80%, #E1E4E8 100%");  
 @def FOCUS_GRADIENT literal("left, #E1E4E8 0%, #EAEDEF 80%, #F4F7F9 100%");  
@@ -148,6 +148,26 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 
 .attributeValue .mceEditor .mceExternalToolbar{
 	z-index: -1;
+}
+
+
+/* These rules are used for laying out TinyMCE's button toolbar rows next to each other, not as rows. */
+
+.mceIframeContainer, .mceIframeContainer iframe, #mce_fullscreen_tbl , #mce_fullscreen_container {
+	height: 100% !important; 
+}
+
+/* Use the cmsTinyMCE class here because we need to turn the float off/on dynamically to fix a layout problem in Chrome. */
+.attributeValue .mceToolbar table, #mce_fullscreen_tbl table.mceToolbar {
+   float: left;
+}
+                    
+.mceToolbar select {
+       width: auto !important;
+}
+                    
+.mceToolbar option {
+  float: none; 
 }
 
 /** Help bubble styles. */
