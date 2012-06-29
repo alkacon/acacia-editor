@@ -67,9 +67,6 @@ public final class TinyMCEWidget extends A_EditWidget {
     /** The original HTML content of the editable element. */
     protected String m_originalContent;
 
-    /** The saved CSS text of the inline editable element. */
-    protected String m_savedCss;
-
     /** The editor height to set. */
     int m_editorHeight;
 
@@ -188,10 +185,9 @@ public final class TinyMCEWidget extends A_EditWidget {
      * Checks whether the necessary Javascript libraries are available by accessing them. 
      */
     protected native void checkLibraries() /*-{
-        // fail early if tinymce or goog.cssom.iframe.style is not available
+        // fail early if tinymce is not available
         var w = $wnd;
         var init = w.tinyMCE.init;
-        var _ = w.goog.cssom.iframe.style;
     }-*/;
 
     /**
@@ -391,9 +387,6 @@ public final class TinyMCEWidget extends A_EditWidget {
         self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_originalContent = mainElement.innerHTML;
         self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_currentContent = mainElement.innerHTML;
 
-        $wnd.goog.cssom.iframe.style.resetDomCache();
-        self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_savedCss = $wnd.goog.cssom.iframe.style
-                .getElementContext(mainElement);
         var fireChange = function() {
             self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::fireValueChange(Z)(false);
         };
@@ -445,12 +438,6 @@ public final class TinyMCEWidget extends A_EditWidget {
             ed.onLoad
                     .add(function() {
                         $wnd.document.getElementById(iframeId).style.minHeight = editorHeight;
-                        var iframe = $wnd.document.getElementById(iframeId);
-                        var doc = $wnd.goog.dom.getFrameContentDocument(iframe);
-                        var domHelper = new $wnd.goog.dom.DomHelper(doc);
-                        var savedCss = self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_savedCss;
-                        $wnd.goog.cssom.addCssText(savedCss, domHelper);
-
                     });
             ed.onClick
                     .add(function(event) {
