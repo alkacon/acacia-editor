@@ -427,6 +427,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         m_widgetHolder.clear();
         addStyleName(I_LayoutBundle.INSTANCE.form().emptyValue());
         generateLabel();
+        removeValidationMessage();
     }
 
     /**
