@@ -144,11 +144,11 @@ public final class ValidationHandler implements ValueChangeHandler<I_Entity> {
     @SuppressWarnings("unchecked")
     public void registerEntity(I_Entity entity) {
 
-        if (m_handlerRegistration != null) {
-            throw new RuntimeException("Validation handler has already been registered for another entity.");
-        }
         if (!(entity instanceof HasValueChangeHandlers)) {
             throw new RuntimeException("The entity does not implement the HasChangeHandlers interface.");
+        }
+        if (m_handlerRegistration != null) {
+            m_handlerRegistration.removeHandler();
         }
         m_handlerRegistration = ((HasValueChangeHandlers<I_Entity>)entity).addValueChangeHandler(this);
     }
