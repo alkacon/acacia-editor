@@ -133,7 +133,7 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 .attributeValue.focused > .widgetHolder > div > .mceEditor .mceExternalToolbar{
 	z-index: 10;
 	left: -1px;
-	border-color: #FFAA00;
+	border-color: #7788AA;
 }
 
 .attributeValue.focused > .widgetHolder > div > .mceEditor .mceIframeContainer{
