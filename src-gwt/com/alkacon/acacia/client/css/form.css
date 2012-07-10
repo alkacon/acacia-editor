@@ -22,9 +22,14 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 
 /** Attribute value view styles. */
 .attributeValue .label{
-	margin:4px 3px 2px;
+	margin:4px 25px 2px 3px;
 	color: #7788aa;
 	cursor: default;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	
+	
 }
 .entity .attributeValue{
 	padding-bottom:2px;
@@ -50,6 +55,7 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 .entity .attributeValue > div.widgetHolder{
 	position: relative;
 	padding: 2px 0px 2px 4px;
+	border-radius: value("constants.css.borderRadius");
 }
 
 .attributeValue .label{
@@ -266,7 +272,7 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 		-moz-border-radius: 4px;
 	}
 	.widgetHolder .widget.input, .attributeValue .widgetHolder  .mceEditor{
-		-moz-border-radius: 2px;
+		-moz-border-radius: 3px;
 	}
 	.formParent{
 		background-image: literal("-moz-linear-gradient(")PARENT_GRADIENT literal(")") !important;
@@ -280,7 +286,7 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 		-webkit-border-radius: 4px;
 	}
 	.widgetHolder .widget.input, .attributeValue .widgetHolder  .mceEditor{
-		-webkit-border-radius: 2px;
+		-webkit-border-radius: 3px;
 	}
 	.formParent{
 		background-image: literal("-webkit-linear-gradient(")PARENT_GRADIENT literal(")") !important;
@@ -294,7 +300,7 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 		border-radius: 4px;
 	}
 	.widgetHolder .widget.input, .attributeValue .widgetHolder  .mceEditor{
-		border-radius: 2px;
+		border-radius: 3px;
 	}
 	.formParent{
 		background-image: literal("-o-linear-gradient(")PARENT_GRADIENT literal(")") !important;
@@ -308,7 +314,7 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 		border-radius: 4px;
 	}
 	.widgetHolder .widget.input, .attributeValue .widgetHolder  .mceEditor{
-		border-radius: 2px;
+		border-radius: 3px;
 	}
 	div.formParent{
 		background: #EEEEEE !important;
