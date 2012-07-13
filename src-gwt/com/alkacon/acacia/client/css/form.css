@@ -1,4 +1,4 @@
-@external mceEditor, mceExternalToolbar, mceStatusbar, mceIframeContainer, mceLayout, mceToolbar, gwt-TabLayoutPanelTabBar, gwt-TabLayoutPanel, gwt-TabLayoutPanelTab;
+@external mceEditor,defaultSkin, mceExternalToolbar, mceStatusbar, mceIframeContainer, mceLayout, mceToolbar, gwt-TabLayoutPanelTabBar, gwt-TabLayoutPanel, gwt-TabLayoutPanelTab;
 
 @def PARENT_GRADIENT literal("left, #FFFFFF 0%, #F4F7F9 80%, #E1E4E8 100%");  
 @def FOCUS_GRADIENT literal("left, #E1E4E8 0%, #EAEDEF 80%, #F4F7F9 100%");  
@@ -155,6 +155,7 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 	z-index: 10;
 	left: -1px;
 	border-color: #7788AA;
+	border-radius: 3px 3px 0 0;
 }
 
 .attributeValue.focused > .widgetHolder > div > .mceEditor .mceIframeContainer{
@@ -188,7 +189,11 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 }
                     
 .mceToolbar select {
-       width: auto !important;
+    width: auto !important;
+}
+
+.mceEditor .defaultSkin td.mceToolbar {
+	background: #E1E4E8;
 }
                     
 .mceToolbar option {
