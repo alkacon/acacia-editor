@@ -73,6 +73,9 @@ public final class TinyMCEWidget extends A_EditWidget {
     /** The editor options. */
     private JavaScriptObject m_options;
 
+    /** The maximal width of the widget. */
+    protected int m_width;
+
     /**
      * Creates a new instance for the given element.<p>
      * 
@@ -305,6 +308,7 @@ public final class TinyMCEWidget extends A_EditWidget {
 
                 m_editorHeight = calculateEditorHeight();
                 m_id = ensureId(getElement());
+                m_width = getElement().getOffsetWidth() - 2;
                 checkLibraries();
                 initNative();
                 if (!m_active) {
@@ -408,12 +412,14 @@ public final class TinyMCEWidget extends A_EditWidget {
 
         // default options:
         var defaults = {
+            theme_advanced_resize_horizontal : true,
+            theme_advanced_resizing_max_width : self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_width,
             relative_urls : false,
             remove_script_host : false,
             skin_variant : 'ocms',
             mode : "exact",
             theme : "advanced",
-            plugins : "autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist",
+            plugins : "autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist",
             theme_advanced_toolbar_location : "external",
             theme_advanced_toolbar_align : "right",
             theme_advanced_statusbar_location : "bottom",
