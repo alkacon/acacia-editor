@@ -176,6 +176,10 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 	z-index: -1;
 }
 
+.attributeValue .mceEditor .mceExternalToolbar td{
+	border-radius: 3px 3px 0 0;
+}
+
 
 /* These rules are used for laying out TinyMCE's button toolbar rows next to each other, not as rows. */
 
