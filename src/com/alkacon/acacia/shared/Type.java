@@ -44,6 +44,9 @@ public class Type implements I_Type, Serializable {
     /** The type id. */
     private String m_id;
 
+    /** Flag indicating if this is a choice type. */
+    private boolean m_isChoice;
+
     /** The max occurrences of the type attributes. */
     private Map<String, Integer> m_maxs;
 
@@ -138,6 +141,14 @@ public class Type implements I_Type, Serializable {
     }
 
     /**
+     * @see com.alkacon.vie.shared.I_Type#isChoice()
+     */
+    public boolean isChoice() {
+
+        return m_isChoice;
+    }
+
+    /**
      * @see com.alkacon.vie.shared.I_Type#isSimpleType()
      */
     public boolean isSimpleType() {
@@ -145,4 +156,11 @@ public class Type implements I_Type, Serializable {
         return m_names.isEmpty();
     }
 
+    /**
+     * @see com.alkacon.vie.shared.I_Type#setIsChoice(boolean)
+     */
+    public void setIsChoice(boolean isChoice) {
+
+        m_isChoice = isChoice;
+    }
 }

@@ -34,9 +34,69 @@ import com.google.gwt.resources.client.ImageResource;
  */
 public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_LayoutBundle {
 
+    /** The attribute choice widget CSS. */
+    interface I_AttributeChoice extends CssResource {
+
+        /** 
+         * Returns the attribute choice CSS class.<p>
+         * 
+         * @return the attribute CSS class
+         */
+        String attributeChoice();
+
+        /**
+         * Returns the bridging div CSS class.<p>
+         * 
+         * @return the bridge CSS class
+         */
+        String bridge();
+
+        /** 
+         * Returns the button icon CSS class name.<p>
+         * 
+         * @return the button icon CSS class
+         */
+        String buttonIcon();
+
+        /** 
+         * Returns the choice CSS class name.<p>
+         * 
+         * @return the choice CSS class
+         */
+        String choice();
+
+        /** 
+         * Returns the choices CSS class name.<p>
+         * 
+         * @return the choices CSS class
+         */
+        String choices();
+
+        /** 
+         * Returns the display above CSS class name.<p>
+         * 
+         * @return the display above CSS class
+         */
+        String displayAbove();
+
+        /** 
+         * Returns the choices frame CSS class name.<p>
+         * 
+         * @return the choices frame CSS class
+         */
+        String frame();
+
+        /** 
+         * Returns the hovering CSS class name.<p>
+         * 
+         * @return the hovering CSS class
+         */
+        String hovering();
+    }
+
     /** The style CSS resource. */
     @Shared
-    public interface I_Style extends com.alkacon.geranium.client.ui.css.I_LayoutBundle.I_DragCss, I_Widgets {
+    interface I_Style extends com.alkacon.geranium.client.ui.css.I_LayoutBundle.I_DragCss, I_Widgets {
 
         /** 
          * Returns the attribute CSS class name.<p>
@@ -72,6 +132,13 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
          * @return the display bubble above CSS class
          */
         String displayAbove();
+
+        /** 
+         * Returns the attribute CSS class name.<p>
+         * 
+         * @return the attribute CSS class
+         */
+        String dragElement();
 
         /**
          * Returns the drag overlay CSS class name.<p>
@@ -143,25 +210,11 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
          */
         String moveHandle();
 
-        /** 
-         * Returns the attribute CSS class name.<p>
-         * 
-         * @return the attribute CSS class
-         */
-        String dragElement();
-
     }
 
     /** The widget CSS classes. */
     @Shared
-    public interface I_Widgets extends CssResource {
-
-        /**
-         * Returns the drag helper CSS class name.<p>
-         *  
-         * @return the drag helper CSS class
-         */
-        String dragHelper();
+    interface I_Widgets extends CssResource {
 
         /**
          * Returns the attribute value CSS class name.<p>
@@ -169,6 +222,13 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
          * @return the attribute value CSS class
          */
         String attributeValue();
+
+        /**
+         * Returns the drag helper CSS class name.<p>
+         *  
+         * @return the drag helper CSS class
+         */
+        String dragHelper();
 
         /**
          * Returns the drag helper CSS class name.<p>
@@ -229,6 +289,14 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
 
     /** The bundle instance. */
     I_LayoutBundle INSTANCE = GWT.create(I_LayoutBundle.class);
+
+    /**
+     * Returns the attribute choice CSS.<p>
+     * 
+     * @return the attribute choice CSS
+     */
+    @Source("attributeChoice.css")
+    I_AttributeChoice attributeChoice();
 
     /**
      * Returns the base image bundle.<p>

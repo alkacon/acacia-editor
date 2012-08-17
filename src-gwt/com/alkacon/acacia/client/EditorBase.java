@@ -79,6 +79,9 @@ public class EditorBase {
         I_LayoutBundle.INSTANCE.buttonCss().ensureInjected();
         I_LayoutBundle.INSTANCE.highlightCss().ensureInjected();
         I_LayoutBundle.INSTANCE.tabbedPanelCss().ensureInjected();
+        I_LayoutBundle.INSTANCE.dialogCss().ensureInjected();
+        com.alkacon.acacia.client.css.I_LayoutBundle.INSTANCE.form().ensureInjected();
+        com.alkacon.acacia.client.css.I_LayoutBundle.INSTANCE.attributeChoice().ensureInjected();
         m_service = service;
         m_vie = Vie.getInstance();
         m_widgetService = new WidgetService();

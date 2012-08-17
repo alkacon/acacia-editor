@@ -284,7 +284,9 @@ public class Renderer implements I_EntityRenderer {
                                     true);
                             } else {
                                 valueWidget.setValueEntity(renderer, attribute.getComplexValues().get(i));
+
                             }
+                            setAttributeChoice(valueWidget, attributeType);
                         }
                     } else {
                         AttributeValueView valueWidget = new AttributeValueView(handler, label, help);
@@ -296,6 +298,7 @@ public class Renderer implements I_EntityRenderer {
                                 m_widgetService.getDefaultAttributeValue(attributeName),
                                 false);
                         }
+                        setAttributeChoice(valueWidget, attributeType);
                     }
                 }
                 handler.updateButtonVisisbility();
@@ -315,44 +318,48 @@ public class Renderer implements I_EntityRenderer {
         context.getElement().setAttribute("about", entity.getId());
         I_Type entityType = m_vie.getType(entity.getTypeName());
         List<String> attributeNames = entityType.getAttributeNames();
-        for (final String attributeName : attributeNames) {
-            AttributeHandler handler = new AttributeHandler(m_vie, entity, attributeName, m_widgetService);
-            I_Type attributeType = entityType.getAttributeType(attributeName);
-            I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(attributeName, attributeType);
+        for (String attributeName : attributeNames) {
             int minOccurrence = entityType.getAttributeMinOccurrence(attributeName);
-            String label = m_widgetService.getAttributeLabel(attributeName);
-            String help = m_widgetService.getAttributeHelp(attributeName);
-            ValuePanel attributeElement = new ValuePanel();
-            context.add(attributeElement);
             I_EntityAttribute attribute = entity.getAttribute(attributeName);
             if ((attribute == null) && (minOccurrence > 0)) {
                 attribute = createEmptyAttribute(entity, attributeName, minOccurrence);
             }
-            if (attribute != null) {
-                for (int i = 0; i < attribute.getValueCount(); i++) {
+            if (!entityType.isChoice() || (attribute != null)) {
+                I_Type attributeType = entityType.getAttributeType(attributeName);
+                I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(attributeName, attributeType);
+                String label = m_widgetService.getAttributeLabel(attributeName);
+                String help = m_widgetService.getAttributeHelp(attributeName);
+                ValuePanel attributeElement = new ValuePanel();
+                context.add(attributeElement);
+                AttributeHandler handler = new AttributeHandler(m_vie, entity, attributeName, m_widgetService);
+                if (attribute != null) {
+                    for (int i = 0; i < attribute.getValueCount(); i++) {
+                        AttributeValueView valueWidget = new AttributeValueView(handler, label, help);
+                        attributeElement.add(valueWidget);
+                        if (attribute.isSimpleValue()) {
+                            valueWidget.setValueWidget(
+                                m_widgetService.getAttributeFormWidget(attributeName),
+                                attribute.getSimpleValues().get(i),
+                                true);
+                        } else {
+                            valueWidget.setValueEntity(renderer, attribute.getComplexValues().get(i));
+                        }
+                        setAttributeChoice(valueWidget, attributeType);
+                    }
+                } else {
                     AttributeValueView valueWidget = new AttributeValueView(handler, label, help);
                     attributeElement.add(valueWidget);
-                    if (attribute.isSimpleValue()) {
+                    if (attributeType.isSimpleType()) {
+                        // create a deactivated widget, to add the attribute on click
                         valueWidget.setValueWidget(
                             m_widgetService.getAttributeFormWidget(attributeName),
-                            attribute.getSimpleValues().get(i),
-                            true);
-                    } else {
-                        valueWidget.setValueEntity(renderer, attribute.getComplexValues().get(i));
+                            m_widgetService.getDefaultAttributeValue(attributeName),
+                            false);
                     }
+                    setAttributeChoice(valueWidget, attributeType);
                 }
-            } else {
-                AttributeValueView valueWidget = new AttributeValueView(handler, label, help);
-                attributeElement.add(valueWidget);
-                if (attributeType.isSimpleType()) {
-                    // create a deactivated widget, to add the attribute on click
-                    valueWidget.setValueWidget(
-                        m_widgetService.getAttributeFormWidget(attributeName),
-                        m_widgetService.getDefaultAttributeValue(attributeName),
-                        false);
-                }
+                handler.updateButtonVisisbility();
             }
-            handler.updateButtonVisisbility();
         }
     }
 
@@ -496,5 +503,23 @@ public class Renderer implements I_EntityRenderer {
 
         context.clear();
         renderForm(entity, context);
+    }
+
+    /**
+     * Sets the attribute choices if present.<p>
+     * 
+     * @param valueWidget the value widget
+     * @param attributeType the attribute type
+     */
+    private void setAttributeChoice(AttributeValueView valueWidget, I_Type attributeType) {
+
+        if (attributeType.isChoice()) {
+            for (String choiceName : attributeType.getAttributeNames()) {
+                valueWidget.addChoice(
+                    m_widgetService.getAttributeLabel(choiceName),
+                    m_widgetService.getAttributeHelp(choiceName),
+                    choiceName);
+            }
+        }
     }
 }

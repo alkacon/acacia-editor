@@ -52,6 +52,7 @@ import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.HasMouseDownHandlers;
@@ -74,6 +75,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -142,6 +144,10 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     @UiField
     protected PushButton m_addButton;
 
+    /** The attribute choice button. */
+    @UiField
+    protected AttributeChoiceWidget m_attributeChoice;
+
     /** The button bar. */
     @UiField
     protected HoverPanel m_buttonBar;
@@ -195,6 +201,9 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     /** The help text. */
     private String m_help;
 
+    /** Flag indicating this is a representing an attribute choice value. */
+    private boolean m_isChoice;
+
     /** Flag indicating that this view represents a simple value. */
     private boolean m_isSimpleValue;
 
@@ -232,6 +241,29 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         addStyleName(I_LayoutBundle.INSTANCE.form().emptyValue());
         initHighlightingHandler();
         initButtons(label);
+    }
+
+    /**
+     * Adds an attribute choice.<p>
+     * 
+     * @param label the choice label
+     * @param description the choice description
+     * @param name the choice name
+     */
+    public void addChoice(String label, String description, final String name) {
+
+        Label choice = new Label(label);
+        choice.setTitle(description);
+        choice.addClickHandler(new ClickHandler() {
+
+            public void onClick(ClickEvent event) {
+
+                m_attributeChoice.hide();
+                selectChoice(name);
+            }
+        });
+        m_attributeChoice.addChoice(choice);
+        m_isChoice = true;
     }
 
     /**
@@ -537,11 +569,17 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
      */
     public void updateButtonVisibility(boolean hasAddButton, boolean hasRemoveButton, boolean hasSortButtons) {
 
-        if (hasAddButton) {
+        if (hasAddButton && m_isChoice) {
+            m_attributeChoice.getElement().getStyle().clearDisplay();
+        } else {
+            m_attributeChoice.getElement().getStyle().setDisplay(Display.NONE);
+        }
+        if (hasAddButton && !m_isChoice) {
             m_addButton.getElement().getStyle().clearDisplay();
         } else {
             m_addButton.getElement().getStyle().setDisplay(Display.NONE);
         }
+
         if (hasRemoveButton) {
             m_removeButton.getElement().getStyle().clearDisplay();
         } else {
@@ -613,6 +651,16 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
 
         m_handler.removeAttributeValue(this);
         onResize();
+    }
+
+    /**
+     * Selects the attribute choice.<p>
+     * 
+     * @param choiceName the attribute choice name
+     */
+    protected void selectChoice(String choiceName) {
+
+        m_handler.addNewChoiceAttributeValue(this, choiceName);
     }
 
     /**

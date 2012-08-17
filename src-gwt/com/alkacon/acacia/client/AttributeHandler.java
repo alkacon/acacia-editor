@@ -159,29 +159,31 @@ public class AttributeHandler {
                 valueWidget.setValueWidget(widget, value, true);
             } else {
                 I_Entity value = m_vie.createEntity(null, m_attributeType.getId());
-                I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(m_attributeName, m_attributeType);
-                int valueIndex = -1;
-                if (reference.getElement().getNextSiblingElement() == null) {
-                    m_entity.addAttributeValue(m_attributeName, value);
-                } else {
-                    valueIndex = reference.getValueIndex() + 1;
-                    m_entity.insertAttributeValue(m_attributeName, value, valueIndex);
-                }
-                AttributeValueView valueWidget = reference;
-                if (reference.hasValue()) {
-                    valueWidget = new AttributeValueView(
-                        this,
-                        m_widgetService.getAttributeLabel(m_attributeName),
-                        m_widgetService.getAttributeHelp(m_attributeName));
-                    if (valueIndex == -1) {
-                        ((FlowPanel)reference.getParent()).add(valueWidget);
-                    } else {
-                        ((FlowPanel)reference.getParent()).insert(valueWidget, valueIndex);
-                    }
-                }
-                valueWidget.setValueEntity(renderer, value);
+                insertValueAfterReference(value, reference);
             }
         }
+        updateButtonVisisbility();
+    }
+
+    /**
+     * Adds a new choice attribute value.<p>
+     * 
+     * @param reference the reference value view
+     * @param attributeChoice the attribute choice
+     */
+    public void addNewChoiceAttributeValue(AttributeValueView reference, String attributeChoice) {
+
+        I_Entity value = m_vie.createEntity(null, getAttributeType().getId());
+        // create the attribute choice
+        I_Type choiceType = getAttributeType().getAttributeType(attributeChoice);
+        if (choiceType.isSimpleType()) {
+            String choiceValue = m_widgetService.getDefaultAttributeValue(attributeChoice);
+            value.addAttributeValue(attributeChoice, choiceValue);
+        } else {
+            I_Entity choiceValue = m_vie.createEntity(null, choiceType.getId());
+            value.addAttributeValue(attributeChoice, choiceValue);
+        }
+        insertValueAfterReference(value, reference);
         updateButtonVisisbility();
     }
 
@@ -409,7 +411,7 @@ public class AttributeHandler {
             && (((attribute == null) || (attribute.getValueCount() < maxOccurrence)));
         boolean needsRemove = false;
         boolean needsSort = false;
-        if (m_entity.hasAttribute(m_attributeName)) {
+        if (!getEntityType().isChoice() && m_entity.hasAttribute(m_attributeName)) {
             int valueCount = m_entity.getAttribute(m_attributeName).getValueCount();
             needsRemove = (maxOccurrence > minOccurrence) && (valueCount > minOccurrence);
             needsSort = valueCount > 1;
@@ -443,5 +445,36 @@ public class AttributeHandler {
             m_entityType = m_vie.getType(m_entity.getTypeName());
         }
         return m_entityType;
+    }
+
+    /**
+     * Inserts an entity value after the given reference.<p>
+     * 
+     * @param value the entity value
+     * @param reference the reference
+     */
+    private void insertValueAfterReference(I_Entity value, AttributeValueView reference) {
+
+        int valueIndex = -1;
+        if (reference.getElement().getNextSiblingElement() == null) {
+            m_entity.addAttributeValue(m_attributeName, value);
+        } else {
+            valueIndex = reference.getValueIndex() + 1;
+            m_entity.insertAttributeValue(m_attributeName, value, valueIndex);
+        }
+        AttributeValueView valueWidget = reference;
+        if (reference.hasValue()) {
+            valueWidget = new AttributeValueView(
+                this,
+                m_widgetService.getAttributeLabel(m_attributeName),
+                m_widgetService.getAttributeHelp(m_attributeName));
+            if (valueIndex == -1) {
+                ((FlowPanel)reference.getParent()).add(valueWidget);
+            } else {
+                ((FlowPanel)reference.getParent()).insert(valueWidget, valueIndex);
+            }
+        }
+        I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(m_attributeName, m_attributeType);
+        valueWidget.setValueEntity(renderer, value);
     }
 }
