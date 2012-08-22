@@ -40,7 +40,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * The attribute choice widget.<p>
@@ -93,7 +93,7 @@ public class AttributeChoiceWidget extends Composite implements HasMouseOverHand
      * 
      * @param choice the choice to add
      */
-    public void addChoice(Label choice) {
+    public void addChoice(Widget choice) {
 
         choice.setStyleName(I_LayoutBundle.INSTANCE.attributeChoice().choice());
         m_choices.add(choice);

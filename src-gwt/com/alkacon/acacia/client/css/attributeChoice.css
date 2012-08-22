@@ -2,7 +2,7 @@
 	border: 1px solid transparent;
 	border-radius: 4px;
 	padding: 1px;
-	marging: 0px;
+	margin: 0px -1px 0px 0px;
 	display: inline-block;
 	position: relative;
 }
@@ -42,7 +42,7 @@
 	border: 1px solid #7788AA;
 	border-radius: 4px;
 	border-top-right-radius: 0px;
-	padding: 2px;
+	padding: 2px 0px;
 	position: absolute;
 	top: 21px;
 	right: -1px;
@@ -53,17 +53,36 @@
 .choices {
 	background: white;
 }
-.choice{
-	padding:1px;
-	margin: 1px;
-	border: 1px solid gray;
-	max-width: 200px;
+@sprite .choice{
+	padding: 0px 22px 0px 0px;
+	gwt-image: "gwtImages.icons.addIconDeactivated";
+	background-position: right;
+	margin: 2px 1px 2px 2px;
+	width: auto;
+}
+
+@sprite .choice:hover{
+	gwt-image: "gwtImages.icons.addIconActive";
+	background-position: right;
+	width: auto;
+}
+
+.choice div{
+	padding:0 4px;
+	border: 1px solid #7788AA;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	overflow: hidden;
 	border-radius: 3px;
+	font-size: 12px;
+	line-height: 18px;
+	color: #7788AA;
+	background-image: literal("-moz-linear-gradient(left center , #FFFFFF 0%, #F4F7F9 80%, #E1E4E8 100%)");
+	max-width: 200px;
 }
-.choice:hover{
-	border-color: black;
+.choice:hover div{
+	color: #445577;
+	border-color: #445577;
+	/** background-image: literal("-moz-linear-gradient(left center , #E1E4E8 0%, #EAEDEF 80%, #F4F7F9 100%)"); */
 }
 .hovering .displayAbove{}

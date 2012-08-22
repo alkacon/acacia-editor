@@ -75,7 +75,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -252,7 +251,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
      */
     public void addChoice(String label, String description, final String name) {
 
-        Label choice = new Label(label);
+        HTML choice = new HTML("<div>" + label + "</div>");
         choice.setTitle(description);
         choice.addClickHandler(new ClickHandler() {
 
