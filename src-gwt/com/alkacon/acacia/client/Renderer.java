@@ -29,6 +29,7 @@ import com.alkacon.acacia.client.ui.AttributeValueView;
 import com.alkacon.acacia.client.ui.ValuePanel;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
 import com.alkacon.acacia.shared.TabInfo;
+import com.alkacon.acacia.shared.Type;
 import com.alkacon.geranium.client.ui.FlowPanel;
 import com.alkacon.geranium.client.ui.TabbedPanel;
 import com.alkacon.geranium.client.ui.TabbedPanel.TabbedPanelStyle;
@@ -317,14 +318,44 @@ public class Renderer implements I_EntityRenderer {
         context.getElement().setAttribute("typeof", entity.getTypeName());
         context.getElement().setAttribute("about", entity.getId());
         I_Type entityType = m_vie.getType(entity.getTypeName());
-        List<String> attributeNames = entityType.getAttributeNames();
-        for (String attributeName : attributeNames) {
-            int minOccurrence = entityType.getAttributeMinOccurrence(attributeName);
-            I_EntityAttribute attribute = entity.getAttribute(attributeName);
-            if ((attribute == null) && (minOccurrence > 0)) {
-                attribute = createEmptyAttribute(entity, attributeName, minOccurrence);
+        if (entityType.isChoice()) {
+            I_EntityAttribute attribute = entity.getAttribute(Type.CHOICE_ATTRIBUTE_NAME);
+            assert (attribute != null) && attribute.isComplexValue() : "a choice type must have a choice attribute";
+            AttributeHandler handler = new AttributeHandler(m_vie, entity, Type.CHOICE_ATTRIBUTE_NAME, m_widgetService);
+            ValuePanel attributeElement = new ValuePanel();
+            for (I_Entity choiceEntity : attribute.getComplexValues()) {
+                I_Type choiceType = m_vie.getType(choiceEntity.getTypeName());
+                List<I_EntityAttribute> choiceAttributes = choiceEntity.getAttributes();
+                assert (choiceAttributes.size() == 1) && choiceAttributes.get(0).isSingleValue() : "each choice entity may only have a single attribute with a single value";
+                I_EntityAttribute choiceAttribute = choiceAttributes.get(0);
+                I_Type attributeType = choiceType.getAttributeType(choiceAttribute.getAttributeName());
+                I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(
+                    choiceAttribute.getAttributeName(),
+                    attributeType);
+                String label = m_widgetService.getAttributeLabel(choiceAttribute.getAttributeName());
+                String help = m_widgetService.getAttributeHelp(choiceAttribute.getAttributeName());
+                context.add(attributeElement);
+                AttributeValueView valueWidget = new AttributeValueView(handler, label, help);
+                attributeElement.add(valueWidget);
+                if (choiceAttribute.isSimpleValue()) {
+                    valueWidget.setValueWidget(
+                        m_widgetService.getAttributeFormWidget(choiceAttribute.getAttributeName()),
+                        choiceAttribute.getSimpleValue(),
+                        true);
+                } else {
+                    valueWidget.setValueEntity(renderer, choiceAttribute.getComplexValue());
+                }
+                setAttributeChoice(valueWidget, entityType);
             }
-            if (!entityType.isChoice() || (attribute != null)) {
+            handler.updateButtonVisisbility();
+        } else {
+            List<String> attributeNames = entityType.getAttributeNames();
+            for (String attributeName : attributeNames) {
+                int minOccurrence = entityType.getAttributeMinOccurrence(attributeName);
+                I_EntityAttribute attribute = entity.getAttribute(attributeName);
+                if ((attribute == null) && (minOccurrence > 0)) {
+                    attribute = createEmptyAttribute(entity, attributeName, minOccurrence);
+                }
                 I_Type attributeType = entityType.getAttributeType(attributeName);
                 I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(attributeName, attributeType);
                 String label = m_widgetService.getAttributeLabel(attributeName);
@@ -514,7 +545,8 @@ public class Renderer implements I_EntityRenderer {
     private void setAttributeChoice(AttributeValueView valueWidget, I_Type attributeType) {
 
         if (attributeType.isChoice()) {
-            for (String choiceName : attributeType.getAttributeNames()) {
+            I_Type choiceType = attributeType.getAttributeType(Type.CHOICE_ATTRIBUTE_NAME);
+            for (String choiceName : choiceType.getAttributeNames()) {
                 valueWidget.addChoice(
                     m_widgetService.getAttributeLabel(choiceName),
                     m_widgetService.getAttributeHelp(choiceName),

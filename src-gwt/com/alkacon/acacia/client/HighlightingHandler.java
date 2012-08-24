@@ -75,6 +75,17 @@ public class HighlightingHandler implements MouseOverHandler, MouseOutHandler, M
     }
 
     /**
+     * Removes all focus highlighting.<p>
+     */
+    public void clearFocusHighlighting() {
+
+        if ((m_currentFocus != null)) {
+            m_currentFocus.toggleFocusHighlighting(false);
+            m_currentFocus = null;
+        }
+    }
+
+    /**
      * Destroys the current handler instance.<p>
      */
     public void destroy() {
@@ -168,5 +179,4 @@ public class HighlightingHandler implements MouseOverHandler, MouseOutHandler, M
         m_currentFocus = target;
         m_currentFocus.toggleFocusHighlighting(true);
     }
-
 }

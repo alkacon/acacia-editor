@@ -27,6 +27,7 @@ package com.alkacon.acacia.client;
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.acacia.client.ui.AttributeValueView;
 import com.alkacon.acacia.client.widgets.I_FormEditWidget;
+import com.alkacon.acacia.shared.Type;
 import com.alkacon.geranium.client.dnd.DNDHandler;
 import com.alkacon.geranium.client.dnd.DNDHandler.Orientation;
 import com.alkacon.geranium.client.ui.TabbedPanel;
@@ -173,17 +174,25 @@ public class AttributeHandler {
      */
     public void addNewChoiceAttributeValue(AttributeValueView reference, String attributeChoice) {
 
-        I_Entity value = m_vie.createEntity(null, getAttributeType().getId());
-        // create the attribute choice
-        I_Type choiceType = getAttributeType().getAttributeType(attributeChoice);
-        if (choiceType.isSimpleType()) {
-            String choiceValue = m_widgetService.getDefaultAttributeValue(attributeChoice);
-            value.addAttributeValue(attributeChoice, choiceValue);
+        HighlightingHandler.getInstance().clearFocusHighlighting();
+        if (isChoiceHandler()) {
+            addChoiceOption(reference, attributeChoice);
         } else {
-            I_Entity choiceValue = m_vie.createEntity(null, choiceType.getId());
-            value.addAttributeValue(attributeChoice, choiceValue);
+            I_Entity value = m_vie.createEntity(null, getAttributeType().getId());
+            I_Type choiceType = getAttributeType().getAttributeType(Type.CHOICE_ATTRIBUTE_NAME);
+            I_Entity choice = m_vie.createEntity(null, choiceType.getId());
+            value.addAttributeValue(Type.CHOICE_ATTRIBUTE_NAME, choice);
+            // create the attribute choice
+            I_Type choiceOptionType = choiceType.getAttributeType(attributeChoice);
+            if (choiceOptionType.isSimpleType()) {
+                String choiceValue = m_widgetService.getDefaultAttributeValue(attributeChoice);
+                choice.addAttributeValue(attributeChoice, choiceValue);
+            } else {
+                I_Entity choiceValue = m_vie.createEntity(null, choiceOptionType.getId());
+                choice.addAttributeValue(attributeChoice, choiceValue);
+            }
+            insertValueAfterReference(value, reference);
         }
-        insertValueAfterReference(value, reference);
         updateButtonVisisbility();
     }
 
@@ -195,7 +204,16 @@ public class AttributeHandler {
      */
     public void changeValue(AttributeValueView reference, String value) {
 
-        m_entity.setAttributeValue(m_attributeName, value, reference.getValueIndex());
+        if (getEntityType().isChoice()) {
+            I_Entity choice = m_entity.getAttribute(Type.CHOICE_ATTRIBUTE_NAME).getComplexValues().get(
+                reference.getValueIndex());
+            String attributeName = getChoiceName(reference.getValueIndex());
+            if (attributeName != null) {
+                choice.setAttributeValue(attributeName, value, 0);
+            }
+        } else {
+            m_entity.setAttributeValue(m_attributeName, value, reference.getValueIndex());
+        }
 
     }
 
@@ -256,22 +274,49 @@ public class AttributeHandler {
 
         valueView.removeFromParent();
         m_attributeValueViews.remove(valueView);
-        if (getAttributeType().isSimpleType()) {
+        AttributeValueView valueWidget = null;
+        if (isChoiceHandler()) {
+            I_Entity value = m_entity.getAttribute(m_attributeName).getComplexValues().get(currentPosition);
+            m_entity.removeAttributeValue(m_attributeName, currentPosition);
+            m_entity.insertAttributeValue(m_attributeName, value, targetPosition);
+            String attributeChoice = getChoiceName(targetPosition);
+            I_Type optionType = getAttributeType().getAttributeType(attributeChoice);
+            valueWidget = new AttributeValueView(
+                this,
+                m_widgetService.getAttributeLabel(attributeChoice),
+                m_widgetService.getAttributeHelp(attributeChoice));
+            parent.insert(valueWidget, targetPosition);
+            if (optionType.isSimpleType()) {
+                valueWidget.setValueWidget(
+                    m_widgetService.getAttributeFormWidget(attributeChoice),
+                    value.getAttribute(attributeChoice).getSimpleValue(),
+                    true);
+            } else {
+                valueWidget.setValueEntity(
+                    m_widgetService.getRendererForAttribute(attributeChoice, getAttributeType()),
+                    value.getAttribute(attributeChoice).getComplexValue());
+            }
+            for (String choiceName : getAttributeType().getAttributeNames()) {
+                valueWidget.addChoice(
+                    m_widgetService.getAttributeLabel(choiceName),
+                    m_widgetService.getAttributeHelp(choiceName),
+                    choiceName);
+            }
+        } else if (getAttributeType().isSimpleType()) {
             String value = m_entity.getAttribute(m_attributeName).getSimpleValues().get(currentPosition);
             m_entity.removeAttributeValue(m_attributeName, currentPosition);
             m_entity.insertAttributeValue(m_attributeName, value, targetPosition);
-            AttributeValueView valueWidget = new AttributeValueView(
+            valueWidget = new AttributeValueView(
                 this,
                 m_widgetService.getAttributeLabel(m_attributeName),
                 m_widgetService.getAttributeHelp(m_attributeName));
             parent.insert(valueWidget, targetPosition);
             valueWidget.setValueWidget(m_widgetService.getAttributeFormWidget(m_attributeName), value, true);
-            HighlightingHandler.getInstance().setFocusHighlighted(valueWidget);
         } else {
             I_Entity value = m_entity.getAttribute(m_attributeName).getComplexValues().get(currentPosition);
             m_entity.removeAttributeValue(m_attributeName, currentPosition);
             m_entity.insertAttributeValue(m_attributeName, value, targetPosition);
-            AttributeValueView valueWidget = new AttributeValueView(
+            valueWidget = new AttributeValueView(
                 this,
                 m_widgetService.getAttributeLabel(m_attributeName),
                 m_widgetService.getAttributeHelp(m_attributeName));
@@ -279,8 +324,9 @@ public class AttributeHandler {
             valueWidget.setValueEntity(
                 m_widgetService.getRendererForAttribute(m_attributeName, getAttributeType()),
                 value);
-            HighlightingHandler.getInstance().setFocusHighlighted(valueWidget);
+
         }
+        HighlightingHandler.getInstance().setFocusHighlighted(valueWidget);
         updateButtonVisisbility();
     }
 
@@ -404,20 +450,72 @@ public class AttributeHandler {
      */
     public void updateButtonVisisbility() {
 
-        int minOccurrence = getEntityType().getAttributeMinOccurrence(m_attributeName);
-        int maxOccurrence = getEntityType().getAttributeMaxOccurrence(m_attributeName);
+        int minOccurrence = 0;
+        int maxOccurrence = 0;
+        if (isChoiceHandler()) {
+            minOccurrence = 1;
+            maxOccurrence = getEntityType().getChoiceMaxOccurrence();
+        } else {
+            minOccurrence = getEntityType().getAttributeMinOccurrence(m_attributeName);
+            maxOccurrence = getEntityType().getAttributeMaxOccurrence(m_attributeName);
+        }
         I_EntityAttribute attribute = m_entity.getAttribute(m_attributeName);
         boolean mayHaveMore = (maxOccurrence > minOccurrence)
             && (((attribute == null) || (attribute.getValueCount() < maxOccurrence)));
         boolean needsRemove = false;
         boolean needsSort = false;
-        if (!getEntityType().isChoice() && m_entity.hasAttribute(m_attributeName)) {
+        if ((isChoiceHandler() || !getEntityType().isChoice()) && m_entity.hasAttribute(m_attributeName)) {
             int valueCount = m_entity.getAttribute(m_attributeName).getValueCount();
             needsRemove = (maxOccurrence > minOccurrence) && (valueCount > minOccurrence);
             needsSort = valueCount > 1;
         }
         for (AttributeValueView value : m_attributeValueViews) {
             value.updateButtonVisibility(mayHaveMore, needsRemove, needsSort);
+        }
+    }
+
+    /**
+     * Adds a new choice option.<p>
+     * 
+     * @param reference the reference view
+     * @param attributeChoice the attribute choice
+     */
+    private void addChoiceOption(AttributeValueView reference, String attributeChoice) {
+
+        I_Type optionType = getAttributeType().getAttributeType(attributeChoice);
+        I_Entity choiceEntity = m_vie.createEntity(null, getAttributeType().getId());
+        AttributeValueView valueWidget = reference;
+        if (reference.hasValue()) {
+            valueWidget = new AttributeValueView(
+                this,
+                m_widgetService.getAttributeLabel(attributeChoice),
+                m_widgetService.getAttributeHelp(attributeChoice));
+        }
+        for (String choiceName : getAttributeType().getAttributeNames()) {
+            valueWidget.addChoice(
+                m_widgetService.getAttributeLabel(choiceName),
+                m_widgetService.getAttributeHelp(choiceName),
+                choiceName);
+        }
+        int valueIndex = reference.getValueIndex() + 1;
+        if (valueIndex < m_entity.getAttribute(m_attributeName).getValueCount()) {
+            m_entity.insertAttributeValue(m_attributeName, choiceEntity, valueIndex);
+            ((FlowPanel)reference.getParent()).insert(valueWidget, valueIndex);
+        } else {
+            m_entity.addAttributeValue(m_attributeName, choiceEntity);
+            ((FlowPanel)reference.getParent()).add(valueWidget);
+
+        }
+        if (optionType.isSimpleType()) {
+            String value = m_widgetService.getDefaultAttributeValue(attributeChoice);
+            I_FormEditWidget widget = m_widgetService.getAttributeFormWidget(attributeChoice);
+            choiceEntity.addAttributeValue(attributeChoice, value);
+            valueWidget.setValueWidget(widget, value, true);
+        } else {
+            I_Entity value = m_vie.createEntity(null, optionType.getId());
+            choiceEntity.addAttributeValue(attributeChoice, value);
+            I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(attributeChoice, optionType);
+            valueWidget.setValueEntity(renderer, value);
         }
     }
 
@@ -432,6 +530,29 @@ public class AttributeHandler {
             m_attributeType = getEntityType().getAttributeType(m_attributeName);
         }
         return m_attributeType;
+    }
+
+    /**
+     * Returns the attribute choice name for the given index.<p>
+     * 
+     * @param valueIndex the value index
+     * 
+     * @return the attribute choice name
+     */
+    private String getChoiceName(int valueIndex) {
+
+        if (isChoiceHandler()) {
+            I_Entity choice = m_entity.getAttribute(Type.CHOICE_ATTRIBUTE_NAME).getComplexValues().get(valueIndex);
+            if (choice != null) {
+                for (String option : getAttributeType().getAttributeNames()) {
+                    if (choice.hasAttribute(option)) {
+                        return option;
+
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -474,7 +595,17 @@ public class AttributeHandler {
                 ((FlowPanel)reference.getParent()).insert(valueWidget, valueIndex);
             }
         }
-        I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(m_attributeName, m_attributeType);
+        I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(m_attributeName, getAttributeType());
         valueWidget.setValueEntity(renderer, value);
+    }
+
+    /**
+     * Returns if this is a choice handler.<p>
+     * 
+     * @return <code>true</code> if this is a choice handler
+     */
+    private boolean isChoiceHandler() {
+
+        return Type.CHOICE_ATTRIBUTE_NAME.equals(m_attributeName);
     }
 }

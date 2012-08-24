@@ -38,14 +38,17 @@ import java.util.Map;
  */
 public class Type implements I_Type, Serializable {
 
+    /** The choice attribute name. */
+    public static final String CHOICE_ATTRIBUTE_NAME = "ATTRIBUTE_CHOICE";
+
     /** The serial version id. */
     private static final long serialVersionUID = -7965094404314721990L;
 
+    /** Flag indicating if this is a choice type. */
+    private int m_choiceMaxOccurrence;
+
     /** The type id. */
     private String m_id;
-
-    /** Flag indicating if this is a choice type. */
-    private boolean m_isChoice;
 
     /** The max occurrences of the type attributes. */
     private Map<String, Integer> m_maxs;
@@ -133,6 +136,14 @@ public class Type implements I_Type, Serializable {
     }
 
     /**
+     * @see com.alkacon.vie.shared.I_Type#getChoiceMaxOccurrence()
+     */
+    public int getChoiceMaxOccurrence() {
+
+        return m_choiceMaxOccurrence;
+    }
+
+    /**
      * @see com.alkacon.vie.shared.I_Type#getId()
      */
     public String getId() {
@@ -145,7 +156,7 @@ public class Type implements I_Type, Serializable {
      */
     public boolean isChoice() {
 
-        return m_isChoice;
+        return m_choiceMaxOccurrence > 0;
     }
 
     /**
@@ -157,10 +168,10 @@ public class Type implements I_Type, Serializable {
     }
 
     /**
-     * @see com.alkacon.vie.shared.I_Type#setIsChoice(boolean)
+     * @see com.alkacon.vie.shared.I_Type#setChoiceMaxOccurrence(int)
      */
-    public void setIsChoice(boolean isChoice) {
+    public void setChoiceMaxOccurrence(int choiceMaxOccurrence) {
 
-        m_isChoice = isChoice;
+        m_choiceMaxOccurrence = choiceMaxOccurrence;
     }
 }
