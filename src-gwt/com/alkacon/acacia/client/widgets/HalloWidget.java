@@ -158,7 +158,8 @@ public class HalloWidget extends A_EditWidget {
                 'halloreundo' : {}
             },
             editable : true,
-            showAlways : true
+            toolbar : 'halloToolbarFixed',
+            cssScope : '__acacia'
         });
         editable
                 .bind(

@@ -103,44 +103,63 @@
         uuid: "",
         headers: [1, 2, 3]
       },
-      _create: function() {
-        var buttonize, buttonset, header, widget, _i, _len, _ref,
+      populateToolbar: function(toolbar) {
+        var button, buttonize, buttonset, header, id, label, widget, _i, _len, _ref,
           _this = this;
         widget = this;
         buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
-        buttonize = function(label) {
-          var buttonHolder, id;
-          id = "" + _this.options.uuid + "-" + label;
-          buttonHolder = jQuery('<span></span>');
-          buttonHolder.hallobutton({
-            label: label,
-            useIcon: false,
-            editable: _this.options.editable,
-            command: "formatBlock",
-            uuid: id,
-            cssClass: _this.options.buttonCssClass,
-            format: label,
-            getQueryState: function(widget) {
-              try {
-                return document.queryCommandValue("formatBlock").toUpperCase() === widget.options.format.toUpperCase();
-              } catch (e) {
-                return false;
-              }
-            },
-            executeCommand: function(widget) {
-              return widget.options.editable.execute("formatBlock", widget.options.format);
-            }
+        id = "" + this.options.uuid + "-paragraph";
+        label = "P";
+        buttonset.append(jQuery("<input id=\"" + id + "\" type=\"radio\" name=\"" + widget.options.uuid + "-headings\"/><label for=\"" + id + "\" class=\"p_button\">" + label + "</label>").button());
+        button = jQuery("#" + id, buttonset);
+        button.attr("hallo-command", "formatBlock");
+        button.bind("change", function(event) {
+          var cmd;
+          cmd = jQuery(this).attr("hallo-command");
+          return widget.options.editable.execute(cmd, "P");
+        });
+        buttonize = function(headerSize) {
+          label = "H" + headerSize;
+          id = "" + _this.options.uuid + "-" + headerSize;
+          buttonset.append(jQuery("<input id=\"" + id + "\" type=\"radio\" name=\"" + widget.options.uuid + "-headings\"/><label for=\"" + id + "\" class=\"h" + headerSize + "_button\">" + label + "</label>").button());
+          button = jQuery("#" + id, buttonset);
+          button.attr("hallo-size", "H" + headerSize);
+          return button.bind("change", function(event) {
+            var size;
+            size = jQuery(this).attr("hallo-size");
+            return widget.options.editable.execute("formatBlock", size);
           });
-          return buttonset.append(buttonHolder);
         };
-        buttonize('P');
         _ref = this.options.headers;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           header = _ref[_i];
-          buttonize('H' + header);
+          buttonize(header);
         }
-        buttonset.hallobuttonset();
-        return this.options.toolbar.append(buttonset);
+        buttonset.buttonset();
+        this.element.bind("keyup paste change mouseup", function(event) {
+          var format, formatNumber, labelParent, matches, selectedButton;
+          try {
+            format = document.queryCommandValue("formatBlock").toUpperCase();
+          } catch (e) {
+            format = '';
+          }
+          if (format === "P") {
+            selectedButton = jQuery("#" + widget.options.uuid + "-paragraph");
+          } else if (matches = format.match(/\d/)) {
+            formatNumber = matches[0];
+            selectedButton = jQuery("#" + widget.options.uuid + "-" + formatNumber);
+          }
+          labelParent = jQuery(buttonset);
+          labelParent.children("input").attr("checked", false);
+          labelParent.children("label").removeClass("ui-state-clicked");
+          labelParent.children("input").button("widget").button("refresh");
+          if (selectedButton) {
+            selectedButton.attr("checked", true);
+            selectedButton.next("label").addClass("ui-state-clicked");
+            return selectedButton.button("refresh");
+          }
+        });
+        return toolbar.append(buttonset);
       },
       _init: function() {}
     });
@@ -154,6 +173,7 @@
         uuid: "",
         limit: 8,
         search: null,
+        searchUrl: null,
         suggestions: null,
         loaded: null,
         upload: null,
@@ -172,17 +192,20 @@
         buttonCssClass: null,
         entity: null,
         vie: null,
-        dbPediaUrl: "http://dev.iks-project.eu/stanbolfull"
+        dbPediaUrl: "http://dev.iks-project.eu/stanbolfull",
+        maxWidth: 250,
+        maxHeight: 250
       },
-      _create: function() {
+      populateToolbar: function(toolbar) {
         var buttonHolder, buttonset, dialogId, id, widget;
+        this.options.toolbar = toolbar;
         widget = this;
         dialogId = "" + this.options.uuid + "-image-dialog";
         this.options.dialog = jQuery("<div id=\"" + dialogId + "\">                <div class=\"nav\">                    <ul class=\"tabs\">                    </ul>                    <div id=\"" + this.options.uuid + "-tab-activeIndicator\" class=\"tab-activeIndicator\" />                </div>                <div class=\"dialogcontent\">            </div>");
         if (widget.options.suggestions) {
           this._addGuiTabSuggestions(jQuery(".tabs", this.options.dialog), jQuery(".dialogcontent", this.options.dialog));
         }
-        if (widget.options.search) {
+        if (widget.options.search || widget.options.searchUrl) {
           this._addGuiTabSearch(jQuery(".tabs", this.options.dialog), jQuery(".dialogcontent", this.options.dialog));
         }
         if (widget.options.upload || widget.options.uploadUrl) {
@@ -190,7 +213,11 @@
         }
         this.current = jQuery('<div class="currentImage"></div>').halloimagecurrent({
           uuid: this.options.uuid,
-          imageWidget: this
+          imageWidget: this,
+          editable: this.options.editable,
+          dialog: this.options.dialog,
+          maxWidth: this.options.maxWidth,
+          maxHeight: this.options.maxHeight
         });
         jQuery('.dialogcontent', this.options.dialog).append(this.current);
         buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
@@ -207,12 +234,13 @@
         });
         buttonset.append(buttonHolder);
         this.button = buttonHolder;
-        this.button.bind("change", function(event) {
+        this.button.bind("click", function(event) {
           if (widget.options.dialog.dialog("isOpen")) {
-            return widget._closeDialog();
+            widget._closeDialog();
           } else {
-            return widget._openDialog();
+            widget._openDialog();
           }
+          return false;
         });
         this.options.editable.element.bind("hallodeactivated", function(event) {
           return widget._closeDialog();
@@ -220,13 +248,11 @@
         jQuery(this.options.editable.element).delegate("img", "click", function(event) {
           return widget._openDialog();
         });
-        buttonset.hallobuttonset();
-        this.options.toolbar.append(buttonset);
+        buttonset.buttonset();
+        toolbar.append(buttonset);
         this.options.dialog.dialog(this.options.dialogOpts);
-        this._handleTabs();
-        return this._addDragnDrop();
+        return this._handleTabs();
       },
-      _init: function() {},
       setCurrent: function(image) {
         return this.current.halloimagecurrent('setImage', image);
       },
@@ -300,6 +326,7 @@
           uuid: this.options.uuid,
           imageWidget: this,
           searchCallback: this.options.search,
+          searchUrl: this.options.searchUrl,
           limit: this.options.limit,
           entity: this.options.entity
         });
@@ -339,302 +366,6 @@
                     @options.dialog.find(".halloimage-activeImage, ##{widget.options.uuid}-#{widget.widgetName}-addimage").click insertImage
         */
 
-      },
-      _addDragnDrop: function() {
-        var dnd, draggables, editable, helper, offset, overlay, overlayMiddleConfig, third, widgetOptions;
-        helper = {
-          delayAction: function(functionToCall, delay) {
-            var timer;
-            timer = clearTimeout(timer);
-            if (!timer) {
-              return timer = setTimeout(functionToCall, delay);
-            }
-          },
-          calcPosition: function(offset, event) {
-            var position;
-            position = offset.left + third;
-            if (event.pageX >= position && event.pageX <= (offset.left + third * 2)) {
-              return "middle";
-            } else if (event.pageX < position) {
-              return "left";
-            } else if (event.pageX > (offset.left + third * 2)) {
-              return "right";
-            }
-          },
-          createInsertElement: function(image, tmp) {
-            var altText, height, imageInsert, maxHeight, maxWidth, ratio, tmpImg, width;
-            maxWidth = 250;
-            maxHeight = 250;
-            tmpImg = new Image();
-            tmpImg.src = image.src;
-            if (!tmp) {
-              if (this.startPlace.parents(".tab-suggestions").length > 0) {
-                altText = jQuery("#caption-sugg").val();
-              } else if (this.startPlace.parents(".tab-search").length > 0) {
-                altText = jQuery("#caption-search").val();
-              } else {
-                altText = jQuery(image).attr("alt");
-              }
-            }
-            width = tmpImg.width;
-            height = tmpImg.height;
-            if (width > maxWidth || height > maxHeight) {
-              if (width > height) {
-                ratio = (tmpImg.width / maxWidth).toFixed();
-              } else {
-                ratio = (tmpImg.height / maxHeight).toFixed();
-              }
-              width = (tmpImg.width / ratio).toFixed();
-              height = (tmpImg.height / ratio).toFixed();
-            }
-            imageInsert = jQuery("<img>").attr({
-              src: tmpImg.src,
-              width: width,
-              height: height,
-              alt: altText,
-              "class": (tmp ? "tmp" : "")
-            }).show();
-            return imageInsert;
-          },
-          createLineFeedbackElement: function() {
-            return jQuery("<div/>").addClass("tmpLine");
-          },
-          removeFeedbackElements: function() {
-            return jQuery('.tmp, .tmpLine', editable).remove();
-          },
-          removeCustomHelper: function() {
-            return jQuery(".customHelper").remove();
-          },
-          showOverlay: function(position) {
-            var eHeight;
-            eHeight = editable.height() + parseFloat(editable.css('paddingTop')) + parseFloat(editable.css('paddingBottom'));
-            overlay.big.css({
-              height: eHeight
-            });
-            overlay.left.css({
-              height: eHeight
-            });
-            overlay.right.css({
-              height: eHeight
-            });
-            switch (position) {
-              case "left":
-                overlay.big.addClass("bigOverlayLeft").removeClass("bigOverlayRight").css({
-                  left: third
-                }).show();
-                overlay.left.hide();
-                return overlay.right.hide();
-              case "middle":
-                overlay.big.removeClass("bigOverlayLeft bigOverlayRight");
-                overlay.big.hide();
-                overlay.left.show();
-                return overlay.right.show();
-              case "right":
-                overlay.big.addClass("bigOverlayRight").removeClass("bigOverlayLeft").css({
-                  left: 0
-                }).show();
-                overlay.left.hide();
-                return overlay.right.hide();
-            }
-          },
-          checkOrigin: function(event) {
-            if (jQuery(event.target).parents("[contenteditable]").length !== 0) {
-              return true;
-            } else {
-              return false;
-            }
-          },
-          startPlace: ""
-        };
-        dnd = {
-          createTmpFeedback: function(image, position) {
-            var el;
-            if (position === 'middle') {
-              return helper.createLineFeedbackElement();
-            } else {
-              el = helper.createInsertElement(image, true);
-              return el.addClass("inlineImage-" + position);
-            }
-          },
-          handleOverEvent: function(event, ui) {
-            var postPone;
-            postPone = function() {
-              var position;
-              window.waitWithTrash = clearTimeout(window.waitWithTrash);
-              position = helper.calcPosition(offset, event);
-              jQuery('.trashcan', ui.helper).remove();
-              editable.append(overlay.big);
-              editable.append(overlay.left);
-              editable.append(overlay.right);
-              helper.removeFeedbackElements();
-              jQuery(event.target).prepend(dnd.createTmpFeedback(ui.draggable[0], position));
-              if (position === "middle") {
-                jQuery(event.target).prepend(dnd.createTmpFeedback(ui.draggable[0], 'right'));
-                jQuery('.tmp', jQuery(event.target)).hide();
-              } else {
-                jQuery(event.target).prepend(dnd.createTmpFeedback(ui.draggable[0], 'middle'));
-                jQuery('.tmpLine', jQuery(event.target)).hide();
-              }
-              return helper.showOverlay(position);
-            };
-            return setTimeout(postPone, 5);
-          },
-          handleDragEvent: function(event, ui) {
-            var position, tmpFeedbackLR, tmpFeedbackMiddle;
-            position = helper.calcPosition(offset, event);
-            if (position === dnd.lastPositionDrag) {
-              return;
-            }
-            dnd.lastPositionDrag = position;
-            tmpFeedbackLR = jQuery('.tmp', editable);
-            tmpFeedbackMiddle = jQuery('.tmpLine', editable);
-            if (position === "middle") {
-              tmpFeedbackMiddle.show();
-              tmpFeedbackLR.hide();
-            } else {
-              tmpFeedbackMiddle.hide();
-              tmpFeedbackLR.removeClass("inlineImage-left inlineImage-right").addClass("inlineImage-" + position).show();
-            }
-            return helper.showOverlay(position);
-          },
-          handleLeaveEvent: function(event, ui) {
-            var func;
-            func = function() {
-              if (!jQuery('div.trashcan', ui.helper).length) {
-                jQuery(ui.helper).append(jQuery('<div class="trashcan"></div>'));
-              }
-              return jQuery('.bigOverlay, .smallOverlay').remove();
-            };
-            window.waitWithTrash = setTimeout(func, 200);
-            return helper.removeFeedbackElements();
-          },
-          handleStartEvent: function(event, ui) {
-            var internalDrop;
-            internalDrop = helper.checkOrigin(event);
-            if (internalDrop) {
-              jQuery(event.target).remove();
-            }
-            jQuery(document).trigger('startPreventSave');
-            return helper.startPlace = jQuery(event.target);
-          },
-          handleStopEvent: function(event, ui) {
-            var internalDrop;
-            internalDrop = helper.checkOrigin(event);
-            if (internalDrop) {
-              jQuery(event.target).remove();
-            } else {
-              editable.trigger('change');
-            }
-            overlay.big.hide();
-            overlay.left.hide();
-            overlay.right.hide();
-            return jQuery(document).trigger('stopPreventSave');
-          },
-          handleDropEvent: function(event, ui) {
-            var imageInsert, internalDrop, position;
-            internalDrop = helper.checkOrigin(event);
-            position = helper.calcPosition(offset, event);
-            helper.removeFeedbackElements();
-            helper.removeCustomHelper();
-            imageInsert = helper.createInsertElement(ui.draggable[0], false);
-            if (position === "middle") {
-              imageInsert.show();
-              imageInsert.removeClass("inlineImage-middle inlineImage-left inlineImage-right").addClass("inlineImage-" + position).css({
-                position: "relative",
-                left: ((editable.width() + parseFloat(editable.css('paddingLeft')) + parseFloat(editable.css('paddingRight'))) - imageInsert.attr('width')) / 2
-              });
-              imageInsert.insertBefore(jQuery(event.target));
-            } else {
-              imageInsert.removeClass("inlineImage-middle inlineImage-left inlineImage-right").addClass("inlineImage-" + position).css("display", "block");
-              jQuery(event.target).prepend(imageInsert);
-            }
-            overlay.big.hide();
-            overlay.left.hide();
-            overlay.right.hide();
-            editable.trigger('change');
-            return dnd.init(editable);
-          },
-          createHelper: function(event) {
-            return jQuery('<div>').css({
-              backgroundImage: "url(" + jQuery(event.currentTarget).attr('src') + ")"
-            }).addClass('customHelper').appendTo('body');
-          },
-          init: function() {
-            var draggable, initDraggable;
-            draggable = [];
-            initDraggable = function(elem) {
-              if (!elem.jquery_draggable_initialized) {
-                elem.jquery_draggable_initialized = true;
-                jQuery(elem).draggable({
-                  cursor: "move",
-                  helper: dnd.createHelper,
-                  drag: dnd.handleDragEvent,
-                  start: dnd.handleStartEvent,
-                  stop: dnd.handleStopEvent,
-                  disabled: !editable.hasClass('inEditMode'),
-                  cursorAt: {
-                    top: 50,
-                    left: 50
-                  }
-                });
-              }
-              return draggables.push(elem);
-            };
-            jQuery(".rotationWrapper img", widgetOptions.dialog).each(function(index, elem) {
-              if (!elem.jquery_draggable_initialized) {
-                return initDraggable(elem);
-              }
-            });
-            jQuery('img', editable).each(function(index, elem) {
-              elem.contentEditable = false;
-              if (!elem.jquery_draggable_initialized) {
-                return initDraggable(elem);
-              }
-            });
-            return jQuery('p', editable).each(function(index, elem) {
-              if (jQuery(elem).data('jquery_droppable_initialized')) {
-                return;
-              }
-              jQuery(elem).droppable({
-                tolerance: "pointer",
-                drop: dnd.handleDropEvent,
-                over: dnd.handleOverEvent,
-                out: dnd.handleLeaveEvent
-              });
-              return jQuery(elem).data('jquery_droppable_initialized', true);
-            });
-          },
-          enableDragging: function() {
-            return jQuery.each(draggables, function(index, d) {
-              return jQuery(d).draggable('option', 'disabled', false);
-            });
-          },
-          disableDragging: function() {
-            return jQuery.each(draggables, function(index, d) {
-              return jQuery(d).draggable('option', 'disabled', true);
-            });
-          }
-        };
-        draggables = [];
-        editable = jQuery(this.options.editable.element);
-        widgetOptions = this.options;
-        offset = editable.offset();
-        third = parseFloat(editable.width() / 3);
-        overlayMiddleConfig = {
-          width: third,
-          height: editable.height()
-        };
-        overlay = {
-          big: jQuery("<div/>").addClass("bigOverlay").css({
-            width: third * 2,
-            height: editable.height()
-          }),
-          left: jQuery("<div/>").addClass("smallOverlay smallOverlayLeft").css(overlayMiddleConfig),
-          right: jQuery("<div/>").addClass("smallOverlay smallOverlayRight").css(overlayMiddleConfig).css("left", third * 2)
-        };
-        dnd.init();
-        editable.bind('halloactivated', dnd.enableDragging);
-        return editable.bind('hallodeactivated', dnd.disableDragging);
       }
     });
   })(jQuery);
@@ -661,8 +392,7 @@
         buttonCssClass: null
       },
       _create: function() {
-        var buttonHolder, editableElement, turnOffAnnotate, widget,
-          _this = this;
+        var editableElement, turnOffAnnotate, widget;
         widget = this;
         if (this.options.vie === void 0) {
           throw 'The halloannotate plugin requires VIE to be loaded';
@@ -673,7 +403,19 @@
           return;
         }
         this.state = 'off';
-        buttonHolder = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
+        this.instantiate();
+        turnOffAnnotate = function() {
+          var editable;
+          editable = this;
+          return jQuery(editable).halloannotate('turnOff');
+        };
+        editableElement = this.options.editable.element;
+        return editableElement.bind('hallodisabled', turnOffAnnotate);
+      },
+      populateToolbar: function(toolbar) {
+        var buttonHolder,
+          _this = this;
+        buttonHolder = jQuery("<span class=\"" + this.widgetName + "\"></span>");
         this.button = buttonHolder.hallobutton({
           label: 'Annotate',
           icon: 'icon-tags',
@@ -692,16 +434,8 @@
           }
           return _this.turnOff();
         });
-        buttonHolder.hallobuttonset();
-        this.options.toolbar.append(this.button);
-        this.instantiate();
-        turnOffAnnotate = function() {
-          var editable;
-          editable = this;
-          return jQuery(editable).halloannotate('turnOff');
-        };
-        editableElement = this.options.editable.element;
-        return editableElement.bind('hallodisabled', turnOffAnnotate);
+        buttonHolder.buttonset();
+        return toolbar.append(this.button);
       },
       cleanupContentClone: function(el) {
         if (this.state === 'on') {
@@ -751,10 +485,13 @@
       },
       turnOff: function() {
         this.options.editable.element.annotate('disable');
+        this.state = 'off';
+        if (!this.button) {
+          return;
+        }
         this.button.attr('checked', false);
         this.button.find("label").removeClass("ui-state-clicked");
-        this.button.button('refresh');
-        return this.state = 'off';
+        return this.button.button('refresh');
       }
     });
   })(jQuery);
@@ -763,13 +500,12 @@
     return jQuery.widget("Liip.hallotoolbarlinebreak", {
       options: {
         editable: null,
-        toolbar: null,
         uuid: "",
         breakAfter: []
       },
-      _create: function() {
+      populateToolbar: function(toolbar) {
         var buttonset, buttonsets, queuedButtonsets, row, rowcounter, _i, _j, _len, _len1, _ref;
-        buttonsets = jQuery('.ui-buttonset', this.options.toolbar);
+        buttonsets = jQuery('.ui-buttonset', toolbar);
         queuedButtonsets = jQuery();
         rowcounter = 0;
         _ref = this.options.breakAfter;
@@ -806,9 +542,10 @@
       },
       _create: function() {
         return this.element.html('\
-        <form>\
-          <input type="file" class="file" accept="image/*" />\
-          <input type="submit" class="uploadSubmit" value="Upload">\
+        <form class="upload">\
+          <input type="file" class="file" name="userfile" accept="image/*" />\
+          <input type="hidden" name="tags" value="" />\
+          <button class="uploadSubmit">Upload</button>\
         </form>\
       ');
       },
@@ -819,12 +556,10 @@
           widget.options.uploadCallback = widget._iframeUpload;
         }
         return jQuery('.uploadSubmit', this.element).bind('click', function(event) {
-          var userFile;
           event.preventDefault();
-          userFile = jQuery('.file', widget.element).val();
+          event.stopPropagation();
           return widget.options.uploadCallback({
             widget: widget,
-            file: jQuery('.file', widget.element).val(),
             success: function(url) {
               return widget.options.imageWidget.setCurrent({
                 url: url,
@@ -836,12 +571,12 @@
       },
       _prepareIframe: function(widget) {
         var iframe, iframeName;
-        iframeName = "" + widget.options.uuid + "_" + widget.widgetName + "_postframe";
+        iframeName = ("" + widget.widgetName + "_postframe_" + widget.options.uuid).replace(/-/g, '_');
         iframe = jQuery("#" + iframeName);
         if (iframe.length) {
           return iframe;
         }
-        iframe = jQuery("<iframe name=\"" + iframeName + "\" id=\"" + iframeName + "\" class=\"hidden\" src=\"javascript:false;\" style=\"display:none\" />");
+        iframe = jQuery("<iframe name=\"" + iframeName + "\" id=\"" + iframeName + "\" class=\"hidden\" style=\"display:none\" />");
         this.element.append(iframe);
         iframe.get(0).name = iframeName;
         return iframe;
@@ -850,25 +585,24 @@
         var iframe, uploadForm, uploadUrl, widget;
         widget = data.widget;
         iframe = widget._prepareIframe(widget);
-        uploadForm = jQuery('form', widget.element);
+        uploadForm = jQuery('form.upload', widget.element);
         if (typeof widget.options.uploadUrl === 'function') {
           uploadUrl = widget.options.uploadUrl(widget.options.entity);
         } else {
           uploadUrl = widget.options.uploadUrl;
         }
-        uploadForm.attr('action', uploadUrl);
-        uploadForm.attr('method', 'post');
-        uploadForm.attr('userfile', data.file);
-        uploadForm.attr('enctype', 'multipart/form-data');
-        uploadForm.attr('encoding', 'multipart/form-data');
-        uploadForm.attr('target', iframe.get(0).name);
-        uploadForm.submit();
-        return iframe.load(function() {
+        iframe.bind('load', function() {
           var imageUrl;
           imageUrl = iframe.get(0).contentWindow.location.href;
           widget.element.hide();
           return data.success(imageUrl);
         });
+        uploadForm.attr('action', uploadUrl);
+        uploadForm.attr('method', 'post');
+        uploadForm.attr('target', iframe.get(0).name);
+        uploadForm.attr('enctype', 'multipart/form-data');
+        uploadForm.attr('encoding', 'multipart/form-data');
+        return uploadForm.submit();
       }
     });
   })(jQuery);
@@ -878,6 +612,7 @@
       options: {
         imageWidget: null,
         searchCallback: null,
+        searchUrl: null,
         limit: 5
       },
       _create: function() {
@@ -895,6 +630,9 @@
       _init: function() {
         var widget;
         widget = this;
+        if (widget.options.searchUrl && !widget.options.searchCallback) {
+          widget.options.searchCallback = widget._ajaxSearch;
+        }
         jQuery('.activitySpinner', this.element).hide();
         return jQuery('form', this.element).submit(function(event) {
           var query;
@@ -916,6 +654,10 @@
         html.bind('click', function() {
           return _this.options.imageWidget.setCurrent(image);
         });
+        jQuery('img', html).bind('mousedown', function(event) {
+          event.preventDefault();
+          return _this.options.imageWidget.setCurrent(image);
+        });
         return jQuery('.imageThumbnailContainer ul', this.element).append(html);
       },
       _showNextPrev: function(results) {
@@ -924,10 +666,10 @@
         container = jQuery('imageThumbnailContainer ul', this.element);
         container.prepend(jQuery('<div class="pager-prev" style="display:none"></div>'));
         container.append(jQuery('<div class="pager-next" style="display:none"></div>'));
-        if (response.offset > 0) {
+        if (results.offset > 0) {
           jQuery('.pager-prev', container).show();
         }
-        if (response.offset < response.total) {
+        if (results.offset < results.total) {
           jQuery('.pager-next', container).show();
         }
         jQuery('.pager-prev', container).click(function(event) {
@@ -944,8 +686,8 @@
       _showResults: function(results) {
         var image, _i, _len, _ref;
         jQuery('.activitySpinner', this.element).hide();
-        jQuery('imageThumbnailContainer ul', this.element).empty();
-        jQuery('imageThumbnailContainer ul', this.element).show();
+        jQuery('.imageThumbnailContainer ul', this.element).empty();
+        jQuery('.imageThumbnailContainer ul', this.element).show();
         _ref = results.assets;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           image = _ref[_i];
@@ -953,6 +695,15 @@
         }
         this.options.imageWidget.setCurrent(results.assets.shift());
         return this._showNextPrev(results);
+      },
+      _ajaxSearch: function(query, limit, offset, success) {
+        var searchUrl;
+        searchUrl = this.searchUrl + '?' + jQuery.param({
+          q: query,
+          limit: limit,
+          offset: offset
+        });
+        return jQuery.getJSON(searchUrl, success);
       }
     });
   })(jQuery);
@@ -1078,7 +829,11 @@
   (function(jQuery) {
     return jQuery.widget('IKS.halloimagecurrent', {
       options: {
-        imageWidget: null
+        imageWidget: null,
+        startPlace: '',
+        draggables: [],
+        maxWidth: 400,
+        maxHeight: 200
       },
       _create: function() {
         this.element.html('<div>\
@@ -1093,15 +848,333 @@
             <input type="text" class="caption" name="caption" />\
           </div>\
         </div>');
-        return this.element.hide();
+        this.element.hide();
+        return this._prepareDnD();
+      },
+      _init: function() {
+        var editable, widget;
+        editable = jQuery(this.options.editable.element);
+        widget = this;
+        jQuery('img', editable).each(function(index, elem) {
+          elem.contentEditable = false;
+          return widget._initDraggable(elem, editable);
+        });
+        return jQuery('p', editable).each(function(index, elem) {
+          if (jQuery(elem).data('jquery_droppable_initialized')) {
+            return;
+          }
+          jQuery(elem).droppable({
+            tolerance: 'pointer',
+            drop: function(event, ui) {
+              return widget._handleDropEvent(event, ui);
+            },
+            over: function(event, ui) {
+              return widget._handleOverEvent(event, ui);
+            },
+            out: function(event, ui) {
+              return widget._handleLeaveEvent(event, ui);
+            }
+          });
+          return jQuery(elem).data('jquery_droppable_initialized', true);
+        });
+      },
+      _prepareDnD: function() {
+        var editable, overlayMiddleConfig, widget;
+        widget = this;
+        editable = jQuery(this.options.editable.element);
+        this.options.offset = editable.offset();
+        this.options.third = parseFloat(editable.width() / 3);
+        overlayMiddleConfig = {
+          width: this.options.third,
+          height: editable.height()
+        };
+        this.overlay = {
+          big: jQuery("<div/>").addClass("bigOverlay").css({
+            width: this.options.third * 2,
+            height: editable.height()
+          }),
+          left: jQuery("<div/>").addClass("smallOverlay smallOverlayLeft").css(overlayMiddleConfig),
+          right: jQuery("<div/>").addClass("smallOverlay smallOverlayRight").css(overlayMiddleConfig).css("left", this.options.third * 2)
+        };
+        editable.bind('halloactivated', function() {
+          return widget._enableDragging();
+        });
+        return editable.bind('hallodeactivated', function() {
+          return widget._disableDragging();
+        });
       },
       setImage: function(image) {
+        if (!image) {
+          return;
+        }
         this.element.show();
         jQuery('.activeImage', this.element).attr('src', image.url);
         if (image.label) {
           jQuery('input', this.element).val(image.label);
-          return jQuery('.metadata', this.element).show();
+          jQuery('.metadata', this.element).show();
         }
+        return this._initImage(jQuery(this.options.editable.element));
+      },
+      _delayAction: function(functionToCall, delay) {
+        var timer;
+        timer = clearTimeout(timer);
+        if (!timer) {
+          return timer = setTimeout(functionToCall, delay);
+        }
+      },
+      _calcDropPosition: function(offset, event) {
+        var position;
+        position = offset.left + this.options.third;
+        if (event.pageX >= position && event.pageX <= (offset.left + this.options.third * 2)) {
+          return 'middle';
+        } else if (event.pageX < position) {
+          return 'left';
+        } else if (event.pageX > (offset.left + this.options.third * 2)) {
+          return 'right';
+        }
+      },
+      _createInsertElement: function(image, tmp) {
+        var imageInsert, maxHeight, maxWidth, tmpImg;
+        imageInsert = jQuery('<img>');
+        tmpImg = new Image();
+        maxWidth = this.options.maxWidth;
+        maxHeight = this.options.maxHeight;
+        jQuery(tmpImg).bind('load', function() {
+          var height, ratio, width;
+          width = tmpImg.width;
+          height = tmpImg.height;
+          if (width > maxWidth || height > maxHeight) {
+            if (width > height) {
+              ratio = (tmpImg.width / maxWidth).toFixed();
+            } else {
+              ratio = (tmpImg.height / maxHeight).toFixed();
+            }
+            width = (tmpImg.width / ratio).toFixed();
+            height = (tmpImg.height / ratio).toFixed();
+          }
+          return imageInsert.attr({
+            width: width,
+            height: height
+          });
+        });
+        tmpImg.src = image.src;
+        imageInsert.attr({
+          src: tmpImg.src,
+          alt: !tmp ? jQuery(image).attr('alt') : void 0,
+          "class": tmp ? 'halloTmp' : ''
+        });
+        imageInsert.show();
+        return imageInsert;
+      },
+      _createLineFeedbackElement: function() {
+        return jQuery('<div/>').addClass('halloTmpLine');
+      },
+      _removeFeedbackElements: function() {
+        return jQuery('.halloTmp, .halloTmpLine', this.options.editable.element).remove();
+      },
+      _removeCustomHelper: function() {
+        return jQuery('.customHelper').remove();
+      },
+      _showOverlay: function(position) {
+        var eHeight, editable;
+        editable = jQuery(this.options.editable.element);
+        eHeight = editable.height() + parseFloat(editable.css('paddingTop')) + parseFloat(editable.css('paddingBottom'));
+        this.overlay.big.css({
+          height: eHeight
+        });
+        this.overlay.left.css({
+          height: eHeight
+        });
+        this.overlay.right.css({
+          height: eHeight
+        });
+        switch (position) {
+          case 'left':
+            this.overlay.big.addClass("bigOverlayLeft").removeClass("bigOverlayRight").css({
+              left: this.options.third
+            }).show();
+            this.overlay.left.hide();
+            return this.overlay.right.hide();
+          case 'middle':
+            this.overlay.big.removeClass("bigOverlayLeft bigOverlayRight");
+            this.overlay.big.hide();
+            this.overlay.left.show();
+            return this.overlay.right.show();
+          case 'right':
+            this.overlay.big.addClass("bigOverlayRight").removeClass("bigOverlayLeft").css({
+              left: 0
+            }).show();
+            this.overlay.left.hide();
+            return this.overlay.right.hide();
+        }
+      },
+      _checkOrigin: function(event) {
+        if (jQuery(event.target).parents("[contenteditable]").length !== 0) {
+          return true;
+        }
+        return false;
+      },
+      _createTmpFeedback: function(image, position) {
+        var el;
+        if (position === 'middle') {
+          return this._createLineFeedbackElement();
+        }
+        el = this._createInsertElement(image, true);
+        return el.addClass("inlineImage-" + position);
+      },
+      _handleOverEvent: function(event, ui) {
+        var editable, postPone, widget;
+        widget = this;
+        editable = jQuery(this.options.editable);
+        postPone = function() {
+          var position;
+          window.waitWithTrash = clearTimeout(window.waitWithTrash);
+          position = widget._calcDropPosition(widget.options.offset, event);
+          jQuery('.trashcan', ui.helper).remove();
+          editable.append(widget.overlay.big);
+          editable.append(widget.overlay.left);
+          editable.append(widget.overlay.right);
+          widget._removeFeedbackElements();
+          jQuery(event.target).prepend(widget._createTmpFeedback(ui.draggable[0], position));
+          if (position === 'middle') {
+            jQuery(event.target).prepend(widget._createTmpFeedback(ui.draggable[0], 'right'));
+            jQuery('.halloTmp', event.target).hide();
+          } else {
+            jQuery(event.target).prepend(widget._createTmpFeedback(ui.draggable[0], 'middle'));
+            jQuery('.halloTmpLine', event.target).hide();
+          }
+          return widget._showOverlay(position);
+        };
+        return setTimeout(postPone, 5);
+      },
+      _handleDragEvent: function(event, ui) {
+        var position, tmpFeedbackLR, tmpFeedbackMiddle;
+        position = this._calcDropPosition(this.options.offset, event);
+        if (position === this._lastPositionDrag) {
+          return;
+        }
+        this._lastPositionDrag = position;
+        tmpFeedbackLR = jQuery('.halloTmp', this.options.editable.element);
+        tmpFeedbackMiddle = jQuery('.halloTmpLine', this.options.editable.element);
+        if (position === 'middle') {
+          tmpFeedbackMiddle.show();
+          tmpFeedbackLR.hide();
+        } else {
+          tmpFeedbackMiddle.hide();
+          tmpFeedbackLR.removeClass('inlineImage-left inlineImage-right').addClass("inlineImage-" + position).show();
+        }
+        return this._showOverlay(position);
+      },
+      _handleLeaveEvent: function(event, ui) {
+        var func;
+        func = function() {
+          if (!jQuery('div.trashcan', ui.helper).length) {
+            jQuery(ui.helper).append(jQuery('<div class="trashcan"></div>'));
+            return jQuery('.bigOverlay, .smallOverlay').remove();
+          }
+        };
+        window.waitWithTrash = setTimeout(func, 200);
+        return this._removeFeedbackElements();
+      },
+      _handleStartEvent: function(event, ui) {
+        var internalDrop;
+        internalDrop = this._checkOrigin(event);
+        if (internalDrop) {
+          jQuery(event.target).remove();
+        }
+        jQuery(document).trigger('startPreventSave');
+        return this.options.startPlace = jQuery(event.target);
+      },
+      _handleStopEvent: function(event, ui) {
+        var internalDrop;
+        internalDrop = this._checkOrigin(event);
+        if (internalDrop) {
+          jQuery(event.target).remove();
+        } else {
+          jQuery(this.options.editable.element).trigger('change');
+        }
+        this.overlay.big.hide();
+        this.overlay.left.hide();
+        this.overlay.right.hide();
+        return jQuery(document).trigger('stopPreventSave');
+      },
+      _handleDropEvent: function(event, ui) {
+        var editable, imageInsert, internalDrop, position;
+        editable = jQuery(this.options.editable.element);
+        internalDrop = this._checkOrigin(event);
+        position = this._calcDropPosition(this.options.offset, event);
+        this._removeFeedbackElements();
+        this._removeCustomHelper();
+        imageInsert = this._createInsertElement(ui.draggable[0], false);
+        if (position === 'middle') {
+          imageInsert.show();
+          imageInsert.removeClass('inlineImage-middle inlineImage-left inlineImage-right');
+          imageInsert.addClass("inlineImage-" + position).css({
+            position: 'relative',
+            left: ((editable.width() + parseFloat(editable.css('paddingLeft')) + parseFloat(editable.css('paddingRight'))) - imageInsert.attr('width')) / 2
+          });
+          imageInsert.insertBefore(jQuery(event.target));
+        } else {
+          imageInsert.removeClass('inlineImage-middle inlineImage-left inlineImage-right');
+          imageInsert.addClass("inlineImage-" + position);
+          imageInsert.css('display', 'block');
+          jQuery(event.target).prepend(imageInsert);
+        }
+        this.overlay.big.hide();
+        this.overlay.left.hide();
+        this.overlay.right.hide();
+        editable.trigger('change');
+        return this._initImage(editable);
+      },
+      _createHelper: function(event) {
+        return jQuery('<div>').css({
+          backgroundImage: "url(" + (jQuery(event.currentTarget).attr('src')) + ")"
+        }).addClass('customHelper').appendTo('body');
+      },
+      _initDraggable: function(elem, editable) {
+        var widget;
+        widget = this;
+        if (!elem.jquery_draggable_initialized) {
+          elem.jquery_draggable_initialized = true;
+          jQuery(elem).draggable({
+            cursor: 'move',
+            helper: function(event) {
+              return widget._createHelper(event);
+            },
+            drag: function(event, ui) {
+              return widget._handleDragEvent(event, ui);
+            },
+            start: function(event, ui) {
+              return widget._handleStartEvent(event, ui);
+            },
+            stop: function(event, ui) {
+              return widget._handleStopEvent(event, ui);
+            },
+            disabled: !editable.hasClass('inEditMode'),
+            cursorAt: {
+              top: 50,
+              left: 50
+            }
+          });
+        }
+        return widget.options.draggables.push(elem);
+      },
+      _initImage: function(editable) {
+        var widget;
+        widget = this;
+        return jQuery('.rotationWrapper img', this.options.dialog).each(function(index, elem) {
+          return widget._initDraggable(elem, editable);
+        });
+      },
+      _enableDragging: function() {
+        return jQuery.each(this.options.draggables, function(index, d) {
+          return jQuery(d).draggable('option', 'disabled', false);
+        });
+      },
+      _disableDragging: function() {
+        return jQuery.each(this.options.draggables, function(index, d) {
+          return jQuery(d).draggable('option', 'disabled', true);
+        });
       }
     });
   })(jQuery);
@@ -1115,14 +1188,14 @@
         elements: ['h1', 'h2', 'h3', 'p', 'pre', 'blockquote'],
         buttonCssClass: null
       },
-      _create: function() {
+      populateToolbar: function(toolbar) {
         var buttonset, contentId, target;
-        buttonset = jQuery("<span class=\"" + this.widgetName + " ui-buttonset\"></span>");
+        buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
         contentId = "" + this.options.uuid + "-" + this.widgetName + "-data";
         target = this._prepareDropdown(contentId);
         buttonset.append(target);
         buttonset.append(this._prepareButton(target));
-        return this.options.toolbar.append(buttonset);
+        return toolbar.append(buttonset);
       },
       _prepareDropdown: function(contentId) {
         var addElement, containingElement, contentArea, element, _i, _len, _ref,
@@ -1131,34 +1204,33 @@
         containingElement = this.options.editable.element.get(0).tagName.toLowerCase();
         addElement = function(element) {
           var el, queryState;
-          el = jQuery("<button class=\"menu-item ui-button ui-corner-all ui-state-default\"><" + element + " style=\"margin:0px;\">" + element + "</" + element + "></button>");
+          el = jQuery("<button class='blockselector'><" + element + " class=\"menu-item\">" + element + "</" + element + "></button>");
           if (containingElement === element) {
-            el.addClass('ui-state-active');
+            el.addClass('selected');
           }
           if (containingElement !== 'div') {
             el.addClass('disabled');
           }
-          el.bind('click', function(event) {
-            if (!el.hasClass('disabled')) {
-              _this.options.editable.execute('formatBlock', element.toUpperCase());
+          el.bind('click', function() {
+            if (el.hasClass('disabled')) {
+              return;
             }
-            return event.preventDefault();
-          });
-          el.bind('mouseenter', function(event) {
-            return el.addClass("ui-state-hover");
-          });
-          el.bind('mouseleave', function(event) {
-            return el.removeClass("ui-state-hover");
+            if (jQuery.browser.msie) {
+              return _this.options.editable.execute('FormatBlock', '<' + element.toUpperCase() + '>');
+            } else {
+              return _this.options.editable.execute('formatBlock', element.toUpperCase());
+            }
           });
           queryState = function(event) {
             var block;
             block = document.queryCommandValue('formatBlock');
             if (block.toLowerCase() === element) {
-              el.addClass('ui-state-active');
+              el.addClass('selected');
               return;
             }
-            return el.removeClass('ui-state-active');
+            return el.removeClass('selected');
           };
+          _this.options.editable.element.bind('keyup paste change mouseup', queryState);
           _this.options.editable.element.bind('halloenabled', function() {
             return _this.options.editable.element.bind('keyup paste change mouseup', queryState);
           });
@@ -1194,7 +1266,6 @@
     return jQuery.widget("IKS.hallolink", {
       options: {
         editable: null,
-        toolbar: null,
         uuid: "",
         link: true,
         image: true,
@@ -1211,7 +1282,7 @@
         },
         butonCssClass: null
       },
-      _create: function() {
+      populateToolbar: function(toolbar) {
         var buttonize, buttonset, dialog, dialogId, dialogSubmitCb, urlInput, widget,
           _this = this;
         widget = this;
@@ -1261,7 +1332,7 @@
           });
           buttonset.append(buttonHolder);
           button = buttonHolder;
-          button.bind("change", function(event) {
+          button.bind("click", function(event) {
             widget.lastSelection = widget.options.editable.getSelection();
             urlInput = jQuery('input[name=url]', dialog);
             if (widget.lastSelection.startContainer.parentNode.href === void 0) {
@@ -1272,11 +1343,12 @@
             }
             widget.options.editable.keepActivated(true);
             dialog.dialog('open');
-            return dialog.bind('dialogclose', function() {
+            dialog.bind('dialogclose', function() {
               jQuery('label', buttonHolder).removeClass('ui-state-active');
               widget.options.editable.element.focus();
               return widget.options.editable.keepActivated(false);
             });
+            return false;
           });
           return _this.element.bind("keyup paste change mouseup", function(event) {
             var nodeName, start;
@@ -1293,8 +1365,8 @@
           buttonize("A");
         }
         if (this.options.link) {
-          buttonset.hallobuttonset();
-          this.options.toolbar.append(buttonset);
+          buttonset.buttonset();
+          toolbar.append(buttonset);
           return dialog.dialog(this.options.dialogOpts);
         }
       },
@@ -1306,7 +1378,6 @@
     return jQuery.widget("IKS.halloformat", {
       options: {
         editable: null,
-        toolbar: null,
         uuid: "",
         formattings: {
           bold: true,
@@ -1316,7 +1387,7 @@
         },
         buttonCssClass: null
       },
-      _create: function() {
+      populateToolbar: function(toolbar) {
         var buttonize, buttonset, enabled, format, widget, _ref,
           _this = this;
         widget = this;
@@ -1341,9 +1412,8 @@
           }
         }
         buttonset.hallobuttonset();
-        return this.options.toolbar.append(buttonset);
-      },
-      _init: function() {}
+        return toolbar.append(buttonset);
+      }
     });
   })(jQuery);
 
@@ -1354,6 +1424,12 @@
         className: 'halloEditIndicator'
       },
       _create: function() {
+        var _this = this;
+        return this.element.bind('halloenabled', function() {
+          return _this.buildIndicator();
+        });
+      },
+      buildIndicator: function() {
         var editButton;
         editButton = jQuery('<div><i class="icon-edit"></i> Edit</div>');
         editButton.addClass(this.options.className);
@@ -1369,6 +1445,9 @@
         });
         this.element.bind('halloactivated', function() {
           return indicator.hide();
+        });
+        this.element.bind('hallodisabled', function() {
+          return indicator.remove();
         });
         return this.options.editable.element.hover(function() {
           if (jQuery(this).hasClass('inEditMode')) {
@@ -1388,7 +1467,7 @@
       setIndicatorPosition: function(indicator) {
         var offset;
         indicator.css('position', 'absolute');
-        offset = this.element.offset();
+        offset = this.element.position();
         indicator.css('top', offset.top + 2);
         return indicator.css('left', offset.left + 2);
       }
@@ -1407,7 +1486,7 @@
         },
         buttonCssClass: null
       },
-      _create: function() {
+      populateToolbar: function(toolbar) {
         var buttonize, buttonset,
           _this = this;
         buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
@@ -1431,9 +1510,8 @@
           buttonize("Unordered", "UL");
         }
         buttonset.hallobuttonset();
-        return this.options.toolbar.append(buttonset);
-      },
-      _init: function() {}
+        return toolbar.append(buttonset);
+      }
     });
   })(jQuery);
 
@@ -1445,7 +1523,7 @@
         uuid: '',
         buttonCssClass: null
       },
-      _create: function() {
+      populateToolbar: function(toolbar) {
         var buttonize, buttonset,
           _this = this;
         buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
@@ -1466,7 +1544,7 @@
         buttonize("Center");
         buttonize("Right");
         buttonset.hallobuttonset();
-        return this.options.toolbar.append(buttonset);
+        return toolbar.append(buttonset);
       },
       _init: function() {}
     });
@@ -1480,7 +1558,7 @@
         uuid: '',
         buttonCssClass: null
       },
-      _create: function() {
+      populateToolbar: function(toolbar) {
         var buttonize, buttonset,
           _this = this;
         buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
@@ -1501,96 +1579,247 @@
         buttonize("undo", "Undo");
         buttonize("redo", "Redo");
         buttonset.hallobuttonset();
-        return this.options.toolbar.append(buttonset);
+        return toolbar.append(buttonset);
       },
       _init: function() {}
     });
   })(jQuery);
 
   (function(jQuery) {
+    return jQuery.widget('Hallo.halloToolbarFixed', {
+      toolbar: null,
+      options: {
+        parentElement: 'body',
+        editable: null,
+        toolbar: null
+      },
+      _create: function() {
+        var el, widthToAdd,
+          _this = this;
+        this.toolbar = this.options.toolbar;
+        this.toolbar.show();
+        jQuery(this.options.parentElement).append(this.toolbar);
+        this._bindEvents();
+        jQuery(window).resize(function(event) {
+          return _this._updatePosition(_this._getPosition(event));
+        });
+        if (this.options.parentElement === 'body' && !this.options.floating) {
+          el = jQuery(this.element);
+          widthToAdd = parseFloat(el.css('padding-left'));
+          widthToAdd += parseFloat(el.css('padding-right'));
+          widthToAdd += parseFloat(el.css('border-left-width'));
+          widthToAdd += parseFloat(el.css('border-right-width'));
+          widthToAdd += (parseFloat(el.css('outline-width'))) * 2;
+          widthToAdd += (parseFloat(el.css('outline-offset'))) * 2;
+          return jQuery(this.toolbar).css("width", el.width() + widthToAdd);
+        }
+      },
+      _getPosition: function(event, selection) {
+        var offset, position;
+        if (!event) {
+          return;
+        }
+        offset = parseFloat(this.element.css('outline-width')) + parseFloat(this.element.css('outline-offset'));
+        return position = {
+          top: this.element.offset().top - this.toolbar.outerHeight() - offset,
+          left: this.element.offset().left - offset
+        };
+      },
+      _getCaretPosition: function(range) {
+        var newRange, position, tmpSpan;
+        tmpSpan = jQuery("<span/>");
+        newRange = rangy.createRange();
+        newRange.setStart(range.endContainer, range.endOffset);
+        newRange.insertNode(tmpSpan.get(0));
+        position = {
+          top: tmpSpan.offset().top,
+          left: tmpSpan.offset().left
+        };
+        tmpSpan.remove();
+        return position;
+      },
+      setPosition: function() {
+        if (this.options.parentElement !== 'body') {
+          return;
+        }
+        this.toolbar.css('position', 'absolute');
+        this.toolbar.css('top', this.element.offset().top - this.toolbar.outerHeight());
+        return this.toolbar.css('left', this.element.offset().left);
+      },
+      _updatePosition: function(position) {},
+      _bindEvents: function() {
+        var _this = this;
+        this.element.bind('halloactivated', function(event, data) {
+          _this._updatePosition(_this._getPosition(event));
+          return _this.toolbar.show();
+        });
+        return this.element.bind('hallodeactivated', function(event, data) {
+          return _this.toolbar.hide();
+        });
+      }
+    });
+  })(jQuery);
+
+  (function(jQuery) {
+    return jQuery.widget('Hallo.halloToolbarContextual', {
+      toolbar: null,
+      options: {
+        parentElement: 'body',
+        editable: null,
+        toolbar: null
+      },
+      _create: function() {
+        var _this = this;
+        this.toolbar = this.options.toolbar;
+        jQuery(this.options.parentElement).append(this.toolbar);
+        this._bindEvents();
+        return jQuery(window).resize(function(event) {
+          return _this._updatePosition(_this._getPosition(event));
+        });
+      },
+      _getPosition: function(event, selection) {
+        var eventType, position;
+        if (!event) {
+          return;
+        }
+        eventType = event.type;
+        if (eventType === "keydown" || eventType === "keyup" || eventType === "keypress") {
+          return this._getCaretPosition(selection);
+        }
+        if (eventType === "click" || eventType === "mousedown" || eventType === "mouseup") {
+          return position = {
+            top: event.pageY,
+            left: event.pageX
+          };
+        }
+      },
+      _getCaretPosition: function(range) {
+        var newRange, position, tmpSpan;
+        tmpSpan = jQuery("<span/>");
+        newRange = rangy.createRange();
+        newRange.setStart(range.endContainer, range.endOffset);
+        newRange.insertNode(tmpSpan.get(0));
+        position = {
+          top: tmpSpan.offset().top,
+          left: tmpSpan.offset().left
+        };
+        tmpSpan.remove();
+        return position;
+      },
+      setPosition: function() {
+        if (this.options.parentElement !== 'body') {
+          this.options.parentElement = 'body';
+          jQuery(this.options.parentElement).append(this.toolbar);
+        }
+        this.toolbar.css('position', 'absolute');
+        this.toolbar.css('top', this.element.offset().top - 20);
+        return this.toolbar.css('left', this.element.offset().left);
+      },
+      _updatePosition: function(position) {
+        if (!position) {
+          return;
+        }
+        if (!(position.top && position.left)) {
+          return;
+        }
+        this.toolbar.css('top', position.top);
+        return this.toolbar.css('left', position.left);
+      },
+      _bindEvents: function() {
+        var _this = this;
+        this.element.bind('halloselected', function(event, data) {
+          var position;
+          position = _this._getPosition(data.originalEvent, data.selection);
+          if (!position) {
+            return;
+          }
+          _this._updatePosition(position);
+          return _this.toolbar.show();
+        });
+        this.element.bind('hallounselected', function(event, data) {
+          return _this.toolbar.hide();
+        });
+        return this.element.bind('hallodeactivated', function(event, data) {
+          return _this.toolbar.hide();
+        });
+      }
+    });
+  })(jQuery);
+
+  (function(jQuery) {
     jQuery.widget('IKS.hallobutton', {
       button: null,
+      isChecked: false,
       options: {
         uuid: '',
         label: null,
-        useIcon: true,
         icon: null,
         editable: null,
         command: null,
         queryState: true,
-        getQueryState: function(widget) {
-          if (!widget.options.command) {
-            return false;
-          }
-          try {
-            return document.queryCommandState(widget.options.command);
-          } catch (e) {
-            return false;
-          }
-        },
-        cssClass: null,
-        executeCommand: function(widget) {
-          return widget.options.editable.execute(widget.options.command);
-        }
+        cssClass: null
       },
       _create: function() {
         var hoverclass, id, _base, _ref,
           _this = this;
-        if (this.options.useIcon) {
-          if ((_ref = (_base = this.options).icon) == null) {
-            _base.icon = "icon-" + (this.options.label.toLowerCase());
-          }
+        if ((_ref = (_base = this.options).icon) == null) {
+          _base.icon = "icon-" + (this.options.label.toLowerCase());
         }
         id = "" + this.options.uuid + "-" + this.options.label;
         this.button = this._createButton(id, this.options.command, this.options.label, this.options.icon);
         this.element.append(this.button);
-        hoverclass = 'ui-state-hover';
-        if (!this.options.queryState) {
-          hoverclass += ' ui-state-active';
+        if (this.options.cssClass) {
+          this.button.addClass(this.options.cssClass);
         }
+        if (this.options.editable.options.touchScreen) {
+          this.button.addClass('btn-large');
+        }
+        this.button.data('hallo-command', this.options.command);
+        hoverclass = 'ui-state-hover';
         this.button.bind('mouseenter', function(event) {
           if (_this.isEnabled()) {
             return _this.button.addClass(hoverclass);
           }
         });
-        this.button.bind('mouseleave', function(event) {
+        return this.button.bind('mouseleave', function(event) {
           return _this.button.removeClass(hoverclass);
         });
-        if (this.options.cssClass) {
-          this.button.addClass(this.options.cssClass);
-        }
-        return this.button.data('hallo-command', this.options.command);
       },
       _init: function() {
-        var editableElement, updateState, widget,
+        var editableElement, queryState,
           _this = this;
         if (!this.button) {
           this.button = this._prepareButton();
         }
         this.element.append(this.button);
-        widget = this;
-        this.button.bind('click', function(event) {
-          if (_this.options.command) {
-            _this.options.executeCommand(widget);
-          } else {
-            _this.element.trigger("change");
+        queryState = function(event) {
+          if (!_this.options.command) {
+            return;
           }
-          event.stopPropagation;
-          event.preventDefault;
-          return false;
-        });
+          try {
+            return _this.checked(document.queryCommandState(_this.options.command));
+          } catch (e) {
+
+          }
+        };
+        if (this.options.command) {
+          this.button.bind('click', function(event) {
+            _this.options.editable.execute(_this.options.command);
+            queryState;
+
+            return false;
+          });
+        }
         if (!this.options.queryState) {
           return;
         }
         editableElement = this.options.editable.element;
-        updateState = function(event) {
-          return _this.refresh();
-        };
+        editableElement.bind('keyup paste change mouseup hallomodified', queryState);
         editableElement.bind('halloenabled', function() {
-          return editableElement.bind('keyup paste change mouseup hallomodified halloactivated', updateState);
+          return editableElement.bind('keyup paste change mouseup hallomodified', queryState);
         });
         return editableElement.bind('hallodisabled', function() {
-          return editableElement.unbind('keyup paste change mouseup hallomodified halloactivated', updateState);
+          return editableElement.unbind('keyup paste change mouseup hallomodified', queryState);
         });
       },
       enable: function() {
@@ -1603,19 +1832,18 @@
         return this.button.attr('disabled') !== 'true';
       },
       refresh: function() {
-        if (!this.options.queryState) {
-          return;
-        }
-        if (this.options.getQueryState(this)) {
-          return this.button.addClass("ui-state-active");
+        if (this.isChecked) {
+          return this.button.addClass('ui-state-active');
         } else {
-          return this.button.removeClass("ui-state-active");
+          return this.button.removeClass('ui-state-active');
         }
       },
+      checked: function(checked) {
+        this.isChecked = checked;
+        return this.refresh();
+      },
       _createButton: function(id, command, label, icon) {
-        var buttonContent;
-        buttonContent = this.options.useIcon ? "<i class=\"" + icon + "\"></i>" : label;
-        return jQuery("<button id=\"" + id + "\" class=\"" + command + "_button ui-button ui-widget ui-state-default ui-button-text-only ui-corner-all\" title=\"" + label + "\" ><span class=\"ui-button-text\">" + buttonContent + "</span></button>");
+        return jQuery("<button for=\"" + id + "\" class=\"ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only " + command + "_button\" title=\"" + label + "\"><span class=\"ui-button-text\"><i class=\"" + icon + "\"></i></span></button>");
       }
     });
     return jQuery.widget('IKS.hallobuttonset', {
@@ -1654,7 +1882,7 @@
         return (_ref = (_base = this.options).icon) != null ? _ref : _base.icon = "icon-" + (this.options.label.toLowerCase());
       },
       _init: function() {
-        var hoverclass, target,
+        var target,
           _this = this;
         target = jQuery(this.options.target);
         target.css('position', 'absolute');
@@ -1663,30 +1891,15 @@
         if (!this.button) {
           this.button = this._prepareButton();
         }
-        hoverclass = 'ui-state-hover ui-state-active';
-        this.button.bind('mouseenter', function(event) {
-          if (_this.isEnabled()) {
-            return _this.button.addClass(hoverclass);
-          }
-        });
-        this.button.bind('mouseleave', function(event) {
-          return _this.button.removeClass(hoverclass);
-        });
-        this.button.bind('click', function(event) {
+        this.button.bind('click', function() {
           if (target.hasClass('open')) {
             _this._hideTarget();
-          } else {
-            _this._showTarget();
+            return;
           }
-          event.stopPropagation;
-          event.preventDefault;
-          return false;
+          return _this._showTarget();
         });
-        target.bind('click', function(event) {
-          _this._hideTarget();
-          event.stopPropagation();
-          event.prevenDefault();
-          return false;
+        target.bind('click', function() {
+          return _this._hideTarget();
         });
         this.options.editable.element.bind('hallodeactivated', function() {
           return _this._hideTarget();
@@ -1707,29 +1920,22 @@
         return target.hide();
       },
       _updateTargetPosition: function() {
-        var bottom, left, target, _ref;
+        var left, target, top, _ref;
         target = jQuery(this.options.target);
-        _ref = this.element.position(), bottom = _ref.bottom, left = _ref.left;
-        target.css('top', bottom + 3);
-        return target.css('left', left);
+        _ref = this.button.position(), top = _ref.top, left = _ref.left;
+        top += this.button.outerHeight();
+        target.css('top', top);
+        return target.css('left', left - 20);
       },
       _prepareButton: function() {
-        var buttonEl, id;
+        var button, buttonEl, id;
         id = "" + this.options.uuid + "-" + this.options.label;
-        buttonEl = jQuery("<button id=\"" + id + "\" data-toggle=\"dropdown\" data-target=\"#" + (this.options.target.attr('id')) + "\" title=\"" + this.options.label + "\" class=\"ui-button ui-widget ui-state-default ui-button-text-only ui-corner-all\">\n  <span class=\"ui-button-text\"><i class=\"" + this.options.icon + "\"></i></span>\n</button>");
+        buttonEl = jQuery("<button id=\"" + id + "\" data-toggle=\"dropdown\" data-target=\"#" + (this.options.target.attr('id')) + "\" title=\"" + this.options.label + "\">\n<i class=\"" + this.options.icon + "\"></i>\n</button>");
         if (this.options.cssClass) {
           buttonEl.addClass(this.options.cssClass);
         }
-        return buttonEl;
-      },
-      enable: function() {
-        return this.button.removeAttr('disabled');
-      },
-      disable: function() {
-        return this.button.attr('disabled', 'true');
-      },
-      isEnabled: function() {
-        return this.button.attr('disabled') !== 'true';
+        button = buttonEl.button();
+        return button;
       }
     });
   })(jQuery);
@@ -1745,55 +1951,51 @@
   (function(jQuery) {
     return jQuery.widget("IKS.hallo", {
       toolbar: null,
-      toolbarMoved: false,
       bound: false,
       originalContent: "",
+      previousContent: "",
       uuid: "",
       selection: null,
       _keepActivated: false,
+      originalHref: null,
       options: {
         editable: true,
         plugins: {},
-        floating: true,
-        offset: {
-          x: 0,
-          y: 0
-        },
-        fixed: false,
-        showAlways: false,
-        activated: function() {},
-        deactivated: function() {},
-        selected: function() {},
-        unselected: function() {},
-        enabled: function() {},
-        disabled: function() {},
-        placeholder: '',
+        toolbar: 'halloToolbarContextual',
         parentElement: 'body',
+        buttonCssClass: null,
+        placeholder: '',
         forceStructured: true,
-        buttonCssClass: null
+        checkTouch: true,
+        touchScreen: null,
+        cssScope: null
       },
       _create: function() {
-        var options, plugin, _ref, _results;
-        this.originalContent = this.getContents();
+        var options, plugin, _ref,
+          _this = this;
         this.id = this._generateUUID();
-        this._prepareToolbar();
+        if (this.options.checkTouch && this.options.touchScreen === null) {
+          this.checkTouch();
+        }
         _ref = this.options.plugins;
-        _results = [];
         for (plugin in _ref) {
           options = _ref[plugin];
           if (!jQuery.isPlainObject(options)) {
             options = {};
           }
-          options['editable'] = this;
-          options['toolbar'] = this.toolbar;
-          options['uuid'] = this.id;
-          options['buttonCssClass'] = this.options.buttonCssClass;
-          _results.push(jQuery(this.element)[plugin](options));
+          jQuery.extend(options, {
+            editable: this,
+            uuid: this.id,
+            buttonCssClass: this.options.buttonCssClass
+          });
+          jQuery(this.element)[plugin](options);
         }
-        return _results;
+        this.element.one('halloactivated', function() {
+          return _this._prepareToolbar();
+        });
+        return this.originalContent = this.getContents();
       },
       _init: function() {
-        this._setToolbarPosition();
         if (this.options.editable) {
           return this.enable();
         } else {
@@ -1801,6 +2003,7 @@
         }
       },
       disable: function() {
+        var _this = this;
         this.element.attr("contentEditable", false);
         this.element.unbind("focus", this._activated);
         this.element.unbind("blur", this._deactivated);
@@ -1808,10 +2011,32 @@
         this.element.unbind("keyup", this._keys);
         this.element.unbind("keyup mouseup", this._checkSelection);
         this.bound = false;
+        jQuery(this.element).removeClass('isModified');
+        this.element.parents('a').andSelf().each(function(idx, elem) {
+          var element;
+          element = jQuery(elem);
+          if (!element.is('a')) {
+            return;
+          }
+          if (!_this.originalHref) {
+            return;
+          }
+          return element.attr('href', _this.originalHref);
+        });
         return this._trigger("disabled", null);
       },
       enable: function() {
-        var widget;
+        var widget,
+          _this = this;
+        this.element.parents('a[href]').andSelf().each(function(idx, elem) {
+          var element;
+          element = jQuery(elem);
+          if (!element.is('a[href]')) {
+            return;
+          }
+          _this.originalHref = element.attr('href');
+          return element.removeAttr('href');
+        });
         this.element.attr("contentEditable", true);
         if (!this.element.html()) {
           this.element.html(this.options.placeholder);
@@ -1881,6 +2106,9 @@
         var contentClone, plugin;
         contentClone = this.element.clone();
         for (plugin in this.options.plugins) {
+          if (!jQuery.isFunction(jQuery(this.element).data(plugin)['cleanupContentClone'])) {
+            continue;
+          }
           jQuery(this.element)[plugin]('cleanupContentClone', contentClone);
         }
         return contentClone.html();
@@ -1889,12 +2117,16 @@
         return this.element.html(contents);
       },
       isModified: function() {
-        return this.originalContent !== this.getContents();
+        if (!this.previousContent) {
+          this.previousContent = this.originalContent;
+        }
+        return this.previousContent !== this.getContents();
       },
       setUnmodified: function() {
-        return this.originalContent = this.getContents();
+        return this.previousContent = this.getContents();
       },
       setModified: function() {
+        jQuery(this.element).addClass('isModified');
         return this._trigger('modified', null, {
           editable: this,
           content: this.getContents()
@@ -1929,118 +2161,23 @@
         };
         return "" + (S4()) + (S4()) + "-" + (S4()) + "-" + (S4()) + "-" + (S4()) + "-" + (S4()) + (S4()) + (S4());
       },
-      _getToolbarPosition: function(event, selection) {
-        var eventType, offset;
-        if (!event) {
-          return;
-        }
-        if (this.options.floating) {
-          eventType = event.type;
-          if (eventType === "keydown" || eventType === "keyup" || eventType === "keypress") {
-            return this._getCaretPosition(selection);
-          } else if (eventType === "click" || eventType === "mousedown" || eventType === "mouseup") {
-            return {
-              top: event.pageY,
-              left: event.pageX
-            };
-          }
-        } else {
-          offset = parseFloat(this.element.css('outline-width')) + parseFloat(this.element.css('outline-offset'));
-          return {
-            top: this.element.offset().top - this.toolbar.outerHeight() - offset,
-            left: this.element.offset().left - offset
-          };
-        }
-      },
-      _getCaretPosition: function(range) {
-        var newRange, position, tmpSpan;
-        tmpSpan = jQuery("<span/>");
-        newRange = rangy.createRange();
-        newRange.setStart(range.endContainer, range.endOffset);
-        newRange.insertNode(tmpSpan.get(0));
-        position = {
-          top: tmpSpan.offset().top,
-          left: tmpSpan.offset().left
-        };
-        tmpSpan.remove();
-        return position;
-      },
-      _bindToolbarEventsFixed: function() {
-        var _this = this;
-        this.options.floating = false;
-        this.element.bind("halloactivated", function(event, data) {
-          _this._updateToolbarPosition(_this._getToolbarPosition(event));
-          return _this.toolbar.show();
-        });
-        return this.element.bind("hallodeactivated", function(event, data) {
-          return _this.toolbar.hide();
-        });
-      },
-      _bindToolbarEventsRegular: function() {
-        var _this = this;
-        this.element.bind("halloselected", function(event, data) {
-          var position;
-          position = _this._getToolbarPosition(data.originalEvent, data.selection);
-          if (!position) {
-            return;
-          }
-          _this._updateToolbarPosition(position);
-          return _this.toolbar.show();
-        });
-        this.element.bind("hallounselected", function(event, data) {
-          return _this.toolbar.hide();
-        });
-        return this.element.bind("hallodeactivated", function(event, data) {
-          return _this.toolbar.hide();
-        });
-      },
-      _setToolbarPosition: function() {
-        if (this.options.fixed) {
-          this.toolbar.css('position', 'static');
-          if (this.toolbarMoved) {
-            jQuery(this.options.parentElement).append(this.toolbar);
-          }
-          this.toolbarMoved = false;
-          return;
-        }
-        if (this.options.parentElement !== 'body') {
-          jQuery('body').append(this.toolbar);
-          this.toolbarMoved = true;
-        }
-        this.toolbar.css('position', 'absolute');
-        this.toolbar.css('top', this.element.offset().top - 20);
-        return this.toolbar.css('left', this.element.offset().left);
-      },
       _prepareToolbar: function() {
-        var widget,
-          _this = this;
-        this.toolbar = jQuery('<div class="hallotoolbar"></div>').hide();
-        this._setToolbarPosition();
-        jQuery(this.options.parentElement).append(this.toolbar);
-        widget = this;
-        if (this.options.showAlways) {
-          this._bindToolbarEventsFixed();
+        var plugin, toolbarClass;
+        toolbarClass = "hallotoolbar";
+        if (this.options.cssScope) {
+          toolbarClass += " " + this.options.cssScope;
         }
-        if (!this.options.showAlways) {
-          this._bindToolbarEventsRegular();
-        }
-        jQuery(window).resize(function(event) {
-          return _this._updateToolbarPosition(_this._getToolbarPosition(event));
+        this.toolbar = jQuery('<div class="' + toolbarClass + '"></div>').hide();
+        jQuery(this.element)[this.options.toolbar]({
+          editable: this,
+          parentElement: this.options.parentElement,
+          toolbar: this.toolbar
         });
+        for (plugin in this.options.plugins) {
+          jQuery(this.element)[plugin]('populateToolbar', this.toolbar);
+        }
+        jQuery(this.element)[this.options.toolbar]('setPosition');
         return this.protectFocusFrom(this.toolbar);
-      },
-      _updateToolbarPosition: function(position) {
-        if (this.options.fixed) {
-          return;
-        }
-        if (!position) {
-          return;
-        }
-        if (!(position.top && position.left)) {
-          return;
-        }
-        this.toolbar.css("top", position.top);
-        return this.toolbar.css("left", position.left);
       },
       _checkModified: function(event) {
         var widget;
@@ -2115,23 +2252,10 @@
         return false;
       },
       turnOn: function() {
-        var el, widthToAdd;
         if (this.getContents() === this.options.placeholder) {
           this.setContents('');
         }
         jQuery(this.element).addClass('inEditMode');
-        if (!this.options.floating) {
-          el = jQuery(this.element);
-          widthToAdd = parseFloat(el.css('padding-left'));
-          widthToAdd += parseFloat(el.css('padding-right'));
-          widthToAdd += parseFloat(el.css('border-left-width'));
-          widthToAdd += parseFloat(el.css('border-right-width'));
-          widthToAdd += (parseFloat(el.css('outline-width'))) * 2;
-          widthToAdd += (parseFloat(el.css('outline-offset'))) * 2;
-          jQuery(this.toolbar).css("width", el.width() + widthToAdd);
-        } else {
-          this.toolbar.css("width", "auto");
-        }
         return this._trigger("activated", this);
       },
       turnOff: function() {
@@ -2170,6 +2294,9 @@
             }
           }
         }
+      },
+      checkTouch: function() {
+        return this.options.touchScreen = !!('createTouch' in document);
       }
     });
   })(jQuery);
