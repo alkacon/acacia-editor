@@ -21,6 +21,7 @@
 	display: block;
 	height: 20px;
 	width: 20px;
+	cursor: pointer;
 }
 @sprite .hovering .buttonIcon{
 	gwt-image: "gwtImages.icons.addIconActive";
@@ -53,22 +54,9 @@
 .choices {
 	background: white;
 }
-@sprite .choice{
-	padding: 0px 22px 0px 0px;
-	gwt-image: "gwtImages.icons.addIconDeactivated";
-	background-position: right;
-	margin: 2px 1px 2px 2px;
-	width: auto;
-}
-
-@sprite .choice:hover{
-	gwt-image: "gwtImages.icons.addIconActive";
-	background-position: right;
-	width: auto;
-}
-
-.choice div{
-	padding:0 4px;
+.choice{
+	padding: 0 2px;
+	margin: 2px 2px 2px 2px;
 	border: 1px solid #7788AA;
 	white-space: nowrap;
 	text-overflow: ellipsis;
@@ -79,10 +67,11 @@
 	color: #7788AA;
 	background-image: literal("-moz-linear-gradient(left center , #FFFFFF 0%, #F4F7F9 80%, #E1E4E8 100%)");
 	max-width: 200px;
+	cursor: pointer;
 }
-.choice:hover div{
+
+.choice:hover{
 	color: #445577;
 	border-color: #445577;
-	/** background-image: literal("-moz-linear-gradient(left center , #E1E4E8 0%, #EAEDEF 80%, #F4F7F9 100%)"); */
 }
 .hovering .displayAbove{}

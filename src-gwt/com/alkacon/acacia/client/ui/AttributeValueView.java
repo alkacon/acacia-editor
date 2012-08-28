@@ -251,7 +251,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
      */
     public void addChoice(String label, String description, final String name) {
 
-        HTML choice = new HTML("<div>" + label + "</div>");
+        HTML choice = new HTML(label);
         choice.setTitle(description);
         choice.addClickHandler(new ClickHandler() {
 
