@@ -688,8 +688,8 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
 
                 public void onMouseDown(MouseDownEvent event) {
 
-                    // only act on click inside the widget holder
-                    if (DomUtil.checkPositionInside(m_widgetHolder.getElement(), event.getClientX(), event.getClientY())) {
+                    // only act on click if not inside the button bar
+                    if (!DomUtil.checkPositionInside(m_buttonBar.getElement(), event.getClientX(), event.getClientY())) {
                         activateWidget();
                     }
                 }
