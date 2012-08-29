@@ -24,6 +24,7 @@
 
 package com.alkacon.acacia.client;
 
+import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.acacia.client.ui.AttributeValueView;
 
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -96,6 +97,21 @@ public class HighlightingHandler implements MouseOverHandler, MouseOutHandler, M
         }
         m_handlerRegistration = null;
         INSTANCE = null;
+    }
+
+    /**
+     * Hides all help bubbles.<p>
+     * 
+     * @param formPanel the form panel
+     * @param hide <code>true</code> to hide the help bubbles
+     */
+    public void hideHelpBubbles(Widget formPanel, boolean hide) {
+
+        if (hide) {
+            formPanel.addStyleName(I_LayoutBundle.INSTANCE.form().hideHelpBubbles());
+        } else {
+            formPanel.removeStyleName(I_LayoutBundle.INSTANCE.form().hideHelpBubbles());
+        }
     }
 
     /**

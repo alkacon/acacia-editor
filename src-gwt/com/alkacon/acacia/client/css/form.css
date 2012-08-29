@@ -278,11 +278,11 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 	color: #222222;
 }
 
-.attributeValue.focused > .helpBubble{
+.attributeValue.focused > .helpBubble, div.attributeValue.focused.hasError > .helpBubble{
 	display: block;
 }
 
-.attributeValue.focused.closedBubble > .helpBubble{
+.attributeValue.focused.closedBubble > .helpBubble, .hideHelpBubbles .attributeValue.focused > .helpBubble{
 	display: none;
 }
 

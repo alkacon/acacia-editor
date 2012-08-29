@@ -197,6 +197,13 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
         String helpMessageIcon();
 
         /**
+         * Returns the hide help bubbles CSS class name.<p>
+         * 
+         * @return the hide help bubbles CSS class
+         */
+        String hideHelpBubbles();
+
+        /**
          * Returns the input field CSS class name.<p>
          * 
          * @return the input field CSS class name
