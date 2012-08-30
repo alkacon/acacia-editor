@@ -199,7 +199,7 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 
 /* These rules are used for laying out TinyMCE's button toolbar rows next to each other, not as rows. */
 
-.mceIframeContainer, #mce_fullscreen_tbl , #mce_fullscreen_container {
+.mceIframeContainer, #mce_fullscreen_tbl , #mce_fullscreen_container, #mce_fullscreen_container  #mce_fullscreen_ifr {
 	height: 100% !important; 
 }
 

@@ -420,7 +420,6 @@ public final class TinyMCEWidget extends A_EditWidget {
             theme_advanced_toolbar_align : "right",
             theme_advanced_statusbar_location : "bottom",
             width : '100%',
-
             theme_advanced_resizing : true,
             theme_advanced_resizing_use_cookie : false
         };
