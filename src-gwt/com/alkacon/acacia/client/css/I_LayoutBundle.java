@@ -98,6 +98,34 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
     @Shared
     interface I_Style extends com.alkacon.geranium.client.ui.css.I_LayoutBundle.I_DragCss, I_Widgets {
 
+        /**
+         * Returns the CSS constant value.<p>
+         * 
+         * @return the CSS constant value
+         */
+        String PARENT_GRADIENT();
+
+        /**
+         * Returns the CSS constant value.<p>
+         * 
+         * @return the CSS constant value
+         */
+        String PARENT_GRADIENT_IE9();
+
+        /**
+         * Returns the CSS constant value.<p>
+         * 
+         * @return the CSS constant value
+         */
+        String FOCUS_GRADIENT();
+
+        /**
+         * Returns the CSS constant value.<p>
+         * 
+         * @return the CSS constant value
+         */
+        String FOCUS_GRADIENT_IE9();
+
         /** 
          * Returns the attribute CSS class name.<p>
          * 

@@ -65,9 +65,33 @@
 	font-size: 12px;
 	line-height: 18px;
 	color: #7788AA;
-	background-image: literal("-moz-linear-gradient(left center , #FFFFFF 0%, #F4F7F9 80%, #E1E4E8 100%)");
+	background-color: #EEEEEE;
 	max-width: 200px;
 	cursor: pointer;
+}
+
+
+/** Browser specific styles. */
+@if user.agent gecko1_8 gecko{
+	/** firefox **/
+	.choice{
+		background-image: literal("-moz-linear-gradient(")value("form.PARENT_GRADIENT") literal(")");
+	}
+} @elif user.agent safari {
+	/** chrome, safari etc. **/
+	.choice{
+		background-image: literal("-webkit-linear-gradient(")value("form.PARENT_GRADIENT") literal(")");
+	}
+} @elif user.agent opera {
+	/** opera */
+	.choice{
+		background-image: literal("-o-linear-gradient(")value("form.PARENT_GRADIENT") literal(")");
+	}
+} @elif user.agent ie9 {
+	/** ie9 */
+	.choice{
+		background-image: value("form.PARENT_GRADIENT_IE9");
+	}
 }
 
 .choice:hover{
