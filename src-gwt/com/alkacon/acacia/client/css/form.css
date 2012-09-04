@@ -355,7 +355,7 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 		background: #EEEEEE !important;
 	}
 	.entity .attributeValue.focused > .widgetHolder, .dragHelper.attributeValue > .widgetHolder{
-		background: #A3B1CC;
+		background: #F4F7F9;
 	}
 }
 
