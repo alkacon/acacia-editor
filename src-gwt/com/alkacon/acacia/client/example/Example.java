@@ -116,7 +116,7 @@ public class Example implements EntryPoint {
 
             public I_EditWidget createInlineWidget(String configuration, Element element) {
 
-                return new HalloWidget(element);
+                return new HalloWidget(element, null);
             }
         });
         I_EntityRenderer defaultRenderer = new Renderer(vie, service);

@@ -108,7 +108,7 @@ public class EditorBase {
 
             public I_EditWidget createInlineWidget(String configuration, Element element) {
 
-                return new HalloWidget(element);
+                return new HalloWidget(element, null);
             }
         });
     }

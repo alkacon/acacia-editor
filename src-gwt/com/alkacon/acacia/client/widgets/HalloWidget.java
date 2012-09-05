@@ -27,6 +27,7 @@ package com.alkacon.acacia.client.widgets;
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.vie.client.Vie;
 
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -41,22 +42,27 @@ public class HalloWidget extends A_EditWidget {
     /** Indicating if the widget is active. */
     private boolean m_active;
 
+    /** The hallo editor options. */
+    private JavaScriptObject m_options;
+
     /**
      * Constructor.<p>
      */
     public HalloWidget() {
 
-        this(DOM.createDiv());
+        this(DOM.createDiv(), null);
     }
 
     /**
      * Constructor wrapping a specific DOM element.<p>
      * 
      * @param element the element to wrap
+     * @param options the hallo editor options
      */
-    public HalloWidget(Element element) {
+    public HalloWidget(Element element, JavaScriptObject options) {
 
         super(element);
+        m_options = options;
     }
 
     /**
@@ -92,7 +98,7 @@ public class HalloWidget extends A_EditWidget {
     protected void onAttach() {
 
         super.onAttach();
-        initNative(getElement(), Vie.getInstance());
+        initNative(getElement(), Vie.getInstance(), m_options);
     }
 
     /**
@@ -145,18 +151,46 @@ public class HalloWidget extends A_EditWidget {
      * 
      * @param element the element
      * @param vie the VIE instance
+     * @param options editor options
      */
-    private native void initNative(Element element, Vie vie) /*-{
+    private native void initNative(Element element, Vie vie, JavaScriptObject options) /*-{
         var _self = this;
         var editable = vie.jQuery(element);
-        editable.hallo({
-            plugins : {
+        var pluginSettings;
+        if (typeof options != null) {
+            pluginSettings = {};
+            if (options.format) {
+                pluginSettings['halloformat'] = {
+                    'formattings' : options.format
+                };
+            }
+            if (options.block) {
+                pluginSettings['halloblock'] = {
+                    'elements' : options.block
+                };
+            }
+            if (options.justify) {
+                pluginSettings['hallojustify'] = {};
+            }
+            if (options.lists) {
+                pluginSettings['hallolists'] = {
+                    'lists' : options.lists
+                };
+            }
+            if (options.reundo) {
+                pluginSettings['halloreundo'] = {};
+            }
+        } else {
+            pluginSettings = {
                 'halloformat' : {},
                 'halloblock' : {},
                 'hallojustify' : {},
                 'hallolists' : {},
                 'halloreundo' : {}
-            },
+            };
+        }
+        editable.hallo({
+            plugins : pluginSettings,
             editable : true,
             toolbar : 'halloToolbarFixed',
             cssScope : '__acacia'
