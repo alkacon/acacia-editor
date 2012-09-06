@@ -97,8 +97,20 @@ public class TestForms extends GWTTestCase {
         WidgetService service = new WidgetService();
         final I_FormEditWidget widget1 = new I_FormEditWidget() {
 
+            public HandlerRegistration addFocusHandler(FocusHandler handler) {
+
+                // dummy method
+                return null;
+            }
+
             public HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> handler) {
 
+                return null;
+            }
+
+            public Widget asWidget() {
+
+                // TODO: Auto-generated method stub
                 return null;
             }
 
@@ -112,20 +124,16 @@ public class TestForms extends GWTTestCase {
                 return null;
             }
 
-            public void setValue(String value) {
+            public boolean isActive() {
 
-                // dummy method
+                // TODO: Auto-generated method stub
+                return false;
             }
 
-            public void setValue(String value, boolean fireEvents) {
+            public void onAttachWidget() {
 
-                // dummy method
-            }
+                // TODO: Auto-generated method stub
 
-            public HandlerRegistration addFocusHandler(FocusHandler handler) {
-
-                // dummy method
-                return null;
             }
 
             public void setActive(boolean active) {
@@ -134,22 +142,23 @@ public class TestForms extends GWTTestCase {
 
             }
 
-            public boolean isActive() {
+            /**
+             * @see com.alkacon.acacia.client.widgets.I_EditWidget#setName(java.lang.String)
+             */
+            public void setName(String name) {
 
-                // TODO: Auto-generated method stub
-                return false;
+                // no input field so nothing to do
+
             }
 
-            public Widget asWidget() {
+            public void setValue(String value) {
 
-                // TODO: Auto-generated method stub
-                return null;
+                // dummy method
             }
 
-            public void onAttachWidget() {
+            public void setValue(String value, boolean fireEvents) {
 
-                // TODO: Auto-generated method stub
-
+                // dummy method
             }
 
             public void setWidgetInfo(String label, String help) {

@@ -84,24 +84,6 @@ public class HalloWidget extends A_EditWidget {
     }
 
     /**
-     * Initializes the widget.<p>
-     */
-    private void init() {
-
-        addStyleName(I_LayoutBundle.INSTANCE.form().input());
-    }
-
-    /**
-     * @see com.google.gwt.user.client.ui.FocusWidget#onAttach()
-     */
-    @Override
-    protected void onAttach() {
-
-        super.onAttach();
-        initNative(getElement(), Vie.getInstance(), m_options);
-    }
-
-    /**
      * @see com.alkacon.acacia.client.widgets.I_EditWidget#isActive()
      */
     public boolean isActive() {
@@ -130,6 +112,15 @@ public class HalloWidget extends A_EditWidget {
     }
 
     /**
+     * @see com.alkacon.acacia.client.widgets.I_EditWidget#setName(java.lang.String)
+     */
+    public void setName(String name) {
+
+        // no input field so nothing to do
+
+    }
+
+    /**
      * @see com.google.gwt.user.client.ui.HasValue#setValue(java.lang.Object)
      */
     public void setValue(String value) {
@@ -144,6 +135,24 @@ public class HalloWidget extends A_EditWidget {
 
         getElement().setInnerHTML(value);
         fireValueChange(false);
+    }
+
+    /**
+     * @see com.google.gwt.user.client.ui.FocusWidget#onAttach()
+     */
+    @Override
+    protected void onAttach() {
+
+        super.onAttach();
+        initNative(getElement(), Vie.getInstance(), m_options);
+    }
+
+    /**
+     * Initializes the widget.<p>
+     */
+    private void init() {
+
+        addStyleName(I_LayoutBundle.INSTANCE.form().input());
     }
 
     /**

@@ -512,6 +512,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         m_widget.setValue(value, false);
         m_widget.asWidget().addStyleName(I_LayoutBundle.INSTANCE.form().widget());
         m_widgetHolder.add(m_widget);
+        m_widget.setName(getHandler().getAttributeName());
         m_widget.addValueChangeHandler(new ChangeHandler());
         m_widget.addFocusHandler(new FocusHandler() {
 

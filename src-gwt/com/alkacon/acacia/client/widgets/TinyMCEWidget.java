@@ -161,6 +161,15 @@ public final class TinyMCEWidget extends A_EditWidget {
     }
 
     /**
+     * @see com.alkacon.acacia.client.widgets.I_EditWidget#setName(java.lang.String)
+     */
+    public void setName(String name) {
+
+        // no input field so nothing to do
+
+    }
+
+    /**
      * @see com.google.gwt.user.client.ui.HasValue#setValue(java.lang.Object)
      */
     public void setValue(String value) {

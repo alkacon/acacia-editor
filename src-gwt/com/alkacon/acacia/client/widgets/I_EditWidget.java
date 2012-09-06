@@ -36,13 +36,6 @@ import com.google.gwt.user.client.ui.IsWidget;
 public interface I_EditWidget extends HasValue<String>, HasFocusHandlers, IsWidget {
 
     /**
-     * This method is called when a widget is attached to the browser's document.<p>
-     * It needs to call the {@link com.google.gwt.user.client.ui.Widget#onAttach()} method.<p>
-     */
-    @SuppressWarnings("javadoc")
-    void onAttachWidget();
-
-    /**
      * @see com.google.gwt.event.logical.shared.HasValueChangeHandlers#addValueChangeHandler(com.google.gwt.event.logical.shared.ValueChangeHandler)
      */
     HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> handler);
@@ -55,11 +48,25 @@ public interface I_EditWidget extends HasValue<String>, HasFocusHandlers, IsWidg
     boolean isActive();
 
     /**
+     * This method is called when a widget is attached to the browser's document.<p>
+     * It needs to call the {@link com.google.gwt.user.client.ui.Widget#onAttach()} method.<p>
+     */
+    @SuppressWarnings("javadoc")
+    void onAttachWidget();
+
+    /**
      * Sets the widget active/inactive.<p>
      * 
      * @param active <code>true</code> to activate the widget
      */
     void setActive(boolean active);
+
+    /**
+     * Sets the name of input fields.<p>
+     * 
+     * @param name of the input field
+     */
+    void setName(String name);
 
     /**
      * @see com.google.gwt.user.client.ui.HasValue#setValue(java.lang.Object, boolean)
