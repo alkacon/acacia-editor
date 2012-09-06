@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -51,6 +52,9 @@ public class AttributeHandler {
 
     /** Map of all attribute handlers. */
     private static final Map<String, AttributeHandler> m_attributeHandlers = new HashMap<String, AttributeHandler>();
+
+    /** The scroll element. */
+    private static Element m_scrollElement;
 
     /** The attribute name. */
     private String m_attributeName;
@@ -119,6 +123,16 @@ public class AttributeHandler {
     public static AttributeHandler getAttributeHandler(String attributeName) {
 
         return m_attributeHandlers.get(attributeName);
+    }
+
+    /**
+     * Sets the scroll element. To be used for automatic scrolling during drag and drop.<p>
+     * 
+     * @param scrollElement the scroll element
+     */
+    public static void setScrollElement(Element scrollElement) {
+
+        m_scrollElement = scrollElement;
     }
 
     /**
@@ -254,6 +268,8 @@ public class AttributeHandler {
         if (m_dndHandler == null) {
             m_dndHandler = new DNDHandler(new AttributeDNDController());
             m_dndHandler.setOrientation(Orientation.VERTICAL);
+            m_dndHandler.setScrollEnabled(true);
+            m_dndHandler.setScrollElement(m_scrollElement);
         }
         return m_dndHandler;
     }

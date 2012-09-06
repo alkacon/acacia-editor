@@ -194,14 +194,17 @@ public class EditorBase {
      * @param entityId the entity id
      * @param tabInfos the tab informations
      * @param context the context element
+     * @param scrollParent the scroll element to be used for automatic scrolling during drag and drop
+
      */
-    public void renderEntityForm(String entityId, List<TabInfo> tabInfos, Panel context) {
+    public void renderEntityForm(String entityId, List<TabInfo> tabInfos, Panel context, Element scrollParent) {
 
         I_Entity entity = m_vie.getEntity(entityId);
         if (entity != null) {
             I_Type type = m_vie.getType(entity.getTypeName());
             FlowPanel formPanel = new FlowPanel();
             context.add(formPanel);
+            AttributeHandler.setScrollElement(scrollParent);
             TabbedPanel<?> formTabs = m_widgetService.getRendererForType(type).renderForm(entity, tabInfos, formPanel);
             ValidationHandler.getInstance().setContentService(m_service);
             ValidationHandler.getInstance().registerEntity(entity);
@@ -214,14 +217,16 @@ public class EditorBase {
      * 
      * @param entityId the entity id
      * @param context the context element
+     * @param scrollParent the scroll element to be used for automatic scrolling during drag and drop
      */
-    public void renderEntityForm(String entityId, Panel context) {
+    public void renderEntityForm(String entityId, Panel context, Element scrollParent) {
 
         I_Entity entity = m_vie.getEntity(entityId);
         if (entity != null) {
             I_Type type = m_vie.getType(entity.getTypeName());
             FlowPanel formPanel = new FlowPanel();
             context.add(formPanel);
+            AttributeHandler.setScrollElement(scrollParent);
             m_widgetService.getRendererForType(type).renderForm(entity, formPanel);
             ValidationHandler.getInstance().setContentService(m_service);
             ValidationHandler.getInstance().registerEntity(entity);
