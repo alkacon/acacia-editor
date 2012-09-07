@@ -154,7 +154,7 @@ public class StringWidget extends A_EditWidget {
      */
     public void setName(String name) {
 
-        this.setName(name);
+        // nothing to do
 
     }
 
