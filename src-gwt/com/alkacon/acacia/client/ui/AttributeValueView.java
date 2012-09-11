@@ -113,7 +113,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
          */
         MoveHandle(AttributeValueView draggable) {
 
-            setImageClass(I_ImageBundle.INSTANCE.style().changeOrderIcon());
+            setImageClass(I_ImageBundle.INSTANCE.style().moveIcon());
             setButtonStyle(ButtonStyle.TRANSPARENT, null);
             setTitle("Move");
             m_draggable = draggable;
