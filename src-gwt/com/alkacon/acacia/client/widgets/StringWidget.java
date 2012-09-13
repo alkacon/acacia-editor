@@ -26,8 +26,10 @@ package com.alkacon.acacia.client.widgets;
 
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -39,11 +41,16 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.TextArea;
 
 /**
  * The string edit widget.<p>
  */
 public class StringWidget extends A_EditWidget {
+
+    /** The value to know if the user want to paste something. */
+    protected boolean m_paste;
 
     /** Indicating if the widget is active. */
     private boolean m_active;
@@ -81,18 +88,52 @@ public class StringWidget extends A_EditWidget {
             m_valueChangeHandlerInitialized = true;
             addDomHandler(new KeyPressHandler() {
 
+                /** The courser position. */
+                protected JavaScriptObject m_range;
+
+                /** The Element of this widget. */
+                protected com.google.gwt.dom.client.Element m_element;
+
+                /** Helper text area to store the text that should be pasted. */
+                protected TextArea m_helpfield;
+
                 public void onKeyPress(KeyPressEvent event) {
+
+                    // check if something is paste to the field
+                    if (event.isShiftKeyDown() || event.isControlKeyDown()) {
+                        int charCode = event.getCharCode();
+                        if ((charCode == 'v') || (charCode == 45)) {
+                            m_helpfield = new TextArea();
+                            m_helpfield.getElement().getStyle().setPosition(Position.FIXED);
+                            m_range = getSelection();
+                            m_element = event.getRelativeElement();
+                            m_element.setAttribute("contentEditable", "false");
+                            RootPanel.get().add(m_helpfield);
+                            m_helpfield.setFocus(true);
+                        }
+                    }
 
                     // schedule the change event, so the key press can take effect
                     Scheduler.get().scheduleDeferred(new ScheduledCommand() {
 
                         public void execute() {
 
+                            if (m_range != null) {
+                                String pasteValue = m_helpfield.getText();
+                                m_helpfield.removeFromParent();
+                                m_element.setAttribute("contentEditable", "true");
+                                setFocus(true);
+                                setSelection(m_range, pasteValue);
+                                m_range = null;
+
+                            }
                             fireValueChange(false);
                         }
                     });
                 }
+
             }, KeyPressEvent.getType());
+
             addDomHandler(new ChangeHandler() {
 
                 public void onChange(ChangeEvent event) {
@@ -176,6 +217,42 @@ public class StringWidget extends A_EditWidget {
             fireValueChange(false);
         }
     }
+
+    /**
+     * Returns the actual range of the courser.<p>
+     * 
+     * @return the actual range of the courser
+     */
+    protected native JavaScriptObject getSelection()
+    /*-{
+        var range, sel;
+        sel = $wnd.rangy.getSelection();
+        range = null;
+        if (sel.rangeCount > 0) {
+            range = sel.getRangeAt(0);
+        } else {
+            range = rangy.createRange();
+        }
+        return range;
+    }-*/;
+
+    /**
+     * Includes the new text into the text block.<p>
+     * @param range the range where the text should be included
+     * @param text the text that should be included 
+     */
+    protected native void setSelection(JavaScriptObject range, String text)
+    /*-{
+        var sel;
+        range.deleteContents();
+        var textNode = $wnd.document.createTextNode(text)
+        range.insertNode(textNode);
+        sel = $wnd.rangy.getSelection();
+        range.setStart(textNode, textNode.length);
+        range.setEnd(textNode, textNode.length);
+        sel.removeAllRanges();
+        sel.setSingleRange(range);
+    }-*/;
 
     /**
      * Initializes the widget.<p>
