@@ -64,6 +64,7 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.event.logical.shared.HasResizeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -507,6 +508,9 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         m_hasValue = true;
         m_isSimpleValue = true;
         m_widget = widget;
+        if (AttributeHandler.hasResizeHandler() && (m_widget instanceof HasResizeHandlers)) {
+            ((HasResizeHandlers)m_widget).addResizeHandler(AttributeHandler.getResizeHandler());
+        }
         m_widgetHolder.clear();
         m_widget.setWidgetInfo(m_label, m_help);
         m_widget.setValue(value, false);

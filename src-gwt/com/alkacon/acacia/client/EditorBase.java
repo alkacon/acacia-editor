@@ -135,6 +135,7 @@ public class EditorBase {
     public void destroyFrom(boolean clearEntities) {
 
         HighlightingHandler.getInstance().destroy();
+        AttributeHandler.clearAttributeHandlers();
         if (clearEntities) {
             m_vie.clearEntities();
         }

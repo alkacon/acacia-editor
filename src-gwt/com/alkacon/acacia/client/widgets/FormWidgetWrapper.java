@@ -27,6 +27,8 @@ package com.alkacon.acacia.client.widgets;
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 
 import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.logical.shared.HasResizeHandlers;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Composite;
@@ -36,7 +38,7 @@ import com.google.gwt.user.client.ui.Label;
 /** 
  * Wraps an edit widget to supply a widget label.<p>
  **/
-public class FormWidgetWrapper extends Composite implements I_FormEditWidget {
+public class FormWidgetWrapper extends Composite implements I_FormEditWidget, HasResizeHandlers {
 
     /** The edit widget. */
     private I_EditWidget m_editWidget;
@@ -70,6 +72,17 @@ public class FormWidgetWrapper extends Composite implements I_FormEditWidget {
     public HandlerRegistration addFocusHandler(FocusHandler handler) {
 
         return m_editWidget.addFocusHandler(handler);
+    }
+
+    /**
+     * @see com.google.gwt.event.logical.shared.HasResizeHandlers#addResizeHandler(com.google.gwt.event.logical.shared.ResizeHandler)
+     */
+    public HandlerRegistration addResizeHandler(ResizeHandler handler) {
+
+        if (m_editWidget instanceof HasResizeHandlers) {
+            return ((HasResizeHandlers)m_editWidget).addResizeHandler(handler);
+        }
+        return null;
     }
 
     /**

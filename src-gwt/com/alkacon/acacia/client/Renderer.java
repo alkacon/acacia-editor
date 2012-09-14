@@ -48,6 +48,8 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -63,7 +65,7 @@ public class Renderer implements I_EntityRenderer {
     /**
      * Handles the size of a tabbed panel.<p>
      */
-    protected class TabSizeHandler implements SelectionHandler<Integer>, ValueChangeHandler<I_Entity> {
+    protected class TabSizeHandler implements SelectionHandler<Integer>, ValueChangeHandler<I_Entity>, ResizeHandler {
 
         /** The context panel. */
         private Panel m_context;
@@ -84,18 +86,19 @@ public class Renderer implements I_EntityRenderer {
         }
 
         /**
+         * @see com.google.gwt.event.logical.shared.ResizeHandler#onResize(com.google.gwt.event.logical.shared.ResizeEvent)
+         */
+        public void onResize(ResizeEvent event) {
+
+            triggerHeightAdjustment();
+        }
+
+        /**
          * @see com.google.gwt.event.logical.shared.SelectionHandler#onSelection(com.google.gwt.event.logical.shared.SelectionEvent)
          */
         public void onSelection(SelectionEvent<Integer> event) {
 
-            Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-
-                public void execute() {
-
-                    adjustContextHeight();
-                }
-            });
-
+            triggerHeightAdjustment();
         }
 
         /**
@@ -103,13 +106,7 @@ public class Renderer implements I_EntityRenderer {
          */
         public void onValueChange(ValueChangeEvent<I_Entity> event) {
 
-            Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-
-                public void execute() {
-
-                    adjustContextHeight();
-                }
-            });
+            triggerHeightAdjustment();
         }
 
         /**
@@ -121,6 +118,20 @@ public class Renderer implements I_EntityRenderer {
             FlowPanel tab = m_tabbedPanel.getWidget(tabIndex);
             int height = PositionBean.getInnerDimensions(tab.getElement()).getHeight();
             m_context.getElement().getStyle().setHeight(50 + height, Unit.PX);
+        }
+
+        /**
+         * Triggers the tab panel height adjustment scheduled after the browsers event loop.
+         */
+        private void triggerHeightAdjustment() {
+
+            Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+
+                public void execute() {
+
+                    adjustContextHeight();
+                }
+            });
         }
     }
 
@@ -224,7 +235,7 @@ public class Renderer implements I_EntityRenderer {
                     return counter < 6;
                 }
             }, 200);
-
+            AttributeHandler.setResizeHandler(tabSizeHandler);
             tabbedPanel.getElement().getStyle().setBorderWidth(0, Unit.PX);
             Iterator<TabInfo> tabIt = tabInfos.iterator();
             TabInfo currentTab = tabIt.next();

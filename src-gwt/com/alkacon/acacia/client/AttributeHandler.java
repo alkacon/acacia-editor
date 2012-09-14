@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -52,6 +53,9 @@ public class AttributeHandler {
 
     /** Map of all attribute handlers. */
     private static final Map<String, AttributeHandler> m_attributeHandlers = new HashMap<String, AttributeHandler>();
+
+    /** The global widget resize handler. */
+    private static ResizeHandler m_resizeHandler;
 
     /** The scroll element. */
     private static Element m_scrollElement;
@@ -99,6 +103,18 @@ public class AttributeHandler {
     }
 
     /**
+     * Clears the attribute handler registry and resets the global resize handler.<p>
+     */
+    public static void clearAttributeHandlers() {
+
+        for (AttributeHandler handler : m_attributeHandlers.values()) {
+            handler.destroy();
+        }
+        m_attributeHandlers.clear();
+        m_resizeHandler = null;
+    }
+
+    /**
      * Clears the error styles on the given tabbed panel.<p>
      * 
      * @param tabbedPanel the tabbed panel
@@ -123,6 +139,36 @@ public class AttributeHandler {
     public static AttributeHandler getAttributeHandler(String attributeName) {
 
         return m_attributeHandlers.get(attributeName);
+    }
+
+    /**
+     * Returns the global widget resize handler.<p>
+     * 
+     * @return the global widget resize handler
+     */
+    public static ResizeHandler getResizeHandler() {
+
+        return m_resizeHandler;
+    }
+
+    /**
+     * Returns <code>true</code> if a global widget resize handler is present.<p>
+     * 
+     * @return <code>true</code> if a global widget resize handler is present
+     */
+    public static boolean hasResizeHandler() {
+
+        return m_resizeHandler != null;
+    }
+
+    /**
+     * Sets the global widget resize handler.<p>
+     * 
+     * @param handler the resize handler
+     */
+    public static void setResizeHandler(ResizeHandler handler) {
+
+        m_resizeHandler = handler;
     }
 
     /**
@@ -236,7 +282,6 @@ public class AttributeHandler {
      */
     public void destroy() {
 
-        m_attributeHandlers.remove(m_attributeName);
         m_attributeName = null;
         m_attributeType = null;
         m_attributeValueViews.clear();

@@ -35,6 +35,9 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.DomEvent;
+import com.google.gwt.event.logical.shared.HasResizeHandlers;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -47,7 +50,7 @@ import com.google.gwt.user.client.Element;
  * After constructing the instance, the actual editor is opened using the init() method, and destroyed with the close()
  * method. While the editor is opened, the edited contents can be accessed using the methods of the HasValue interface.  
  */
-public final class TinyMCEWidget extends A_EditWidget {
+public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandlers {
 
     /** The minimum editor height. */
     private static final int MIN_EDITOR_HEIGHT = 70;
@@ -67,14 +70,14 @@ public final class TinyMCEWidget extends A_EditWidget {
     /** The original HTML content of the editable element. */
     protected String m_originalContent;
 
+    /** The maximal width of the widget. */
+    protected int m_width;
+
     /** The editor height to set. */
     int m_editorHeight;
 
     /** The editor options. */
     private JavaScriptObject m_options;
-
-    /** The maximal width of the widget. */
-    protected int m_width;
 
     /**
      * Creates a new instance for the given element.<p>
@@ -98,6 +101,14 @@ public final class TinyMCEWidget extends A_EditWidget {
 
         this(DOM.createDiv(), options);
 
+    }
+
+    /**
+     * @see com.google.gwt.event.logical.shared.HasResizeHandlers#addResizeHandler(com.google.gwt.event.logical.shared.ResizeHandler)
+     */
+    public HandlerRegistration addResizeHandler(ResizeHandler handler) {
+
+        return addHandler(handler, ResizeEvent.getType());
     }
 
     /**
@@ -448,6 +459,14 @@ public final class TinyMCEWidget extends A_EditWidget {
             ed.onLoadContent
                     .add(function() {
                         $wnd.document.getElementById(iframeId).style.minHeight = editorHeight;
+                        // firing resize event on resize of the editor iframe
+                        ed.dom
+                                .bind(
+                                        ed.getWin(),
+                                        'resize',
+                                        function() {
+                                            self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::fireResizeEvent()();
+                                        });
                     });
             ed.onClick
                     .add(function(event) {
@@ -495,6 +514,14 @@ public final class TinyMCEWidget extends A_EditWidget {
         $wnd.tinyMCE.init(defaults);
         self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::fixStyles()();
     }-*/;
+
+    /**
+     * Fires the resize event.<p>
+     */
+    private void fireResizeEvent() {
+
+        ResizeEvent.fire(this, getOffsetWidth(), getOffsetHeight());
+    }
 
     /**
      * Returns the editor content.<p>
