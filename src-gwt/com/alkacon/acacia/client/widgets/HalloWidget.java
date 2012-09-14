@@ -144,6 +144,7 @@ public class HalloWidget extends A_EditWidget {
     protected void onAttach() {
 
         super.onAttach();
+        init();
         initNative(getElement(), Vie.getInstance(), m_options);
     }
 
