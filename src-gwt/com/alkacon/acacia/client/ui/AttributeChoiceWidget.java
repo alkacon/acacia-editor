@@ -24,6 +24,7 @@
 
 package com.alkacon.acacia.client.ui;
 
+import com.alkacon.acacia.client.EditorBase;
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 
 import com.google.gwt.core.client.GWT;
@@ -71,7 +72,7 @@ public class AttributeChoiceWidget extends Composite implements HasMouseOverHand
     public AttributeChoiceWidget() {
 
         initWidget(uiBinder.createAndBindUi(this));
-        m_buttonIcon.setTitle("Add choice");
+        m_buttonIcon.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_CHOICE_ADD_CHOICE_0));
         addMouseOutHandler(new MouseOutHandler() {
 
             public void onMouseOut(MouseOutEvent event) {

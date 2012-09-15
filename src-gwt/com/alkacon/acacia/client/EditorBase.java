@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.i18n.client.Dictionary;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -57,17 +58,53 @@ import com.google.gwt.user.client.ui.Panel;
  * The content editor base.<p>
  */
 public class EditorBase {
+	
+	/** Message constant for key in the resource bundle. */
+	public static String GUI_CHOICE_ADD_CHOICE_0="GUI_CHOICE_ADD_CHOICE_0"; //Add choice
+	
+	/** Message constant for key in the resource bundle. */
+	public static String GUI_VIEW_ADD_0="GUI_VIEW_ADD_0"; //Add
+	
+	/** Message constant for key in the resource bundle. */
+	public static String GUI_VIEW_CLOSE_0="GUI_VIEW_CLOSE_0"; //Close
+	
+	/** Message constant for key in the resource bundle. */
+	public static String GUI_VIEW_DELETE_0="GUI_VIEW_DELETE_0"; //Delete
+	
+	/** Message constant for key in the resource bundle. */
+	public static String GUI_VIEW_MOVE_0="GUI_VIEW_MOVE_0"; //Move
+
+    /** The localized dictionary. */
+    private static Dictionary m_dictionary;
+
+    /**
+	 * Returns the m_dictionary.<p>
+	 *
+	 * @return the m_dictionary
+	 */
+	public static Dictionary getDictionary() {
+		return m_dictionary;
+	}
+
+    /**
+	 * Sets the m_dictionary.<p>
+	 *
+	 * @param dictionary the m_dictionary to set
+	 */
+	public static void setDictionary(Dictionary dictionary) {
+		m_dictionary = dictionary;
+	}
+    
+    /** The content service instance. */
+    private I_ContentServiceAsync m_service;
 
     /** The VIE instance. */
     protected I_Vie m_vie;
 
-    /** The content service instance. */
-    private I_ContentServiceAsync m_service;
-
-    /** The widget service. */
+	/** The widget service. */
     private WidgetService m_widgetService;
 
-    /**
+	/**
      * Constructor.<p>
      * 
      * @param service the content service 
@@ -152,6 +189,16 @@ public class EditorBase {
     }
 
     /**
+     * Returns the widget service.<p>
+     * 
+     * @return the widget service
+     */
+    protected I_WidgetService getWidgetService() {
+
+        return m_widgetService;
+    }
+
+    /**
      * Loads the content definition for the given entity and executes the callback on success.<p>
      * 
      * @param entityId the entity id
@@ -173,6 +220,18 @@ public class EditorBase {
             }
         };
         getService().loadContentDefinition(entityId, asyncCallback);
+    }
+
+    /**
+     * Handles RPC errors.<p>
+     * 
+     * Override this for better error handling
+     * 
+     * @param caught the error caught from the RPC
+     */
+    protected void onRpcError(Throwable caught) {
+
+        // doing nothing
     }
 
     /**
@@ -366,27 +425,5 @@ public class EditorBase {
 
         I_Entity entity = m_vie.getEntity(entityId);
         saveEntity(entity, false, callback);
-    }
-
-    /**
-     * Returns the widget service.<p>
-     * 
-     * @return the widget service
-     */
-    protected I_WidgetService getWidgetService() {
-
-        return m_widgetService;
-    }
-
-    /**
-     * Handles RPC errors.<p>
-     * 
-     * Override this for better error handling
-     * 
-     * @param caught the error caught from the RPC
-     */
-    protected void onRpcError(Throwable caught) {
-
-        // doing nothing
     }
 }

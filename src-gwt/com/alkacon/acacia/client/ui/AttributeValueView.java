@@ -25,6 +25,7 @@
 package com.alkacon.acacia.client.ui;
 
 import com.alkacon.acacia.client.AttributeHandler;
+import com.alkacon.acacia.client.EditorBase;
 import com.alkacon.acacia.client.HighlightingHandler;
 import com.alkacon.acacia.client.I_EntityRenderer;
 import com.alkacon.acacia.client.css.I_LayoutBundle;
@@ -116,7 +117,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
 
             setImageClass(I_ImageBundle.INSTANCE.style().moveIcon());
             setButtonStyle(ButtonStyle.TRANSPARENT, null);
-            setTitle("Move");
+            setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_MOVE_0));
             m_draggable = draggable;
         }
 
@@ -741,15 +742,15 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     private void initButtons(String label) {
 
         m_addButton.setImageClass(I_ImageBundle.INSTANCE.style().addIcon());
-        m_addButton.setTitle("Add");
+        m_addButton.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_ADD_0));
         m_addButton.setButtonStyle(ButtonStyle.TRANSPARENT, null);
 
         m_removeButton.setImageClass(I_ImageBundle.INSTANCE.style().removeIcon());
-        m_removeButton.setTitle("Delete");
+        m_removeButton.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_DELETE_0));
         m_removeButton.setButtonStyle(ButtonStyle.TRANSPARENT, null);
 
         m_helpBubbleClose.setImageClass(I_ImageBundle.INSTANCE.style().closeIcon());
-        m_helpBubbleClose.setTitle("Close");
+        m_helpBubbleClose.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_CLOSE_0));
         m_helpBubbleClose.setButtonStyle(ButtonStyle.TRANSPARENT, null);
     }
 
