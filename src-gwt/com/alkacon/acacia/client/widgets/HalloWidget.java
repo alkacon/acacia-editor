@@ -170,25 +170,19 @@ public class HalloWidget extends A_EditWidget {
         if (typeof options != null) {
             pluginSettings = {};
             if (options.format) {
-                pluginSettings['halloformat'] = {
-                    'formattings' : options.format
-                };
+                pluginSettings['halloformat'] = options.format;
             }
             if (options.block) {
-                pluginSettings['halloblock'] = {
-                    'elements' : options.block
-                };
+                pluginSettings['halloblock'] = options.block;
             }
             if (options.justify) {
-                pluginSettings['hallojustify'] = {};
+                pluginSettings['hallojustify'] = options.justify;
             }
             if (options.lists) {
-                pluginSettings['hallolists'] = {
-                    'lists' : options.lists
-                };
+                pluginSettings['hallolists'] = options.lists;
             }
             if (options.reundo) {
-                pluginSettings['halloreundo'] = {};
+                pluginSettings['halloreundo'] = options.reundo;
             }
         } else {
             pluginSettings = {
