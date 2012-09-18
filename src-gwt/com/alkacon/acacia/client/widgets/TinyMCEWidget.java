@@ -76,6 +76,9 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
     /** The editor height to set. */
     int m_editorHeight;
 
+    /** Flag indicating the editor has been initialized. */
+    private boolean m_initialized;
+
     /** The editor options. */
     private JavaScriptObject m_options;
 
@@ -185,7 +188,7 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
      */
     public void setValue(String value) {
 
-        setValue(value, true);
+        setValue(value, false);
     }
 
     /**
@@ -193,6 +196,7 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
      */
     public void setValue(String value, boolean fireEvents) {
 
+        setPreviousValue(value);
         if (m_editor == null) {
             // editor has not been initialized yet
             getElement().setInnerHTML(value);
@@ -200,7 +204,7 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
             setContent(value);
         }
         if (fireEvents) {
-            fireValueChange(false);
+            fireValueChange(true);
         }
     }
 
@@ -408,26 +412,12 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
         self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_currentContent = mainElement.innerHTML;
 
         var fireChange = function() {
-            self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::fireValueChange(Z)(false);
-        };
-
-        var fireChangeDelayed = function() {
-            // delay because we want TinyMCE to process the event first 
-            $wnd
-                    .setTimeout(
-                            function() {
-                                try {
-                                    self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::fireValueChange(Z)(false);
-                                } catch (e) {
-                                    var handler = @com.google.gwt.core.client.GWT::getUncaughtExceptionHandler()();
-                                    handler.@com.google.gwt.core.client.GWT.UncaughtExceptionHandler::onUncaughtException(Ljava/lang/Throwable;)(e);
-                                    throw e;
-                                }
-                            }, 1);
+            self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::fireChangeFromNative()();
         };
 
         // default options:
         var defaults = {
+            onchange_callback : fireChange,
             theme_advanced_resize_horizontal : true,
             theme_advanced_resizing_max_width : self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_width,
             relative_urls : false,
@@ -454,8 +444,8 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
         defaults.setup = function(ed) {
             self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_editor = ed;
 
-            ed.onChange.add(fireChange);
-            ed.onKeyDown.add(fireChangeDelayed);
+            ed.onSetContent.add(fireChange);
+            ed.onKeyDown.add(fireChange);
             ed.onLoadContent
                     .add(function() {
                         $wnd.document.getElementById(iframeId).style.minHeight = editorHeight;
@@ -467,6 +457,7 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
                                         function() {
                                             self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::fireResizeEvent()();
                                         });
+                        self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_initialized = true;
                     });
             ed.onClick
                     .add(function(event) {
@@ -514,6 +505,22 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
         $wnd.tinyMCE.init(defaults);
         self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::fixStyles()();
     }-*/;
+
+    /**
+     * Used to fire the value changed event from native code.<p>
+     */
+    private void fireChangeFromNative() {
+
+        if (m_initialized) {
+            Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+
+                public void execute() {
+
+                    fireValueChange(false);
+                }
+            });
+        }
+    }
 
     /**
      * Fires the resize event.<p>
