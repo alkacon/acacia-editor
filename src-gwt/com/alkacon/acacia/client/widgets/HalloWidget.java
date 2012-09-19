@@ -197,6 +197,7 @@ public class HalloWidget extends A_EditWidget {
             plugins : pluginSettings,
             editable : true,
             toolbar : 'halloToolbarFixed',
+            toolbarOffset : 5,
             cssScope : '__acacia'
         });
         editable
