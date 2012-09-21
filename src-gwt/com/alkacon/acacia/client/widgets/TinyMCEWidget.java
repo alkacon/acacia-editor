@@ -141,9 +141,9 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
     public String getValue() {
 
         if (m_editor != null) {
-            return getContent();
+            return getContent().trim();
         }
-        return getElement().getInnerHTML();
+        return getElement().getInnerHTML().trim();
     }
 
     /**
@@ -196,6 +196,9 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
      */
     public void setValue(String value, boolean fireEvents) {
 
+        if (value != null) {
+            value = value.trim();
+        }
         setPreviousValue(value);
         if (m_editor == null) {
             // editor has not been initialized yet

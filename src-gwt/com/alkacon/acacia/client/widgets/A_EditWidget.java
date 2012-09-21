@@ -67,7 +67,7 @@ public abstract class A_EditWidget extends FocusWidget implements I_EditWidget {
      */
     public String getValue() {
 
-        return getElement().getInnerText();
+        return getElement().getInnerText().trim();
     }
 
     /**

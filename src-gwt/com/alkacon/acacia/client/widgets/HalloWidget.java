@@ -80,7 +80,7 @@ public class HalloWidget extends A_EditWidget {
     @Override
     public String getValue() {
 
-        return getElement().getInnerHTML();
+        return getElement().getInnerHTML().trim();
     }
 
     /**
@@ -133,6 +133,9 @@ public class HalloWidget extends A_EditWidget {
      */
     public void setValue(String value, boolean fireEvents) {
 
+        if (value != null) {
+            value = value.trim();
+        }
         getElement().setInnerHTML(value);
         fireValueChange(false);
     }
