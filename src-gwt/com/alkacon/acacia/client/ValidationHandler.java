@@ -36,14 +36,17 @@ import java.util.Map.Entry;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.shared.EventHandler;
+import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /** 
  * Validation handler.<p>
  */
-public final class ValidationHandler implements ValueChangeHandler<I_Entity> {
+public final class ValidationHandler implements ValueChangeHandler<I_Entity>, HasValueChangeHandlers<ValidationContext> {
 
     /**
      * The validation timer.<p>
@@ -74,9 +77,6 @@ public final class ValidationHandler implements ValueChangeHandler<I_Entity> {
         }
     }
 
-    /** The handler instance. */
-    private static ValidationHandler INSTANCE;
-
     /** Flag indicating the a validation call is running. */
     boolean m_validating;
 
@@ -86,30 +86,24 @@ public final class ValidationHandler implements ValueChangeHandler<I_Entity> {
     /** The content service use for validation. */
     private I_ContentServiceAsync m_contentService;
 
+    /** The event bus. */
+    private SimpleEventBus m_eventBus;
+
     /** The forms tabbed panel. */
     private TabbedPanel<?> m_formTabPanel;
 
     /** The handler registration. */
     private HandlerRegistration m_handlerRegistration;
 
-    /**
-     * Constructor.<p>
-     */
-    private ValidationHandler() {
-
-    }
+    /** The validation context. */
+    private ValidationContext m_validationContext;
 
     /**
-     * Returns the highlighting handler instance.<p>
-     * 
-     * @return the highlighting handler instance
+     * @see com.google.gwt.event.logical.shared.HasValueChangeHandlers#addValueChangeHandler(com.google.gwt.event.logical.shared.ValueChangeHandler)
      */
-    public static ValidationHandler getInstance() {
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<ValidationContext> handler) {
 
-        if (INSTANCE == null) {
-            INSTANCE = new ValidationHandler();
-        }
-        return INSTANCE;
+        return addHandler(handler, ValueChangeEvent.getType());
     }
 
     /**
@@ -121,7 +115,14 @@ public final class ValidationHandler implements ValueChangeHandler<I_Entity> {
             m_handlerRegistration.removeHandler();
             m_handlerRegistration = null;
         }
-        INSTANCE = null;
+    }
+
+    /**
+     * @see com.google.gwt.event.shared.HasHandlers#fireEvent(com.google.gwt.event.shared.GwtEvent)
+     */
+    public void fireEvent(GwtEvent<?> event) {
+
+        ensureHandlers().fireEventFromSource(event, this);
     }
 
     /**
@@ -144,6 +145,9 @@ public final class ValidationHandler implements ValueChangeHandler<I_Entity> {
     @SuppressWarnings("unchecked")
     public void registerEntity(I_Entity entity) {
 
+        if (m_validationContext == null) {
+            m_validationContext = new ValidationContext();
+        }
         if (!(entity instanceof HasValueChangeHandlers)) {
             throw new RuntimeException("The entity does not implement the HasChangeHandlers interface.");
         }
@@ -171,6 +175,19 @@ public final class ValidationHandler implements ValueChangeHandler<I_Entity> {
     public void setFormTabPanel(TabbedPanel<?> tabPanel) {
 
         m_formTabPanel = tabPanel;
+    }
+
+    /**
+     * Adds this handler to the widget.
+     * 
+     * @param <H> the type of handler to add
+     * @param type the event type
+     * @param handler the handler
+     * @return {@link HandlerRegistration} used to remove the handler
+     */
+    protected final <H extends EventHandler> HandlerRegistration addHandler(final H handler, GwtEvent.Type<H> type) {
+
+        return ensureHandlers().addHandlerToSource(type, this, handler);
     }
 
     /**
@@ -258,7 +275,24 @@ public final class ValidationHandler implements ValueChangeHandler<I_Entity> {
                     handler.setErrorMessage(index, error.getValue(), m_formTabPanel);
                 }
             }
+            m_validationContext.addInvalidEntity(entityId);
+        } else {
+            m_validationContext.addValidEntity(entityId);
         }
+        ValueChangeEvent.fire(this, m_validationContext);
         m_validating = false;
+    }
+
+    /**
+     * Lazy initializing the handler manager.<p>
+     * 
+     * @return the handler manager
+     */
+    private SimpleEventBus ensureHandlers() {
+
+        if (m_eventBus == null) {
+            m_eventBus = new SimpleEventBus();
+        }
+        return m_eventBus;
     }
 }

@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.Dictionary;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Element;
@@ -58,53 +59,58 @@ import com.google.gwt.user.client.ui.Panel;
  * The content editor base.<p>
  */
 public class EditorBase {
-	
-	/** Message constant for key in the resource bundle. */
-	public static String GUI_CHOICE_ADD_CHOICE_0="GUI_CHOICE_ADD_CHOICE_0"; //Add choice
-	
-	/** Message constant for key in the resource bundle. */
-	public static String GUI_VIEW_ADD_0="GUI_VIEW_ADD_0"; //Add
-	
-	/** Message constant for key in the resource bundle. */
-	public static String GUI_VIEW_CLOSE_0="GUI_VIEW_CLOSE_0"; //Close
-	
-	/** Message constant for key in the resource bundle. */
-	public static String GUI_VIEW_DELETE_0="GUI_VIEW_DELETE_0"; //Delete
-	
-	/** Message constant for key in the resource bundle. */
-	public static String GUI_VIEW_MOVE_0="GUI_VIEW_MOVE_0"; //Move
+
+    /** Message constant for key in the resource bundle. */
+    public static String GUI_CHOICE_ADD_CHOICE_0 = "GUI_CHOICE_ADD_CHOICE_0"; //Add choice
+
+    /** Message constant for key in the resource bundle. */
+    public static String GUI_VIEW_ADD_0 = "GUI_VIEW_ADD_0"; //Add
+
+    /** Message constant for key in the resource bundle. */
+    public static String GUI_VIEW_CLOSE_0 = "GUI_VIEW_CLOSE_0"; //Close
+
+    /** Message constant for key in the resource bundle. */
+    public static String GUI_VIEW_DELETE_0 = "GUI_VIEW_DELETE_0"; //Delete
+
+    /** Message constant for key in the resource bundle. */
+    public static String GUI_VIEW_MOVE_0 = "GUI_VIEW_MOVE_0"; //Move
 
     /** The localized dictionary. */
     private static Dictionary m_dictionary;
 
     /**
-	 * Returns the m_dictionary.<p>
-	 *
-	 * @return the m_dictionary
-	 */
-	public static Dictionary getDictionary() {
-		return m_dictionary;
-	}
+     * Returns the m_dictionary.<p>
+     *
+     * @return the m_dictionary
+     */
+    public static Dictionary getDictionary() {
+
+        return m_dictionary;
+    }
 
     /**
-	 * Sets the m_dictionary.<p>
-	 *
-	 * @param dictionary the m_dictionary to set
-	 */
-	public static void setDictionary(Dictionary dictionary) {
-		m_dictionary = dictionary;
-	}
-    
+     * Sets the m_dictionary.<p>
+     *
+     * @param dictionary the m_dictionary to set
+     */
+    public static void setDictionary(Dictionary dictionary) {
+
+        m_dictionary = dictionary;
+    }
+
     /** The content service instance. */
     private I_ContentServiceAsync m_service;
 
     /** The VIE instance. */
     protected I_Vie m_vie;
 
-	/** The widget service. */
+    /** The widget service. */
     private WidgetService m_widgetService;
 
-	/**
+    /** The validation handler. */
+    private ValidationHandler m_validationHandler;
+
+    /**
      * Constructor.<p>
      * 
      * @param service the content service 
@@ -148,6 +154,8 @@ public class EditorBase {
                 return new HalloWidget(element, null);
             }
         });
+        m_validationHandler = new ValidationHandler();
+        m_validationHandler.setContentService(m_service);
     }
 
     /**
@@ -266,10 +274,21 @@ public class EditorBase {
             context.add(formPanel);
             AttributeHandler.setScrollElement(scrollParent);
             TabbedPanel<?> formTabs = m_widgetService.getRendererForType(type).renderForm(entity, tabInfos, formPanel);
-            ValidationHandler.getInstance().setContentService(m_service);
-            ValidationHandler.getInstance().registerEntity(entity);
-            ValidationHandler.getInstance().setFormTabPanel(formTabs);
+            m_validationHandler.registerEntity(entity);
+            m_validationHandler.setFormTabPanel(formTabs);
         }
+    }
+
+    /**
+     * Adds a validation change handler.<p>
+     * 
+     * @param handler the validation change handler
+     * 
+     * @return the handler registration
+     */
+    public HandlerRegistration addValidationChangeHandler(ValueChangeHandler<ValidationContext> handler) {
+
+        return m_validationHandler.addValueChangeHandler(handler);
     }
 
     /**
@@ -288,8 +307,8 @@ public class EditorBase {
             context.add(formPanel);
             AttributeHandler.setScrollElement(scrollParent);
             m_widgetService.getRendererForType(type).renderForm(entity, formPanel);
-            ValidationHandler.getInstance().setContentService(m_service);
-            ValidationHandler.getInstance().registerEntity(entity);
+            m_validationHandler.setContentService(m_service);
+            m_validationHandler.registerEntity(entity);
         }
     }
 
