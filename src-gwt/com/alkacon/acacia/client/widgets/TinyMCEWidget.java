@@ -202,7 +202,7 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
         setPreviousValue(value);
         if (m_editor == null) {
             // editor has not been initialized yet
-            getElement().setInnerHTML(value);
+            m_originalContent = value;
         } else {
             setContent(value);
         }
@@ -411,8 +411,7 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
         var mainElement = $wnd.document.getElementById(elementId);
         var editorHeight = self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_editorHeight
                 + "px";
-        self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_originalContent = mainElement.innerHTML;
-        self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_currentContent = mainElement.innerHTML;
+        self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_currentContent = self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_originalContent;
 
         var fireChange = function() {
             self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::fireChangeFromNative()();
@@ -452,6 +451,8 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
             ed.onLoadContent
                     .add(function() {
                         $wnd.document.getElementById(iframeId).style.minHeight = editorHeight;
+                        ed
+                                .setContent(self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_originalContent);
                         // firing resize event on resize of the editor iframe
                         ed.dom
                                 .bind(
