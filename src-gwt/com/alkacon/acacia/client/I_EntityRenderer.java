@@ -45,18 +45,27 @@ public interface I_EntityRenderer {
      * @param entity the entity to render
      * @param tabInfos the tab infos
      * @param context the context widget panel
+     * @param parentHandler the parent attribute handler
+     * @param attributeIndex the attribute index
      * 
      * @return the tabbed panel 
      */
-    public TabbedPanel<FlowPanel> renderForm(I_Entity entity, List<TabInfo> tabInfos, Panel context);
+    public TabbedPanel<FlowPanel> renderForm(
+        I_Entity entity,
+        List<TabInfo> tabInfos,
+        Panel context,
+        I_AttributeHandler parentHandler,
+        int attributeIndex);
 
     /**
      * Renders the given entity into a form.<p>
      * 
      * @param entity the entity to render
      * @param context the context widget panel
+     * @param parentHandler the parent attribute handler
+     * @param attributeIndex the attribute index
      */
-    void renderForm(I_Entity entity, Panel context);
+    void renderForm(I_Entity entity, Panel context, I_AttributeHandler parentHandler, int attributeIndex);
 
     /**
      * Injects editing widgets into the given DOM context to enable editing of the given entity.<p>

@@ -490,7 +490,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         m_isSimpleValue = false;
         FlowPanel entityPanel = new FlowPanel();
         m_widgetHolder.add(entityPanel);
-        renderer.renderForm(value, entityPanel);
+        renderer.renderForm(value, entityPanel, m_handler, getValueIndex());
         removeStyleName(I_LayoutBundle.INSTANCE.form().emptyValue());
     }
 

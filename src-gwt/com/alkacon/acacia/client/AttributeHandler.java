@@ -37,9 +37,7 @@ import com.alkacon.vie.shared.I_EntityAttribute;
 import com.alkacon.vie.shared.I_Type;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Element;
@@ -49,10 +47,7 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * The attribute handler. Handles value changes, addition of new values, remove and move operations on values.<p> 
  */
-public class AttributeHandler {
-
-    /** Map of all attribute handlers. */
-    private static final Map<String, AttributeHandler> m_attributeHandlers = new HashMap<String, AttributeHandler>();
+public class AttributeHandler extends RootHandler {
 
     /** The global widget resize handler. */
     private static ResizeHandler m_resizeHandler;
@@ -99,19 +94,14 @@ public class AttributeHandler {
         m_attributeName = attributeName;
         m_widgetService = widgetService;
         m_attributeValueViews = new ArrayList<AttributeValueView>();
-        m_attributeHandlers.put(attributeName, this);
-    }
-
-    /**
-     * Clears the attribute handler registry and resets the global resize handler.<p>
-     */
-    public static void clearAttributeHandlers() {
-
-        for (AttributeHandler handler : m_attributeHandlers.values()) {
-            handler.destroy();
+        if (!getAttributeType().isSimpleType()) {
+            int count = 0;
+            I_EntityAttribute attribute = entity.getAttribute(attributeName);
+            if (attribute != null) {
+                count = attribute.getValueCount();
+            }
+            initHandlers(count);
         }
-        m_attributeHandlers.clear();
-        m_resizeHandler = null;
     }
 
     /**
@@ -127,18 +117,6 @@ public class AttributeHandler {
             tab.getParent().removeStyleName(I_LayoutBundle.INSTANCE.form().hasError());
             tab.getParent().removeStyleName(I_LayoutBundle.INSTANCE.form().hasWarning());
         }
-    }
-
-    /**
-     * Returns the attribute handler for the given attribute name.<p>
-     * 
-     * @param attributeName the attribute name
-     * 
-     * @return the attribute handler
-     */
-    public static AttributeHandler getAttributeHandler(String attributeName) {
-
-        return m_attributeHandlers.get(attributeName);
     }
 
     /**
@@ -304,6 +282,19 @@ public class AttributeHandler {
     }
 
     /**
+     * Returns the attribute type.<p>
+     * 
+     * @return the attribute type
+     */
+    public I_Type getAttributeType() {
+
+        if (m_attributeType == null) {
+            m_attributeType = getEntityType().getAttributeType(m_attributeName);
+        }
+        return m_attributeType;
+    }
+
+    /**
      * Returns the drag and drop handler.<p>
      * 
      * @return the drag and drop handler
@@ -317,6 +308,16 @@ public class AttributeHandler {
             m_dndHandler.setScrollElement(m_scrollElement);
         }
         return m_dndHandler;
+    }
+
+    /**
+     * Returns if this is a choice handler.<p>
+     * 
+     * @return <code>true</code> if this is a choice handler
+     */
+    public boolean isChoiceHandler() {
+
+        return Type.CHOICE_ATTRIBUTE_NAME.equals(m_attributeName);
     }
 
     /**
@@ -337,6 +338,7 @@ public class AttributeHandler {
         m_attributeValueViews.remove(valueView);
         AttributeValueView valueWidget = null;
         if (isChoiceHandler()) {
+            removeHandlers(currentPosition);
             I_Entity value = m_entity.getAttribute(m_attributeName).getComplexValues().get(currentPosition);
             m_entity.removeAttributeValue(m_attributeName, currentPosition);
             m_entity.insertAttributeValue(m_attributeName, value, targetPosition);
@@ -347,6 +349,7 @@ public class AttributeHandler {
                 m_widgetService.getAttributeLabel(attributeChoice),
                 m_widgetService.getAttributeHelp(attributeChoice));
             parent.insert(valueWidget, targetPosition);
+            insertHandlers(targetPosition);
             if (optionType.isSimpleType()) {
                 valueWidget.setValueWidget(
                     m_widgetService.getAttributeFormWidget(attributeChoice),
@@ -374,6 +377,7 @@ public class AttributeHandler {
             parent.insert(valueWidget, targetPosition);
             valueWidget.setValueWidget(m_widgetService.getAttributeFormWidget(m_attributeName), value, true);
         } else {
+            removeHandlers(currentPosition);
             I_Entity value = m_entity.getAttribute(m_attributeName).getComplexValues().get(currentPosition);
             m_entity.removeAttributeValue(m_attributeName, currentPosition);
             m_entity.insertAttributeValue(m_attributeName, value, targetPosition);
@@ -382,6 +386,7 @@ public class AttributeHandler {
                 m_widgetService.getAttributeLabel(m_attributeName),
                 m_widgetService.getAttributeHelp(m_attributeName));
             parent.insert(valueWidget, targetPosition);
+            insertHandlers(targetPosition);
             valueWidget.setValueEntity(
                 m_widgetService.getRendererForAttribute(m_attributeName, getAttributeType()),
                 value);
@@ -445,12 +450,18 @@ public class AttributeHandler {
                     m_widgetService.getAttributeFormWidget(m_attributeName),
                     m_widgetService.getDefaultAttributeValue(m_attributeName),
                     false);
+            } else {
+                removeHandlers(0);
             }
         } else {
             int index = reference.getValueIndex();
+            if (attribute.isComplexValue()) {
+                removeHandlers(index);
+            }
             m_entity.removeAttributeValue(m_attributeName, index);
             reference.removeFromParent();
             m_attributeValueViews.remove(reference);
+
         }
         updateButtonVisisbility();
     }
@@ -567,6 +578,7 @@ public class AttributeHandler {
             ((FlowPanel)reference.getParent()).add(valueWidget);
 
         }
+        insertHandlers(valueWidget.getValueIndex());
         if (optionType.isSimpleType()) {
             String value = m_widgetService.getDefaultAttributeValue(attributeChoice);
             I_FormEditWidget widget = m_widgetService.getAttributeFormWidget(attributeChoice);
@@ -578,19 +590,6 @@ public class AttributeHandler {
             I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(attributeChoice, optionType);
             valueWidget.setValueEntity(renderer, value);
         }
-    }
-
-    /**
-     * Returns the attribute type.<p>
-     * 
-     * @return the attribute type
-     */
-    private I_Type getAttributeType() {
-
-        if (m_attributeType == null) {
-            m_attributeType = getEntityType().getAttributeType(m_attributeName);
-        }
-        return m_attributeType;
     }
 
     /**
@@ -656,17 +655,9 @@ public class AttributeHandler {
                 ((FlowPanel)reference.getParent()).insert(valueWidget, valueIndex);
             }
         }
+        valueIndex = valueWidget.getValueIndex();
+        insertHandlers(valueIndex);
         I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(m_attributeName, getAttributeType());
         valueWidget.setValueEntity(renderer, value);
-    }
-
-    /**
-     * Returns if this is a choice handler.<p>
-     * 
-     * @return <code>true</code> if this is a choice handler
-     */
-    private boolean isChoiceHandler() {
-
-        return Type.CHOICE_ATTRIBUTE_NAME.equals(m_attributeName);
     }
 }

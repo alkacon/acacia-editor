@@ -200,13 +200,18 @@ public class Renderer implements I_EntityRenderer {
     }
 
     /**
-     * @see com.alkacon.acacia.client.I_EntityRenderer#renderForm(com.alkacon.vie.shared.I_Entity, java.util.List, com.google.gwt.user.client.ui.Panel)
+     * @see com.alkacon.acacia.client.I_EntityRenderer#renderForm(com.alkacon.vie.shared.I_Entity, java.util.List, com.google.gwt.user.client.ui.Panel, com.alkacon.acacia.client.I_AttributeHandler, int)
      */
     @SuppressWarnings("unchecked")
-    public TabbedPanel<FlowPanel> renderForm(I_Entity entity, List<TabInfo> tabInfos, Panel context) {
+    public TabbedPanel<FlowPanel> renderForm(
+        I_Entity entity,
+        List<TabInfo> tabInfos,
+        Panel context,
+        I_AttributeHandler parentHandler,
+        int attributeIndex) {
 
         if ((tabInfos == null) || (tabInfos.size() < 2)) {
-            renderForm(entity, context);
+            renderForm(entity, context, parentHandler, attributeIndex);
             return null;
         } else {
 
@@ -266,6 +271,7 @@ public class Renderer implements I_EntityRenderer {
                     }
                 }
                 AttributeHandler handler = new AttributeHandler(m_vie, entity, attributeName, m_widgetService);
+                parentHandler.setHandler(attributeIndex, attributeName, handler);
                 I_Type attributeType = entityType.getAttributeType(attributeName);
                 I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(attributeName, attributeType);
                 int minOccurrence = entityType.getAttributeMinOccurrence(attributeName);
@@ -276,7 +282,7 @@ public class Renderer implements I_EntityRenderer {
                     && !attributeType.isSimpleType()
                     && (minOccurrence == 1)
                     && (entityType.getAttributeMaxOccurrence(attributeName) == 1)) {
-                    renderer.renderForm(attribute.getComplexValue(), tabPanel);
+                    renderer.renderForm(attribute.getComplexValue(), tabPanel, handler, 0);
                 } else {
                     String label = m_widgetService.getAttributeLabel(attributeName);
                     String help = m_widgetService.getAttributeHelp(attributeName);
@@ -321,9 +327,9 @@ public class Renderer implements I_EntityRenderer {
     }
 
     /**
-     * @see com.alkacon.acacia.client.I_EntityRenderer#renderForm(com.alkacon.vie.shared.I_Entity, com.google.gwt.user.client.ui.Panel)
+     * @see com.alkacon.acacia.client.I_EntityRenderer#renderForm(com.alkacon.vie.shared.I_Entity, com.google.gwt.user.client.ui.Panel, com.alkacon.acacia.client.I_AttributeHandler, int)
      */
-    public void renderForm(I_Entity entity, Panel context) {
+    public void renderForm(I_Entity entity, Panel context, I_AttributeHandler parentHandler, int attributeIndex) {
 
         context.addStyleName(ENTITY_CLASS);
         context.getElement().setAttribute("typeof", entity.getTypeName());
@@ -333,6 +339,7 @@ public class Renderer implements I_EntityRenderer {
             I_EntityAttribute attribute = entity.getAttribute(Type.CHOICE_ATTRIBUTE_NAME);
             assert (attribute != null) && attribute.isComplexValue() : "a choice type must have a choice attribute";
             AttributeHandler handler = new AttributeHandler(m_vie, entity, Type.CHOICE_ATTRIBUTE_NAME, m_widgetService);
+            parentHandler.setHandler(attributeIndex, Type.CHOICE_ATTRIBUTE_NAME, handler);
             ValuePanel attributeElement = new ValuePanel();
             for (I_Entity choiceEntity : attribute.getComplexValues()) {
                 I_Type choiceType = m_vie.getType(choiceEntity.getTypeName());
@@ -374,6 +381,7 @@ public class Renderer implements I_EntityRenderer {
                 ValuePanel attributeElement = new ValuePanel();
                 context.add(attributeElement);
                 AttributeHandler handler = new AttributeHandler(m_vie, entity, attributeName, m_widgetService);
+                parentHandler.setHandler(attributeIndex, attributeName, handler);
                 if (attribute != null) {
                     for (int i = 0; i < attribute.getValueCount(); i++) {
                         AttributeValueView valueWidget = new AttributeValueView(handler, label, help);
@@ -533,18 +541,6 @@ public class Renderer implements I_EntityRenderer {
             result = parentEntity.getAttribute(attributeName);
         }
         return result;
-    }
-
-    /**
-     * Re-renders the given entity.<p>
-     * 
-     * @param entity the entity
-     * @param context the context DOM element
-     */
-    protected void rerenderForm(final I_Entity entity, final Panel context) {
-
-        context.clear();
-        renderForm(entity, context);
     }
 
     /**

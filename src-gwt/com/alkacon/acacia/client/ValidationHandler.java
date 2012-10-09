@@ -95,6 +95,9 @@ public final class ValidationHandler implements ValueChangeHandler<I_Entity>, Ha
     /** The handler registration. */
     private HandlerRegistration m_handlerRegistration;
 
+    /** The root attribute handler. */
+    private RootHandler m_rootHandler;
+
     /** The validation context. */
     private ValidationContext m_validationContext;
 
@@ -178,6 +181,16 @@ public final class ValidationHandler implements ValueChangeHandler<I_Entity>, Ha
     }
 
     /**
+     * Sets the root attribute handler.<p>
+     * 
+     * @param rootHandler the root attribute handler
+     */
+    public void setRootHandler(RootHandler rootHandler) {
+
+        m_rootHandler = rootHandler;
+    }
+
+    /**
      * Adds this handler to the widget.
      * 
      * @param <H> the type of handler to add
@@ -229,50 +242,26 @@ public final class ValidationHandler implements ValueChangeHandler<I_Entity>, Ha
             AttributeHandler.clearErrorStyles(m_formTabPanel);
         }
         if (validationResult.hasWarnings(entityId)) {
-            for (Entry<String, String> warning : validationResult.getWarnings(entityId).entrySet()) {
-                String attributeName = warning.getKey();
+            for (Entry<String[], String> warning : validationResult.getWarnings(entityId).entrySet()) {
+                String[] pathElements = warning.getKey();
                 // check if there are no errors for this attribute
                 if (!validationResult.hasErrors(entityId)
-                    || !validationResult.getErrors(entityId).containsKey(attributeName)) {
-                    int index = 0;
-                    // check if the value index is appended to the attribute name
-                    if (attributeName.endsWith("]") && attributeName.contains("[")) {
-                        try {
-                            String temp = attributeName.substring(
-                                attributeName.lastIndexOf("[") + 1,
-                                attributeName.length() - 1);
-                            attributeName = attributeName.substring(0, attributeName.lastIndexOf("["));
-                            index = Integer.parseInt(temp);
-                        } catch (NumberFormatException e) {
-                            // ignore
-                        }
-                    }
-                    AttributeHandler handler = AttributeHandler.getAttributeHandler(attributeName);
+                    || !validationResult.getErrors(entityId).containsKey(pathElements)) {
+                    AttributeHandler handler = m_rootHandler.getHandlerByPath(pathElements);
                     if (handler != null) {
-                        handler.setWarningMessage(index, warning.getValue(), m_formTabPanel);
+                        String attributeName = pathElements[pathElements.length - 1];
+                        handler.setWarningMessage(getIndexFromName(attributeName), warning.getValue(), m_formTabPanel);
                     }
                 }
             }
         }
         if (validationResult.hasErrors(entityId)) {
-            for (Entry<String, String> error : validationResult.getErrors(entityId).entrySet()) {
-                String attributeName = error.getKey();
-                int index = 0;
-                // check if the value index is appended to the attribute name
-                if (attributeName.endsWith("]") && attributeName.contains("[")) {
-                    try {
-                        String temp = attributeName.substring(
-                            attributeName.lastIndexOf("[") + 1,
-                            attributeName.length() - 1);
-                        attributeName = attributeName.substring(0, attributeName.lastIndexOf("["));
-                        index = Integer.parseInt(temp);
-                    } catch (NumberFormatException e) {
-                        // ignore
-                    }
-                }
-                AttributeHandler handler = AttributeHandler.getAttributeHandler(attributeName);
+            for (Entry<String[], String> error : validationResult.getErrors(entityId).entrySet()) {
+                String[] pathElements = error.getKey();
+                AttributeHandler handler = m_rootHandler.getHandlerByPath(pathElements);
                 if (handler != null) {
-                    handler.setErrorMessage(index, error.getValue(), m_formTabPanel);
+                    String attributeName = pathElements[pathElements.length - 1];
+                    handler.setErrorMessage(getIndexFromName(attributeName), error.getValue(), m_formTabPanel);
                 }
             }
             m_validationContext.addInvalidEntity(entityId);
@@ -294,5 +283,28 @@ public final class ValidationHandler implements ValueChangeHandler<I_Entity>, Ha
             m_eventBus = new SimpleEventBus();
         }
         return m_eventBus;
+    }
+
+    /**
+     * Parses the value index from the given attribute name.<p>
+     * 
+     * @param attributeName the attribute name
+     * 
+     * @return the value index
+     */
+    private int getIndexFromName(String attributeName) {
+
+        int index = 0;
+        // check if the value index is appended to the attribute name
+        if (attributeName.endsWith("]") && attributeName.contains("[")) {
+            try {
+                String temp = attributeName.substring(attributeName.lastIndexOf("[") + 1, attributeName.length() - 1);
+                attributeName = attributeName.substring(0, attributeName.lastIndexOf("["));
+                index = Integer.parseInt(temp);
+            } catch (NumberFormatException e) {
+                // ignore
+            }
+        }
+        return index;
     }
 }

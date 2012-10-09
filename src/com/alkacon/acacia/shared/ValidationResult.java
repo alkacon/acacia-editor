@@ -34,10 +34,10 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class ValidationResult implements IsSerializable {
 
     /** The error messages by entity and attribute. */
-    private Map<String, Map<String, String>> m_errors;
+    private Map<String, Map<String[], String>> m_errors;
 
     /** The warning messages by entity and attribute. */
-    private Map<String, Map<String, String>> m_warnings;
+    private Map<String, Map<String[], String>> m_warnings;
 
     /**
      * Constructor.<p>
@@ -45,7 +45,7 @@ public class ValidationResult implements IsSerializable {
      * @param errors the error messages by entity and attribute
      * @param warnings the warning messages by entity and attribute
      */
-    public ValidationResult(Map<String, Map<String, String>> errors, Map<String, Map<String, String>> warnings) {
+    public ValidationResult(Map<String, Map<String[], String>> errors, Map<String, Map<String[], String>> warnings) {
 
         m_errors = errors;
         m_warnings = warnings;
@@ -64,7 +64,7 @@ public class ValidationResult implements IsSerializable {
      * 
      * @return the error messages by entity id and attribute
      */
-    public Map<String, Map<String, String>> getErrors() {
+    public Map<String, Map<String[], String>> getErrors() {
 
         return m_errors;
     }
@@ -76,7 +76,7 @@ public class ValidationResult implements IsSerializable {
      * 
      * @return the error messages for the given entity
      */
-    public Map<String, String> getErrors(String entityId) {
+    public Map<String[], String> getErrors(String entityId) {
 
         return m_errors != null ? m_errors.get(entityId) : null;
     }
@@ -86,7 +86,7 @@ public class ValidationResult implements IsSerializable {
      * 
      * @return the warning messages by entity id and attribute
      */
-    public Map<String, Map<String, String>> getWarnings() {
+    public Map<String, Map<String[], String>> getWarnings() {
 
         return m_warnings;
     }
@@ -98,7 +98,7 @@ public class ValidationResult implements IsSerializable {
      * 
      * @return the warning messages for the given entity
      */
-    public Map<String, String> getWarnings(String entityId) {
+    public Map<String[], String> getWarnings(String entityId) {
 
         return m_warnings != null ? m_warnings.get(entityId) : null;
     }

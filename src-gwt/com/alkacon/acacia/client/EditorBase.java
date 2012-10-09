@@ -78,37 +78,17 @@ public class EditorBase {
     /** The localized dictionary. */
     private static Dictionary m_dictionary;
 
-    /**
-     * Returns the m_dictionary.<p>
-     *
-     * @return the m_dictionary
-     */
-    public static Dictionary getDictionary() {
-
-        return m_dictionary;
-    }
-
-    /**
-     * Sets the m_dictionary.<p>
-     *
-     * @param dictionary the m_dictionary to set
-     */
-    public static void setDictionary(Dictionary dictionary) {
-
-        m_dictionary = dictionary;
-    }
+    /** The VIE instance. */
+    protected I_Vie m_vie;
 
     /** The content service instance. */
     private I_ContentServiceAsync m_service;
 
-    /** The VIE instance. */
-    protected I_Vie m_vie;
+    /** The validation handler. */
+    private ValidationHandler m_validationHandler;
 
     /** The widget service. */
     private WidgetService m_widgetService;
-
-    /** The validation handler. */
-    private ValidationHandler m_validationHandler;
 
     /**
      * Constructor.<p>
@@ -159,6 +139,26 @@ public class EditorBase {
     }
 
     /**
+     * Returns the m_dictionary.<p>
+     *
+     * @return the m_dictionary
+     */
+    public static Dictionary getDictionary() {
+
+        return m_dictionary;
+    }
+
+    /**
+     * Sets the m_dictionary.<p>
+     *
+     * @param dictionary the m_dictionary to set
+     */
+    public static void setDictionary(Dictionary dictionary) {
+
+        m_dictionary = dictionary;
+    }
+
+    /**
      * Adds the value change handler to the entity with the given id.<p>
      * 
      * @param entityId the entity id
@@ -173,6 +173,18 @@ public class EditorBase {
     }
 
     /**
+     * Adds a validation change handler.<p>
+     * 
+     * @param handler the validation change handler
+     * 
+     * @return the handler registration
+     */
+    public HandlerRegistration addValidationChangeHandler(ValueChangeHandler<ValidationContext> handler) {
+
+        return m_validationHandler.addValueChangeHandler(handler);
+    }
+
+    /**
      * Destroys the form and related resources. Also clears all entities from VIE<p>
      * 
      * @param clearEntities <code>true</code> to also clear all entities
@@ -180,7 +192,6 @@ public class EditorBase {
     public void destroyFrom(boolean clearEntities) {
 
         HighlightingHandler.getInstance().destroy();
-        AttributeHandler.clearAttributeHandlers();
         if (clearEntities) {
             m_vie.clearEntities();
         }
@@ -194,16 +205,6 @@ public class EditorBase {
     public I_ContentServiceAsync getService() {
 
         return m_service;
-    }
-
-    /**
-     * Returns the widget service.<p>
-     * 
-     * @return the widget service
-     */
-    protected I_WidgetService getWidgetService() {
-
-        return m_widgetService;
     }
 
     /**
@@ -228,18 +229,6 @@ public class EditorBase {
             }
         };
         getService().loadContentDefinition(entityId, asyncCallback);
-    }
-
-    /**
-     * Handles RPC errors.<p>
-     * 
-     * Override this for better error handling
-     * 
-     * @param caught the error caught from the RPC
-     */
-    protected void onRpcError(Throwable caught) {
-
-        // doing nothing
     }
 
     /**
@@ -273,22 +262,17 @@ public class EditorBase {
             FlowPanel formPanel = new FlowPanel();
             context.add(formPanel);
             AttributeHandler.setScrollElement(scrollParent);
-            TabbedPanel<?> formTabs = m_widgetService.getRendererForType(type).renderForm(entity, tabInfos, formPanel);
+            RootHandler rootHandler = new RootHandler();
+            TabbedPanel<?> formTabs = m_widgetService.getRendererForType(type).renderForm(
+                entity,
+                tabInfos,
+                formPanel,
+                rootHandler,
+                0);
             m_validationHandler.registerEntity(entity);
+            m_validationHandler.setRootHandler(rootHandler);
             m_validationHandler.setFormTabPanel(formTabs);
         }
-    }
-
-    /**
-     * Adds a validation change handler.<p>
-     * 
-     * @param handler the validation change handler
-     * 
-     * @return the handler registration
-     */
-    public HandlerRegistration addValidationChangeHandler(ValueChangeHandler<ValidationContext> handler) {
-
-        return m_validationHandler.addValueChangeHandler(handler);
     }
 
     /**
@@ -306,9 +290,11 @@ public class EditorBase {
             FlowPanel formPanel = new FlowPanel();
             context.add(formPanel);
             AttributeHandler.setScrollElement(scrollParent);
-            m_widgetService.getRendererForType(type).renderForm(entity, formPanel);
+            RootHandler rootHandler = new RootHandler();
+            m_widgetService.getRendererForType(type).renderForm(entity, formPanel, rootHandler, 0);
             m_validationHandler.setContentService(m_service);
             m_validationHandler.registerEntity(entity);
+            m_validationHandler.setRootHandler(rootHandler);
         }
     }
 
@@ -444,5 +430,27 @@ public class EditorBase {
 
         I_Entity entity = m_vie.getEntity(entityId);
         saveEntity(entity, false, callback);
+    }
+
+    /**
+     * Returns the widget service.<p>
+     * 
+     * @return the widget service
+     */
+    protected I_WidgetService getWidgetService() {
+
+        return m_widgetService;
+    }
+
+    /**
+     * Handles RPC errors.<p>
+     * 
+     * Override this for better error handling
+     * 
+     * @param caught the error caught from the RPC
+     */
+    protected void onRpcError(Throwable caught) {
+
+        // doing nothing
     }
 }

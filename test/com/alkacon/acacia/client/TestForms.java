@@ -82,7 +82,7 @@ public class TestForms extends GWTTestCase {
         I_EntityRenderer renderer = service.getRendererForType(complex);
         FlowPanel context = new FlowPanel();
         RootPanel.get().add(context);
-        renderer.renderForm(entity, context);
+        renderer.renderForm(entity, context, new RootHandler(), 0);
         assertEquals(
             "The forms inner HTML should match the exspected.",
             "<div typeof=\"cms:complex\" about=\"myEntity\" class=\"entity\"><div title=\"\" class=\"label\">http:opencms/simpleAttribute</div><div class=\"widgetHolder\"><div style=\"color: red;\" contenteditable=\"true\" property=\"http:opencms/simpleAttribute\">my attribute value</div></div></div>",
