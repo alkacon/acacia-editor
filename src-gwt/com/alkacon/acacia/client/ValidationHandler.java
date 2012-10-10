@@ -121,6 +121,48 @@ public final class ValidationHandler implements ValueChangeHandler<I_Entity>, Ha
     }
 
     /**
+     * Displays the given error messages within the form.<p>
+     * 
+     * @param entityId the entity id
+     * @param validationResult the validationResult
+     */
+    public void displayValidation(String entityId, ValidationResult validationResult) {
+
+        if (m_formTabPanel != null) {
+            AttributeHandler.clearErrorStyles(m_formTabPanel);
+        }
+        if (validationResult.hasWarnings(entityId)) {
+            for (Entry<String[], String> warning : validationResult.getWarnings(entityId).entrySet()) {
+                String[] pathElements = warning.getKey();
+                // check if there are no errors for this attribute
+                if (!validationResult.hasErrors(entityId)
+                    || !validationResult.getErrors(entityId).containsKey(pathElements)) {
+                    AttributeHandler handler = m_rootHandler.getHandlerByPath(pathElements);
+                    if (handler != null) {
+                        String attributeName = pathElements[pathElements.length - 1];
+                        handler.setWarningMessage(getIndexFromName(attributeName), warning.getValue(), m_formTabPanel);
+                    }
+                }
+            }
+        }
+        if (validationResult.hasErrors(entityId)) {
+            for (Entry<String[], String> error : validationResult.getErrors(entityId).entrySet()) {
+                String[] pathElements = error.getKey();
+                AttributeHandler handler = m_rootHandler.getHandlerByPath(pathElements);
+                if (handler != null) {
+                    String attributeName = pathElements[pathElements.length - 1];
+                    handler.setErrorMessage(getIndexFromName(attributeName), error.getValue(), m_formTabPanel);
+                }
+            }
+            m_validationContext.addInvalidEntity(entityId);
+        } else {
+            m_validationContext.addValidEntity(entityId);
+        }
+        ValueChangeEvent.fire(this, m_validationContext);
+        m_validating = false;
+    }
+
+    /**
      * @see com.google.gwt.event.shared.HasHandlers#fireEvent(com.google.gwt.event.shared.GwtEvent)
      */
     public void fireEvent(GwtEvent<?> event) {
@@ -228,48 +270,6 @@ public final class ValidationHandler implements ValueChangeHandler<I_Entity>, Ha
                     }
                 });
         }
-    }
-
-    /**
-     * Displays the given error messages within the form.<p>
-     * 
-     * @param entityId the entity id
-     * @param validationResult the validationResult
-     */
-    void displayValidation(String entityId, ValidationResult validationResult) {
-
-        if (m_formTabPanel != null) {
-            AttributeHandler.clearErrorStyles(m_formTabPanel);
-        }
-        if (validationResult.hasWarnings(entityId)) {
-            for (Entry<String[], String> warning : validationResult.getWarnings(entityId).entrySet()) {
-                String[] pathElements = warning.getKey();
-                // check if there are no errors for this attribute
-                if (!validationResult.hasErrors(entityId)
-                    || !validationResult.getErrors(entityId).containsKey(pathElements)) {
-                    AttributeHandler handler = m_rootHandler.getHandlerByPath(pathElements);
-                    if (handler != null) {
-                        String attributeName = pathElements[pathElements.length - 1];
-                        handler.setWarningMessage(getIndexFromName(attributeName), warning.getValue(), m_formTabPanel);
-                    }
-                }
-            }
-        }
-        if (validationResult.hasErrors(entityId)) {
-            for (Entry<String[], String> error : validationResult.getErrors(entityId).entrySet()) {
-                String[] pathElements = error.getKey();
-                AttributeHandler handler = m_rootHandler.getHandlerByPath(pathElements);
-                if (handler != null) {
-                    String attributeName = pathElements[pathElements.length - 1];
-                    handler.setErrorMessage(getIndexFromName(attributeName), error.getValue(), m_formTabPanel);
-                }
-            }
-            m_validationContext.addInvalidEntity(entityId);
-        } else {
-            m_validationContext.addValidEntity(entityId);
-        }
-        ValueChangeEvent.fire(this, m_validationContext);
-        m_validating = false;
     }
 
     /**

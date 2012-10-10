@@ -433,6 +433,16 @@ public class EditorBase {
     }
 
     /**
+     * Returns the validation handler.<p>
+     * 
+     * @return the validation handler
+     */
+    protected ValidationHandler getValidationHandler() {
+
+        return m_validationHandler;
+    }
+
+    /**
      * Returns the widget service.<p>
      * 
      * @return the widget service
