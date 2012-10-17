@@ -224,7 +224,7 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 }
 
 /** Help bubble styles. */
-.helpBubble{
+div.helpBubble{
 	position: absolute;
 	background: #FFFFCC;
 	color: #222222;
@@ -241,7 +241,7 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 	display: block;
 	margin-top: 3px;
 }
-.hasError .helpBubble{
+.hasError div.helpBubble{
 	background-color: #ffcccc;
 }
 
@@ -293,6 +293,10 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 	position: absolute;
 	top: 2px;
 	right: 2px;
+}
+
+.hasError .helpBubble .helpBubbleClose{
+	display: none;
 }
 
 @sprite .helpBubbleArrow{
