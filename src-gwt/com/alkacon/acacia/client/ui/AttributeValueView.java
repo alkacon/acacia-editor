@@ -187,6 +187,9 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     /** The activation mouse down handler registration. */
     private HandlerRegistration m_activationHandlerRegistration;
 
+    /** The default widget value. */
+    private String m_defaultValue;
+
     /** Drag and drop helper element. */
     private Element m_dragHelper;
 
@@ -514,7 +517,9 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         }
         m_widgetHolder.clear();
         m_widget.setWidgetInfo(m_label, m_help);
-        m_widget.setValue(value, false);
+        if (active) {
+            m_widget.setValue(value, false);
+        }
         m_widget.asWidget().addStyleName(I_LayoutBundle.INSTANCE.form().widget());
         m_widgetHolder.add(m_widget);
         m_widget.setName(getHandler().getAttributeName());
@@ -528,6 +533,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         });
         m_widget.setActive(active);
         if (!active) {
+            m_defaultValue = value;
             addActivationHandler();
         } else {
             removeStyleName(I_LayoutBundle.INSTANCE.form().emptyValue());
@@ -679,6 +685,9 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         }
         if ((m_widget != null) && !m_widget.isActive()) {
             m_widget.setActive(true);
+            if (m_defaultValue != null) {
+                m_widget.setValue(m_defaultValue, true);
+            }
             m_handler.updateButtonVisisbility();
             removeStyleName(I_LayoutBundle.INSTANCE.form().emptyValue());
         }
@@ -697,6 +706,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
                     // only act on click if not inside the button bar
                     if (!DomUtil.checkPositionInside(m_buttonBar.getElement(), event.getClientX(), event.getClientY())) {
                         activateWidget();
+
                     }
                 }
             });
