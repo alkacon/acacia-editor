@@ -440,6 +440,10 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
             theme_advanced_resizing_use_cookie : false
         };
         var options = this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_options;
+        if (options != null && options.editorHeight) {
+            editorHeight = options.editorHeight + "px";
+            delete options.editorHeight;
+        }
         // extend the defaults with any given options
         if (options != null) {
             var vie = @com.alkacon.vie.client.Vie::getInstance()();
