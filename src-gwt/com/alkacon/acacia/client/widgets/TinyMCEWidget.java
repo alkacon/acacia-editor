@@ -43,6 +43,7 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Timer;
 
 /**
  * This class is used to start TinyMCE for editing the content of an element.<p>
@@ -75,6 +76,9 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
 
     /** The editor height to set. */
     int m_editorHeight;
+
+    /** The fire change event timer to trigger the change event from native code. */
+    private Timer m_fireChangeTimer;
 
     /** Flag indicating the editor has been initialized. */
     private boolean m_initialized;
@@ -459,9 +463,10 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
                                         function() {
                                             self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::fireResizeEvent()();
                                         });
-                        self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_initialized = true;
+
                         ed
                                 .setContent(self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_originalContent);
+                        self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_initialized = true;
 
                     });
             ed.onClick
@@ -517,13 +522,20 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
     private void fireChangeFromNative() {
 
         if (m_initialized) {
-            Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+            if (m_fireChangeTimer != null) {
+                m_fireChangeTimer.cancel();
+            }
 
-                public void execute() {
+            m_fireChangeTimer = new Timer() {
+
+                @Override
+                public void run() {
 
                     fireValueChange(false);
+
                 }
-            });
+            };
+            m_fireChangeTimer.schedule(300);
         }
     }
 
