@@ -43,7 +43,6 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Timer;
 
 /**
  * This class is used to start TinyMCE for editing the content of an element.<p>
@@ -76,9 +75,6 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
 
     /** The editor height to set. */
     int m_editorHeight;
-
-    /** The fire change event timer to trigger the change event from native code. */
-    private Timer m_fireChangeTimer;
 
     /** Flag indicating the editor has been initialized. */
     private boolean m_initialized;
@@ -526,20 +522,17 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
     private void fireChangeFromNative() {
 
         if (m_initialized) {
-            if (m_fireChangeTimer != null) {
-                m_fireChangeTimer.cancel();
-            }
+            Scheduler.get().scheduleDeferred(new ScheduledCommand() {
 
-            m_fireChangeTimer = new Timer() {
+                public void execute() {
 
-                @Override
-                public void run() {
-
-                    fireValueChange(false);
-
+                    try {
+                        fireValueChange(false);
+                    } catch (Throwable t) {
+                        // this may happen when returning from full screen mode, nothing to be done
+                    }
                 }
-            };
-            m_fireChangeTimer.schedule(300);
+            });
         }
     }
 
