@@ -60,6 +60,9 @@ import com.google.gwt.user.client.ui.Panel;
  */
 public class EditorBase {
 
+    /** Id for the form panel. */
+    public static final String ACACIA_FORM_PANEL_ID = "acaciaFormPanel";
+
     /** Message constant for key in the resource bundle. */
     public static String GUI_CHOICE_ADD_CHOICE_0 = "GUI_CHOICE_ADD_CHOICE_0"; //Add choice
 
@@ -259,7 +262,7 @@ public class EditorBase {
         I_Entity entity = m_vie.getEntity(entityId);
         if (entity != null) {
             I_Type type = m_vie.getType(entity.getTypeName());
-            FlowPanel formPanel = new FlowPanel();
+            Panel formPanel = createFormPanel();
             context.add(formPanel);
             AttributeHandler.setScrollElement(scrollParent);
             RootHandler rootHandler = new RootHandler();
@@ -287,7 +290,7 @@ public class EditorBase {
         I_Entity entity = m_vie.getEntity(entityId);
         if (entity != null) {
             I_Type type = m_vie.getType(entity.getTypeName());
-            FlowPanel formPanel = new FlowPanel();
+            Panel formPanel = createFormPanel();
             context.add(formPanel);
             AttributeHandler.setScrollElement(scrollParent);
             RootHandler rootHandler = new RootHandler();
@@ -430,6 +433,18 @@ public class EditorBase {
 
         I_Entity entity = m_vie.getEntity(entityId);
         saveEntity(entity, false, callback);
+    }
+
+    /**
+     * Creates the panel for the form.<p>
+     * 
+     * @return the newly created panel
+     */
+    protected Panel createFormPanel() {
+
+        FlowPanel result = new FlowPanel();
+        result.getElement().setId(ACACIA_FORM_PANEL_ID);
+        return result;
     }
 
     /**

@@ -1,4 +1,4 @@
-.attributeChoice{
+#acaciaFormPanel .attributeChoice{
 	border: 1px solid transparent;
 	border-radius: 4px;
 	padding: 1px;
@@ -7,7 +7,7 @@
 	position: relative;
 }
 
-.hovering.attributeChoice{
+#acaciaFormPanel .hovering.attributeChoice{
 	border-color: #7788AA;
 	margin-bottom: -4px;
 	background: white;
@@ -16,18 +16,18 @@
 	background: white;
 }
 
-@sprite .buttonIcon{
+@sprite #acaciaFormPanel .buttonIcon{
 	gwt-image: "gwtImages.icons.addIconDeactivated";
 	display: block;
 	height: 20px;
 	width: 20px;
 	cursor: pointer;
 }
-@sprite .hovering .buttonIcon{
+@sprite #acaciaFormPanel .hovering .buttonIcon{
 	gwt-image: "gwtImages.icons.addIconActive";
 }
 
-.frame{
+#acaciaFormPanel .frame{
 	display: none;
 	border: 1px solid #7788AA;
 	border-radius: 4px;
@@ -40,7 +40,7 @@
 	z-index: 10;
 	box-shadow: 2px 2px 2px #666666;
 }
-.frame .bridge{
+#acaciaFormPanel .frame .bridge{
 	position: absolute;
 	width:22px;
 	height:3px;
@@ -48,13 +48,13 @@
 	right:0px;
 	background: white;
 }
-.hovering .frame{
+#acaciaFormPanel .hovering .frame{
 	display:block;
 }
-.choices {
+#acaciaFormPanel .choices {
 	background: white;
 }
-.choice{
+#acaciaFormPanel .choice{
 	padding: 0 6px;
 	margin: 3px;
 	border: 1px solid #7788AA;
@@ -74,28 +74,29 @@
 /** Browser specific styles. */
 @if user.agent gecko1_8 gecko{
 	/** firefox **/
-	.choice{
+	#acaciaFormPanel .choice{
 		background-image: literal("-moz-linear-gradient(")value("form.PARENT_GRADIENT") literal(")");
 	}
 } @elif user.agent safari {
 	/** chrome, safari etc. **/
-	.choice{
+	#acaciaFormPanel .choice{
 		background-image: literal("-webkit-linear-gradient(")value("form.PARENT_GRADIENT") literal(")");
 	}
 } @elif user.agent opera {
 	/** opera */
-	.choice{
+	#acaciaFormPanel .choice{
 		background-image: literal("-o-linear-gradient(")value("form.PARENT_GRADIENT") literal(")");
 	}
 } @elif user.agent ie9 {
 	/** ie9 */
-	.choice{
+	#acaciaFormPanel .choice{
 		background-image: value("form.PARENT_GRADIENT_IE9");
 	}
 }
 
-.choice:hover{
+#acaciaFormPanel .choice:hover{
 	color: #445577;
 	border-color: #445577;
 }
-.hovering .displayAbove{}
+
+#acaciaFormPanel .hovering .displayAbove{}
