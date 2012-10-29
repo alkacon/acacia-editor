@@ -91,6 +91,7 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
     public TinyMCEWidget(Element element, JavaScriptObject options) {
 
         super(element);
+        m_originalContent = "";
         m_options = options;
         m_active = true;
     }
@@ -463,9 +464,10 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
                                         function() {
                                             self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::fireResizeEvent()();
                                         });
-
-                        ed
-                                .setContent(self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_originalContent);
+                        var content = self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_originalContent;
+                        if (content != null) {
+                            ed.setContent(content);
+                        }
                         self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_initialized = true;
 
                     });
