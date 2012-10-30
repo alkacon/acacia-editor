@@ -363,12 +363,20 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
     /**
      * Propagates a native mouse event.<p>
      *
-     * @param nativeEvent the native mouse event 
+     * @param eventType the mouse event type 
+     * @param eventSource the event source
      */
-    protected void propagateMouseEvent(NativeEvent nativeEvent) {
-
-        DomEvent.fireNativeEvent(nativeEvent, this, this.getElement());
-    }
+    protected native void propagateMouseEvent(String eventType, Element eventSource) /*-{
+        var doc = $wnd.document;
+        var event;
+        if (doc.createEvent) {
+            event = doc.createEvent("MouseEvents");
+            event.initEvent(eventType, true, true);
+            eventSource.dispatchEvent(event);
+        } else {
+            eventSource.fireEvent("on" + eventType);
+        }
+    }-*/;
 
     /**
      * Removes the editor instance.<p>
@@ -474,7 +482,12 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
             ed.onClick
                     .add(function(event) {
                         self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::fixToolbar()();
-                        self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Lcom/google/gwt/dom/client/NativeEvent;)(event);
+                        if (!self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::isActive()()) {
+                            // this may be the case if the mouse-down event has not been triggered correctly yet (IE),
+                            // trigger activation through new mouse-down
+                            self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Ljava/lang/String;Lcom/google/gwt/user/client/Element;)('mousedown', mainElement);
+                        }
+                        self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Ljava/lang/String;Lcom/google/gwt/user/client/Element;)('click', mainElement);
                     });
         };
 
@@ -492,22 +505,22 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
                             ed.getWin(),
                             'mousedown',
                             function(event) {
-                                self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Lcom/google/gwt/dom/client/NativeEvent;)(event);
+                                self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Ljava/lang/String;Lcom/google/gwt/user/client/Element;)('mousedown', mainElement);
                             });
             $wnd.tinyMCE.dom.Event
                     .add(
                             ed.getWin(),
                             'mouseup',
                             function(event) {
-                                self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Lcom/google/gwt/dom/client/NativeEvent;)(event);
+                                self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Ljava/lang/String;Lcom/google/gwt/user/client/Element;)('mouseup', mainElement);
                             });
-            $wnd.tinyMCE.dom.Event
-                    .add(
-                            ed.getWin(),
-                            'mousemove',
-                            function(event) {
-                                self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Lcom/google/gwt/dom/client/NativeEvent;)(event);
-                            });
+            //            $wnd.tinyMCE.dom.Event
+            //                    .add(
+            //                            ed.getWin(),
+            //                            'mousemove',
+            //                            function(event) {
+            //                                self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Ljava/lang/String;Lcom/google/gwt/user/client/Element;)('mousemove', mainElement);
+            //                            });
         };
 
         // set the edited element id
