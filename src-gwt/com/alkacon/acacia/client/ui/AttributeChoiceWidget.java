@@ -38,6 +38,7 @@ import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -130,6 +131,44 @@ public class AttributeChoiceWidget extends Composite implements HasMouseOverHand
     public void show() {
 
         addStyleName(I_LayoutBundle.INSTANCE.attributeChoice().hovering());
+        if (displayAbove()) {
+            addStyleName(I_LayoutBundle.INSTANCE.attributeChoice().displayAbove());
+        } else {
+            removeStyleName(I_LayoutBundle.INSTANCE.attributeChoice().displayAbove());
+        }
     }
 
+    /**
+     * Evaluates if the choice select should be displayed above the button.<p>
+     * 
+     * @return <code>true</code> if the choice select should be displayed above the button
+     */
+    private boolean displayAbove() {
+
+        int popupHeight = m_choices.getOffsetHeight();
+        // Calculate top position for the choice select
+        int top = m_buttonIcon.getAbsoluteTop();
+
+        // Make sure scrolling is taken into account, since
+        // box.getAbsoluteTop() takes scrolling into account.
+        int windowTop = Window.getScrollTop();
+        int windowBottom = Window.getScrollTop() + Window.getClientHeight();
+
+        // Distance from the top edge of the window to the top edge of the
+        // text box
+        int distanceFromWindowTop = top - windowTop;
+
+        // Distance from the bottom edge of the window to the bottom edge of
+        // the text box
+        int distanceToWindowBottom = windowBottom - (top + m_buttonIcon.getOffsetHeight());
+
+        // If there is not enough space for the popup's height below the button
+        // and there IS enough space for the popup's height above the button,
+        // then then position the popup above the button. However, if there
+        // is not enough space on either side, then stick with displaying the
+        // popup below the button.
+        boolean displayAbove = (distanceFromWindowTop > distanceToWindowBottom)
+            && (distanceToWindowBottom < popupHeight);
+        return displayAbove;
+    }
 }
