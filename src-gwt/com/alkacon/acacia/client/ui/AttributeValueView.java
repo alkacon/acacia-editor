@@ -50,7 +50,6 @@ import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Display;
-import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -72,13 +71,11 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -300,32 +297,20 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     public Element getDragHelper(I_DropTarget target) {
 
         closeHelpBubble(null);
-        m_dragHelper = DomUtil.clone(getElement());
-        // we append the drag helper to the body to prevent any kind of issues 
-        // (ie when the parent is styled with overflow:hidden)
-        // and we put it additionally inside a absolute positioned provisional parent  
-        // ON the original parent for the eventual animation when releasing 
+        // using the widget element as the drag helper also to avoid cloning issues on input fields
+        m_dragHelper = getElement();
         Element parentElement = getElement().getParentElement();
         if (parentElement == null) {
             parentElement = target.getElement();
         }
         int elementTop = getElement().getAbsoluteTop();
         int parentTop = parentElement.getAbsoluteTop();
-        m_provisionalParent = DOM.createElement(parentElement.getTagName());
-        RootPanel.getBodyElement().appendChild(m_provisionalParent);
-        m_provisionalParent.addClassName(com.alkacon.geranium.client.ui.css.I_LayoutBundle.INSTANCE.generalCss().clearStyles());
-        m_provisionalParent.getStyle().setWidth(parentElement.getOffsetWidth(), Unit.PX);
-        m_provisionalParent.appendChild(m_dragHelper);
         Style style = m_dragHelper.getStyle();
         style.setWidth(m_dragHelper.getOffsetWidth(), Unit.PX);
         // the dragging class will set position absolute
         style.setTop(elementTop - parentTop, Unit.PX);
         m_dragHelper.addClassName(I_LayoutBundle.INSTANCE.form().dragHelper());
-        m_provisionalParent.getStyle().setPosition(Position.ABSOLUTE);
-        m_provisionalParent.getStyle().setTop(parentTop, Unit.PX);
-        m_provisionalParent.getStyle().setLeft(parentElement.getAbsoluteLeft(), Unit.PX);
-        m_provisionalParent.getStyle().setZIndex(
-            com.alkacon.geranium.client.ui.css.I_LayoutBundle.INSTANCE.constants().css().zIndexDND());
+        style.setZIndex(com.alkacon.geranium.client.ui.css.I_LayoutBundle.INSTANCE.constants().css().zIndexDND());
         return m_dragHelper;
     }
 
@@ -366,6 +351,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     public Element getPlaceholder(I_DropTarget target) {
 
         m_placeHolder = DomUtil.clone(getElement());
+        removeDragHelperStyles(m_placeHolder);
         m_placeHolder.addClassName(I_LayoutBundle.INSTANCE.form().dragPlaceholder());
         return m_placeHolder;
     }
@@ -437,7 +423,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
      */
     public void onStartDrag(I_DropTarget target) {
 
-        addStyleName(I_LayoutBundle.INSTANCE.form().dragElement());
+        // nothing to do
     }
 
     /**
@@ -721,14 +707,14 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     private void clearDrag() {
 
         if (m_dragHelper != null) {
-            m_dragHelper.removeFromParent();
+            removeDragHelperStyles(m_dragHelper);
+            // m_dragHelper.removeFromParent();
             m_dragHelper = null;
         }
         if (m_provisionalParent != null) {
             m_provisionalParent.removeFromParent();
             m_provisionalParent = null;
         }
-        removeStyleName(I_LayoutBundle.INSTANCE.form().dragElement());
     }
 
     /**
@@ -776,6 +762,22 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         addMouseDownHandler(HighlightingHandler.getInstance());
         m_buttonBar.addMouseOverHandler(HighlightingHandler.getInstance());
         m_buttonBar.addMouseOutHandler(HighlightingHandler.getInstance());
+    }
+
+    /**
+     * Removes the drag helper styles from the given element.<p>
+     * 
+     * @param helper the helper element
+     */
+    private void removeDragHelperStyles(Element helper) {
+
+        Style style = helper.getStyle();
+        style.clearTop();
+        style.clearLeft();
+        style.clearPosition();
+        style.clearWidth();
+        style.clearZIndex();
+        helper.removeClassName(I_LayoutBundle.INSTANCE.form().dragHelper());
     }
 
     /**

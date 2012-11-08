@@ -132,33 +132,8 @@ public class ValuePanel extends FlowPanel implements I_DropTarget {
      */
     public void repositionPlaceholder(int x, int y, Orientation orientation) {
 
-        switch (orientation) {
-            case HORIZONTAL:
-                m_placeholderIndex = DomUtil.positionElementInside(
-                    m_placeholder,
-                    getElement(),
-                    m_placeholderIndex,
-                    x,
-                    -1);
-                break;
-            case VERTICAL:
-                m_placeholderIndex = DomUtil.positionElementInside(
-                    m_placeholder,
-                    getElement(),
-                    m_placeholderIndex,
-                    -1,
-                    y);
-                break;
-            case ALL:
-            default:
-                m_placeholderIndex = DomUtil.positionElementInside(
-                    m_placeholder,
-                    getElement(),
-                    m_placeholderIndex,
-                    x,
-                    y);
-                break;
-        }
+        // handle vertical orientation only
+        m_placeholderIndex = DomUtil.positionElementInside(m_placeholder, getElement(), m_placeholderIndex, -1, y);
     }
 
     /**

@@ -74,6 +74,8 @@ public class AttributeDNDController implements I_DNDController {
 
         removeDragOverlay();
         clearTargets(handler);
+        // remove the drag helper reference from handler, to avoid helper.removeFromParent() call
+        handler.setDragHelper(null);
     }
 
     /**
@@ -107,6 +109,8 @@ public class AttributeDNDController implements I_DNDController {
         attributeValue.getHandler().moveAttributeValue(attributeValue, m_startPosition, targetIndex);
         removeDragOverlay();
         clearTargets(handler);
+        // remove the drag helper reference from handler, to avoid helper.removeFromParent() call
+        handler.setDragHelper(null);
     }
 
     /**
