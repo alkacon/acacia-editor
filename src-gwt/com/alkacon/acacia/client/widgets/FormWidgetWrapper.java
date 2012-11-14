@@ -33,7 +33,7 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.HTML;
 
 /** 
  * Wraps an edit widget to supply a widget label.<p>
@@ -44,7 +44,7 @@ public class FormWidgetWrapper extends Composite implements I_FormEditWidget, Ha
     private I_EditWidget m_editWidget;
 
     /** The label. */
-    private Label m_label;
+    private HTML m_label;
 
     /** The main panel. */
     private FlowPanel m_mainPanel;
@@ -57,7 +57,7 @@ public class FormWidgetWrapper extends Composite implements I_FormEditWidget, Ha
     public FormWidgetWrapper(I_EditWidget editWidget) {
 
         m_mainPanel = new FlowPanel();
-        m_label = new Label();
+        m_label = new HTML();
         m_label.setStyleName(I_LayoutBundle.INSTANCE.form().label());
         m_mainPanel.add(m_label);
         m_editWidget = editWidget;
@@ -155,7 +155,7 @@ public class FormWidgetWrapper extends Composite implements I_FormEditWidget, Ha
      */
     public void setWidgetInfo(String label, String help) {
 
-        m_label.setText(label);
+        m_label.setHTML(label);
         m_label.setTitle(help);
     }
 
