@@ -24,6 +24,7 @@
 
 package com.alkacon.acacia.client;
 
+import com.alkacon.acacia.shared.ContentDefinition;
 import com.alkacon.acacia.shared.Entity;
 import com.alkacon.acacia.shared.ValidationResult;
 import com.alkacon.acacia.shared.rpc.I_ContentServiceAsync;
@@ -140,7 +141,10 @@ public final class ValidationHandler implements ValueChangeHandler<I_Entity>, Ha
                     AttributeHandler handler = m_rootHandler.getHandlerByPath(pathElements);
                     if (handler != null) {
                         String attributeName = pathElements[pathElements.length - 1];
-                        handler.setWarningMessage(getIndexFromName(attributeName), warning.getValue(), m_formTabPanel);
+                        handler.setWarningMessage(
+                            ContentDefinition.extractIndex(attributeName),
+                            warning.getValue(),
+                            m_formTabPanel);
                     }
                 }
             }
@@ -151,7 +155,10 @@ public final class ValidationHandler implements ValueChangeHandler<I_Entity>, Ha
                 AttributeHandler handler = m_rootHandler.getHandlerByPath(pathElements);
                 if (handler != null) {
                     String attributeName = pathElements[pathElements.length - 1];
-                    handler.setErrorMessage(getIndexFromName(attributeName), error.getValue(), m_formTabPanel);
+                    handler.setErrorMessage(
+                        ContentDefinition.extractIndex(attributeName),
+                        error.getValue(),
+                        m_formTabPanel);
                 }
             }
             m_validationContext.addInvalidEntity(entityId);
@@ -283,28 +290,5 @@ public final class ValidationHandler implements ValueChangeHandler<I_Entity>, Ha
             m_eventBus = new SimpleEventBus();
         }
         return m_eventBus;
-    }
-
-    /**
-     * Parses the value index from the given attribute name.<p>
-     * 
-     * @param attributeName the attribute name
-     * 
-     * @return the value index
-     */
-    private int getIndexFromName(String attributeName) {
-
-        int index = 0;
-        // check if the value index is appended to the attribute name
-        if (attributeName.endsWith("]") && attributeName.contains("[")) {
-            try {
-                String temp = attributeName.substring(attributeName.lastIndexOf("[") + 1, attributeName.length() - 1);
-                attributeName = attributeName.substring(0, attributeName.lastIndexOf("["));
-                index = Integer.parseInt(temp);
-            } catch (NumberFormatException e) {
-                // ignore
-            }
-        }
-        return index;
     }
 }

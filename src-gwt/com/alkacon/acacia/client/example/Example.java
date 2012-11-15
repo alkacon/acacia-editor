@@ -124,9 +124,9 @@ public class Example implements EntryPoint {
         I_EntityRenderer renderer = service.getRendererForType(vie.getType(personTypeName));
         renderer.renderInline(person, RootPanel.getBodyElement());
 
-        ((Entity)person).addValueChangeHandler(new ValueChangeHandler<I_Entity>() {
+        ((Entity)person).addValueChangeHandler(new ValueChangeHandler<Entity>() {
 
-            public void onValueChange(ValueChangeEvent<I_Entity> event) {
+            public void onValueChange(ValueChangeEvent<Entity> event) {
 
                 RootPanel.get().getElement().getStyle().setBackgroundColor("#77f3f3");
                 RootPanel.get().add(new Label(event.getValue().toJSON()));

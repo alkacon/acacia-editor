@@ -24,6 +24,7 @@
 
 package com.alkacon.acacia.client;
 
+import com.alkacon.acacia.shared.ContentDefinition;
 import com.alkacon.acacia.shared.Type;
 
 import java.util.ArrayList;
@@ -72,19 +73,8 @@ public class RootHandler implements I_AttributeHandler {
         int index = 0;
         for (int i = 0; i < pathNames.length; i++) {
             String attributeName = pathNames[i];
-            int nextIndex = 0;
-            // check if the value index is appended to the attribute name
-            if (attributeName.endsWith("]") && attributeName.contains("[")) {
-                try {
-                    String temp = attributeName.substring(
-                        attributeName.lastIndexOf("[") + 1,
-                        attributeName.length() - 1);
-                    attributeName = attributeName.substring(0, attributeName.lastIndexOf("["));
-                    nextIndex = Integer.parseInt(temp);
-                } catch (NumberFormatException e) {
-                    // ignore
-                }
-            }
+            int nextIndex = ContentDefinition.extractIndex(attributeName);
+            attributeName = ContentDefinition.removeIndex(attributeName);
             if ((handler instanceof AttributeHandler) && ((AttributeHandler)handler).getAttributeType().isChoice()) {
                 // in case of a choice attribute, skip to the next level
                 attributeName = Type.CHOICE_ATTRIBUTE_NAME;

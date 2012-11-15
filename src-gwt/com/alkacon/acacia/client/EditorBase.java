@@ -164,7 +164,7 @@ public class EditorBase {
      * @param entityId the entity id
      * @param handler the change handler
      */
-    public void addEntityChangeHandler(String entityId, ValueChangeHandler<I_Entity> handler) {
+    public void addEntityChangeHandler(String entityId, ValueChangeHandler<Entity> handler) {
 
         I_Entity entity = m_vie.getEntity(entityId);
         if (entity != null) {

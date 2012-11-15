@@ -74,6 +74,30 @@ public class ContentDefinition implements IsSerializable {
         m_locale = locale;
     }
 
+    public static int extractIndex(String attributeName) {
+
+        int index = 0;
+        // check if the value index is appended to the attribute name
+        if (attributeName.endsWith("]") && attributeName.contains("[")) {
+            try {
+                String temp = attributeName.substring(attributeName.lastIndexOf("[") + 1, attributeName.length() - 1);
+
+                index = Integer.parseInt(temp);
+            } catch (NumberFormatException e) {
+                // ignore
+            }
+        }
+        return index;
+    }
+
+    public static String removeIndex(String attributeName) {
+
+        if (attributeName.endsWith("]") && attributeName.contains("[")) {
+            attributeName = attributeName.substring(0, attributeName.lastIndexOf("["));
+        }
+        return attributeName;
+    }
+
     /**
      * Constructor. Used for serialization only.<p>
      */
