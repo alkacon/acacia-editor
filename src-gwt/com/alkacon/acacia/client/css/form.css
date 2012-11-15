@@ -195,6 +195,11 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 
 .attributeValue .mceEditor .mceExternalToolbar{
 	z-index: -1;
+	display: none !important;
+}
+
+.attributeValue.focused .mceEditor .mceExternalToolbar {
+	display: block !important;
 }
 
 .attributeValue .mceEditor .mceExternalToolbar td{
