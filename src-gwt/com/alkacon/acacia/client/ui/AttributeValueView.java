@@ -237,6 +237,10 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         m_moveButton.addMouseDownHandler(m_handler.getDNDHandler());
         m_label = label;
         m_help = help;
+        if (m_help == null) {
+            closeHelpBubble(null);
+            m_help = "";
+        }
         generateLabel();
         m_helpBubbleText.setInnerHTML(m_help);
         addStyleName(I_LayoutBundle.INSTANCE.form().emptyValue());
@@ -459,7 +463,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
      */
     public void setErrorMessage(String message) {
 
-        m_messageText.setInnerText(message);
+        m_messageText.setInnerHTML(message);
         addStyleName(I_LayoutBundle.INSTANCE.form().hasError());
         m_hasError = true;
     }
