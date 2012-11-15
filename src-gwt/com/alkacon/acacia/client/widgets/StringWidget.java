@@ -34,6 +34,7 @@ import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -111,6 +112,11 @@ public class StringWidget extends A_EditWidget {
                             RootPanel.get().add(m_helpfield);
                             m_helpfield.setFocus(true);
                         }
+                    }
+                    // prevent adding line breaks
+                    if (KeyCodes.KEY_ENTER == event.getNativeEvent().getKeyCode()) {
+                        event.preventDefault();
+                        event.stopPropagation();
                     }
 
                     // schedule the change event, so the key press can take effect
