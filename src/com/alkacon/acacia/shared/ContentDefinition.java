@@ -74,6 +74,21 @@ public class ContentDefinition implements IsSerializable {
         m_locale = locale;
     }
 
+    /**
+     * Constructor. Used for serialization only.<p>
+     */
+    protected ContentDefinition() {
+
+        // nothing to do
+    }
+
+    /**
+     * Extracts the attribute index from the given attribute name where the index is appended to the name like 'attributename[1]'.<p>
+     * 
+     * @param attributeName the attribute name
+     * 
+     * @return the extracted index
+     */
     public static int extractIndex(String attributeName) {
 
         int index = 0;
@@ -90,20 +105,19 @@ public class ContentDefinition implements IsSerializable {
         return index;
     }
 
+    /**
+     * Removes an attribute index suffix from the given attribute name.<p>
+     * 
+     * @param attributeName the attribute name
+     * 
+     * @return the attribute name
+     */
     public static String removeIndex(String attributeName) {
 
         if (attributeName.endsWith("]") && attributeName.contains("[")) {
             attributeName = attributeName.substring(0, attributeName.lastIndexOf("["));
         }
         return attributeName;
-    }
-
-    /**
-     * Constructor. Used for serialization only.<p>
-     */
-    protected ContentDefinition() {
-
-        // nothing to do
     }
 
     /**
