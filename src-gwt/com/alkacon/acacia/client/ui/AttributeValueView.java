@@ -68,6 +68,7 @@ import com.google.gwt.event.logical.shared.HasResizeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -727,7 +728,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     private void generateLabel() {
 
         HTML labelWidget = new HTML("<div title=\""
-            + m_help
+            + SafeHtmlUtils.htmlEscape(stripHtml(m_help))
             + "\" class=\""
             + I_LayoutBundle.INSTANCE.form().label()
             + "\">"
@@ -792,5 +793,15 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     private boolean shouldDisplayTooltipAbove() {
 
         return !isSimpleValue();
+    }
+
+    /**
+     * Strips all HTML tags.<p>
+     * @param html the string that should be striped
+     * @return the striped HTML string
+     */
+    private String stripHtml(String html) {
+
+        return html.replaceAll("\\<.*?\\>", "");
     }
 }
