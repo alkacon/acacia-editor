@@ -649,6 +649,7 @@ public class AttributeHandler extends RootHandler {
                 this,
                 m_widgetService.getAttributeLabel(m_attributeName),
                 m_widgetService.getAttributeHelp(m_attributeName));
+            Renderer.setAttributeChoice(m_widgetService, valueWidget, getAttributeType());
             if (valueIndex == -1) {
                 ((FlowPanel)reference.getParent()).add(valueWidget);
             } else {

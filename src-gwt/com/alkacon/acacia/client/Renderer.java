@@ -200,6 +200,29 @@ public class Renderer implements I_EntityRenderer {
     }
 
     /**
+     * Sets the attribute choices if present.<p>
+     * 
+     * @param widgetService the widget service to use 
+     * @param valueWidget the value widget
+     * @param attributeType the attribute type
+     */
+    public static void setAttributeChoice(
+        I_WidgetService widgetService,
+        AttributeValueView valueWidget,
+        I_Type attributeType) {
+
+        if (attributeType.isChoice()) {
+            I_Type choiceType = attributeType.getAttributeType(Type.CHOICE_ATTRIBUTE_NAME);
+            for (String choiceName : choiceType.getAttributeNames()) {
+                valueWidget.addChoice(
+                    widgetService.getAttributeLabel(choiceName),
+                    widgetService.getAttributeHelp(choiceName),
+                    choiceName);
+            }
+        }
+    }
+
+    /**
      * @see com.alkacon.acacia.client.I_EntityRenderer#renderForm(com.alkacon.vie.shared.I_Entity, java.util.List, com.google.gwt.user.client.ui.Panel, com.alkacon.acacia.client.I_AttributeHandler, int)
      */
     @SuppressWarnings("unchecked")
@@ -551,14 +574,6 @@ public class Renderer implements I_EntityRenderer {
      */
     private void setAttributeChoice(AttributeValueView valueWidget, I_Type attributeType) {
 
-        if (attributeType.isChoice()) {
-            I_Type choiceType = attributeType.getAttributeType(Type.CHOICE_ATTRIBUTE_NAME);
-            for (String choiceName : choiceType.getAttributeNames()) {
-                valueWidget.addChoice(
-                    m_widgetService.getAttributeLabel(choiceName),
-                    m_widgetService.getAttributeHelp(choiceName),
-                    choiceName);
-            }
-        }
+        setAttributeChoice(m_widgetService, valueWidget, attributeType);
     }
 }
