@@ -76,6 +76,9 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
     /** The editor height to set. */
     int m_editorHeight;
 
+    /** Indicating if the widget has been attached yet. */
+    private boolean m_hasBeenAttached;
+
     /** Flag indicating the editor has been initialized. */
     private boolean m_initialized;
 
@@ -330,25 +333,31 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
     protected void onAttach() {
 
         super.onAttach();
-        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+        if (!m_hasBeenAttached) {
+            m_hasBeenAttached = true;
+            Scheduler.get().scheduleDeferred(new ScheduledCommand() {
 
-            public void execute() {
+                public void execute() {
 
-                m_editorHeight = calculateEditorHeight();
-                m_id = ensureId(getElement());
-                m_width = getElement().getOffsetWidth() - 2;
-                checkLibraries();
-                initNative();
-                if (!m_active) {
+                    if (isAttached()) {
+                        m_editorHeight = calculateEditorHeight();
+                        m_id = ensureId(getElement());
+                        m_width = getElement().getOffsetWidth() - 2;
+                        checkLibraries();
+                        initNative();
+                        if (!m_active) {
 
-                    Element parent = getEditorParentElement();
-                    if (parent != null) {
-                        parent.addClassName(I_LayoutBundle.INSTANCE.form().inActive());
+                            Element parent = getEditorParentElement();
+                            if (parent != null) {
+                                parent.addClassName(I_LayoutBundle.INSTANCE.form().inActive());
+                            }
+                        }
+                    } else {
+                        resetAtachedFlag();
                     }
                 }
-
-            }
-        });
+            });
+        }
     }
 
     /**
@@ -530,6 +539,14 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
         $wnd.tinyMCE.init(defaults);
         self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::fixStyles()();
     }-*/;
+
+    /**
+     * Resets the attached flag.<p> 
+     */
+    void resetAtachedFlag() {
+
+        m_hasBeenAttached = false;
+    }
 
     /**
      * Used to fire the value changed event from native code.<p>
