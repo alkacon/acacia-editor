@@ -39,6 +39,7 @@ import com.alkacon.vie.shared.I_Entity;
 import com.alkacon.vie.shared.I_EntityAttribute;
 import com.alkacon.vie.shared.I_Type;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -200,6 +201,22 @@ public class Renderer implements I_EntityRenderer {
     }
 
     /**
+     * Gets the paths of nested choice attributes starting from a given type.<p>
+     *  
+     * @param attributeType the type from which to start 
+     * @param startingAtChoiceAttribute true if the attribute is a synthetic CHOICE_ATTRIBUTE
+     * 
+     * @return the list of nested choice attribute name paths  
+     */
+    public static List<List<String>> getChoiceAttributeNamePaths(I_Type attributeType, boolean startingAtChoiceAttribute) {
+
+        List<List<String>> results = new ArrayList<List<String>>();
+        List<String> chain = new ArrayList<String>();
+        collectChoiceAttributeNamePaths(attributeType, startingAtChoiceAttribute, chain, results);
+        return results;
+    }
+
+    /**
      * Sets the attribute choices if present.<p>
      * 
      * @param widgetService the widget service to use 
@@ -212,13 +229,43 @@ public class Renderer implements I_EntityRenderer {
         I_Type attributeType) {
 
         if (attributeType.isChoice()) {
-            I_Type choiceType = attributeType.getAttributeType(Type.CHOICE_ATTRIBUTE_NAME);
-            for (String choiceName : choiceType.getAttributeNames()) {
+            List<List<String>> choiceAttributePaths = getChoiceAttributeNamePaths(attributeType, false);
+            for (List<String> path : choiceAttributePaths) {
+                String lastPathComponent = path.get(path.size() - 1);
                 valueWidget.addChoice(
-                    widgetService.getAttributeLabel(choiceName),
-                    widgetService.getAttributeHelp(choiceName),
-                    choiceName);
+                    widgetService.getAttributeLabel(lastPathComponent),
+                    widgetService.getAttributeHelp(lastPathComponent),
+                    path);
             }
+        }
+    }
+
+    /**
+     * Recursive helper method to collect nested choice element attribute names.<p>
+     * 
+     * @param startType the type from which to start
+     * @param startingAtChoiceAttribute true if the recursion starts at a synthetic choice attribute  
+     * @param currentPath a list which  contains the "path" of attribute names which has led to the current type (modified in-place by this method)  
+     * @param results the list into which the results will be written 
+     */
+    private static void collectChoiceAttributeNamePaths(
+        I_Type startType,
+        boolean startingAtChoiceAttribute,
+        List<String> currentPath,
+        List<List<String>> results) {
+
+        if (startingAtChoiceAttribute || startType.isChoice()) {
+            I_Type choiceType = startingAtChoiceAttribute
+            ? startType
+            : startType.getAttributeType(Type.CHOICE_ATTRIBUTE_NAME);
+            for (String choiceName : choiceType.getAttributeNames()) {
+                currentPath.add(choiceName);
+                I_Type includedType = choiceType.getAttributeType(choiceName);
+                collectChoiceAttributeNamePaths(includedType, false, currentPath, results);
+                currentPath.remove(currentPath.size() - 1);
+            }
+        } else {
+            results.add(new ArrayList<String>(currentPath));
         }
     }
 

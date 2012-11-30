@@ -208,28 +208,15 @@ public class AttributeHandler extends RootHandler {
      * Adds a new choice attribute value.<p>
      * 
      * @param reference the reference value view
-     * @param attributeChoice the attribute choice
+     * @param choicePath the path of the selected (possibly nested) choice attribute, consisting of attribute names 
      */
-    public void addNewChoiceAttributeValue(AttributeValueView reference, String attributeChoice) {
+    public void addNewChoiceAttributeValue(AttributeValueView reference, List<String> choicePath) {
 
         HighlightingHandler.getInstance().clearFocusHighlighting();
         if (isChoiceHandler()) {
-            addChoiceOption(reference, attributeChoice);
+            addChoiceOption(reference, choicePath);
         } else {
-            I_Entity value = m_vie.createEntity(null, getAttributeType().getId());
-            I_Type choiceType = getAttributeType().getAttributeType(Type.CHOICE_ATTRIBUTE_NAME);
-            I_Entity choice = m_vie.createEntity(null, choiceType.getId());
-            value.addAttributeValue(Type.CHOICE_ATTRIBUTE_NAME, choice);
-            // create the attribute choice
-            I_Type choiceOptionType = choiceType.getAttributeType(attributeChoice);
-            if (choiceOptionType.isSimpleType()) {
-                String choiceValue = m_widgetService.getDefaultAttributeValue(attributeChoice);
-                choice.addAttributeValue(attributeChoice, choiceValue);
-            } else {
-                I_Entity choiceValue = m_vie.createEntity(null, choiceOptionType.getId());
-                choice.addAttributeValue(attributeChoice, choiceValue);
-            }
-            insertValueAfterReference(value, reference);
+            addComplexChoiceValue(reference, choicePath);
         }
         updateButtonVisisbility();
     }
@@ -253,6 +240,32 @@ public class AttributeHandler extends RootHandler {
             m_entity.setAttributeValue(m_attributeName, value, reference.getValueIndex());
         }
 
+    }
+
+    /**
+     * Creates a sequence of nested entities according to a given path of choice attribute names.<p>
+     * 
+     * @param value the entity into which the new entities for the given path should be inserted 
+     * @param choicePath the path of choice attributes 
+     */
+    public void createNestedEntitiesForChoicePath(I_Entity value, List<String> choicePath) {
+
+        I_Entity parentValue = value;
+        for (String attributeChoice : choicePath) {
+            I_Type choiceType = m_vie.getType(parentValue.getTypeName()).getAttributeType(Type.CHOICE_ATTRIBUTE_NAME);
+            I_Entity choice = m_vie.createEntity(null, choiceType.getId());
+            parentValue.addAttributeValue(Type.CHOICE_ATTRIBUTE_NAME, choice);
+            I_Type choiceOptionType = choiceType.getAttributeType(attributeChoice);
+            if (choiceOptionType.isSimpleType()) {
+                String choiceValue = m_widgetService.getDefaultAttributeValue(attributeChoice);
+                choice.addAttributeValue(attributeChoice, choiceValue);
+                break;
+            } else {
+                I_Entity choiceValue = m_vie.createEntity(null, choiceOptionType.getId());
+                choice.addAttributeValue(attributeChoice, choiceValue);
+                parentValue = choiceValue;
+            }
+        }
     }
 
     /**
@@ -360,11 +373,13 @@ public class AttributeHandler extends RootHandler {
                     m_widgetService.getRendererForAttribute(attributeChoice, getAttributeType()),
                     value.getAttribute(attributeChoice).getComplexValue());
             }
-            for (String choiceName : getAttributeType().getAttributeNames()) {
+            List<List<String>> choiceAttributePaths = Renderer.getChoiceAttributeNamePaths(getAttributeType(), true);
+            for (List<String> path : choiceAttributePaths) {
+                String lastPathComponent = path.get(path.size() - 1);
                 valueWidget.addChoice(
-                    m_widgetService.getAttributeLabel(choiceName),
-                    m_widgetService.getAttributeHelp(choiceName),
-                    choiceName);
+                    m_widgetService.getAttributeLabel(lastPathComponent),
+                    m_widgetService.getAttributeHelp(lastPathComponent),
+                    path);
             }
         } else if (getAttributeType().isSimpleType()) {
             String value = m_entity.getAttribute(m_attributeName).getSimpleValues().get(currentPosition);
@@ -550,11 +565,13 @@ public class AttributeHandler extends RootHandler {
      * Adds a new choice option.<p>
      * 
      * @param reference the reference view
-     * @param attributeChoice the attribute choice
+     * @param choicePath the choice attribute path
      */
-    private void addChoiceOption(AttributeValueView reference, String attributeChoice) {
+    private void addChoiceOption(AttributeValueView reference, List<String> choicePath) {
 
+        String attributeChoice = choicePath.get(0);
         I_Type optionType = getAttributeType().getAttributeType(attributeChoice);
+
         I_Entity choiceEntity = m_vie.createEntity(null, getAttributeType().getId());
         AttributeValueView valueWidget = reference;
         if (reference.hasValue()) {
@@ -563,22 +580,20 @@ public class AttributeHandler extends RootHandler {
                 m_widgetService.getAttributeLabel(attributeChoice),
                 m_widgetService.getAttributeHelp(attributeChoice));
         }
-        for (String choiceName : getAttributeType().getAttributeNames()) {
+
+        List<List<String>> choiceAttributePaths = Renderer.getChoiceAttributeNamePaths(getAttributeType(), true);
+        for (List<String> path : choiceAttributePaths) {
+            String lastPathComponent = path.get(path.size() - 1);
             valueWidget.addChoice(
-                m_widgetService.getAttributeLabel(choiceName),
-                m_widgetService.getAttributeHelp(choiceName),
-                choiceName);
+                m_widgetService.getAttributeLabel(lastPathComponent),
+                m_widgetService.getAttributeHelp(lastPathComponent),
+                path);
         }
         int valueIndex = reference.getValueIndex() + 1;
-        if (valueIndex < m_entity.getAttribute(m_attributeName).getValueCount()) {
-            m_entity.insertAttributeValue(m_attributeName, choiceEntity, valueIndex);
-            ((FlowPanel)reference.getParent()).insert(valueWidget, valueIndex);
-        } else {
-            m_entity.addAttributeValue(m_attributeName, choiceEntity);
-            ((FlowPanel)reference.getParent()).add(valueWidget);
-
-        }
+        m_entity.insertAttributeValue(m_attributeName, choiceEntity, valueIndex);
+        ((FlowPanel)reference.getParent()).insert(valueWidget, valueIndex);
         insertHandlers(valueWidget.getValueIndex());
+
         if (optionType.isSimpleType()) {
             String value = m_widgetService.getDefaultAttributeValue(attributeChoice);
             I_FormEditWidget widget = m_widgetService.getAttributeFormWidget(attributeChoice);
@@ -587,9 +602,41 @@ public class AttributeHandler extends RootHandler {
         } else {
             I_Entity value = m_vie.createEntity(null, optionType.getId());
             choiceEntity.addAttributeValue(attributeChoice, value);
+            List<String> remainingAttributeNames = tail(choicePath);
+            createNestedEntitiesForChoicePath(value, remainingAttributeNames);
             I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(attributeChoice, optionType);
             valueWidget.setValueEntity(renderer, value);
         }
+        updateButtonVisisbility();
+
+    }
+
+    /**
+     * Adds a new complex value which corresponds to a choice element.<p>
+     * 
+     * @param reference the reference view  
+     * @param choicePath the path of choice attribute names 
+     */
+    private void addComplexChoiceValue(AttributeValueView reference, List<String> choicePath) {
+
+        I_Entity value = m_vie.createEntity(null, getAttributeType().getId());
+        I_Entity parentValue = value;
+        for (String attributeChoice : choicePath) {
+            I_Type choiceType = m_vie.getType(parentValue.getTypeName()).getAttributeType(Type.CHOICE_ATTRIBUTE_NAME);
+            I_Entity choice = m_vie.createEntity(null, choiceType.getId());
+            parentValue.addAttributeValue(Type.CHOICE_ATTRIBUTE_NAME, choice);
+            I_Type choiceOptionType = choiceType.getAttributeType(attributeChoice);
+            if (choiceOptionType.isSimpleType()) {
+                String choiceValue = m_widgetService.getDefaultAttributeValue(attributeChoice);
+                choice.addAttributeValue(attributeChoice, choiceValue);
+                break;
+            } else {
+                I_Entity choiceValue = m_vie.createEntity(null, choiceOptionType.getId());
+                choice.addAttributeValue(attributeChoice, choiceValue);
+                parentValue = choiceValue;
+            }
+        }
+        insertValueAfterReference(value, reference);
     }
 
     /**
@@ -660,5 +707,26 @@ public class AttributeHandler extends RootHandler {
         insertHandlers(valueIndex);
         I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(m_attributeName, getAttributeType());
         valueWidget.setValueEntity(renderer, value);
+    }
+
+    /**
+     * Creates a list consisting of all but the first element of another list.<p>
+     * 
+     * @param values the list 
+     * 
+     * @return the tail of the list 
+     */
+    private List<String> tail(List<String> values) {
+
+        List<String> result = new ArrayList<String>();
+        boolean first = true;
+        for (String value : values) {
+            if (!first) {
+                result.add(value);
+            }
+            first = false;
+        }
+        return result;
+
     }
 }

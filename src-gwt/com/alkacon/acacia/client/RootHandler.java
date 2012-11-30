@@ -90,10 +90,8 @@ public class RootHandler implements I_AttributeHandler {
      */
     public void insertHandlers(int index) {
 
-        if (index < m_handlers.size()) {
+        if (index <= m_handlers.size()) {
             m_handlers.add(index, new HashMap<String, AttributeHandler>());
-        } else if (index == m_handlers.size()) {
-            m_handlers.add(new HashMap<String, AttributeHandler>());
         } else {
             throw new IndexOutOfBoundsException("index of " + index + " too big, current size: " + m_handlers.size());
         }

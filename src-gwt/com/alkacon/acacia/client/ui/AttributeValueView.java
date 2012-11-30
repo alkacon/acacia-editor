@@ -41,6 +41,8 @@ import com.alkacon.geranium.client.ui.css.I_ImageBundle;
 import com.alkacon.geranium.client.util.DomUtil;
 import com.alkacon.vie.shared.I_Entity;
 
+import java.util.List;
+
 import com.google.gwt.animation.client.Animation;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
@@ -254,9 +256,9 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
      * 
      * @param label the choice label
      * @param description the choice description
-     * @param name the choice name
+     * @param choicePath the choice attribute path 
      */
-    public void addChoice(String label, String description, final String name) {
+    public void addChoice(String label, String description, final List<String> choicePath) {
 
         HTML choice = new HTML(label);
         choice.setTitle(description);
@@ -265,7 +267,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
             public void onClick(ClickEvent event) {
 
                 m_attributeChoice.hide();
-                selectChoice(name);
+                selectChoice(choicePath);
             }
         });
         m_attributeChoice.addChoice(choice);
@@ -660,15 +662,15 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     /**
      * Selects the attribute choice.<p>
      * 
-     * @param choiceName the attribute choice name
+     * @param choicePath the choice attribute path 
      */
-    protected void selectChoice(String choiceName) {
+    protected void selectChoice(List<String> choicePath) {
 
-        m_handler.addNewChoiceAttributeValue(this, choiceName);
+        m_handler.addNewChoiceAttributeValue(this, choicePath);
     }
 
     /**
-     * Activates the value widget if present.<p>
+     * Activates the value widget if prNamet.<p>
      */
     void activateWidget() {
 
