@@ -39,7 +39,6 @@ import com.alkacon.vie.shared.I_Entity;
 import com.alkacon.vie.shared.I_EntityAttribute;
 import com.alkacon.vie.shared.I_Type;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -208,12 +207,11 @@ public class Renderer implements I_EntityRenderer {
      * 
      * @return the list of nested choice attribute name paths  
      */
-    public static List<List<String>> getChoiceAttributeNamePaths(I_Type attributeType, boolean startingAtChoiceAttribute) {
+    public static List<ChoiceMenuEntryBean> getChoiceEntries(I_Type attributeType, boolean startingAtChoiceAttribute) {
 
-        List<List<String>> results = new ArrayList<List<String>>();
-        List<String> chain = new ArrayList<String>();
-        collectChoiceAttributeNamePaths(attributeType, startingAtChoiceAttribute, chain, results);
-        return results;
+        ChoiceMenuEntryBean rootEntry = new ChoiceMenuEntryBean(null);
+        collectChoiceEntries(attributeType, startingAtChoiceAttribute, rootEntry);
+        return rootEntry.getChildren();
     }
 
     /**
@@ -229,43 +227,34 @@ public class Renderer implements I_EntityRenderer {
         I_Type attributeType) {
 
         if (attributeType.isChoice()) {
-            List<List<String>> choiceAttributePaths = getChoiceAttributeNamePaths(attributeType, false);
-            for (List<String> path : choiceAttributePaths) {
-                String lastPathComponent = path.get(path.size() - 1);
-                valueWidget.addChoice(
-                    widgetService.getAttributeLabel(lastPathComponent),
-                    widgetService.getAttributeHelp(lastPathComponent),
-                    path);
+            List<ChoiceMenuEntryBean> menuEntries = getChoiceEntries(attributeType, false);
+            for (ChoiceMenuEntryBean menuEntry : menuEntries) {
+                valueWidget.addChoice(widgetService, menuEntry);
             }
         }
     }
 
     /**
-     * Recursive helper method to collect nested choice element attribute names.<p>
+     * Recursive helper method to create a tree structure of choice menu entries for a choice type.<p>
      * 
      * @param startType the type from which to start
-     * @param startingAtChoiceAttribute true if the recursion starts at a synthetic choice attribute  
-     * @param currentPath a list which  contains the "path" of attribute names which has led to the current type (modified in-place by this method)  
-     * @param results the list into which the results will be written 
+     * @param startingAtChoiceAttribute true if the recursion starts at a synthetic choice attribute
+     * @param currentEntry the current menu entry bean  
      */
-    private static void collectChoiceAttributeNamePaths(
+    private static void collectChoiceEntries(
         I_Type startType,
         boolean startingAtChoiceAttribute,
-        List<String> currentPath,
-        List<List<String>> results) {
+        ChoiceMenuEntryBean currentEntry) {
 
         if (startingAtChoiceAttribute || startType.isChoice()) {
             I_Type choiceType = startingAtChoiceAttribute
             ? startType
             : startType.getAttributeType(Type.CHOICE_ATTRIBUTE_NAME);
             for (String choiceName : choiceType.getAttributeNames()) {
-                currentPath.add(choiceName);
+                ChoiceMenuEntryBean subEntry = currentEntry.addChild(choiceName);
                 I_Type includedType = choiceType.getAttributeType(choiceName);
-                collectChoiceAttributeNamePaths(includedType, false, currentPath, results);
-                currentPath.remove(currentPath.size() - 1);
+                collectChoiceEntries(includedType, false, subEntry);
             }
-        } else {
-            results.add(new ArrayList<String>(currentPath));
         }
     }
 

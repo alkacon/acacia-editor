@@ -92,39 +92,18 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
          * @return the hovering CSS class
          */
         String hovering();
+
+        /**
+         * Returns the submenu CSS class name.<p>
+         * 
+         * @return the submenu CSS class name 
+         */
+        String submenu();
     }
 
     /** The style CSS resource. */
     @Shared
     interface I_Style extends com.alkacon.geranium.client.ui.css.I_LayoutBundle.I_DragCss, I_Widgets {
-
-        /**
-         * Returns the CSS constant value.<p>
-         * 
-         * @return the CSS constant value
-         */
-        String PARENT_GRADIENT();
-
-        /**
-         * Returns the CSS constant value.<p>
-         * 
-         * @return the CSS constant value
-         */
-        String PARENT_GRADIENT_IE9();
-
-        /**
-         * Returns the CSS constant value.<p>
-         * 
-         * @return the CSS constant value
-         */
-        String FOCUS_GRADIENT();
-
-        /**
-         * Returns the CSS constant value.<p>
-         * 
-         * @return the CSS constant value
-         */
-        String FOCUS_GRADIENT_IE9();
 
         /** 
          * Returns the attribute CSS class name.<p>
@@ -174,6 +153,20 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
          * @return the drag overlay CSS class
          */
         String dragOverlay();
+
+        /**
+         * Returns the CSS constant value.<p>
+         * 
+         * @return the CSS constant value
+         */
+        String FOCUS_GRADIENT();
+
+        /**
+         * Returns the CSS constant value.<p>
+         * 
+         * @return the CSS constant value
+         */
+        String FOCUS_GRADIENT_IE9();
 
         /**
          * Returns the focused CSS class name.<p>
@@ -244,6 +237,20 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
          * @return the move handle CSS class
          */
         String moveHandle();
+
+        /**
+         * Returns the CSS constant value.<p>
+         * 
+         * @return the CSS constant value
+         */
+        String PARENT_GRADIENT();
+
+        /**
+         * Returns the CSS constant value.<p>
+         * 
+         * @return the CSS constant value
+         */
+        String PARENT_GRADIENT_IE9();
 
     }
 

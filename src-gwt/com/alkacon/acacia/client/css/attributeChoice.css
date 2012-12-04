@@ -21,6 +21,12 @@ div.hovering.displayAbove.attributeChoice{
 	border-bottom-left-radius: 4px;
 }
 
+.submenu {
+	border-radius: 4px;
+	border: 1px solid #7788AA !important; 
+	z-index: 999999;
+}
+
 @sprite span.buttonIcon{
 	gwt-image: "gwtImages.icons.addIconDeactivated";
 	display: block;

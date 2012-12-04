@@ -24,7 +24,9 @@
 
 package com.alkacon.acacia.client.ui;
 
+import com.alkacon.acacia.client.ChoiceMenuEntryBean;
 import com.alkacon.acacia.client.EditorBase;
+import com.alkacon.acacia.client.I_WidgetService;
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 
 import com.google.gwt.core.client.GWT;
@@ -39,9 +41,11 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -78,7 +82,9 @@ public class AttributeChoiceWidget extends Composite implements HasMouseOverHand
 
             public void onMouseOut(MouseOutEvent event) {
 
-                hide();
+                if (!ChoiceMenuHandler.INSTANCE.hasSubmenus(AttributeChoiceWidget.this)) {
+                    hide();
+                }
             }
         });
         addMouseOverHandler(new MouseOverHandler() {
@@ -88,6 +94,27 @@ public class AttributeChoiceWidget extends Composite implements HasMouseOverHand
                 show();
             }
         });
+    }
+
+    /**
+     * Adds a new choice entry.<p>
+     * 
+     * @param widgetService the widget service to use for labels 
+     * @param menuEntry the menu entry bean 
+     * @param selectHandler the handler to use for selecting entries 
+     */
+    public void addChoice(
+        I_WidgetService widgetService,
+        ChoiceMenuEntryBean menuEntry,
+        AsyncCallback<ChoiceMenuEntryBean> selectHandler) {
+
+        Widget choice = ChoiceMenuHandler.INSTANCE.createMenuEntryWidget(
+            widgetService,
+            menuEntry,
+            selectHandler,
+            this,
+            null);
+        addChoice(choice);
     }
 
     /**
@@ -115,6 +142,16 @@ public class AttributeChoiceWidget extends Composite implements HasMouseOverHand
     public HandlerRegistration addMouseOverHandler(MouseOverHandler handler) {
 
         return addDomHandler(handler, MouseOverEvent.getType());
+    }
+
+    /**
+     * Gets the panel into which submenus of this menu should be inserted.<p>
+     * 
+     * @return the panel for submenus 
+     */
+    public Panel getSubmenuPanel() {
+
+        return (Panel)getParent();
     }
 
     /**

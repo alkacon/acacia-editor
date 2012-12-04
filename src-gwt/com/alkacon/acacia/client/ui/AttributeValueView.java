@@ -25,9 +25,11 @@
 package com.alkacon.acacia.client.ui;
 
 import com.alkacon.acacia.client.AttributeHandler;
+import com.alkacon.acacia.client.ChoiceMenuEntryBean;
 import com.alkacon.acacia.client.EditorBase;
 import com.alkacon.acacia.client.HighlightingHandler;
 import com.alkacon.acacia.client.I_EntityRenderer;
+import com.alkacon.acacia.client.I_WidgetService;
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
 import com.alkacon.acacia.client.widgets.I_FormEditWidget;
@@ -54,7 +56,6 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.HasMouseDownHandlers;
@@ -74,6 +75,7 @@ import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -252,25 +254,29 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     }
 
     /**
-     * Adds an attribute choice.<p>
+     * Adds a new choice  choice selection menu.<p> 
      * 
-     * @param label the choice label
-     * @param description the choice description
-     * @param choicePath the choice attribute path 
+     * @param widgetService the widget service to use for labels  
+     * @param menuEntry the menu entry bean for the choice 
      */
-    public void addChoice(String label, String description, final List<String> choicePath) {
+    public void addChoice(I_WidgetService widgetService, final ChoiceMenuEntryBean menuEntry) {
 
-        HTML choice = new HTML(label);
-        choice.setTitle(description);
-        choice.addClickHandler(new ClickHandler() {
+        AsyncCallback<ChoiceMenuEntryBean> selectHandler = new AsyncCallback<ChoiceMenuEntryBean>() {
 
-            public void onClick(ClickEvent event) {
+            public void onFailure(Throwable caught) {
+
+                // will not be called 
+
+            }
+
+            public void onSuccess(ChoiceMenuEntryBean selectedEntry) {
 
                 m_attributeChoice.hide();
-                selectChoice(choicePath);
+                selectChoice(selectedEntry.getPath());
             }
-        });
-        m_attributeChoice.addChoice(choice);
+        };
+
+        m_attributeChoice.addChoice(widgetService, menuEntry, selectHandler);
         m_isChoice = true;
     }
 

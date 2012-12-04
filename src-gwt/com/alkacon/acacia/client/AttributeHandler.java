@@ -373,13 +373,10 @@ public class AttributeHandler extends RootHandler {
                     m_widgetService.getRendererForAttribute(attributeChoice, getAttributeType()),
                     value.getAttribute(attributeChoice).getComplexValue());
             }
-            List<List<String>> choiceAttributePaths = Renderer.getChoiceAttributeNamePaths(getAttributeType(), true);
-            for (List<String> path : choiceAttributePaths) {
-                String lastPathComponent = path.get(path.size() - 1);
-                valueWidget.addChoice(
-                    m_widgetService.getAttributeLabel(lastPathComponent),
-                    m_widgetService.getAttributeHelp(lastPathComponent),
-                    path);
+
+            List<ChoiceMenuEntryBean> menuEntries = Renderer.getChoiceEntries(getAttributeType(), true);
+            for (ChoiceMenuEntryBean menuEntry : menuEntries) {
+                valueWidget.addChoice(m_widgetService, menuEntry);
             }
         } else if (getAttributeType().isSimpleType()) {
             String value = m_entity.getAttribute(m_attributeName).getSimpleValues().get(currentPosition);
@@ -581,13 +578,9 @@ public class AttributeHandler extends RootHandler {
                 m_widgetService.getAttributeHelp(attributeChoice));
         }
 
-        List<List<String>> choiceAttributePaths = Renderer.getChoiceAttributeNamePaths(getAttributeType(), true);
-        for (List<String> path : choiceAttributePaths) {
-            String lastPathComponent = path.get(path.size() - 1);
-            valueWidget.addChoice(
-                m_widgetService.getAttributeLabel(lastPathComponent),
-                m_widgetService.getAttributeHelp(lastPathComponent),
-                path);
+        List<ChoiceMenuEntryBean> menuEntries = Renderer.getChoiceEntries(getAttributeType(), true);
+        for (ChoiceMenuEntryBean menuEntry : menuEntries) {
+            valueWidget.addChoice(m_widgetService, menuEntry);
         }
         int valueIndex = reference.getValueIndex() + 1;
         m_entity.insertAttributeValue(m_attributeName, choiceEntity, valueIndex);
