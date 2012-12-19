@@ -32,6 +32,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 
@@ -63,6 +64,21 @@ public class ChoiceSubmenu extends Composite {
     public void addChoice(ChoiceMenuEntryWidget choice) {
 
         m_root.add(choice);
+    }
+
+    /**
+     * Checks whether the submenu should be opened above instead of below.<p>
+     * 
+     * @param referenceElement the reference element 
+     * @return true if the new submenu should be opened above 
+     */
+    public boolean openAbove(Element referenceElement) {
+
+        int windowTop = Window.getScrollTop();
+        int windowBottom = Window.getScrollTop() + Window.getClientHeight();
+        int spaceAbove = referenceElement.getAbsoluteTop() - windowTop;
+        int spaceBelow = windowBottom - referenceElement.getAbsoluteBottom();
+        return spaceAbove > spaceBelow;
     }
 
     /**
@@ -108,7 +124,14 @@ public class ChoiceSubmenu extends Composite {
         int refLeft = referenceElement.getAbsoluteLeft();
         int refTop = referenceElement.getAbsoluteTop();
         int newLeft = startX + (refLeft - myRight) + deltaX;
-        int newTop = startY + (refTop - myTop) + deltaY;
+        int newTop;
+        if (openAbove(referenceElement)) {
+            int myHeight = elem.getOffsetHeight();
+            int refHeight = referenceElement.getOffsetHeight();
+            newTop = startY + ((refTop + refHeight) - (myTop + myHeight)) + deltaY;
+        } else {
+            newTop = startY + (refTop - myTop) + deltaY;
+        }
         style.setLeft(newLeft, Unit.PX);
         style.setTop(newTop, Unit.PX);
     }

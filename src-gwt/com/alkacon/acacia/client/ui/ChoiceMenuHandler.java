@@ -213,7 +213,6 @@ public class ChoiceMenuHandler implements MouseOverHandler, MouseOutHandler {
      */
     protected void removeSubmenu(ChoiceSubmenu submenu) {
 
-        submenu.setVisible(false);
         submenu.removeFromParent();
         m_submenus.remove(submenu);
     }
