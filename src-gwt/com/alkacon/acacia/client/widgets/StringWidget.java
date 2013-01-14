@@ -35,8 +35,8 @@ import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -87,7 +87,7 @@ public class StringWidget extends A_EditWidget {
         // Initialization code
         if (!m_valueChangeHandlerInitialized) {
             m_valueChangeHandlerInitialized = true;
-            addDomHandler(new KeyPressHandler() {
+            addDomHandler(new KeyUpHandler() {
 
                 /** The courser position. */
                 protected JavaScriptObject m_range;
@@ -98,11 +98,11 @@ public class StringWidget extends A_EditWidget {
                 /** Helper text area to store the text that should be pasted. */
                 protected TextArea m_helpfield;
 
-                public void onKeyPress(KeyPressEvent event) {
+                public void onKeyUp(KeyUpEvent event) {
 
                     // check if something is paste to the field
                     if (event.isShiftKeyDown() || event.isControlKeyDown()) {
-                        int charCode = event.getCharCode();
+                        int charCode = event.getNativeEvent().getCharCode();
                         if ((charCode == 'v') || (charCode == 45)) {
                             m_helpfield = new TextArea();
                             m_helpfield.getElement().getStyle().setPosition(Position.FIXED);
@@ -138,7 +138,7 @@ public class StringWidget extends A_EditWidget {
                     });
                 }
 
-            }, KeyPressEvent.getType());
+            }, KeyUpEvent.getType());
 
             addDomHandler(new ChangeHandler() {
 
