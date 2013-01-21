@@ -172,6 +172,8 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 .attributeValue.focused > .widgetHolder > div > .mceEditor .mceExternalToolbar{
 	z-index: 10;
 	left: -1px;
+	/* leave some space for attribute buttons */
+	margin-right: 64px;
 	border-color: #7788AA;
 	border-radius: 3px 3px 0 0;
 }
