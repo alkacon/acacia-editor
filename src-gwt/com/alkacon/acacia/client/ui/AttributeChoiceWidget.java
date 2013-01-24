@@ -77,7 +77,9 @@ public class AttributeChoiceWidget extends Composite implements HasMouseOverHand
     public AttributeChoiceWidget() {
 
         initWidget(uiBinder.createAndBindUi(this));
-        m_buttonIcon.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_CHOICE_ADD_CHOICE_0));
+        if (EditorBase.getDictionary() != null) {
+            m_buttonIcon.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_CHOICE_ADD_CHOICE_0));
+        }
         addMouseOutHandler(new MouseOutHandler() {
 
             public void onMouseOut(MouseOutEvent event) {
