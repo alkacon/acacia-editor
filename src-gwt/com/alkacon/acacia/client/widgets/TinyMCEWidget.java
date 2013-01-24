@@ -133,9 +133,9 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
      * @return the editable element 
      */
     public native Element getMainElement() /*-{
-      var elementId = this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_id;
-      var mainElement = $wnd.document.getElementById(elementId);
-      return mainElement;
+        var elementId = this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_id;
+        var mainElement = $wnd.document.getElementById(elementId);
+        return mainElement;
     }-*/;
 
     /**
@@ -219,9 +219,9 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
      * Checks whether the necessary Javascript libraries are available by accessing them. 
      */
     protected native void checkLibraries() /*-{
-      // fail early if tinymce is not available
-      var w = $wnd;
-      var init = w.tinyMCE.init;
+        // fail early if tinymce is not available
+        var w = $wnd;
+        var init = w.tinyMCE.init;
     }-*/;
 
     /**
@@ -270,27 +270,14 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
     }
 
     /**
-     * Fixes the layout when the toolbar's top is above the body's top.<p>
-     */
-    protected void fixToolbar() {
-
-        Element element = getToolbarElement();
-        int top = element.getAbsoluteTop();
-        if (top < 0) {
-            Element parent = (Element)(element.getParentNode());
-            parent.getStyle().setMarginTop(-top, Unit.PX);
-        }
-    }
-
-    /**
      * Returns the editor parent element.<p>
      * 
      * @return the editor parent element
      */
     protected native Element getEditorParentElement() /*-{
-      var elementId = this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_id;
-      var parentId = elementId + "_parent";
-      return $doc.getElementById(parentId);
+        var elementId = this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_id;
+        var parentId = elementId + "_parent";
+        return $doc.getElementById(parentId);
     }-*/;
 
     /**
@@ -299,9 +286,9 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
      * @return the editor table element
      */
     protected native Element getEditorTableElement() /*-{
-      var elementId = this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_id;
-      var tableId = elementId + "_tbl";
-      return $doc.getElementById(tableId);
+        var elementId = this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_id;
+        var tableId = elementId + "_tbl";
+        return $doc.getElementById(tableId);
     }-*/;
 
     /**
@@ -310,9 +297,9 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
      * @return the editor parent element
      */
     protected native int getFrameContentHeight() /*-{
-      var elementId = this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_id;
-      var parentId = elementId + "_parent";
-      return $doc.getElementById(parentId);
+        var elementId = this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_id;
+        var parentId = elementId + "_parent";
+        return $doc.getElementById(parentId);
     }-*/;
 
     /**
@@ -321,9 +308,9 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
      * @return the toolbar element 
      */
     protected native Element getToolbarElement() /*-{
-      var elementId = this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_id;
-      var toolbarId = elementId + "_external";
-      return $doc.getElementById(toolbarId);
+        var elementId = this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_id;
+        var toolbarId = elementId + "_external";
+        return $doc.getElementById(toolbarId);
     }-*/;
 
     /**
@@ -376,23 +363,23 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
      * @param eventSource the event source
      */
     protected native void propagateMouseEvent(String eventType, Element eventSource) /*-{
-      var doc = $wnd.document;
-      var event;
-      if (doc.createEvent) {
-         event = doc.createEvent("MouseEvents");
-         event.initEvent(eventType, true, true);
-         eventSource.dispatchEvent(event);
-      } else {
-         eventSource.fireEvent("on" + eventType);
-      }
+        var doc = $wnd.document;
+        var event;
+        if (doc.createEvent) {
+            event = doc.createEvent("MouseEvents");
+            event.initEvent(eventType, true, true);
+            eventSource.dispatchEvent(event);
+        } else {
+            eventSource.fireEvent("on" + eventType);
+        }
     }-*/;
 
     /**
      * Removes the editor instance.<p>
      */
     protected native void removeEditor() /*-{
-      var editor = this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_editor;
-      editor.remove();
+        var editor = this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_editor;
+        editor.remove();
     }-*/;
 
     /**
@@ -401,10 +388,10 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
      * @param html the new content html 
      */
     protected native void setMainElementContent(String html) /*-{
-      var instance = this;
-      var elementId = instance.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_id;
-      var mainElement = $wnd.document.getElementById(elementId);
-      mainElement.innerHTML = html;
+        var instance = this;
+        var elementId = instance.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_id;
+        var mainElement = $wnd.document.getElementById(elementId);
+        mainElement.innerHTML = html;
     }-*/;
 
     /**
@@ -423,122 +410,121 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
      */
     native void initNative() /*-{
 
-      var self = this;
-      var elementId = self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_id;
-      var iframeId = elementId + "_ifr";
-      var mainElement = $wnd.document.getElementById(elementId);
-      var editorHeight = self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_editorHeight
-            + "px";
-      self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_currentContent = self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_originalContent;
+        var self = this;
+        var elementId = self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_id;
+        var iframeId = elementId + "_ifr";
+        var mainElement = $wnd.document.getElementById(elementId);
+        var editorHeight = self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_editorHeight
+                + "px";
+        self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_currentContent = self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_originalContent;
 
-      var fireChange = function() {
-         self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::fireChangeFromNative()();
-      };
+        var fireChange = function() {
+            self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::fireChangeFromNative()();
+        };
 
-      // default options:
-      var defaults = {
-         onchange_callback : fireChange,
-         theme_advanced_resize_horizontal : true,
-         theme_advanced_resizing_max_width : self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_width,
-         relative_urls : false,
-         remove_script_host : false,
-         entity_encoding : "raw",
-         skin_variant : 'ocms',
-         mode : "exact",
-         theme : "advanced",
-         plugins : "autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist",
-         theme_advanced_toolbar_location : "external",
-         theme_advanced_toolbar_align : "right",
-         theme_advanced_statusbar_location : "bottom",
-         width : '100%',
-         theme_advanced_resizing : true,
-         theme_advanced_resizing_use_cookie : false
-      };
-      var options = this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_options;
-      if (options != null && options.editorHeight) {
-         editorHeight = options.editorHeight + "px";
-         delete options.editorHeight;
-      }
-      // extend the defaults with any given options
-      if (options != null) {
-         var vie = @com.alkacon.vie.client.Vie::getInstance()();
-         vie.jQuery.extend(defaults, options);
-      }
+        // default options:
+        var defaults = {
+            onchange_callback : fireChange,
+            theme_advanced_resize_horizontal : true,
+            theme_advanced_resizing_max_width : self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_width,
+            relative_urls : false,
+            remove_script_host : false,
+            entity_encoding : "raw",
+            skin_variant : 'ocms',
+            mode : "exact",
+            theme : "advanced",
+            plugins : "autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist",
+            theme_advanced_toolbar_location : "external",
+            theme_advanced_toolbar_align : "right",
+            theme_advanced_statusbar_location : "bottom",
+            width : '100%',
+            theme_advanced_resizing : true,
+            theme_advanced_resizing_use_cookie : false
+        };
+        var options = this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_options;
+        if (options != null && options.editorHeight) {
+            editorHeight = options.editorHeight + "px";
+            delete options.editorHeight;
+        }
+        // extend the defaults with any given options
+        if (options != null) {
+            var vie = @com.alkacon.vie.client.Vie::getInstance()();
+            vie.jQuery.extend(defaults, options);
+        }
 
-      // add the setup function
-      defaults.setup = function(ed) {
-         self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_editor = ed;
+        // add the setup function
+        defaults.setup = function(ed) {
+            self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_editor = ed;
 
-         ed.onSetContent.add(fireChange);
-         ed.onKeyDown.add(fireChange);
-         ed.onLoadContent
-               .add(function() {
-                  $wnd.document.getElementById(iframeId).style.minHeight = editorHeight;
-                  // firing resize event on resize of the editor iframe
-                  ed.dom
-                        .bind(
-                              ed.getWin(),
-                              'resize',
-                              function() {
-                                 self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::fireResizeEvent()();
-                              });
-                  var content = self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_originalContent;
-                  if (content != null) {
-                     ed.setContent(content);
-                  }
-                  self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_initialized = true;
+            ed.onSetContent.add(fireChange);
+            ed.onKeyDown.add(fireChange);
+            ed.onLoadContent
+                    .add(function() {
+                        $wnd.document.getElementById(iframeId).style.minHeight = editorHeight;
+                        // firing resize event on resize of the editor iframe
+                        ed.dom
+                                .bind(
+                                        ed.getWin(),
+                                        'resize',
+                                        function() {
+                                            self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::fireResizeEvent()();
+                                        });
+                        var content = self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_originalContent;
+                        if (content != null) {
+                            ed.setContent(content);
+                        }
+                        self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_initialized = true;
 
-               });
-         ed.onClick
-               .add(function(event) {
-                  self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::fixToolbar()();
-                  if (!self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::isActive()()) {
-                     // this may be the case if the mouse-down event has not been triggered correctly yet (IE),
-                     // trigger activation through new mouse-down
-                     self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Ljava/lang/String;Lcom/google/gwt/user/client/Element;)('mousedown', mainElement);
-                  }
-                  self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Ljava/lang/String;Lcom/google/gwt/user/client/Element;)('click', mainElement);
-               });
-      };
+                    });
+            ed.onClick
+                    .add(function(event) {
+                        if (!self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::isActive()()) {
+                            // this may be the case if the mouse-down event has not been triggered correctly yet (IE),
+                            // trigger activation through new mouse-down
+                            self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Ljava/lang/String;Lcom/google/gwt/user/client/Element;)('mousedown', mainElement);
+                        }
+                        self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Ljava/lang/String;Lcom/google/gwt/user/client/Element;)('click', mainElement);
+                    });
+        };
 
-      // add event handlers
-      defaults.init_instance_callback = function(ed) {
-         $wnd.tinyMCE.dom.Event
-               .add(
-                     ed.getWin(),
-                     'focus',
-                     function(event) {
-                        self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateFocusEvent()();
-                     });
-         $wnd.tinyMCE.dom.Event
-               .add(
-                     ed.getWin(),
-                     'mousedown',
-                     function(event) {
-                        self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Ljava/lang/String;Lcom/google/gwt/user/client/Element;)('mousedown', mainElement);
-                     });
-         $wnd.tinyMCE.dom.Event
-               .add(
-                     ed.getWin(),
-                     'mouseup',
-                     function(event) {
-                        self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Ljava/lang/String;Lcom/google/gwt/user/client/Element;)('mouseup', mainElement);
-                     });
-         //            $wnd.tinyMCE.dom.Event
-         //                    .add(
-         //                            ed.getWin(),
-         //                            'mousemove',
-         //                            function(event) {
-         //                                self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Ljava/lang/String;Lcom/google/gwt/user/client/Element;)('mousemove', mainElement);
-         //                            });
-      };
+        // add event handlers
+        defaults.init_instance_callback = function(ed) {
+            $wnd.tinyMCE.dom.Event
+                    .add(
+                            ed.getWin(),
+                            'focus',
+                            function(event) {
+                                self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateFocusEvent()();
+                            });
+            $wnd.tinyMCE.dom.Event
+                    .add(
+                            ed.getWin(),
+                            'mousedown',
+                            function(event) {
+                                self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Ljava/lang/String;Lcom/google/gwt/user/client/Element;)('mousedown', mainElement);
+                            });
+            $wnd.tinyMCE.dom.Event
+                    .add(
+                            ed.getWin(),
+                            'mouseup',
+                            function(event) {
+                                self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Ljava/lang/String;Lcom/google/gwt/user/client/Element;)('mouseup', mainElement);
+                            });
+            //            $wnd.tinyMCE.dom.Event
+            //                    .add(
+            //                            ed.getWin(),
+            //                            'mousemove',
+            //                            function(event) {
+            //                                self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Ljava/lang/String;Lcom/google/gwt/user/client/Element;)('mousemove', mainElement);
+            //                            });
+        };
 
-      // set the edited element id
-      defaults.elements = self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_id;
+        // set the edited element id
+        defaults.elements = self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_id;
 
-      // initialize tinyMCE
-      $wnd.tinyMCE.init(defaults);
-      self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::fixStyles()();
+        // initialize tinyMCE
+        $wnd.tinyMCE.init(defaults);
+        self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::fixStyles()();
     }-*/;
 
     /**
@@ -583,8 +569,8 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
      * @return the editor content
      */
     private native String getContent() /*-{
-      var editor = this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_editor;
-      return editor.getContent();
+        var editor = this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_editor;
+        return editor.getContent();
     }-*/;
 
     /**
@@ -593,8 +579,8 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
      * @param newContent the new content 
      */
     private native void setContent(String newContent) /*-{
-      var editor = this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_editor;
-      editor.setContent(newContent);
+        var editor = this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_editor;
+        editor.setContent(newContent);
     }-*/;
 
 }
