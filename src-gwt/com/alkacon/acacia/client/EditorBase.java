@@ -134,6 +134,10 @@ public class EditorBase {
                 return new HalloWidget(element, null);
             }
         });
+
+        // we may want to explicitly use the default renderer for specific attributes. 
+        m_widgetService.addRenderer(new Renderer(Vie.getInstance(), getWidgetService()));
+        m_widgetService.addRenderer(new NativeComplexWidgetRenderer());
         m_validationHandler = new ValidationHandler();
         m_validationHandler.setContentService(m_service);
     }

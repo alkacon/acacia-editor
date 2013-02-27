@@ -54,6 +54,12 @@ public class WidgetService implements I_WidgetService {
     /** The registered widget factories. */
     private Map<String, I_WidgetFactory> m_widgetFactories;
 
+    /** Renderers by attribute. */
+    private Map<String, I_EntityRenderer> m_rendererByAttribute = new HashMap<String, I_EntityRenderer>();
+
+    /** Map of renderers by name. */
+    private Map<String, I_EntityRenderer> m_renderers = new HashMap<String, I_EntityRenderer>();
+
     /**
      * Constructor.<p>
      */
@@ -70,6 +76,14 @@ public class WidgetService implements I_WidgetService {
     public void addConfigurations(Map<String, AttributeConfiguration> configurations) {
 
         m_attributeConfigurations.putAll(configurations);
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.I_WidgetService#addRenderer(com.alkacon.acacia.client.I_EntityRenderer)
+     */
+    public void addRenderer(I_EntityRenderer renderer) {
+
+        m_renderers.put(renderer.getName(), renderer);
     }
 
     /**
@@ -92,34 +106,6 @@ public class WidgetService implements I_WidgetService {
     }
 
     /**
-     * @see com.alkacon.acacia.client.I_WidgetService#getAttributeHelp(java.lang.String)
-     */
-    public String getAttributeHelp(String attributeName) {
-
-        if (m_attributeConfigurations != null) {
-            AttributeConfiguration config = m_attributeConfigurations.get(attributeName);
-            if (config != null) {
-                return config.getHelp();
-            }
-        }
-        return null;
-    }
-
-    /**
-     * @see com.alkacon.acacia.client.I_WidgetService#getAttributeLabel(java.lang.String)
-     */
-    public String getAttributeLabel(String attributeName) {
-
-        if (m_attributeConfigurations != null) {
-            AttributeConfiguration config = m_attributeConfigurations.get(attributeName);
-            if (config != null) {
-                return config.getLabel();
-            }
-        }
-        return attributeName;
-    }
-
-    /**
      * @see com.alkacon.acacia.client.I_WidgetService#getAttributeFormWidget(java.lang.String)
      */
     public I_FormEditWidget getAttributeFormWidget(String attributeName) {
@@ -135,6 +121,20 @@ public class WidgetService implements I_WidgetService {
         }
         // no configuration or widget factory found, return default string widget 
         return new FormWidgetWrapper(new StringWidget());
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.I_WidgetService#getAttributeHelp(java.lang.String)
+     */
+    public String getAttributeHelp(String attributeName) {
+
+        if (m_attributeConfigurations != null) {
+            AttributeConfiguration config = m_attributeConfigurations.get(attributeName);
+            if (config != null) {
+                return config.getHelp();
+            }
+        }
+        return null;
     }
 
     /**
@@ -156,13 +156,42 @@ public class WidgetService implements I_WidgetService {
     }
 
     /**
+     * @see com.alkacon.acacia.client.I_WidgetService#getAttributeLabel(java.lang.String)
+     */
+    public String getAttributeLabel(String attributeName) {
+
+        if (m_attributeConfigurations != null) {
+            AttributeConfiguration config = m_attributeConfigurations.get(attributeName);
+            if (config != null) {
+                return config.getLabel();
+            }
+        }
+        return attributeName;
+    }
+
+    /**
      * @see com.alkacon.acacia.client.I_WidgetService#getDefaultAttributeValue(java.lang.String)
      */
     public String getDefaultAttributeValue(String attributeName) {
 
         AttributeConfiguration config = m_attributeConfigurations.get(attributeName);
         return (config != null) && (config.getDefaultValue() != null) ? config.getDefaultValue() : "";
+    }
 
+    /**
+     * Gets the renderer instance for a specific attribute.<p>
+     * 
+     * @param attribute the attribute for which we want the renderer 
+     * 
+     * @return the renderer instance 
+     */
+    public I_EntityRenderer getRendererForAttribute(String attribute) {
+
+        I_EntityRenderer result = m_rendererByAttribute.get(attribute);
+        if (result == null) {
+            return m_defaultRenderer;
+        }
+        return result;
     }
 
     /**
@@ -170,7 +199,7 @@ public class WidgetService implements I_WidgetService {
      */
     public I_EntityRenderer getRendererForAttribute(String attributeName, I_Type attributeType) {
 
-        return getRendererForType(attributeType);
+        return getRendererForAttribute(attributeName);
     }
 
     /**
@@ -194,6 +223,20 @@ public class WidgetService implements I_WidgetService {
         m_attributeConfigurations = definition.getConfigurations();
     }
 
+    /** 
+     * @see com.alkacon.acacia.client.I_WidgetService#registerComplexWidgetAttribute(java.lang.String, java.lang.String, java.lang.String)
+     */
+    public void registerComplexWidgetAttribute(String attrName, String rendererName, String configuration) {
+
+        I_EntityRenderer renderer = m_renderers.get(rendererName);
+        if (renderer != null) {
+            renderer = renderer.configure(configuration);
+            m_rendererByAttribute.put(attrName, renderer);
+        } else {
+            log("Invalid entity renderer: " + rendererName);
+        }
+    }
+
     /**
      * Adds the default complex type renderer.<p>
      * 
@@ -211,5 +254,16 @@ public class WidgetService implements I_WidgetService {
 
         m_widgetFactories = widgetFactories;
     }
+
+    /** 
+     * Log method for debugging.<p>
+     * 
+     * @param message the message to log 
+     */
+    private native void log(String message) /*-{
+      if ($wnd.console) {
+         $wnd.console.log(message);
+      }
+    }-*/;
 
 }

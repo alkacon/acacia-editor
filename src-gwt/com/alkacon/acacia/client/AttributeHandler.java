@@ -239,7 +239,6 @@ public class AttributeHandler extends RootHandler {
         } else {
             m_entity.setAttributeValue(m_attributeName, value, reference.getValueIndex());
         }
-
     }
 
     /**

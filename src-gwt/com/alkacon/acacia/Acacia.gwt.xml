@@ -2,6 +2,7 @@
 <module>
 	<inherits name="com.alkacon.vie.VieGwt" /> 
 	<inherits name="com.alkacon.geranium.Geranium" />
+	
 	<stylesheet src="../hallo/jquery-ui-bootstrap/css/custom-theme/jquery-ui-1.8.16.custom.css" />
 	<stylesheet src="../hallo/hallo.css" />
 	<stylesheet src="../hallo/fontawesome/css/font-awesome.css" />

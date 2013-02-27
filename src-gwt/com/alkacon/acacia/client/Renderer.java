@@ -172,6 +172,9 @@ public class Renderer implements I_EntityRenderer {
         }
     }
 
+    /** The renderer name. */
+    public static final String RENDERER_NAME = "default";
+
     /** The entity CSS class. */
     public static final String ENTITY_CLASS = I_LayoutBundle.INSTANCE.form().entity();
 
@@ -259,6 +262,22 @@ public class Renderer implements I_EntityRenderer {
     }
 
     /**
+     * @see com.alkacon.acacia.client.I_EntityRenderer#configure(java.lang.String)
+     */
+    public I_EntityRenderer configure(String configuration) {
+
+        return this;
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.I_EntityRenderer#getName()
+     */
+    public String getName() {
+
+        return RENDERER_NAME;
+    }
+
+    /**
      * @see com.alkacon.acacia.client.I_EntityRenderer#renderForm(com.alkacon.vie.shared.I_Entity, java.util.List, com.google.gwt.user.client.ui.Panel, com.alkacon.acacia.client.I_AttributeHandler, int)
      */
     @SuppressWarnings("unchecked")
@@ -304,10 +323,7 @@ public class Renderer implements I_EntityRenderer {
             Iterator<TabInfo> tabIt = tabInfos.iterator();
             TabInfo currentTab = tabIt.next();
             TabInfo nextTab = tabIt.next();
-            FlowPanel tabPanel = new FlowPanel();
-            tabPanel.addStyleName(ENTITY_CLASS);
-            tabPanel.addStyleName(I_LayoutBundle.INSTANCE.form().formParent());
-            tabPanel.getElement().getStyle().setMargin(0, Unit.PX);
+            FlowPanel tabPanel = createTab();
             tabbedPanel.addNamed(tabPanel, currentTab.getTabName(), currentTab.getTabId());
             I_Type entityType = m_vie.getType(entity.getTypeName());
             List<String> attributeNames = entityType.getAttributeNames();
@@ -316,10 +332,7 @@ public class Renderer implements I_EntityRenderer {
                 if ((nextTab != null) && attributeName.endsWith("/" + nextTab.getStartName())) {
                     currentTab = nextTab;
                     nextTab = tabIt.hasNext() ? tabIt.next() : null;
-                    tabPanel = new FlowPanel();
-                    tabPanel.addStyleName(ENTITY_CLASS);
-                    tabPanel.addStyleName(I_LayoutBundle.INSTANCE.form().formParent());
-                    tabPanel.getElement().getStyle().setMargin(0, Unit.PX);
+                    tabPanel = createTab();
                     tabbedPanel.addNamed(tabPanel, currentTab.getTabName(), currentTab.getTabId());
                     // check if the tab content may be collapsed
                     if (currentTab.isCollapsed()) {
@@ -600,6 +613,21 @@ public class Renderer implements I_EntityRenderer {
             result = parentEntity.getAttribute(attributeName);
         }
         return result;
+    }
+
+    /** 
+     * Creates a tab.<p>
+     * 
+     * @return the created tab 
+     */
+    private FlowPanel createTab() {
+
+        FlowPanel tabPanel;
+        tabPanel = new FlowPanel();
+        tabPanel.addStyleName(ENTITY_CLASS);
+        tabPanel.addStyleName(I_LayoutBundle.INSTANCE.form().formParent());
+        tabPanel.getElement().getStyle().setMargin(0, Unit.PX);
+        return tabPanel;
     }
 
     /**

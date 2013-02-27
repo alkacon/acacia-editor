@@ -38,6 +38,13 @@ import com.google.gwt.user.client.Element;
  */
 public interface I_WidgetService {
 
+    /** 
+     * Adds a renderer.<p>
+     * 
+     * @param renderer the renderer to add 
+     */
+    public void addRenderer(I_EntityRenderer renderer);
+
     /**
      * Adds all configurations.<p>
      * 
@@ -54,24 +61,6 @@ public interface I_WidgetService {
     void addWidgetFactory(String widgetName, I_WidgetFactory widgetFactory);
 
     /**
-     * Returns the attribute help information.<p>
-     * 
-     * @param attributeName the attribute name
-     * 
-     * @return the attribute help information
-     */
-    String getAttributeHelp(String attributeName);
-
-    /**
-     * Returns the label for the given attribute.<p>
-     * 
-     * @param attributeName the attribute name
-     * 
-     * @return the attribute label
-     */
-    String getAttributeLabel(String attributeName);
-
-    /**
      * Returns the attribute form editing widget.<p>
      * 
      * @param attributeName the attribute name
@@ -79,6 +68,15 @@ public interface I_WidgetService {
      * @return the attribute widget
      */
     I_FormEditWidget getAttributeFormWidget(String attributeName);
+
+    /**
+     * Returns the attribute help information.<p>
+     * 
+     * @param attributeName the attribute name
+     * 
+     * @return the attribute help information
+     */
+    String getAttributeHelp(String attributeName);
 
     /**
      * Returns the attribute inline editing widget wrapping the given DOM element.<p>
@@ -89,6 +87,15 @@ public interface I_WidgetService {
      * @return the attribute widget
      */
     I_EditWidget getAttributeInlineWidget(String attributeName, Element element);
+
+    /**
+     * Returns the label for the given attribute.<p>
+     * 
+     * @param attributeName the attribute name
+     * 
+     * @return the attribute label
+     */
+    String getAttributeLabel(String attributeName);
 
     /**
      * Returns the default attribute value
@@ -117,6 +124,15 @@ public interface I_WidgetService {
      * @return the renderer
      */
     I_EntityRenderer getRendererForType(I_Type entityType);
+
+    /**
+     * Registers a complex widget attribute which should be handled by a special renderer.<p>
+     * 
+     * @param attrName the attribute name 
+     * @param renderer the renderer to register for the attribute 
+     * @param configuration the renderer configuration 
+     */
+    void registerComplexWidgetAttribute(String attrName, String renderer, String configuration);
 
     /**
      * Sets the widget factories.<p>

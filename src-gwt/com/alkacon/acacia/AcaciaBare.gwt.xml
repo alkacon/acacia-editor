@@ -4,6 +4,8 @@
 <!-- This module requires additional JavaScript and CSS resources. Take care to include jquery, backbone and vie.js. Also include resources required by hallo and tinyMCE. -->
 	<inherits name="com.alkacon.vie.VieGwtBare" /> 
 	<inherits name="com.alkacon.geranium.Geranium" />
+	<inherits name="org.timepedia.exporter.Exporter" />
+  	<set-property name="export" value="yes" />
 	<source path="client" />
 	<source path="shared" />
 </module>

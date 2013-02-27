@@ -40,6 +40,22 @@ import com.google.gwt.user.client.ui.Panel;
 public interface I_EntityRenderer {
 
     /**
+     * Returns a copy of this renderer which has been configured with the given configuration string.<p>
+     * 
+     * @param configuration the configuration string 
+     * 
+     * @return the configured copy of the renderer 
+     */
+    public I_EntityRenderer configure(String configuration);
+
+    /**
+     * Gets the name of the renderer (should be unique for each renderer class).<p>
+     * 
+     * @return the renderer name 
+     */
+    public String getName();
+
+    /**
      * Renders the given entity into a form with tabs.<p>
      * 
      * @param entity the entity to render
