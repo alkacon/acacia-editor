@@ -10,6 +10,8 @@
 			<aui:PushButton ui:field="m_removeButton" addStyleNames="{style.form.button}" />
 			<aui:PushButton ui:field="m_addButton" addStyleNames="{style.form.button}" />
 			<ed:AttributeChoiceWidget ui:field="m_attributeChoice" />
+			<aui:PushButton ui:field="m_upButton" addStyleNames="{style.form.button}" />
+			<aui:PushButton ui:field="m_downButton" addStyleNames="{style.form.button}" />
 			<aui:PushButton ui:field="m_moveButton" addStyleNames="{style.form.button} {style.form.moveHandle}" />
 		</aui:HoverPanel>
 		<div ui:field="m_helpBubble" class="{style.form.helpBubble}">

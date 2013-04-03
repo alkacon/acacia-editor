@@ -61,19 +61,25 @@ import com.google.gwt.user.client.ui.Panel;
 public class EditorBase {
 
     /** Message constant for key in the resource bundle. */
-    public static String GUI_CHOICE_ADD_CHOICE_0 = "GUI_CHOICE_ADD_CHOICE_0"; //Add choice
+    public static final String GUI_CHOICE_ADD_CHOICE_0 = "GUI_CHOICE_ADD_CHOICE_0"; //Add choice
 
     /** Message constant for key in the resource bundle. */
-    public static String GUI_VIEW_ADD_0 = "GUI_VIEW_ADD_0"; //Add
+    public static final String GUI_VIEW_ADD_0 = "GUI_VIEW_ADD_0"; //Add
 
     /** Message constant for key in the resource bundle. */
-    public static String GUI_VIEW_CLOSE_0 = "GUI_VIEW_CLOSE_0"; //Close
+    public static final String GUI_VIEW_CLOSE_0 = "GUI_VIEW_CLOSE_0"; //Close
 
     /** Message constant for key in the resource bundle. */
-    public static String GUI_VIEW_DELETE_0 = "GUI_VIEW_DELETE_0"; //Delete
+    public static final String GUI_VIEW_DELETE_0 = "GUI_VIEW_DELETE_0"; //Delete
 
     /** Message constant for key in the resource bundle. */
-    public static String GUI_VIEW_MOVE_0 = "GUI_VIEW_MOVE_0"; //Move
+    public static final String GUI_VIEW_MOVE_0 = "GUI_VIEW_MOVE_0"; //Move
+
+    /** Message constant for key in the resource bundle. */
+    public static final String GUI_VIEW_MOVE_DOWN_0 = "GUI_VIEW_MOVE_DOWN_0"; //Move down
+
+    /** Message constant for key in the resource bundle. */
+    public static final String GUI_VIEW_MOVE_UP_0 = "GUI_VIEW_MOVE_UP_0"; //Move up
 
     /** The localized dictionary. */
     private static Dictionary m_dictionary;

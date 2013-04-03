@@ -153,6 +153,10 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     @UiField
     protected AttributeChoiceWidget m_attributeChoice;
 
+    /** The down button. */
+    @UiField
+    protected PushButton m_downButton;
+
     /** The button bar. */
     @UiField
     protected HoverPanel m_buttonBar;
@@ -180,6 +184,10 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     /** The remove button. */
     @UiField
     protected PushButton m_removeButton;
+
+    /** The up button. */
+    @UiField
+    protected PushButton m_upButton;
 
     /** The widget holder elemenet. */
     @UiField
@@ -599,6 +607,16 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         } else {
             m_removeButton.getElement().getStyle().setDisplay(Display.NONE);
         }
+        if (hasSortButtons && (getValueIndex() != 0)) {
+            m_upButton.getElement().getStyle().clearDisplay();
+        } else {
+            m_upButton.getElement().getStyle().setDisplay(Display.NONE);
+        }
+        if (hasSortButtons && (getElement().getNextSibling() != null)) {
+            m_downButton.getElement().getStyle().clearDisplay();
+        } else {
+            m_downButton.getElement().getStyle().setDisplay(Display.NONE);
+        }
         if (hasSortButtons) {
             m_moveButton.getElement().getStyle().clearDisplay();
         } else {
@@ -638,6 +656,28 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     protected void closeHelpBubble(ClickEvent event) {
 
         addStyleName(I_LayoutBundle.INSTANCE.form().closedBubble());
+    }
+
+    /**
+     * Handles the click event to move the attribute value down.<p>
+     * 
+     * @param event the click event
+     */
+    @UiHandler("m_downButton")
+    protected void moveAttributeValueDown(ClickEvent event) {
+
+        m_handler.moveAttributeValueDown(this);
+    }
+
+    /**
+     * Handles the click event to move the attribute value up.<p>
+     * 
+     * @param event the click event
+     */
+    @UiHandler("m_upButton")
+    protected void moveAttributeValueUp(ClickEvent event) {
+
+        m_handler.moveAttributeValueUp(this);
     }
 
     /**
@@ -760,6 +800,12 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         m_removeButton.setImageClass(I_ImageBundle.INSTANCE.style().removeIcon());
         m_removeButton.setButtonStyle(ButtonStyle.TRANSPARENT, null);
 
+        m_upButton.setImageClass(I_ImageBundle.INSTANCE.style().arrowUpIcon());
+        m_upButton.setButtonStyle(ButtonStyle.TRANSPARENT, null);
+
+        m_downButton.setImageClass(I_ImageBundle.INSTANCE.style().arrowDownIcon());
+        m_downButton.setButtonStyle(ButtonStyle.TRANSPARENT, null);
+
         m_helpBubbleClose.setImageClass(I_ImageBundle.INSTANCE.style().closeIcon());
         m_helpBubbleClose.setButtonStyle(ButtonStyle.TRANSPARENT, null);
 
@@ -767,6 +813,8 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
             m_addButton.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_ADD_0));
             m_removeButton.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_DELETE_0));
             m_helpBubbleClose.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_CLOSE_0));
+            m_upButton.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_MOVE_UP_0));
+            m_downButton.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_MOVE_DOWN_0));
         }
     }
 
