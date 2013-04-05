@@ -403,7 +403,6 @@ public class AttributeHandler extends RootHandler {
                 value);
 
         }
-        HighlightingHandler.getInstance().setFocusHighlighted(valueWidget);
         updateButtonVisisbility();
     }
 
