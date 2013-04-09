@@ -172,14 +172,14 @@ public class Renderer implements I_EntityRenderer {
         }
     }
 
-    /** The renderer name. */
-    public static final String RENDERER_NAME = "default";
-
     /** The entity CSS class. */
     public static final String ENTITY_CLASS = I_LayoutBundle.INSTANCE.form().entity();
 
     /** The attribute label CSS class. */
     public static final String LABEL_CLASS = I_LayoutBundle.INSTANCE.form().label();
+
+    /** The renderer name. */
+    public static final String RENDERER_NAME = "default";
 
     /** The widget holder CSS class. */
     public static final String WIDGET_HOLDER_CLASS = I_LayoutBundle.INSTANCE.form().widgetHolder();
@@ -327,6 +327,7 @@ public class Renderer implements I_EntityRenderer {
             tabbedPanel.addNamed(tabPanel, currentTab.getTabName(), currentTab.getTabId());
             I_Type entityType = m_vie.getType(entity.getTypeName());
             List<String> attributeNames = entityType.getAttributeNames();
+            AttributeValueView lastCompactView = null;
             for (final String attributeName : attributeNames) {
                 boolean collapsed = false;
                 if ((nextTab != null) && attributeName.endsWith("/" + nextTab.getStartName())) {
@@ -341,11 +342,15 @@ public class Renderer implements I_EntityRenderer {
                             || ((nextTab != null) && attributeNames.get(currentIndex + 1).endsWith(
                                 "/" + nextTab.getStartName()));
                     }
+                    if (lastCompactView != null) {
+                        // previous widget was set to first column mode,
+                        // revert that as no following widget will occupy the second column
+                        lastCompactView.setCompactMode(AttributeValueView.COMPACT_MODE_WIDE);
+                    }
                 }
                 AttributeHandler handler = new AttributeHandler(m_vie, entity, attributeName, m_widgetService);
                 parentHandler.setHandler(attributeIndex, attributeName, handler);
                 I_Type attributeType = entityType.getAttributeType(attributeName);
-                I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(attributeName, attributeType);
                 int minOccurrence = entityType.getAttributeMinOccurrence(attributeName);
                 I_EntityAttribute attribute = entity.getAttribute(attributeName);
                 // only single complex values may be collapsed
@@ -354,44 +359,28 @@ public class Renderer implements I_EntityRenderer {
                     && !attributeType.isSimpleType()
                     && (minOccurrence == 1)
                     && (entityType.getAttributeMaxOccurrence(attributeName) == 1)) {
+                    I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(attributeName, attributeType);
                     renderer.renderForm(attribute.getComplexValue(), tabPanel, handler, 0);
                 } else {
-                    String label = m_widgetService.getAttributeLabel(attributeName);
-                    String help = m_widgetService.getAttributeHelp(attributeName);
                     ValuePanel attributeElement = new ValuePanel();
                     tabPanel.add(attributeElement);
                     if ((attribute == null) && (minOccurrence > 0)) {
                         attribute = createEmptyAttribute(entity, attributeName, minOccurrence);
                     }
-                    if (attribute != null) {
-                        for (int i = 0; i < attribute.getValueCount(); i++) {
-                            AttributeValueView valueWidget = new AttributeValueView(handler, label, help);
-                            attributeElement.add(valueWidget);
-                            if (attribute.isSimpleValue()) {
-                                valueWidget.setValueWidget(
-                                    m_widgetService.getAttributeFormWidget(attributeName),
-                                    attribute.getSimpleValues().get(i),
-                                    true);
-                            } else {
-                                valueWidget.setValueEntity(renderer, attribute.getComplexValues().get(i));
-
-                            }
-                            setAttributeChoice(valueWidget, attributeType);
-                        }
-                    } else {
-                        AttributeValueView valueWidget = new AttributeValueView(handler, label, help);
-                        attributeElement.add(valueWidget);
-                        if (attributeType.isSimpleType()) {
-                            // create a deactivated widget, to add the attribute on click
-                            valueWidget.setValueWidget(
-                                m_widgetService.getAttributeFormWidget(attributeName),
-                                m_widgetService.getDefaultAttributeValue(attributeName),
-                                false);
-                        }
-                        setAttributeChoice(valueWidget, attributeType);
-                    }
+                    lastCompactView = renderAttribute(
+                        attributeType,
+                        attribute,
+                        handler,
+                        attributeElement,
+                        attributeName,
+                        lastCompactView);
                 }
                 handler.updateButtonVisisbility();
+            }
+            if (lastCompactView != null) {
+                // previous widget was set to first column mode,
+                // revert that as no following widget will occupy the second column
+                lastCompactView.setCompactMode(AttributeValueView.COMPACT_MODE_WIDE);
             }
             context.add(tabbedPanel);
             return tabbedPanel;
@@ -407,6 +396,7 @@ public class Renderer implements I_EntityRenderer {
         context.getElement().setAttribute("typeof", entity.getTypeName());
         context.getElement().setAttribute("about", entity.getId());
         I_Type entityType = m_vie.getType(entity.getTypeName());
+        AttributeValueView lastCompactView = null;
         if (entityType.isChoice()) {
             I_EntityAttribute attribute = entity.getAttribute(Type.CHOICE_ATTRIBUTE_NAME);
             assert (attribute != null) && attribute.isComplexValue() : "a choice type must have a choice attribute";
@@ -419,23 +409,14 @@ public class Renderer implements I_EntityRenderer {
                 assert (choiceAttributes.size() == 1) && choiceAttributes.get(0).isSingleValue() : "each choice entity may only have a single attribute with a single value";
                 I_EntityAttribute choiceAttribute = choiceAttributes.get(0);
                 I_Type attributeType = choiceType.getAttributeType(choiceAttribute.getAttributeName());
-                I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(
-                    choiceAttribute.getAttributeName(),
-                    attributeType);
-                String label = m_widgetService.getAttributeLabel(choiceAttribute.getAttributeName());
-                String help = m_widgetService.getAttributeHelp(choiceAttribute.getAttributeName());
                 context.add(attributeElement);
-                AttributeValueView valueWidget = new AttributeValueView(handler, label, help);
-                attributeElement.add(valueWidget);
-                if (choiceAttribute.isSimpleValue()) {
-                    valueWidget.setValueWidget(
-                        m_widgetService.getAttributeFormWidget(choiceAttribute.getAttributeName()),
-                        choiceAttribute.getSimpleValue(),
-                        true);
-                } else {
-                    valueWidget.setValueEntity(renderer, choiceAttribute.getComplexValue());
-                }
-                setAttributeChoice(valueWidget, entityType);
+                lastCompactView = renderAttribute(
+                    attributeType,
+                    choiceAttribute,
+                    handler,
+                    attributeElement,
+                    choiceAttribute.getAttributeName(),
+                    lastCompactView);
             }
             handler.updateButtonVisisbility();
         } else {
@@ -447,41 +428,23 @@ public class Renderer implements I_EntityRenderer {
                     attribute = createEmptyAttribute(entity, attributeName, minOccurrence);
                 }
                 I_Type attributeType = entityType.getAttributeType(attributeName);
-                I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(attributeName, attributeType);
-                String label = m_widgetService.getAttributeLabel(attributeName);
-                String help = m_widgetService.getAttributeHelp(attributeName);
                 ValuePanel attributeElement = new ValuePanel();
                 context.add(attributeElement);
                 AttributeHandler handler = new AttributeHandler(m_vie, entity, attributeName, m_widgetService);
                 parentHandler.setHandler(attributeIndex, attributeName, handler);
-                if (attribute != null) {
-                    for (int i = 0; i < attribute.getValueCount(); i++) {
-                        AttributeValueView valueWidget = new AttributeValueView(handler, label, help);
-                        attributeElement.add(valueWidget);
-                        if (attribute.isSimpleValue()) {
-                            valueWidget.setValueWidget(
-                                m_widgetService.getAttributeFormWidget(attributeName),
-                                attribute.getSimpleValues().get(i),
-                                true);
-                        } else {
-                            valueWidget.setValueEntity(renderer, attribute.getComplexValues().get(i));
-                        }
-                        setAttributeChoice(valueWidget, attributeType);
-                    }
-                } else {
-                    AttributeValueView valueWidget = new AttributeValueView(handler, label, help);
-                    attributeElement.add(valueWidget);
-                    if (attributeType.isSimpleType()) {
-                        // create a deactivated widget, to add the attribute on click
-                        valueWidget.setValueWidget(
-                            m_widgetService.getAttributeFormWidget(attributeName),
-                            m_widgetService.getDefaultAttributeValue(attributeName),
-                            false);
-                    }
-                    setAttributeChoice(valueWidget, attributeType);
-                }
-                handler.updateButtonVisisbility();
+                lastCompactView = renderAttribute(
+                    attributeType,
+                    attribute,
+                    handler,
+                    attributeElement,
+                    attributeName,
+                    lastCompactView);
             }
+        }
+        if (lastCompactView != null) {
+            // previous widget was set to first column mode,
+            // revert that as no following widget will occupy the second column
+            lastCompactView.setCompactMode(AttributeValueView.COMPACT_MODE_WIDE);
         }
     }
 
@@ -628,6 +591,114 @@ public class Renderer implements I_EntityRenderer {
         tabPanel.addStyleName(I_LayoutBundle.INSTANCE.form().formParent());
         tabPanel.getElement().getStyle().setMargin(0, Unit.PX);
         return tabPanel;
+    }
+
+    /**
+     * Renders a single attribute.<p>
+     * 
+     * @param attributeType the attribute type
+     * @param attribute the attribute, or null if not set
+     * @param handler the attribute handler
+     * @param attributeElement the attribute parent element
+     * @param attributeName the attribute name
+     * @param lastCompactView the previous attribute view that was rendered in compact mode if present
+     * 
+     * @return the last attribute view that was rendered in compact mode if present
+     */
+    private AttributeValueView renderAttribute(
+        I_Type attributeType,
+        I_EntityAttribute attribute,
+        AttributeHandler handler,
+        ValuePanel attributeElement,
+        String attributeName,
+        AttributeValueView lastCompactView) {
+
+        String label = m_widgetService.getAttributeLabel(attributeName);
+        String help = m_widgetService.getAttributeHelp(attributeName);
+        if (attribute != null) {
+            I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(attributeName, attributeType);
+            for (int i = 0; i < attribute.getValueCount(); i++) {
+                AttributeValueView valueWidget = new AttributeValueView(handler, label, help);
+                attributeElement.add(valueWidget);
+                if (attribute.isSimpleValue()) {
+                    valueWidget.setValueWidget(
+                        m_widgetService.getAttributeFormWidget(attributeName),
+                        attribute.getSimpleValues().get(i),
+                        true);
+                    // check for compact view setting
+                    if (m_widgetService.isDisplayCompact(attributeName)) {
+                        // widget should be displayed in compact view, using only 50% of the available width
+                        if (lastCompactView == null) {
+                            // set mode to first column
+                            valueWidget.setCompactMode(AttributeValueView.COMPACT_MODE_FIRST_COLUMN);
+                            lastCompactView = valueWidget;
+                        } else {
+                            // previous widget is displayed as first column, set second column mode
+                            valueWidget.setCompactMode(AttributeValueView.COMPACT_MODE_SECOND_COLUMN);
+                            lastCompactView = null;
+                        }
+                    } else if (lastCompactView != null) {
+                        // previous widget was set to first column mode,
+                        // revert that as the current widget will be displayed in a new line
+                        lastCompactView.setCompactMode(AttributeValueView.COMPACT_MODE_WIDE);
+                        lastCompactView = null;
+                    }
+                } else {
+                    valueWidget.setValueEntity(renderer, attribute.getComplexValues().get(i));
+                    if (lastCompactView != null) {
+                        // previous widget was set to first column mode,
+                        // revert that as the current widget will be displayed in a new line
+                        lastCompactView.setCompactMode(AttributeValueView.COMPACT_MODE_WIDE);
+                        lastCompactView = null;
+                    }
+                    if (m_widgetService.isDisplayCompact(attributeName)) {
+                        valueWidget.setCompactMode(AttributeValueView.COMPACT_MODE_NESTED);
+                    }
+                }
+                setAttributeChoice(valueWidget, attributeType);
+            }
+        } else {
+            AttributeValueView valueWidget = new AttributeValueView(handler, label, help);
+            attributeElement.add(valueWidget);
+            if (attributeType.isSimpleType()) {
+                // create a deactivated widget, to add the attribute on click
+                valueWidget.setValueWidget(
+                    m_widgetService.getAttributeFormWidget(attributeName),
+                    m_widgetService.getDefaultAttributeValue(attributeName),
+                    false);
+                // check for compact view setting
+                if (m_widgetService.isDisplayCompact(attributeName)) {
+                    // widget should be displayed in compact view, using only 50% of the available width
+                    if (lastCompactView == null) {
+                        // set mode to first column
+                        valueWidget.setCompactMode(AttributeValueView.COMPACT_MODE_FIRST_COLUMN);
+                        lastCompactView = valueWidget;
+                    } else {
+                        // previous widget is displayed as first column, set second column mode
+                        valueWidget.setCompactMode(AttributeValueView.COMPACT_MODE_SECOND_COLUMN);
+                        lastCompactView = null;
+                    }
+                } else if (lastCompactView != null) {
+                    // previous widget was set to first column mode,
+                    // revert that as the current widget will be displayed in a new line
+                    lastCompactView.setCompactMode(AttributeValueView.COMPACT_MODE_WIDE);
+                    lastCompactView = null;
+                }
+            } else {
+                if (lastCompactView != null) {
+                    // previous widget was set to first column mode,
+                    // revert that as the current widget will be displayed in a new line
+                    lastCompactView.setCompactMode(AttributeValueView.COMPACT_MODE_WIDE);
+                    lastCompactView = null;
+                }
+                if (m_widgetService.isDisplayCompact(attributeName)) {
+                    valueWidget.setCompactMode(AttributeValueView.COMPACT_MODE_NESTED);
+                }
+            }
+            setAttributeChoice(valueWidget, attributeType);
+        }
+        handler.updateButtonVisisbility();
+        return lastCompactView;
     }
 
     /**

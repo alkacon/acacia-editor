@@ -156,6 +156,20 @@ public class WidgetService implements I_WidgetService {
     }
 
     /**
+     * @see com.alkacon.acacia.client.I_WidgetService#isDisplayCompact(java.lang.String)
+     */
+    public boolean isDisplayCompact(String attributeName) {
+
+        if (m_attributeConfigurations != null) {
+            AttributeConfiguration config = m_attributeConfigurations.get(attributeName);
+            if (config != null) {
+                return config.isDisplayCompact();
+            }
+        }
+        return false;
+    }
+
+    /**
      * @see com.alkacon.acacia.client.I_WidgetService#getAttributeLabel(java.lang.String)
      */
     public String getAttributeLabel(String attributeName) {
@@ -261,9 +275,9 @@ public class WidgetService implements I_WidgetService {
      * @param message the message to log 
      */
     private native void log(String message) /*-{
-      if ($wnd.console) {
-         $wnd.console.log(message);
-      }
+        if ($wnd.console) {
+            $wnd.console.log(message);
+        }
     }-*/;
 
 }

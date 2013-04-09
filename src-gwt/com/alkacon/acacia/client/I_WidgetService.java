@@ -98,7 +98,7 @@ public interface I_WidgetService {
     String getAttributeLabel(String attributeName);
 
     /**
-     * Returns the default attribute value
+     * Returns the default attribute value.<p>
      * 
      * @param attributeName the attribute name
      * 
@@ -124,6 +124,15 @@ public interface I_WidgetService {
      * @return the renderer
      */
     I_EntityRenderer getRendererForType(I_Type entityType);
+
+    /**
+     * Returns the if the attribute widget should be displayed in compact view.<p>
+     * 
+     * @param attributeName the attribute name
+     * 
+     * @return the default value
+     */
+    boolean isDisplayCompact(String attributeName);
 
     /**
      * Registers a complex widget attribute which should be handled by a special renderer.<p>

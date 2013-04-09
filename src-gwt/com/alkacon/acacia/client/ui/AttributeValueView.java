@@ -41,12 +41,15 @@ import com.alkacon.geranium.client.ui.I_Button.ButtonStyle;
 import com.alkacon.geranium.client.ui.PushButton;
 import com.alkacon.geranium.client.ui.css.I_ImageBundle;
 import com.alkacon.geranium.client.util.DomUtil;
+import com.alkacon.geranium.client.util.StyleVariable;
 import com.alkacon.vie.shared.I_Entity;
 
 import java.util.List;
 
 import com.google.gwt.animation.client.Animation;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
@@ -142,6 +145,18 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         // nothing to do
     }
 
+    /** The first column compact view mode. */
+    public static final int COMPACT_MODE_FIRST_COLUMN = 1;
+
+    /** The second column compact view mode. */
+    public static final int COMPACT_MODE_SECOND_COLUMN = 2;
+
+    /** The wide compact view mode. */
+    public static final int COMPACT_MODE_WIDE = 0;
+
+    /** The nested compact view mode. */
+    public static final int COMPACT_MODE_NESTED = 3;
+
     /** The UI binder instance. */
     private static AttributeValueUiBinder uiBinder = GWT.create(AttributeValueUiBinder.class);
 
@@ -153,13 +168,13 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     @UiField
     protected AttributeChoiceWidget m_attributeChoice;
 
-    /** The down button. */
-    @UiField
-    protected PushButton m_downButton;
-
     /** The button bar. */
     @UiField
     protected HoverPanel m_buttonBar;
+
+    /** The down button. */
+    @UiField
+    protected PushButton m_downButton;
 
     /** The help bubble element. */
     @UiField
@@ -198,6 +213,9 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
 
     /** The activation mouse down handler registration. */
     private HandlerRegistration m_activationHandlerRegistration;
+
+    /** The compact view style variable. */
+    private StyleVariable m_compacteModeStyle;
 
     /** The default widget value. */
     private String m_defaultValue;
@@ -259,6 +277,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         generateLabel();
         m_helpBubbleText.setInnerHTML(m_help);
         addStyleName(I_LayoutBundle.INSTANCE.form().emptyValue());
+        m_compacteModeStyle = new StyleVariable(this);
         initHighlightingHandler();
         initButtons(label);
     }
@@ -476,6 +495,29 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     }
 
     /**
+     * Sets the compact view mode.<p>
+     * 
+     * @param mode the mode to set
+     */
+    public void setCompactMode(int mode) {
+
+        switch (mode) {
+            case COMPACT_MODE_FIRST_COLUMN:
+                m_compacteModeStyle.setValue(I_LayoutBundle.INSTANCE.form().firstColumn());
+                break;
+            case COMPACT_MODE_SECOND_COLUMN:
+                m_compacteModeStyle.setValue(I_LayoutBundle.INSTANCE.form().secondColumn());
+                break;
+            case COMPACT_MODE_NESTED:
+                m_compacteModeStyle.setValue(I_LayoutBundle.INSTANCE.form().compactView());
+                break;
+            default:
+                m_compacteModeStyle.setValue(null);
+        }
+        updateWidth();
+    }
+
+    /**
      * Shows a validation error message.<p>
      * 
      * @param message the error message
@@ -681,6 +723,22 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     }
 
     /**
+     * @see com.google.gwt.user.client.ui.Composite#onAttach()
+     */
+    @Override
+    protected void onAttach() {
+
+        super.onAttach();
+        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+
+            public void execute() {
+
+                updateWidth();
+            }
+        });
+    }
+
+    /**
      * Call when content changes.<p>
      */
     protected void onResize() {
@@ -733,6 +791,24 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
             }
             m_handler.updateButtonVisisbility();
             removeStyleName(I_LayoutBundle.INSTANCE.form().emptyValue());
+        }
+    }
+
+    /**
+     * Updates the widget width according to the compact mode setting.<p>
+     */
+    void updateWidth() {
+
+        if (I_LayoutBundle.INSTANCE.form().firstColumn().equals(m_compacteModeStyle.getValue())) {
+            int width = getElement().getParentElement().getOffsetWidth()
+                - I_LayoutBundle.INSTANCE.form().SECOND_COLUMN_WIDTH();
+            // if width could not be evaluated, fall back to a 'save' value
+            if (width < 0) {
+                width = 400;
+            }
+            getElement().getStyle().setWidth(width, Unit.PX);
+        } else {
+            getElement().getStyle().clearWidth();
         }
     }
 

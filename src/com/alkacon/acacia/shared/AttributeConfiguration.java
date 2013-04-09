@@ -34,6 +34,9 @@ public class AttributeConfiguration implements IsSerializable {
     /** The attribute default value. */
     private String m_defaultValue;
 
+    /** The display compact flag. */
+    private boolean m_displayCompact;
+
     /** The attribute help information. */
     private String m_help;
 
@@ -54,14 +57,22 @@ public class AttributeConfiguration implements IsSerializable {
      * @param widgetName the widget name
      * @param widgetConfig the widget configuration
      * @param defaultValue the attribute default value
+     * @param displayCompact the display compact flag
      */
-    public AttributeConfiguration(String label, String help, String widgetName, String widgetConfig, String defaultValue) {
+    public AttributeConfiguration(
+        String label,
+        String help,
+        String widgetName,
+        String widgetConfig,
+        String defaultValue,
+        boolean displayCompact) {
 
         m_label = label;
         m_help = help;
         m_widgetName = widgetName;
         m_widgetConfig = widgetConfig;
         m_defaultValue = defaultValue;
+        m_displayCompact = displayCompact;
     }
 
     /**
@@ -120,6 +131,16 @@ public class AttributeConfiguration implements IsSerializable {
     public String getWidgetName() {
 
         return m_widgetName;
+    }
+
+    /**
+     * Returns the if the widget should be displayed in compact view.<p>
+     *
+     * @return the displayCompact
+     */
+    public boolean isDisplayCompact() {
+
+        return m_displayCompact;
     }
 
 }

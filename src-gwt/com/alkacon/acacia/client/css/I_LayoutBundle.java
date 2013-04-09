@@ -134,6 +134,13 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
         String closedBubble();
 
         /**
+         * Returns the compact view CSS class name.<p>
+         * 
+         * @return the compact view CSS class
+         */
+        String compactView();
+
+        /**
          * Returns the display bubble above CSS class name.<p>
          * 
          * @return the display bubble above CSS class
@@ -153,6 +160,13 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
          * @return the drag overlay CSS class
          */
         String dragOverlay();
+
+        /**
+         * Returns the first column CSS class name.<p>
+         *  
+         * @return the first column CSS class
+         */
+        String firstColumn();
 
         /**
          * Returns the CSS constant value.<p>
@@ -251,6 +265,20 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
          * @return the CSS constant value
          */
         String PARENT_GRADIENT_IE9();
+
+        /**
+         * Returns the second column CSS class name.<p>
+         *  
+         * @return the second column CSS class
+         */
+        String secondColumn();
+
+        /**
+         * The second column width constant.<p>
+         *  
+         * @return the second column width constant
+         */
+        int SECOND_COLUMN_WIDTH();
 
     }
 

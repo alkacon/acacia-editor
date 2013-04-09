@@ -37,6 +37,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.user.client.DOM;
 
 /**
@@ -89,6 +90,7 @@ public class AttributeDNDController implements I_DNDController {
             m_startPosition = ((AttributeValueView)draggable).getValueIndex();
             handler.clearTargets();
             handler.addTarget(target);
+            target.getElement().getStyle().setPosition(Position.RELATIVE);
             target.getElement().insertBefore(handler.getPlaceholder(), draggable.getElement());
             ((ValuePanel)target).highlightOutline();
             return true;
@@ -145,6 +147,7 @@ public class AttributeDNDController implements I_DNDController {
     private void clearTargets(final DNDHandler handler) {
 
         ((ValuePanel)handler.getCurrentTarget()).removeHighlighting();
+        handler.getCurrentTarget().getElement().getStyle().clearPosition();
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
 
             /**
