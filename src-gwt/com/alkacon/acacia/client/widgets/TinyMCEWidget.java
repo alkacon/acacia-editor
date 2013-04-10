@@ -292,17 +292,6 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
     }-*/;
 
     /**
-     * Returns the editor parent element.<p>
-     * 
-     * @return the editor parent element
-     */
-    protected native int getFrameContentHeight() /*-{
-        var elementId = this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_id;
-        var parentId = elementId + "_parent";
-        return $doc.getElementById(parentId);
-    }-*/;
-
-    /**
      * Gets the toolbar element.<p>
      * 
      * @return the toolbar element 
@@ -421,7 +410,11 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
         var fireChange = function() {
             self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::fireChangeFromNative()();
         };
-
+        var options = this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_options;
+        if (options != null && options.editorHeight) {
+            editorHeight = options.editorHeight;
+            delete options.editorHeight;
+        }
         // default options:
         var defaults = {
             onchange_callback : fireChange,
@@ -433,7 +426,9 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
             skin_variant : 'ocms',
             mode : "exact",
             theme : "advanced",
-            plugins : "autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist",
+            plugins : "autoresize,autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist",
+            autoresize_min_height : 100,
+            autoresize_max_height : editorHeight,
             theme_advanced_toolbar_location : "external",
             theme_advanced_toolbar_align : "right",
             theme_advanced_statusbar_location : "bottom",
@@ -441,11 +436,6 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
             theme_advanced_resizing : true,
             theme_advanced_resizing_use_cookie : false
         };
-        var options = this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_options;
-        if (options != null && options.editorHeight) {
-            editorHeight = options.editorHeight + "px";
-            delete options.editorHeight;
-        }
         // extend the defaults with any given options
         if (options != null) {
             var vie = @com.alkacon.vie.client.Vie::getInstance()();
@@ -460,7 +450,6 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
             ed.onKeyDown.add(fireChange);
             ed.onLoadContent
                     .add(function() {
-                        $wnd.document.getElementById(iframeId).style.minHeight = editorHeight;
                         // firing resize event on resize of the editor iframe
                         ed.dom
                                 .bind(
@@ -474,7 +463,8 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
                             ed.setContent(content);
                         }
                         self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_initialized = true;
-
+                        // ensure the body height is set to 'auto', otherwise the autoresize plugin will not work
+                        ed.getDoc().body.style.height = 'auto';
                     });
             ed.onClick
                     .add(function(event) {
@@ -510,13 +500,6 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
                             function(event) {
                                 self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Ljava/lang/String;Lcom/google/gwt/user/client/Element;)('mouseup', mainElement);
                             });
-            //            $wnd.tinyMCE.dom.Event
-            //                    .add(
-            //                            ed.getWin(),
-            //                            'mousemove',
-            //                            function(event) {
-            //                                self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Ljava/lang/String;Lcom/google/gwt/user/client/Element;)('mousemove', mainElement);
-            //                            });
         };
 
         // set the edited element id
