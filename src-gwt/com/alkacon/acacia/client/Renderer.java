@@ -409,14 +409,26 @@ public class Renderer implements I_EntityRenderer {
                 assert (choiceAttributes.size() == 1) && choiceAttributes.get(0).isSingleValue() : "each choice entity may only have a single attribute with a single value";
                 I_EntityAttribute choiceAttribute = choiceAttributes.get(0);
                 I_Type attributeType = choiceType.getAttributeType(choiceAttribute.getAttributeName());
-                context.add(attributeElement);
-                lastCompactView = renderAttribute(
-                    attributeType,
-                    choiceAttribute,
-                    handler,
-                    attributeElement,
+                I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(
                     choiceAttribute.getAttributeName(),
-                    lastCompactView);
+                    attributeType);
+                String label = m_widgetService.getAttributeLabel(choiceAttribute.getAttributeName());
+                String help = m_widgetService.getAttributeHelp(choiceAttribute.getAttributeName());
+                context.add(attributeElement);
+                AttributeValueView valueWidget = new AttributeValueView(handler, label, help);
+                attributeElement.add(valueWidget);
+                if (choiceAttribute.isSimpleValue()) {
+                    valueWidget.setValueWidget(
+                        m_widgetService.getAttributeFormWidget(choiceAttribute.getAttributeName()),
+                        choiceAttribute.getSimpleValue(),
+                        true);
+                } else {
+                    valueWidget.setValueEntity(renderer, choiceAttribute.getComplexValue());
+                    if (m_widgetService.isDisplayCompact(choiceAttribute.getAttributeName())) {
+                        valueWidget.setCompactMode(AttributeValueView.COMPACT_MODE_NESTED);
+                    }
+                }
+                setAttributeChoice(valueWidget, entityType);
             }
             handler.updateButtonVisisbility();
         } else {
