@@ -31,6 +31,7 @@ import com.alkacon.acacia.shared.Type;
 import com.alkacon.geranium.client.dnd.DNDHandler;
 import com.alkacon.geranium.client.dnd.DNDHandler.Orientation;
 import com.alkacon.geranium.client.ui.TabbedPanel;
+import com.alkacon.geranium.client.util.MoveAnimation;
 import com.alkacon.vie.client.I_Vie;
 import com.alkacon.vie.shared.I_Entity;
 import com.alkacon.vie.shared.I_EntityAttribute;
@@ -39,7 +40,10 @@ import com.alkacon.vie.shared.I_Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gwt.dom.client.Style.Position;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -411,13 +415,35 @@ public class AttributeHandler extends RootHandler {
      * 
      * @param reference the reference value
      */
-    public void moveAttributeValueDown(AttributeValueView reference) {
+    public void moveAttributeValueDown(final AttributeValueView reference) {
 
-        int index = reference.getValueIndex();
+        final int index = reference.getValueIndex();
         if (index >= (m_entity.getAttribute(m_attributeName).getValueCount() - 1)) {
             return;
         }
-        moveAttributeValue(reference, index, index + 1);
+        reference.hideAllButtons();
+        Element parent = (Element)reference.getElement().getParentElement();
+        parent.getStyle().setPosition(Position.RELATIVE);
+        final Element placeHolder = (Element)reference.getPlaceholder(null);
+        int top = reference.getElement().getOffsetTop();
+        int left = reference.getElement().getOffsetLeft();
+        int width = reference.getOffsetWidth();
+        reference.getElement().getStyle().setPosition(Position.ABSOLUTE);
+        reference.getElement().getStyle().setZIndex(5);
+        parent.insertAfter(placeHolder, reference.getElement().getNextSibling());
+        reference.getElement().getStyle().setTop(top, Unit.PX);
+        reference.getElement().getStyle().setLeft(left, Unit.PX);
+        reference.getElement().getStyle().setWidth(width, Unit.PX);
+        new MoveAnimation(reference.getElement(), top, left, placeHolder.getOffsetTop(), left, new Command() {
+
+            public void execute() {
+
+                clearMoveAnimationStyles(placeHolder, reference);
+                moveAttributeValue(reference, index, index + 1);
+
+            }
+        }).run(200);
+
     }
 
     /**
@@ -425,13 +451,34 @@ public class AttributeHandler extends RootHandler {
      * 
      * @param reference the reference value
      */
-    public void moveAttributeValueUp(AttributeValueView reference) {
+    public void moveAttributeValueUp(final AttributeValueView reference) {
 
-        int index = reference.getValueIndex();
+        final int index = reference.getValueIndex();
         if (index == 0) {
             return;
         }
-        moveAttributeValue(reference, index, index - 1);
+        reference.hideAllButtons();
+        Element parent = (Element)reference.getElement().getParentElement();
+        parent.getStyle().setPosition(Position.RELATIVE);
+        final Element placeHolder = (Element)reference.getPlaceholder(null);
+        int top = reference.getElement().getOffsetTop();
+        int left = reference.getElement().getOffsetLeft();
+        int width = reference.getOffsetWidth();
+        reference.getElement().getStyle().setPosition(Position.ABSOLUTE);
+        reference.getElement().getStyle().setZIndex(5);
+        parent.insertBefore(placeHolder, reference.getElement().getPreviousSibling());
+        reference.getElement().getStyle().setTop(top, Unit.PX);
+        reference.getElement().getStyle().setLeft(left, Unit.PX);
+        reference.getElement().getStyle().setWidth(width, Unit.PX);
+        new MoveAnimation(reference.getElement(), top, left, placeHolder.getOffsetTop(), left, new Command() {
+
+            public void execute() {
+
+                clearMoveAnimationStyles(placeHolder, reference);
+                moveAttributeValue(reference, index, index - 1);
+
+            }
+        }).run(200);
     }
 
     /**
@@ -554,6 +601,22 @@ public class AttributeHandler extends RootHandler {
         for (AttributeValueView value : m_attributeValueViews) {
             value.updateButtonVisibility(mayHaveMore, needsRemove, needsSort);
         }
+    }
+
+    /**
+     * Clears the inline styles used during move animation.<p>
+     * 
+     * @param placeHolder the animation place holder
+     * @param reference the moved attribute widget
+     */
+    void clearMoveAnimationStyles(Element placeHolder, AttributeValueView reference) {
+
+        placeHolder.removeFromParent();
+        reference.getElement().getParentElement().getStyle().clearPosition();
+        reference.getElement().getStyle().clearPosition();
+        reference.getElement().getStyle().clearWidth();
+        reference.getElement().getStyle().clearZIndex();
+        reference.showButtons();
     }
 
     /**

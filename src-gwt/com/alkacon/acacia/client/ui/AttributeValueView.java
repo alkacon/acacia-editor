@@ -148,14 +148,14 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     /** The first column compact view mode. */
     public static final int COMPACT_MODE_FIRST_COLUMN = 1;
 
+    /** The nested compact view mode. */
+    public static final int COMPACT_MODE_NESTED = 3;
+
     /** The second column compact view mode. */
     public static final int COMPACT_MODE_SECOND_COLUMN = 2;
 
     /** The wide compact view mode. */
     public static final int COMPACT_MODE_WIDE = 0;
-
-    /** The nested compact view mode. */
-    public static final int COMPACT_MODE_NESTED = 3;
 
     /** The UI binder instance. */
     private static AttributeValueUiBinder uiBinder = GWT.create(AttributeValueUiBinder.class);
@@ -435,6 +435,14 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     }
 
     /**
+     * Hides the button bar.<p>
+     */
+    public void hideAllButtons() {
+
+        m_buttonBar.getElement().getStyle().setDisplay(Display.NONE);
+    }
+
+    /**
      * Returns if this view represents a simple value.<p>
      * 
      * @return <code>true</code> if this view represents a simple value
@@ -603,6 +611,14 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         m_messageText.setInnerText(message);
         addStyleName(I_LayoutBundle.INSTANCE.form().hasWarning());
         m_hasError = true;
+    }
+
+    /**
+     * Shows the button bar.<p>
+     */
+    public void showButtons() {
+
+        m_buttonBar.getElement().getStyle().clearDisplay();
     }
 
     /**
