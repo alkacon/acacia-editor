@@ -37,8 +37,8 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 }
 
 .attributeValue.compactView .label{
-	padding-bottom: 1px;
-	padding-top: 0px;
+	padding-bottom: 2px;
+	padding-top: 2px;
 }
 
 .entity .attributeValue{
@@ -87,6 +87,10 @@ div.attributeValue.secondColumn{
 	position: absolute;
 	top: 2px;
 	right: 2px;
+}
+
+.attributeValue.compactView .buttonBar{
+	top: 0px;
 }
 
 @if user.agent ie6 {
@@ -208,25 +212,11 @@ div.attributeValue.secondColumn{
 	border-radius: 3px;
 }
 
-.attributeValue.focused > .widgetHolder > div > .mceEditor > table.mceLayout{
-	display: table;
-	height: auto;
-	overflow: visible;
-}
-
 .attributeValue > .widgetHolder > div > .mceEditor > table.mceLayout{
 	border: none;
 	border-radius: 0 3px 0 0;
     width: 100%;
     position: relative;
-    display: block;
-	height: 100px;
-	overflow: hidden;
-}
-
-.attributeValue > .widgetHolder > div > .mceEditor > table.mceLayout *{
-	width: 100%;
-	display: block;
 }
 
 .attributeValue .mceEditor .mceExternalToolbar{
