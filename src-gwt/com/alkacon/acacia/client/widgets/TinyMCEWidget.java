@@ -429,6 +429,7 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
             plugins : "autoresize,autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist",
             autoresize_min_height : 100,
             autoresize_max_height : editorHeight,
+            autoresize_bottom_margin : 10,
             theme_advanced_toolbar_location : "external",
             theme_advanced_toolbar_align : "right",
             theme_advanced_statusbar_location : "bottom",
