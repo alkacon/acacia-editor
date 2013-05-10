@@ -156,15 +156,18 @@ div.attributeValue.secondColumn{
 	visibility: hidden;
 }
 
-.attributeValue.focused .widgetHolder .mceEditor {
+.attributeValue.focused > .widgetHolder > .widget .mceEditor {
 	border-radius: 0 3px 0 0;
 }
 
 .widgetHolder > div > .widget.input.inActive, .attributeValue .widgetHolder  .mceEditor.inActive{
 	color: transparent;
-	border-color: #B1B4B8;
+	border-color: value("constants.css.borderColor");
 }
-
+.attributeValue > .widgetHolder > .widget .mceEditor.inActive{
+	height: 18px;	
+	border-radius: 3px;
+}
 .attributeValue.focused > .widgetHolder > div > .mceEditor tr.mceLast{
 	visibility: visible;
 }
