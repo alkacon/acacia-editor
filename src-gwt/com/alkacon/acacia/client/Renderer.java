@@ -422,6 +422,9 @@ public class Renderer implements I_EntityRenderer {
                         m_widgetService.getAttributeFormWidget(choiceAttribute.getAttributeName()),
                         choiceAttribute.getSimpleValue(),
                         true);
+                    if (m_widgetService.isDisplaySingleLine(choiceAttribute.getAttributeName())) {
+                        valueWidget.setCompactMode(AttributeValueView.COMPACT_MODE_SINGLE_LINE);
+                    }
                 } else {
                     valueWidget.setValueEntity(renderer, choiceAttribute.getComplexValue());
                     if (m_widgetService.isDisplayCompact(choiceAttribute.getAttributeName())) {
@@ -649,11 +652,16 @@ public class Renderer implements I_EntityRenderer {
                             valueWidget.setCompactMode(AttributeValueView.COMPACT_MODE_SECOND_COLUMN);
                             lastCompactView = null;
                         }
-                    } else if (lastCompactView != null) {
-                        // previous widget was set to first column mode,
-                        // revert that as the current widget will be displayed in a new line
-                        lastCompactView.setCompactMode(AttributeValueView.COMPACT_MODE_WIDE);
-                        lastCompactView = null;
+                    } else {
+                        if (lastCompactView != null) {
+                            // previous widget was set to first column mode,
+                            // revert that as the current widget will be displayed in a new line
+                            lastCompactView.setCompactMode(AttributeValueView.COMPACT_MODE_WIDE);
+                            lastCompactView = null;
+                        }
+                        if (m_widgetService.isDisplaySingleLine(attributeName)) {
+                            valueWidget.setCompactMode(AttributeValueView.COMPACT_MODE_SINGLE_LINE);
+                        }
                     }
                 } else {
                     valueWidget.setValueEntity(renderer, attribute.getComplexValues().get(i));
@@ -690,11 +698,16 @@ public class Renderer implements I_EntityRenderer {
                         valueWidget.setCompactMode(AttributeValueView.COMPACT_MODE_SECOND_COLUMN);
                         lastCompactView = null;
                     }
-                } else if (lastCompactView != null) {
-                    // previous widget was set to first column mode,
-                    // revert that as the current widget will be displayed in a new line
-                    lastCompactView.setCompactMode(AttributeValueView.COMPACT_MODE_WIDE);
-                    lastCompactView = null;
+                } else {
+                    if (lastCompactView != null) {
+                        // previous widget was set to first column mode,
+                        // revert that as the current widget will be displayed in a new line
+                        lastCompactView.setCompactMode(AttributeValueView.COMPACT_MODE_WIDE);
+                        lastCompactView = null;
+                    }
+                    if (m_widgetService.isDisplaySingleLine(attributeName)) {
+                        valueWidget.setCompactMode(AttributeValueView.COMPACT_MODE_SINGLE_LINE);
+                    }
                 }
             } else {
                 if (lastCompactView != null) {

@@ -280,4 +280,18 @@ public class WidgetService implements I_WidgetService {
         }
     }-*/;
 
+    /**
+     * @see com.alkacon.acacia.client.I_WidgetService#isDisplaySingleLine(java.lang.String)
+     */
+    public boolean isDisplaySingleLine(String attributeName) {
+
+        if (m_attributeConfigurations != null) {
+            AttributeConfiguration config = m_attributeConfigurations.get(attributeName);
+            if (config != null) {
+                return config.isDisplaySingleLine();
+            }
+        }
+        return false;
+    }
+
 }

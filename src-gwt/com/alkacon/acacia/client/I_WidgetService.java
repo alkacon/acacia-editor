@@ -130,9 +130,18 @@ public interface I_WidgetService {
      * 
      * @param attributeName the attribute name
      * 
-     * @return the default value
+     * @return <code>true</code> if the attribute widget should be displayed in compact view
      */
     boolean isDisplayCompact(String attributeName);
+
+    /**
+     * Returns if the attribute widget should be displayed in single line view.<p>
+     * 
+     * @param attributeName the attribute name
+     * 
+     * @return <code>true</code> if the attribute widget should be displayed in single line view
+     */
+    boolean isDisplaySingleLine(String attributeName);
 
     /**
      * Registers a complex widget attribute which should be handled by a special renderer.<p>

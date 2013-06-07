@@ -154,6 +154,9 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     /** The second column compact view mode. */
     public static final int COMPACT_MODE_SECOND_COLUMN = 2;
 
+    /** The single line compact view mode. */
+    public static final int COMPACT_MODE_SINGLE_LINE = 4;
+
     /** The wide compact view mode. */
     public static final int COMPACT_MODE_WIDE = 0;
 
@@ -519,8 +522,11 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
             case COMPACT_MODE_NESTED:
                 m_compacteModeStyle.setValue(I_LayoutBundle.INSTANCE.form().compactView());
                 break;
+            case COMPACT_MODE_SINGLE_LINE:
+                m_compacteModeStyle.setValue(I_LayoutBundle.INSTANCE.form().singleLine());
+                break;
             default:
-                m_compacteModeStyle.setValue(null);
+
         }
         updateWidth();
     }
@@ -581,7 +587,6 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         } else {
             m_widget.setValue("", false);
         }
-        m_widget.asWidget().addStyleName(I_LayoutBundle.INSTANCE.form().widget());
         m_widgetHolder.add(m_widget);
         m_widget.setName(getHandler().getAttributeName());
         m_widget.addValueChangeHandler(new ChangeHandler());

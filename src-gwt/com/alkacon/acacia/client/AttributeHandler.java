@@ -192,6 +192,9 @@ public class AttributeHandler extends RootHandler {
                         this,
                         m_widgetService.getAttributeLabel(m_attributeName),
                         m_widgetService.getAttributeHelp(m_attributeName));
+                    if (m_widgetService.isDisplaySingleLine(m_attributeName)) {
+                        valueWidget.setCompactMode(AttributeValueView.COMPACT_MODE_SINGLE_LINE);
+                    }
                     if (valueIndex == -1) {
                         ((FlowPanel)reference.getParent()).add(valueWidget);
                     } else {
@@ -364,6 +367,9 @@ public class AttributeHandler extends RootHandler {
                 this,
                 m_widgetService.getAttributeLabel(attributeChoice),
                 m_widgetService.getAttributeHelp(attributeChoice));
+            if (optionType.isSimpleType() && m_widgetService.isDisplaySingleLine(attributeChoice)) {
+                valueWidget.setCompactMode(AttributeValueView.COMPACT_MODE_SINGLE_LINE);
+            }
             parent.insert(valueWidget, targetPosition);
             insertHandlers(targetPosition);
             if (optionType.isSimpleType()) {
@@ -389,6 +395,9 @@ public class AttributeHandler extends RootHandler {
                 this,
                 m_widgetService.getAttributeLabel(m_attributeName),
                 m_widgetService.getAttributeHelp(m_attributeName));
+            if (m_widgetService.isDisplaySingleLine(m_attributeName)) {
+                valueWidget.setCompactMode(AttributeValueView.COMPACT_MODE_SINGLE_LINE);
+            }
             parent.insert(valueWidget, targetPosition);
             valueWidget.setValueWidget(m_widgetService.getAttributeFormWidget(m_attributeName), value, true);
         } else {
@@ -637,6 +646,9 @@ public class AttributeHandler extends RootHandler {
                 this,
                 m_widgetService.getAttributeLabel(attributeChoice),
                 m_widgetService.getAttributeHelp(attributeChoice));
+            if (optionType.isSimpleType() && m_widgetService.isDisplaySingleLine(attributeChoice)) {
+                valueWidget.setCompactMode(AttributeValueView.COMPACT_MODE_SINGLE_LINE);
+            }
         }
 
         List<ChoiceMenuEntryBean> menuEntries = Renderer.getChoiceEntries(getAttributeType(), true);

@@ -267,6 +267,13 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
         String PARENT_GRADIENT_IE9();
 
         /**
+         * The second column width constant.<p>
+         *  
+         * @return the second column width constant
+         */
+        int SECOND_COLUMN_WIDTH();
+
+        /**
          * Returns the second column CSS class name.<p>
          *  
          * @return the second column CSS class
@@ -274,11 +281,11 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
         String secondColumn();
 
         /**
-         * The second column width constant.<p>
-         *  
-         * @return the second column width constant
+         * Returns the single line view CSS class name.<p>
+         * 
+         * @return the single line view CSS class
          */
-        int SECOND_COLUMN_WIDTH();
+        String singleLine();
 
     }
 

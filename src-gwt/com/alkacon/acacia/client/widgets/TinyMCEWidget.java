@@ -76,6 +76,9 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
     /** The editor height to set. */
     int m_editorHeight;
 
+    /** The element to store the widget content in. */
+    private Element m_contentElement;
+
     /** Indicating if the widget has been attached yet. */
     private boolean m_hasBeenAttached;
 
@@ -97,6 +100,7 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
         m_originalContent = "";
         m_options = options;
         m_active = true;
+        m_contentElement = element;
     }
 
     /**
@@ -107,7 +111,8 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
     public TinyMCEWidget(JavaScriptObject options) {
 
         this(DOM.createDiv(), options);
-
+        // using a child DIV as content element
+        m_contentElement = getElement().appendChild(DOM.createDiv());
     }
 
     /**
@@ -132,11 +137,10 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
      * 
      * @return the editable element 
      */
-    public native Element getMainElement() /*-{
-        var elementId = this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_id;
-        var mainElement = $wnd.document.getElementById(elementId);
-        return mainElement;
-    }-*/;
+    public Element getMainElement() {
+
+        return m_contentElement;
+    }
 
     /**
      * @see com.google.gwt.user.client.ui.HasValue#getValue()
@@ -170,7 +174,6 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
         if (m_editor != null) {
             if (m_active) {
                 getEditorParentElement().removeClassName(I_LayoutBundle.INSTANCE.form().inActive());
-                // getElement().focus();
                 fireValueChange(true);
             } else {
                 getEditorParentElement().addClassName(I_LayoutBundle.INSTANCE.form().inActive());
@@ -317,7 +320,7 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
 
                     if (isAttached()) {
                         m_editorHeight = calculateEditorHeight();
-                        m_id = ensureId(getElement());
+                        m_id = ensureId(getMainElement());
                         m_width = getElement().getOffsetWidth() - 2;
                         checkLibraries();
                         initNative();
@@ -342,7 +345,7 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
     protected void propagateFocusEvent() {
 
         NativeEvent nativeEvent = Document.get().createFocusEvent();
-        DomEvent.fireNativeEvent(nativeEvent, this, this.getElement());
+        DomEvent.fireNativeEvent(nativeEvent, this, getElement());
     }
 
     /**
