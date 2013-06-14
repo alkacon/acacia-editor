@@ -84,9 +84,11 @@ public class AttributeDNDController implements I_DNDController {
      */
     public boolean onDragStart(I_Draggable draggable, I_DropTarget target, DNDHandler handler) {
 
-        installDragOverlay();
-        handler.setOrientation(Orientation.VERTICAL);
-        if ((target instanceof ValuePanel) && (draggable instanceof AttributeValueView)) {
+        if ((target instanceof ValuePanel)
+            && (draggable instanceof AttributeValueView)
+            && ((AttributeValueView)draggable).isDragEnabled()) {
+            installDragOverlay();
+            handler.setOrientation(Orientation.VERTICAL);
             m_startPosition = ((AttributeValueView)draggable).getValueIndex();
             handler.clearTargets();
             handler.addTarget(target);

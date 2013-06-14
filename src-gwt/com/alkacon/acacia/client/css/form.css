@@ -68,10 +68,6 @@ div.attributeValue.secondColumn{
 	margin:0px;
 	top: 4px;
 }
-/*
-.attributeValue.singleLine > .widgetHolder > div > .label:last-child{
-	float: none;
-}*/
 
 .attributeValue.singleLine > .widgetHolder > div > .widget {
 	float: right;
@@ -88,15 +84,8 @@ div.attributeValue.secondColumn{
     visibility: hidden;
 }
 
-.attributeValue.singleLine .buttonBar{
-	width: 20px;
-	height:20px;
-	overflow: hidden;
-}
-
-.attributeValue.singleLine .buttonBar:hover{
-	width: auto;
-	overflow: visible;
+.attributeValue.simpleValue.singleLine .buttonBar{
+	top:6px;
 }
 
 .attributeValue.emptyValue .label{
@@ -132,25 +121,76 @@ div.buttonBar > div {
 	right: 2px;
 }
 
+.attributeValue.simpleValue .buttonBar{
+	top: 23px;
+}
+
 .attributeValue.compactView .buttonBar{
 	top: 0px;
 }
 
-@if user.agent ie6 {
-	.button{
-		display: inline;
-		cursor: pointer;
-	}
-} @else {
-	.button{
-		display: inline-block;
-		cursor: pointer;
-	}
+.multiButtonBar.buttonBar .buttonBarFrame{
+	display: none;
+	border: 1px solid #7788AA;
+	border-radius: 4px;
+	border-top-right-radius: 0px;
+	padding: 1px;
+	position: absolute;
+	top: 21px;
+	right: -2px;
+	background: white;
+	z-index: 10;
+	box-shadow: 2px 2px 2px #666666;
+	white-space: nowrap;
 }
+
+.multiButtonBar.buttonBar:hover .buttonBarFrame{
+	display: block;
+}
+
+.buttonBarBridge{
+	display: none;
+}
+
+.multiButtonBar .buttonBarBridge{
+	position: absolute;
+	display: block;
+	width: 22px;
+	height: 3px;
+	top: -1px;
+	right: 0px;
+	background: white;
+}
+
+.button{
+	display: inline-block;
+	cursor: pointer;
+}
+
+.buttonBar > .button{
+	display: none;
+}
+
+.buttonBar.multiButtonBar > .button{
+	border: 1px solid transparent;
+	border-radius: 4px;
+	padding: 1px;
+	margin: -2px -2px 0 -2px;
+	display: inline-block;
+	position: relative;
+}
+
+.buttonBar.multiButtonBar:hover > .button{
+	border-color: #7788AA;
+	background: white;
+	border-bottom-right-radius: 0px;
+	border-bottom-left-radius: 0px;
+}
+
 
 /** Editing widget styles. */
 .widgetHolder .widget{
-	margin: 0 2px 4px 2px;
+	margin: 0 25px 4px 2px;
 }
 
 .compactView .widgetHolder .widget{

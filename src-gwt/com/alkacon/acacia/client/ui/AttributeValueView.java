@@ -36,7 +36,6 @@ import com.alkacon.acacia.client.widgets.I_FormEditWidget;
 import com.alkacon.geranium.client.dnd.I_DragHandle;
 import com.alkacon.geranium.client.dnd.I_Draggable;
 import com.alkacon.geranium.client.dnd.I_DropTarget;
-import com.alkacon.geranium.client.ui.HoverPanel;
 import com.alkacon.geranium.client.ui.I_Button.ButtonStyle;
 import com.alkacon.geranium.client.ui.PushButton;
 import com.alkacon.geranium.client.ui.css.I_ImageBundle;
@@ -120,7 +119,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
          */
         MoveHandle(AttributeValueView draggable) {
 
-            setImageClass(I_ImageBundle.INSTANCE.style().moveIcon());
+            setImageClass(I_ImageBundle.INSTANCE.style().bullsEyeIcon());
             setButtonStyle(ButtonStyle.TRANSPARENT, null);
             if (EditorBase.getDictionary() != null) {
                 setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_MOVE_0));
@@ -173,7 +172,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
 
     /** The button bar. */
     @UiField
-    protected HoverPanel m_buttonBar;
+    protected DivElement m_buttonBar;
 
     /** The down button. */
     @UiField
@@ -223,6 +222,9 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     /** The default widget value. */
     private String m_defaultValue;
 
+    /** Flag indicating if drag and drop is enabled for this attribute. */
+    private boolean m_dragEnabled;
+
     /** Drag and drop helper element. */
     private Element m_dragHelper;
 
@@ -265,7 +267,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
      */
     public AttributeValueView(AttributeHandler handler, String label, String help) {
 
-        // important: provide the move button before initializing the widget
+        // important: provide the move button before binding the widget UI
         m_moveButton = new MoveHandle(this);
         initWidget(uiBinder.createAndBindUi(this));
         m_handler = handler;
@@ -282,7 +284,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         addStyleName(I_LayoutBundle.INSTANCE.form().emptyValue());
         m_compacteModeStyle = new StyleVariable(this);
         initHighlightingHandler();
-        initButtons(label);
+        initButtons();
     }
 
     /**
@@ -442,7 +444,17 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
      */
     public void hideAllButtons() {
 
-        m_buttonBar.getElement().getStyle().setDisplay(Display.NONE);
+        m_buttonBar.getStyle().setDisplay(Display.NONE);
+    }
+
+    /**
+     * Returns if drag and drop is enabled for this attribute.<p>
+     * 
+     * @return <code>true</code> if drag and drop is enabled for this attribute
+     */
+    public boolean isDragEnabled() {
+
+        return m_dragEnabled;
     }
 
     /**
@@ -604,6 +616,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         } else {
             removeStyleName(I_LayoutBundle.INSTANCE.form().emptyValue());
         }
+        addStyleName(I_LayoutBundle.INSTANCE.form().simpleValue());
     }
 
     /**
@@ -623,7 +636,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
      */
     public void showButtons() {
 
-        m_buttonBar.getElement().getStyle().clearDisplay();
+        m_buttonBar.getStyle().clearDisplay();
     }
 
     /**
@@ -680,17 +693,24 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         } else {
             m_downButton.getElement().getStyle().setDisplay(Display.NONE);
         }
-        if (hasSortButtons) {
-            m_moveButton.getElement().getStyle().clearDisplay();
+        if (hasSortButtons && (EditorBase.getDictionary() != null)) {
+            m_moveButton.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_MOVE_0));
         } else {
-            m_moveButton.getElement().getStyle().setDisplay(Display.NONE);
+            m_moveButton.setTitle("");
         }
+        m_dragEnabled = hasSortButtons;
         if (!hasAddButton && !hasRemoveButton && !hasSortButtons) {
             // hide the button bar if no button is visible
-            m_buttonBar.getElement().getStyle().setDisplay(Display.NONE);
+            m_buttonBar.getStyle().setDisplay(Display.NONE);
         } else {
             // show the button bar
-            m_buttonBar.getElement().getStyle().clearDisplay();
+            m_buttonBar.getStyle().clearDisplay();
+            if (hasSortButtons || (hasAddButton && hasRemoveButton)) {
+                // set multi button mode
+                m_buttonBar.addClassName(I_LayoutBundle.INSTANCE.form().multiButtonBar());
+            } else {
+                m_buttonBar.removeClassName(I_LayoutBundle.INSTANCE.form().multiButtonBar());
+            }
         }
     }
 
@@ -844,9 +864,8 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
                 public void onMouseDown(MouseDownEvent event) {
 
                     // only act on click if not inside the button bar
-                    if (!DomUtil.checkPositionInside(m_buttonBar.getElement(), event.getClientX(), event.getClientY())) {
+                    if (!m_buttonBar.isOrHasChild((Node)event.getNativeEvent().getEventTarget().cast())) {
                         activateWidget();
-
                     }
                 }
             });
@@ -886,10 +905,8 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
 
     /**
      * Initializes the button styling.<p>
-     * 
-     * @param label the attribute label 
      */
-    private void initButtons(String label) {
+    private void initButtons() {
 
         m_addButton.setImageClass(I_ImageBundle.INSTANCE.style().addIcon());
         m_addButton.setButtonStyle(ButtonStyle.TRANSPARENT, null);
@@ -923,8 +940,6 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         addMouseOverHandler(HighlightingHandler.getInstance());
         addMouseOutHandler(HighlightingHandler.getInstance());
         addMouseDownHandler(HighlightingHandler.getInstance());
-        m_buttonBar.addMouseOverHandler(HighlightingHandler.getInstance());
-        m_buttonBar.addMouseOutHandler(HighlightingHandler.getInstance());
     }
 
     /**

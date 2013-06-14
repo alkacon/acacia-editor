@@ -127,6 +127,27 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
         String buttonBar();
 
         /**
+         * Returns the multi button bar CSS class name.<p>
+         * 
+         * @return the multi button bar CSS class
+         */
+        String multiButtonBar();
+
+        /**
+         * Returns the button bar frame CSS class name.<p>
+         * 
+         * @return the button bar frame CSS class
+         */
+        String buttonBarFrame();
+
+        /**
+         * Returns the button bar bridge CSS class name.<p>
+         * 
+         * @return the button bar bridge CSS class
+         */
+        String buttonBarBridge();
+
+        /**
          * Returns the closed bubble CSS class name.<p>
          * 
          * @return the closed bubble CSS class
@@ -279,6 +300,13 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
          * @return the second column CSS class
          */
         String secondColumn();
+
+        /**
+         * Returns the simple value CSS class name.<p>
+         * 
+         * @return the simple value CSS class name
+         */
+        String simpleValue();
 
         /**
          * Returns the single line view CSS class name.<p>
