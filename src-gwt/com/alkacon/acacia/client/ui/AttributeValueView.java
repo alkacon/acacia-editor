@@ -886,6 +886,9 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
             m_provisionalParent.removeFromParent();
             m_provisionalParent = null;
         }
+        // preventing issue where mouse out was never triggered after drag and drop
+        m_moveButton.getElement().removeFromParent();
+        m_buttonBar.insertFirst(m_moveButton.getElement());
     }
 
     /**
