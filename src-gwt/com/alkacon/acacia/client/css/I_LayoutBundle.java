@@ -155,13 +155,6 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
         String closedBubble();
 
         /**
-         * Returns the compact view CSS class name.<p>
-         * 
-         * @return the compact view CSS class
-         */
-        String compactView();
-
-        /**
          * Returns the display bubble above CSS class name.<p>
          * 
          * @return the display bubble above CSS class
@@ -181,13 +174,6 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
          * @return the drag overlay CSS class
          */
         String dragOverlay();
-
-        /**
-         * Returns the first column CSS class name.<p>
-         *  
-         * @return the first column CSS class
-         */
-        String firstColumn();
 
         /**
          * Returns the CSS constant value.<p>
@@ -295,11 +281,11 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
         int SECOND_COLUMN_WIDTH();
 
         /**
-         * Returns the second column CSS class name.<p>
+         * Returns the shallow widget CSS class name.<p>
          *  
-         * @return the second column CSS class
+         * @return the shallow widget CSS class
          */
-        String secondColumn();
+        String shallowWidget();
 
         /**
          * Returns the simple value CSS class name.<p>
@@ -307,13 +293,6 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
          * @return the simple value CSS class name
          */
         String simpleValue();
-
-        /**
-         * Returns the single line view CSS class name.<p>
-         * 
-         * @return the single line view CSS class
-         */
-        String singleLine();
 
     }
 
@@ -327,6 +306,41 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
          * @return the attribute value CSS class
          */
         String attributeValue();
+
+        /**
+         * Returns the compact view CSS class name.<p>
+         * 
+         * @return the compact view CSS class
+         */
+        String compactView();
+
+        /**
+         * Returns the default view CSS class name.<p>
+         * 
+         * @return the compact view CSS class
+         */
+        String defaultView();
+
+        /**
+         * Returns the first column CSS class name.<p>
+         *  
+         * @return the first column CSS class
+         */
+        String firstColumn();
+
+        /**
+         * Returns the second column CSS class name.<p>
+         *  
+         * @return the second column CSS class
+         */
+        String secondColumn();
+
+        /**
+         * Returns the single line view CSS class name.<p>
+         * 
+         * @return the single line view CSS class
+         */
+        String singleLine();
 
         /**
          * Returns the drag helper CSS class name.<p>

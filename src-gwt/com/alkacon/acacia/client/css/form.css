@@ -7,7 +7,7 @@
 
 @def SECOND_COLUMN_WIDTH 448;
  
-.attribute{}
+.attribute, .defaultView{}
 
 .formParent{
 	background-color: transparent !important;
@@ -63,16 +63,17 @@ div.attributeValue.secondColumn{
 
 .attributeValue.singleLine > .widgetHolder > div > .label{
 	position:absolute;
-	text-align: right;
-	right: 745px;
+	text-align: left;
+	right: 765px;
 	margin:0px;
+	left: 7px;
 	top: 4px;
 }
 
 .attributeValue.singleLine > .widgetHolder > div > .widget {
 	float: right;
 	margin: 4px 25px 4px 0px;
-	width: 710px;
+	width: 730px;
 }
 
 /* clear both after the widget holder */
@@ -86,6 +87,9 @@ div.attributeValue.secondColumn{
 
 .attributeValue.simpleValue.singleLine .buttonBar{
 	top:6px;
+}
+.attributeValue.simpleValue.shallowWidget div.buttonBar{
+	top:2px;
 }
 
 .attributeValue.emptyValue .label{

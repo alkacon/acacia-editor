@@ -283,6 +283,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         m_helpBubbleText.setInnerHTML(m_help);
         addStyleName(I_LayoutBundle.INSTANCE.form().emptyValue());
         m_compacteModeStyle = new StyleVariable(this);
+        m_compacteModeStyle.setValue(I_LayoutBundle.INSTANCE.form().defaultView());
         initHighlightingHandler();
         initButtons();
     }
