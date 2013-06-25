@@ -76,6 +76,14 @@ public class HighlightingHandler implements MouseOverHandler, MouseOutHandler, M
     }
 
     /**
+     * Clears the static instance reference.<p>
+     */
+    private static void clearInstance() {
+
+        INSTANCE = null;
+    }
+
+    /**
      * Removes all focus highlighting.<p>
      */
     public void clearFocusHighlighting() {
@@ -96,7 +104,7 @@ public class HighlightingHandler implements MouseOverHandler, MouseOutHandler, M
             m_handlerRegistration.removeHandler();
         }
         m_handlerRegistration = null;
-        INSTANCE = null;
+        clearInstance();
     }
 
     /**

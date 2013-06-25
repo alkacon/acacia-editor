@@ -252,9 +252,6 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     /** The drag and drop place holder element. */
     private Element m_placeHolder;
 
-    /** The provisional drag and drop helper parent. */
-    private Element m_provisionalParent;
-
     /** The editing widget. */
     private I_FormEditWidget m_widget;
 
@@ -882,10 +879,6 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
             removeDragHelperStyles(m_dragHelper);
             // m_dragHelper.removeFromParent();
             m_dragHelper = null;
-        }
-        if (m_provisionalParent != null) {
-            m_provisionalParent.removeFromParent();
-            m_provisionalParent = null;
         }
         // preventing issue where mouse out was never triggered after drag and drop
         m_moveButton.getElement().removeFromParent();
