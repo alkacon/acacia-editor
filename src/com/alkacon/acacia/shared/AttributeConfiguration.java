@@ -138,9 +138,9 @@ public class AttributeConfiguration implements IsSerializable {
      *
      * @return <code>true</code> if the widget should be displayed in compact view
      */
-    public boolean isDisplayCompact() {
+    public boolean isDisplayColumn() {
 
-        return "compact".equals(m_displayType);
+        return "column".equals(m_displayType);
     }
 
     /**

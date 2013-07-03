@@ -77,7 +77,7 @@ div.attributeValue.secondColumn{
 }
 
 /* clear both after the widget holder */
-.attributeValue.singleLine > div.widgetHolder:after{
+.attributeValue > div.widgetHolder:after{
 	content: ".";
     display: block;
     height: 0;

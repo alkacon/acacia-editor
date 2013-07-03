@@ -163,7 +163,7 @@ public class WidgetService implements I_WidgetService {
         if (m_attributeConfigurations != null) {
             AttributeConfiguration config = m_attributeConfigurations.get(attributeName);
             if (config != null) {
-                return config.isDisplayCompact();
+                return config.isDisplayColumn();
             }
         }
         return false;
