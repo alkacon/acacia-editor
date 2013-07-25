@@ -30,10 +30,10 @@ import com.alkacon.acacia.client.Renderer;
 import com.alkacon.acacia.client.WidgetService;
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.acacia.client.widgets.FormWidgetWrapper;
-import com.alkacon.acacia.client.widgets.HalloWidget;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
 import com.alkacon.acacia.client.widgets.I_FormEditWidget;
 import com.alkacon.acacia.client.widgets.StringWidget;
+import com.alkacon.acacia.client.widgets.TinyMCEWidget;
 import com.alkacon.acacia.shared.AttributeConfiguration;
 import com.alkacon.acacia.shared.ContentDefinition;
 import com.alkacon.acacia.shared.Type;
@@ -111,12 +111,12 @@ public class Example implements EntryPoint {
 
             public I_FormEditWidget createFormWidget(String configuration) {
 
-                return new FormWidgetWrapper(new HalloWidget());
+                return new FormWidgetWrapper(new TinyMCEWidget(null));
             }
 
             public I_EditWidget createInlineWidget(String configuration, Element element) {
 
-                return new HalloWidget(element, null);
+                return new TinyMCEWidget(element, null);
             }
         });
         I_EntityRenderer defaultRenderer = new Renderer(vie, service);

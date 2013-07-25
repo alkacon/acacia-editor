@@ -1,4 +1,4 @@
-@external mceEditor,defaultSkin, mceExternalToolbar, mceStatusbar, mceIframeContainer, mceLayout, mceLast,mceToolbar, gwt-TabLayoutPanelTabBar, gwt-TabLayoutPanel, gwt-TabLayoutPanelTab;
+@external mce-tinymce, mce-statusbar, mce-wordcount, mce-path, mce-container-body, mce-panel, gwt-TabLayoutPanelTabBar, gwt-TabLayoutPanel, gwt-TabLayoutPanelTab;
 
 @def PARENT_GRADIENT literal("left, #FFFFFF 0%, #F4F7F9 80%, #E1E4E8 100%");  
 @def PARENT_GRADIENT_IE9 literal("url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjgwJSIgc3RvcC1jb2xvcj0iI2Y0ZjdmOSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNlMWU0ZTgiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+)");
@@ -215,11 +215,6 @@ div.buttonBar > div {
 	border: 1px solid #7788AA;
 	background: #ffffff;
 }
-.attributeValue .widgetHolder  .mceEditor{
-	border: 1px solid #7788AA;
-	background: #ffffff;
-	border-radius: 3px;
-	}
 
 .attributeValue.hasError .label{
 	color: value("constants.css.borderColorHighlight");
@@ -229,121 +224,70 @@ div.buttonBar > div {
 	color: #FFAA00;
 }
 
-.hasError .widgetHolder > div > .widget.input, .attributeValue.hasError .widgetHolder  .mceEditor, .gwt-TabLayoutPanel .gwt-TabLayoutPanelTabBar .gwt-TabLayoutPanelTab.hasError{
+.hasError .widgetHolder > div > .widget.input, .attributeValue.hasError .widgetHolder  .mce-tinymce, .gwt-TabLayoutPanel .gwt-TabLayoutPanelTabBar .gwt-TabLayoutPanelTab.hasError{
 	border-color: value("constants.css.borderColorHighlight");
 }
 
-.hasWarning .widgetHolder > div > .widget.input, .attributeValue.hasWarning .widgetHolder  .mceEditor, .gwt-TabLayoutPanel .gwt-TabLayoutPanelTabBar .gwt-TabLayoutPanelTab.hasWarning{
+.hasWarning .widgetHolder > div > .widget.input, .attributeValue.hasWarning .widgetHolder  .mce-tinymce, .gwt-TabLayoutPanel .gwt-TabLayoutPanelTabBar .gwt-TabLayoutPanelTab.hasWarning{
 	border-color: #FFAA00;
 }
 .widgetHolder > div > .widget.input{
 	cursor: text;
 }
-.attributeValue .widgetHolder  .mceEditor.inActive *{
+
+.attributeValue .widgetHolder  .mce-tinymce{
+	border: 1px solid #7788AA;
+	background: #ffffff;
+	border-radius: 3px;
+}
+
+.attributeValue .widgetHolder  .mce-tinymce.inActive *{
 	visibility: hidden;
 }
 
-.attributeValue.focused > .widgetHolder > .widget .mceEditor {
-	border-radius: 0 3px 0 0;
+.attributeValue.focused > .widgetHolder > .widget .mce-tinymce {
+	border-radius: 3px 3px 0 0;
 }
 
-.widgetHolder > div > .widget.input.inActive, .attributeValue .widgetHolder  .mceEditor.inActive{
+.widgetHolder > div > .widget.input.inActive, .attributeValue .widgetHolder  .mce-tinymce.inActive{
 	color: transparent;
 	border-color: value("constants.css.borderColor");
 }
-.attributeValue > .widgetHolder > .widget .mceEditor.inActive{
+.attributeValue > .widgetHolder > .widget .mce-tinymce.inActive{
 	height: 18px;	
 	border-radius: 3px;
 }
-.attributeValue.focused > .widgetHolder > div > div.widget .mceEditor tr.mceLast{
-	visibility: visible;
+
+.attributeValue .mce-tinymce > .mce-container-body > .mce-panel:first-child{
+	border-radius: 3px 3px 0px 0px;
 }
 
-.attributeValue > .widgetHolder > div > div.widget .mceEditor tr.mceLast{
-	visibility: collapse;
+.attributeValue.focused > .widgetHolder > div > div.widget .mce-tinymce .mce-statusbar{
+	display: block;	
 }
 
-.attributeValue > .widgetHolder > div > div.widget .mceEditor .mceStatusbar{
+.attributeValue > .widgetHolder > div > div.widget .mce-tinymce .mce-statusbar{
 	background: none repeat scroll 0 0 white;
-    border-bottom: 1px solid #7788AA;
-    border-right: 1px solid #7788AA;
-    border-left: 1px solid #7788AA;
+    border-bottom: 1px solid #7788AA !important;
+    border-right: 1px solid #7788AA !important;
+    border-left: 1px solid #7788AA !important;
     box-shadow: 0 1px 3px 0 #7788AA;
     border-radius: 0 0 3px 3px;
-    display: block;
+    display: none;
     left: -1px;
     position: absolute;
     right: -1px;
     z-index: 2;
-	
 }
 
-.attributeValue > .widgetHolder > div > div.widget .mceEditor iframe{
-	border-radius: 3px 3px 0 0;
-	width: 100% !important;
-}
+.mce-statusbar .mce-wordcount, .mce-statusbar .mce-path{
+	padding: 2px;
+	margin-right: 8px;
+} 
 
-.attributeValue.focused > .widgetHolder > div > div.widget .mceEditor .mceExternalToolbar{
-	z-index: 10;
-	left: -1px;
-	/* leave some space for attribute buttons */
-	margin-right: 64px;
-	border-color: #7788AA;
-	border-radius: 3px 3px 0 0;
-}
-
-.attributeValue.focused > .widgetHolder > div > div.widget .mceEditor .mceIframeContainer{
-	border-bottom: 1px solid #aaaaaa;
-	border-radius: 0 3px 0 0;
-}
-
-.attributeValue > .widgetHolder > div > div.widget .mceEditor .mceIframeContainer{
-	border-color: #ffffff;
+.attributeValue > .widgetHolder > div > div.widget .mce-tinymce, .attributeValue > .widgetHolder > div > div.widget .mce-tinymce iframe{
 	border-radius: 3px;
-}
-
-.attributeValue > .widgetHolder > div > div.widget .mceEditor > table.mceLayout{
-	border: none;
-	border-radius: 0 3px 0 0;
-    width: 100%;
-    position: relative;
-}
-
-.attributeValue .mceEditor .mceExternalToolbar{
-	z-index: -1;
-	display: none !important;
-}
-
-.attributeValue.focused .mceEditor .mceExternalToolbar {
-	display: block !important;
-}
-
-.attributeValue .mceEditor .mceExternalToolbar td{
-	border-radius: 3px 3px 0 0;
-}
-
-
-/* These rules are used for laying out TinyMCE's button toolbar rows next to each other, not as rows. */
-
-.mceIframeContainer, #mce_fullscreen_tbl , #mce_fullscreen_container, #mce_fullscreen_container  #mce_fullscreen_ifr {
-	height: 100% !important; 
-}
-
-/* Use the cmsTinyMCE class here because we need to turn the float off/on dynamically to fix a layout problem in Chrome. */
-.attributeValue .mceToolbar table, #mce_fullscreen_tbl table.mceToolbar {
-   float: left;
-}
-                    
-.mceToolbar select {
-    width: auto !important;
-}
-
-.mceEditor .defaultSkin td.mceToolbar {
-	background: #E1E4E8;
-}
-                    
-.mceToolbar option {
-  float: none; 
+	width: 100% !important;
 }
 
 /** Help bubble styles. */
@@ -440,14 +384,14 @@ div.helpBubble{
 .entity .attributeValue > div, .dragHelper.attributeValue > div{
 	border-radius: 4px;
 }
-.widgetHolder .widget.input, .attributeValue .widgetHolder  .mceEditor{
+.widgetHolder .widget.input, .attributeValue .widgetHolder  .mce-tinymce{
 	border-radius: 3px;
 }
 
 /** Browser specific styles. */
 @if user.agent gecko1_8 gecko{
 	/** firefox **/
-	.formParent, .attributeValue > .widgetHolder > div > div.widget .mceEditor .mceStatusbar,.attributeValue.focused > .widgetHolder > div > div.widget .mceEditor .mceExternalToolbar{
+	.formParent{
 		background-image: literal("-moz-linear-gradient(")PARENT_GRADIENT literal(")") !important;
 	}
 	.entity .attributeValue.focused > .widgetHolder, .dragHelper.attributeValue > .widgetHolder{
@@ -455,7 +399,7 @@ div.helpBubble{
 	}
 } @elif user.agent safari {
 	/** chrome, safari etc. **/
-	.formParent, .attributeValue > .widgetHolder > div > div.widget .mceEditor .mceStatusbar,.attributeValue.focused > .widgetHolder > div > div.widget .mceEditor .mceExternalToolbar{
+	.formParent{
 		background-image: literal("-webkit-linear-gradient(")PARENT_GRADIENT literal(")") !important;
 	}
 	.entity .attributeValue.focused > .widgetHolder, .dragHelper.attributeValue > .widgetHolder{
@@ -463,7 +407,7 @@ div.helpBubble{
 	}
 } @elif user.agent opera {
 	/** opera */
-	.formParent, .attributeValue > .widgetHolder > div > div.widget .mceEditor .mceStatusbar,.attributeValue.focused > .widgetHolder > div > div.widget .mceEditor .mceExternalToolbar{
+	.formParent{
 		background-image: literal("-o-linear-gradient(")PARENT_GRADIENT literal(")") !important;
 	}
 	.entity .attributeValue.focused > .widgetHolder, .dragHelper.attributeValue > .widgetHolder{
@@ -471,7 +415,7 @@ div.helpBubble{
 	}
 } @elif user.agent ie9 {
 	/** ie9 */
-	div.formParent, .attributeValue > .widgetHolder > div > div.widget .mceEditor .mceStatusbar, .attributeValue.focused > .widgetHolder > div > div.widget .mceEditor .mceExternalToolbar{
+	div.formParent{
 		background-image: PARENT_GRADIENT_IE9 !important;
 	}
 	.entity .attributeValue.focused > .widgetHolder, .dragHelper.attributeValue > .widgetHolder{
@@ -479,7 +423,7 @@ div.helpBubble{
 	}
 } @else {
 	/** ie8, ie7 */
-	div.formParent, .attributeValue > .widgetHolder > div > div.widget .mceEditor .mceStatusbar, .attributeValue.focused > .widgetHolder > div > div.widget .mceEditor .mceExternalToolbar{
+	div.formParent{
 		background: #EEEEEE !important;
 	}
 	.entity .attributeValue.focused > .widgetHolder, .dragHelper.attributeValue > .widgetHolder{

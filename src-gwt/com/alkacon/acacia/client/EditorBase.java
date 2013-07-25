@@ -25,10 +25,10 @@
 package com.alkacon.acacia.client;
 
 import com.alkacon.acacia.client.widgets.FormWidgetWrapper;
-import com.alkacon.acacia.client.widgets.HalloWidget;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
 import com.alkacon.acacia.client.widgets.I_FormEditWidget;
 import com.alkacon.acacia.client.widgets.StringWidget;
+import com.alkacon.acacia.client.widgets.TinyMCEWidget;
 import com.alkacon.acacia.shared.ContentDefinition;
 import com.alkacon.acacia.shared.TabInfo;
 import com.alkacon.acacia.shared.ValidationResult;
@@ -132,12 +132,12 @@ public class EditorBase {
 
             public I_FormEditWidget createFormWidget(String configuration) {
 
-                return new FormWidgetWrapper(new HalloWidget());
+                return new FormWidgetWrapper(new TinyMCEWidget(null));
             }
 
             public I_EditWidget createInlineWidget(String configuration, Element element) {
 
-                return new HalloWidget(element, null);
+                return new TinyMCEWidget(element, null);
             }
         });
 
