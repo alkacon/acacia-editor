@@ -294,6 +294,12 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
          */
         String simpleValue();
 
+        /**
+         * Returns the tinymce toolbar container CSS class name.<p>
+         * 
+         * @return the tinymce toolbar container CSS class name
+         */
+        String tinymceToolbarContainer();
     }
 
     /** The widget CSS classes. */

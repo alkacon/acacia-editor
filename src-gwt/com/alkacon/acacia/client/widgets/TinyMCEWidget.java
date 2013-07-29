@@ -25,14 +25,13 @@
 package com.alkacon.acacia.client.widgets;
 
 import com.alkacon.acacia.client.css.I_LayoutBundle;
+import com.alkacon.geranium.client.util.PositionBean;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.event.logical.shared.HasResizeHandlers;
@@ -55,6 +54,9 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
 
     /** The minimum editor height. */
     private static final int MIN_EDITOR_HEIGHT = 70;
+
+    /** The toolbar container css class name. */
+    private static final String TOOLBAR_CONTAINER = I_LayoutBundle.INSTANCE.form().tinymceToolbarContainer();
 
     /** A flag which indicates whether the editor is currently active. */
     protected boolean m_active;
@@ -91,6 +93,9 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
 
     /** The editor options. */
     private JavaScriptObject m_options;
+
+    /** The in line editing toolbar container. */
+    private Element m_toolbarContainer;
 
     /**
      * Creates a new instance for the given element. Use this constructor for in line editing.<p>
@@ -265,36 +270,6 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
     }
 
     /**
-     * Fixes the styling of the editor widget.<p>
-     */
-    protected void fixStyles() {
-
-        if (!m_inline) {
-            // it may take some time until the editor has been initialized, repeat until layout fix can be applied
-            Scheduler.get().scheduleFixedDelay(new RepeatingCommand() {
-
-                /**
-                 * @see com.google.gwt.core.client.Scheduler.RepeatingCommand#execute()
-                 */
-                public boolean execute() {
-
-                    Element parent = getEditorParentElement();
-                    if (parent != null) {
-                        String cssClass = getMainElement().getClassName();
-                        if ((cssClass != null) && (cssClass.trim().length() > 0)) {
-                            parent.addClassName(cssClass);
-                        }
-                        parent.getStyle().setDisplay(Display.BLOCK);
-                        getEditorTableElement().getStyle().setWidth(100, Unit.PCT);
-                        return false;
-                    }
-                    return true;
-                }
-            }, 100);
-        }
-    }
-
-    /**
      * Returns the editor parent element.<p>
      * 
      * @return the editor parent element
@@ -303,17 +278,6 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
         var elementId = this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_id;
         var parentId = elementId + "_parent";
         return $doc.getElementById(parentId);
-    }-*/;
-
-    /**
-     * Returns the editor table element.<p>
-     * 
-     * @return the editor table element
-     */
-    protected native Element getEditorTableElement() /*-{
-        var elementId = this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_id;
-        var tableId = elementId + "_tbl";
-        return $doc.getElementById(tableId);
     }-*/;
 
     /**
@@ -328,6 +292,17 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
     }-*/;
 
     /**
+     * Checks if the main element contains the current text selection.<p>
+     * 
+     * @return <code>true</code> if the main element contains the current text selection
+     */
+    protected boolean hasCurrentSelectionRange() {
+
+        Element rangeParent = getCurrentRangeParent();
+        return (rangeParent != null) && getMainElement().isOrHasChild(rangeParent);
+    }
+
+    /**
      * @see com.google.gwt.user.client.ui.FocusWidget#onAttach()
      */
     @Override
@@ -336,13 +311,6 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
         super.onAttach();
         if (!m_hasBeenAttached) {
             m_hasBeenAttached = true;
-            final boolean refocus;
-            if (m_inline) {
-                Element rangeParent = getCurrentRangeParent();
-                refocus = (rangeParent != null) && getMainElement().isOrHasChild(rangeParent);
-            } else {
-                refocus = false;
-            }
             Scheduler.get().scheduleDeferred(new ScheduledCommand() {
 
                 public void execute() {
@@ -353,19 +321,6 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
                         m_width = getElement().getOffsetWidth() - 2;
                         checkLibraries();
                         initNative();
-                        if (refocus) {
-                            Timer focusTimer = new Timer() {
-
-                                @Override
-                                public void run() {
-
-                                    refocusInlineEditor();
-                                }
-
-                            };
-                            focusTimer.schedule(200);
-                        }
-
                         if (!m_active) {
 
                             Element parent = getEditorParentElement();
@@ -388,6 +343,10 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
     protected void onDetach() {
 
         detachEditor();
+        if (m_toolbarContainer != null) {
+            m_toolbarContainer.removeFromParent();
+            m_toolbarContainer = null;
+        }
         super.onDetach();
     }
 
@@ -437,6 +396,23 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
     }-*/;
 
     /**
+     * Schedules to reset the focus to the main element.<p>
+     */
+    protected void scheduleRefocus() {
+
+        // this needs to be delayed a bit, otherwise the toolbar is not rendered properly
+        Timer focusTimer = new Timer() {
+
+            @Override
+            public void run() {
+
+                refocusInlineEditor();
+            }
+        };
+        focusTimer.schedule(150);
+    }
+
+    /**
      * Sets the main content of the element which is inline editable.<p>
      * 
      * @param html the new content html 
@@ -465,8 +441,8 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
     native void initNative() /*-{
 
         var self = this;
+        var needsRefocus = self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::hasCurrentSelectionRange()();
         var elementId = self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_id;
-        var iframeId = elementId + "_ifr";
         var mainElement = $wnd.document.getElementById(elementId);
         var editorHeight = self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_editorHeight
                 + "px";
@@ -481,6 +457,7 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
         }
         // default options:
         var defaults = {
+            elements : elementId,
             relative_urls : false,
             remove_script_host : false,
             entity_encoding : "raw",
@@ -491,32 +468,42 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
             menubar : false,
             toolbar_items_size : 'small'
         };
+
         if (this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_inline) {
             self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_currentContent = mainElement.innerHTML;
             defaults.inline = true;
             defaults.width = this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_width;
+            var toolbarContainer = $wnd.document.createElement("div");
+            toolbarContainer.className = @com.alkacon.acacia.client.widgets.TinyMCEWidget::TOOLBAR_CONTAINER;
+            toolbarContainer.innerHTML = "<div id=\"" + elementId
+                    + "_toolbarContainer\" style=\"width: " + defaults.width
+                    + "px;\"></div>";
+            $wnd.document.body.appendChild(toolbarContainer);
+            this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_toolbarContainer = toolbarContainer;
+            defaults.fixed_toolbar_container = "#" + elementId
+                    + "_toolbarContainer";
         } else {
             self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_currentContent = self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_originalContent;
             defaults.autoresize_min_height = 100;
             defaults.autoresize_max_height = editorHeight;
-            defaults.autoresize_bottom_margin = 10;
             defaults.width = '100%';
             defaults.resize = 'both';
-            defaults.plugins = "autoresize," + defaults.plugins;
         }
         // extend the defaults with any given options
         if (options != null) {
-            if (this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_inline) {
-                delete options.content_css;
-            }
             var vie = @com.alkacon.vie.client.Vie::getInstance()();
             vie.jQuery.extend(defaults, options);
+            if (this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_inline) {
+                delete defaults.content_css;
+            } else {
+                // enable autoresize
+                defaults.plugins = "autoresize," + defaults.plugins;
+            }
         }
 
         // add the setup function
         defaults.setup = function(ed) {
             self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_editor = ed;
-
             ed.on('SetContent', fireChange);
             ed.on('change', fireChange);
             ed.on('KeyDown', fireChange);
@@ -542,7 +529,9 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
                                 }
                                 self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_initialized = true;
                             });
+
             if (!self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_inline) {
+
                 ed
                         .on(
                                 'Click',
@@ -572,17 +561,28 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
                                 function(event) {
                                     self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Ljava/lang/String;Lcom/google/gwt/user/client/Element;)('mouseup', mainElement);
                                 });
+            } else {
+                if (needsRefocus) {
+                    ed
+                            .on(
+                                    'init',
+                                    function() {
+                                        self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::scheduleRefocus()();
+                                    });
+                }
+                ed
+                        .on(
+                                'focus',
+                                function(event) {
+                                    self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::resetToolbarContainerPosition()();
+                                });
             }
         };
-        // set the edited element id
-        defaults.elements = self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_id;
-        // set default zindex
+        // set default z-index for overlay ui components
         var cssConstants = @com.alkacon.acacia.client.css.I_LayoutBundle::INSTANCE.@com.alkacon.acacia.client.css.I_LayoutBundle::constants()().@com.alkacon.geranium.client.ui.css.I_ConstantsBundle::css()();
         $wnd.tinymce.ui.FloatPanel.zIndex = cssConstants.@com.alkacon.geranium.client.ui.css.I_ConstantsBundle.I_ConstantsCss::zIndexPopup()();
-
         // initialize tinyMCE
         $wnd.tinymce.init(defaults);
-        self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::fixStyles()();
     }-*/;
 
     /**
@@ -599,6 +599,10 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
     private native void detachEditor() /*-{
         var ed = this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_editor;
         ed.remove();
+        // in IE somehow the whole document will be selected, empty the selection to resolve that
+        if ($wnd.document.selection) {
+            $wnd.document.selection.empty();
+        }
     }-*/;
 
     /**
@@ -658,6 +662,18 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
         }
         return null;
     }-*/;
+
+    /**
+     * Resets the in line editing toolbar position.<p>
+     */
+    private void resetToolbarContainerPosition() {
+
+        if (m_toolbarContainer != null) {
+            PositionBean position = PositionBean.generatePositionInfo(m_contentElement);
+            m_toolbarContainer.getStyle().setTop(position.getTop() - 5, Unit.PX);
+            m_toolbarContainer.getStyle().setLeft(position.getLeft(), Unit.PX);
+        }
+    }
 
     /**
      * Sets the content of the TinyMCE editor.<p>
