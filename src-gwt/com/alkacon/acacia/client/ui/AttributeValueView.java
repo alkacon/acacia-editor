@@ -25,6 +25,7 @@
 package com.alkacon.acacia.client.ui;
 
 import com.alkacon.acacia.client.AttributeHandler;
+import com.alkacon.acacia.client.ButtonBarHandler;
 import com.alkacon.acacia.client.ChoiceMenuEntryBean;
 import com.alkacon.acacia.client.EditorBase;
 import com.alkacon.acacia.client.I_EntityRenderer;
@@ -144,6 +145,9 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         // nothing to do
     }
 
+    /** Handler for controlling the visibility of button bars. */
+    private static ButtonBarHandler hoverHandler = new ButtonBarHandler();
+
     /** The first column compact view mode. */
     public static final int COMPACT_MODE_FIRST_COLUMN = 1;
 
@@ -172,7 +176,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
 
     /** The button bar. */
     @UiField
-    protected DivElement m_buttonBar;
+    protected HTMLPanel m_buttonBar;
 
     /** The down button. */
     @UiField
@@ -283,6 +287,10 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         m_compacteModeStyle.setValue(I_LayoutBundle.INSTANCE.form().defaultView());
         initHighlightingHandler();
         initButtons();
+
+        ButtonBarHandler.EventHandler handler2 = hoverHandler.createEventHandler(this);
+        m_buttonBar.addDomHandler(handler2, MouseOverEvent.getType());
+        m_buttonBar.addDomHandler(handler2, MouseOutEvent.getType());
     }
 
     /**
@@ -442,7 +450,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
      */
     public void hideAllButtons() {
 
-        m_buttonBar.getStyle().setDisplay(Display.NONE);
+        m_buttonBar.getElement().getStyle().setDisplay(Display.NONE);
     }
 
     /**
@@ -513,6 +521,21 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         addStyleName(I_LayoutBundle.INSTANCE.form().emptyValue());
         generateLabel();
         removeValidationMessage();
+    }
+
+    /**
+     * Shows or hides the button bar.<p>
+     * 
+     * @param visible true if the button bar should be shown 
+     */
+    public void setButtonsVisible(boolean visible) {
+
+        String hoverStyle = I_LayoutBundle.INSTANCE.form().hoverButton();
+        if (visible) {
+            m_buttonBar.addStyleName(hoverStyle);
+        } else {
+            m_buttonBar.removeStyleName(hoverStyle);
+        }
     }
 
     /**
@@ -634,7 +657,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
      */
     public void showButtons() {
 
-        m_buttonBar.getStyle().clearDisplay();
+        m_buttonBar.getElement().getStyle().clearDisplay();
     }
 
     /**
@@ -707,15 +730,15 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         m_dragEnabled = hasSortButtons;
         if (!hasAddButton && !hasRemoveButton && !hasSortButtons) {
             // hide the button bar if no button is visible
-            m_buttonBar.getStyle().setDisplay(Display.NONE);
+            m_buttonBar.getElement().getStyle().setDisplay(Display.NONE);
         } else {
             // show the button bar
-            m_buttonBar.getStyle().clearDisplay();
+            m_buttonBar.getElement().getStyle().clearDisplay();
             if (hasSortButtons || (hasAddButton && hasRemoveButton)) {
                 // set multi button mode
-                m_buttonBar.addClassName(I_LayoutBundle.INSTANCE.form().multiButtonBar());
+                m_buttonBar.addStyleName(I_LayoutBundle.INSTANCE.form().multiButtonBar());
             } else {
-                m_buttonBar.removeClassName(I_LayoutBundle.INSTANCE.form().multiButtonBar());
+                m_buttonBar.addStyleName(I_LayoutBundle.INSTANCE.form().multiButtonBar());
             }
         }
     }
@@ -870,7 +893,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
                 public void onMouseDown(MouseDownEvent event) {
 
                     // only act on click if not inside the button bar
-                    if (!m_buttonBar.isOrHasChild((Node)event.getNativeEvent().getEventTarget().cast())) {
+                    if (!m_buttonBar.getElement().isOrHasChild((Node)event.getNativeEvent().getEventTarget().cast())) {
                         activateWidget();
                     }
                 }
@@ -890,7 +913,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         }
         // preventing issue where mouse out was never triggered after drag and drop
         m_moveButton.getElement().removeFromParent();
-        m_buttonBar.insertFirst(m_moveButton.getElement());
+        m_buttonBar.getElement().insertFirst(m_moveButton.getElement());
     }
 
     /**

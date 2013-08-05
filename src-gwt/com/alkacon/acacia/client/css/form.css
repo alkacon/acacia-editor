@@ -148,13 +148,17 @@ div.buttonBar > div {
 	white-space: nowrap;
 }
 
-.multiButtonBar.buttonBar:hover .buttonBarFrame{
+
+
+.multiButtonBar.buttonBar.hoverButton .buttonBarFrame{
 	display: block;
 }
 
 .buttonBarBridge{
 	display: none;
 }
+
+
 
 .multiButtonBar .buttonBarBridge{
 	position: absolute;
@@ -184,7 +188,7 @@ div.buttonBar > div {
 	position: relative;
 }
 
-.buttonBar.multiButtonBar:hover > .button{
+.buttonBar.multiButtonBar.hoverButton > .button{
 	border-color: #7788AA;
 	background: white;
 	border-bottom-right-radius: 0px;

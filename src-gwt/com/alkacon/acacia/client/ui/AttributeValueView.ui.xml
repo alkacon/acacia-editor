@@ -6,7 +6,7 @@
 	<ui:with field="style" type="com.alkacon.acacia.client.css.I_LayoutBundle" />
 	<g:HTMLPanel styleName="{style.form.attributeValue}">
 		<g:FlowPanel ui:field="m_widgetHolder" styleName="{style.form.widgetHolder}" />
-		<div ui:field="m_buttonBar" class="{style.form.buttonBar}">
+		<g:HTMLPanel tag="div" ui:field="m_buttonBar" addStyleNames="{style.form.buttonBar}">
 			<aui:PushButton ui:field="m_moveButton" addStyleNames="{style.form.button}" />
 			<div class="{style.form.buttonBarFrame}">
 				<div class="{style.form.buttonBarBridge}"></div>
@@ -16,7 +16,7 @@
 				<aui:PushButton ui:field="m_addButton" addStyleNames="{style.form.button}" />
 				<aui:PushButton ui:field="m_removeButton" addStyleNames="{style.form.button}" />
 			</div>
-		</div>
+		</g:HTMLPanel>
 		<div ui:field="m_helpBubble" class="{style.form.helpBubble}">
 			<div ui:field="m_helpBubbleText"></div>
 			<div class="{style.form.helpMessage}"><span class="{style.form.helpMessageIcon}"></span><span ui:field="m_messageText"></span></div>
