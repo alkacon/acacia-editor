@@ -27,9 +27,9 @@ package com.alkacon.acacia.client.ui;
 import com.alkacon.acacia.client.AttributeHandler;
 import com.alkacon.acacia.client.ChoiceMenuEntryBean;
 import com.alkacon.acacia.client.EditorBase;
-import com.alkacon.acacia.client.HighlightingHandler;
 import com.alkacon.acacia.client.I_EntityRenderer;
 import com.alkacon.acacia.client.I_WidgetService;
+import com.alkacon.acacia.client.ValueFocusHandler;
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
 import com.alkacon.acacia.client.widgets.I_FormEditWidget;
@@ -604,7 +604,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
 
             public void onFocus(FocusEvent event) {
 
-                HighlightingHandler.getInstance().setFocusHighlighted(AttributeValueView.this);
+                ValueFocusHandler.getInstance().setFocus(AttributeValueView.this);
             }
         });
         m_widget.setActive(active);
@@ -638,13 +638,13 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     }
 
     /**
-     * Toggles the permanent highlighting.<p>
+     * Tells the attribute value view to change its display state between focused/unfocused (this doesn't actually change the focus).<p>
      * 
-     * @param highlightingOn <code>true</code> to turn the highlighting on
+     * @param focusOn <code>true</code> to change the display state to 'focused'
      */
-    public void toggleFocusHighlighting(boolean highlightingOn) {
+    public void toggleFocus(boolean focusOn) {
 
-        if (highlightingOn) {
+        if (focusOn) {
             addStyleName(I_LayoutBundle.INSTANCE.form().focused());
             if (shouldDisplayTooltipAbove()) {
                 addStyleName(I_LayoutBundle.INSTANCE.form().displayAbove());
@@ -653,6 +653,14 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
             }
         } else {
             removeStyleName(I_LayoutBundle.INSTANCE.form().focused());
+            if (m_widget != null) {
+                if (m_handler.hasSingleOptionalValue()) {
+                    if (m_handler.getWidgetService().shouldRemoveLastValueAfterUnfocus(m_widget)) {
+                        m_handler.removeAttributeValue(this);
+                    }
+
+                }
+            }
         }
     }
 
@@ -934,9 +942,9 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
      */
     private void initHighlightingHandler() {
 
-        addMouseOverHandler(HighlightingHandler.getInstance());
-        addMouseOutHandler(HighlightingHandler.getInstance());
-        addMouseDownHandler(HighlightingHandler.getInstance());
+        addMouseOverHandler(ValueFocusHandler.getInstance());
+        addMouseOutHandler(ValueFocusHandler.getInstance());
+        addMouseDownHandler(ValueFocusHandler.getInstance());
     }
 
     /**

@@ -153,9 +153,27 @@ public interface I_WidgetService {
     void registerComplexWidgetAttribute(String attrName, String renderer, String configuration);
 
     /**
+     * Sets the default renderer 
+     * 
+     * @param renderer the default renderer 
+     */
+    void setDefaultRenderer(I_EntityRenderer renderer);
+
+    /**
      * Sets the widget factories.<p>
      * 
      * @param widgetFactories the widget factories
      */
     void setWidgetFactories(Map<String, I_WidgetFactory> widgetFactories);
+
+    /**
+     * Returns true if the value which this widget is being used for should be disabled if it is unfocused and the last remaining attribute value for a given attribute.<p>
+     * 
+     * The main use case is disabling empty text input fields.<p>
+     * 
+     * @param widget the widget to check
+     *  
+     * @return true if the value should be disabled 
+     */
+    boolean shouldRemoveLastValueAfterUnfocus(I_EditWidget widget);
 }

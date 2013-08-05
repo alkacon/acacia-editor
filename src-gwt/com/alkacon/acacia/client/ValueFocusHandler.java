@@ -40,10 +40,10 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * The attribute value view highlighting handler.<p>
  */
-public class HighlightingHandler implements MouseOverHandler, MouseOutHandler, MouseDownHandler {
+public class ValueFocusHandler implements MouseOverHandler, MouseOutHandler, MouseDownHandler {
 
     /** The handler instance. */
-    private static HighlightingHandler INSTANCE;
+    private static ValueFocusHandler INSTANCE;
 
     /** The on button hover highlighted element. */
     private AttributeValueView m_currentButtonFocus;
@@ -57,7 +57,7 @@ public class HighlightingHandler implements MouseOverHandler, MouseOutHandler, M
     /**
      * Constructor.<p>
      */
-    private HighlightingHandler() {
+    private ValueFocusHandler() {
 
         m_handlerRegistration = RootPanel.get().addDomHandler(this, MouseDownEvent.getType());
     }
@@ -67,10 +67,10 @@ public class HighlightingHandler implements MouseOverHandler, MouseOutHandler, M
      * 
      * @return the highlighting handler instance
      */
-    public static HighlightingHandler getInstance() {
+    public static ValueFocusHandler getInstance() {
 
         if (INSTANCE == null) {
-            INSTANCE = new HighlightingHandler();
+            INSTANCE = new ValueFocusHandler();
         }
         return INSTANCE;
     }
@@ -86,10 +86,10 @@ public class HighlightingHandler implements MouseOverHandler, MouseOutHandler, M
     /**
      * Removes all focus highlighting.<p>
      */
-    public void clearFocusHighlighting() {
+    public void clearFocus() {
 
         if ((m_currentFocus != null)) {
-            m_currentFocus.toggleFocusHighlighting(false);
+            m_currentFocus.toggleFocus(false);
             m_currentFocus = null;
         }
     }
@@ -130,7 +130,7 @@ public class HighlightingHandler implements MouseOverHandler, MouseOutHandler, M
         event.stopPropagation();
         if (RootPanel.get().equals(event.getSource())) {
             if (m_currentFocus != null) {
-                m_currentFocus.toggleFocusHighlighting(false);
+                m_currentFocus.toggleFocus(false);
                 m_currentFocus = null;
             }
         } else {
@@ -138,10 +138,10 @@ public class HighlightingHandler implements MouseOverHandler, MouseOutHandler, M
                 return;
             }
             if ((m_currentFocus != null)) {
-                m_currentFocus.toggleFocusHighlighting(false);
+                m_currentFocus.toggleFocus(false);
             }
             m_currentFocus = (AttributeValueView)event.getSource();
-            m_currentFocus.toggleFocusHighlighting(true);
+            m_currentFocus.toggleFocus(true);
         }
     }
 
@@ -154,7 +154,7 @@ public class HighlightingHandler implements MouseOverHandler, MouseOutHandler, M
             if ((m_currentButtonFocus != null)
                 && m_currentButtonFocus.getElement().isOrHasChild(((Widget)event.getSource()).getElement())) {
                 if (!m_currentButtonFocus.equals(m_currentFocus)) {
-                    m_currentButtonFocus.toggleFocusHighlighting(false);
+                    m_currentButtonFocus.toggleFocus(false);
                 }
                 m_currentButtonFocus = null;
             }
@@ -181,11 +181,11 @@ public class HighlightingHandler implements MouseOverHandler, MouseOutHandler, M
                 if (m_currentButtonFocus.equals(parentView)) {
                     return;
                 } else if (!m_currentButtonFocus.equals(m_currentFocus)) {
-                    m_currentButtonFocus.toggleFocusHighlighting(false);
+                    m_currentButtonFocus.toggleFocus(false);
                 }
             }
             m_currentButtonFocus = parentView;
-            m_currentButtonFocus.toggleFocusHighlighting(true);
+            m_currentButtonFocus.toggleFocus(true);
             return;
         }
     }
@@ -195,12 +195,16 @@ public class HighlightingHandler implements MouseOverHandler, MouseOutHandler, M
      * 
      * @param target the target attribute value view
      */
-    public void setFocusHighlighted(AttributeValueView target) {
+    public void setFocus(AttributeValueView target) {
+
+        if (m_currentFocus == target) {
+            return;
+        }
 
         if ((m_currentFocus != null)) {
-            m_currentFocus.toggleFocusHighlighting(false);
+            m_currentFocus.toggleFocus(false);
         }
         m_currentFocus = target;
-        m_currentFocus.toggleFocusHighlighting(true);
+        m_currentFocus.toggleFocus(true);
     }
 }

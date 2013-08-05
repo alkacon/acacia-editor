@@ -94,14 +94,15 @@ public class EditorBase {
     private ValidationHandler m_validationHandler;
 
     /** The widget service. */
-    private WidgetService m_widgetService;
+    private I_WidgetService m_widgetService;
 
     /**
      * Constructor.<p>
      * 
      * @param service the content service 
+     * @param widgetService the widget service to use 
      */
-    public EditorBase(I_ContentServiceAsync service) {
+    public EditorBase(I_ContentServiceAsync service, I_WidgetService widgetService) {
 
         I_ImageBundle.INSTANCE.style().ensureInjected();
         I_LayoutBundle.INSTANCE.generalCss().ensureInjected();
@@ -113,7 +114,7 @@ public class EditorBase {
         com.alkacon.acacia.client.css.I_LayoutBundle.INSTANCE.attributeChoice().ensureInjected();
         m_service = service;
         m_vie = Vie.getInstance();
-        m_widgetService = new WidgetService();
+        m_widgetService = widgetService;
         I_EntityRenderer renderer = new Renderer(m_vie, m_widgetService);
         m_widgetService.setDefaultRenderer(renderer);
         m_widgetService.addWidgetFactory("string", new I_WidgetFactory() {
@@ -201,7 +202,7 @@ public class EditorBase {
      */
     public void destroyFrom(boolean clearEntities) {
 
-        HighlightingHandler.getInstance().destroy();
+        ValueFocusHandler.getInstance().destroy();
         if (clearEntities) {
             m_vie.clearEntities();
         }

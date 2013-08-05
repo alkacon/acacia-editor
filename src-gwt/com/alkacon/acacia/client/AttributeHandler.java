@@ -219,7 +219,7 @@ public class AttributeHandler extends RootHandler {
      */
     public void addNewChoiceAttributeValue(AttributeValueView reference, List<String> choicePath) {
 
-        HighlightingHandler.getInstance().clearFocusHighlighting();
+        ValueFocusHandler.getInstance().clearFocus();
         if (isChoiceHandler()) {
             addChoiceOption(reference, choicePath);
         } else {
@@ -327,6 +327,27 @@ public class AttributeHandler extends RootHandler {
             m_dndHandler.setScrollElement(m_scrollElement);
         }
         return m_dndHandler;
+    }
+
+    /**
+     * Gets the widget service.<p>
+     * 
+     * @return the widget service 
+     */
+    public I_WidgetService getWidgetService() {
+
+        return m_widgetService;
+    }
+
+    /**
+     * Return true if there is a single remaining value, which is optional.<p>
+     * 
+     * @return true if this has only one optional value
+     */
+    public boolean hasSingleOptionalValue() {
+
+        return ((getEntityType().getAttributeMinOccurrence(m_attributeName) == 0)
+            && (m_entity.getAttribute(m_attributeName) != null) && (m_entity.getAttribute(m_attributeName).getValueCount() == 1));
     }
 
     /**

@@ -94,6 +94,16 @@ public class FormWidgetWrapper extends Composite implements I_FormEditWidget, Ha
     }
 
     /**
+     * Gets the wrapped widget.<p>
+     * 
+     * @return the wrapped widget 
+     */
+    public I_EditWidget getEditWidget() {
+
+        return m_editWidget;
+    }
+
+    /**
      * @see com.google.gwt.user.client.ui.HasValue#getValue()
      */
     public String getValue() {
