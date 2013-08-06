@@ -83,6 +83,9 @@ public class AttributeHandler extends RootHandler {
     /** The widget service. */
     private I_WidgetService m_widgetService;
 
+    /** The parent attribute handler. */
+    private I_AttributeHandler m_parentHandler;
+
     /**
      * Constructor.<p>
      * 
@@ -330,6 +333,16 @@ public class AttributeHandler extends RootHandler {
     }
 
     /**
+     * Gets the maximum occurrence of the attribute.<p>
+     * 
+     * @return the maximum occurrence 
+     */
+    public int getMaxOccurence() {
+
+        return getEntityType().getAttributeMaxOccurrence(m_attributeName);
+    }
+
+    /**
      * Gets the widget service.<p>
      * 
      * @return the widget service 
@@ -528,7 +541,18 @@ public class AttributeHandler extends RootHandler {
      */
     public void removeAttributeValue(AttributeValueView reference) {
 
+        AttributeHandler parentHandler = null;
+        AttributeValueView parentView = null;
+        boolean removeParent = false;
+
         I_EntityAttribute attribute = m_entity.getAttribute(m_attributeName);
+        if (isChoiceHandler() && attribute.isSingleValue()) {
+            // removing last choice value, so remove choice itself 
+            parentHandler = (AttributeHandler)m_parentHandler;
+            parentView = reference.getParentView();
+            removeParent = true;
+        }
+
         if (attribute.isSingleValue()) {
             m_entity.removeAttribute(m_attributeName);
             reference.removeValue();
@@ -551,6 +575,10 @@ public class AttributeHandler extends RootHandler {
 
         }
         updateButtonVisisbility();
+        if (removeParent && (parentHandler != null) && (parentView != null)) {
+            parentHandler.removeAttributeValue(parentView);
+            parentView.setCollapsed(false);
+        }
     }
 
     /**
@@ -577,6 +605,16 @@ public class AttributeHandler extends RootHandler {
 
             }
         }
+    }
+
+    /**
+     * Sets the parent attribute handler.<p>
+     * 
+     * @param handler the parent attribute handler 
+     */
+    public void setParentHandler(I_AttributeHandler handler) {
+
+        m_parentHandler = handler;
     }
 
     /**
@@ -612,7 +650,7 @@ public class AttributeHandler extends RootHandler {
         int minOccurrence = 0;
         int maxOccurrence = 0;
         if (isChoiceHandler()) {
-            minOccurrence = 1;
+            minOccurrence = 0;
             maxOccurrence = getEntityType().getChoiceMaxOccurrence();
         } else {
             minOccurrence = getEntityType().getAttributeMinOccurrence(m_attributeName);
@@ -724,6 +762,9 @@ public class AttributeHandler extends RootHandler {
             }
         }
         insertValueAfterReference(value, reference);
+        if (getMaxOccurence() == 1) {
+            reference.setCollapsed(true);
+        }
     }
 
     /**

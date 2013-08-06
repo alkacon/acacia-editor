@@ -368,6 +368,7 @@ public class Renderer implements I_EntityRenderer {
                         attribute = createEmptyAttribute(entity, attributeName, minOccurrence);
                     }
                     lastCompactView = renderAttribute(
+                        entityType,
                         attributeType,
                         attribute,
                         handler,
@@ -448,6 +449,7 @@ public class Renderer implements I_EntityRenderer {
                 AttributeHandler handler = new AttributeHandler(m_vie, entity, attributeName, m_widgetService);
                 parentHandler.setHandler(attributeIndex, attributeName, handler);
                 lastCompactView = renderAttribute(
+                    entityType,
                     attributeType,
                     attribute,
                     handler,
@@ -611,16 +613,18 @@ public class Renderer implements I_EntityRenderer {
     /**
      * Renders a single attribute.<p>
      * 
+     * @param entityType the type of the entity containing the attribute 
      * @param attributeType the attribute type
      * @param attribute the attribute, or null if not set
      * @param handler the attribute handler
      * @param attributeElement the attribute parent element
      * @param attributeName the attribute name
      * @param lastCompactView the previous attribute view that was rendered in compact mode if present
-     * 
+     *  
      * @return the last attribute view that was rendered in compact mode if present
      */
     private AttributeValueView renderAttribute(
+        I_Type entityType,
         I_Type attributeType,
         I_EntityAttribute attribute,
         AttributeHandler handler,
@@ -634,6 +638,9 @@ public class Renderer implements I_EntityRenderer {
             I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(attributeName, attributeType);
             for (int i = 0; i < attribute.getValueCount(); i++) {
                 AttributeValueView valueWidget = new AttributeValueView(handler, label, help);
+                if (attributeType.isChoice() && (entityType.getAttributeMaxOccurrence(attributeName) == 1)) {
+                    valueWidget.setCollapsed(true);
+                }
                 attributeElement.add(valueWidget);
                 if (attribute.isSimpleValue()) {
                     valueWidget.setValueWidget(

@@ -147,6 +147,13 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
          */
         String closedBubble();
 
+        /** 
+         * Returns the CSS class for collapsed attribute value views.<p>
+         * 
+         * @return a CSS class 
+         */
+        String collapsed();
+
         /**
          * Returns the display bubble above CSS class name.<p>
          * 

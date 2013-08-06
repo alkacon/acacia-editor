@@ -111,6 +111,7 @@ public class RootHandler implements I_AttributeHandler {
     public void setHandler(int index, String attributeName, AttributeHandler handler) {
 
         m_handlers.get(index).put(attributeName, handler);
+        handler.setParentHandler(this);
     }
 
     /**

@@ -160,6 +160,9 @@ div.buttonBar > div {
 
 
 
+
+
+
 .multiButtonBar .buttonBarBridge{
 	position: absolute;
 	display: block;
@@ -200,6 +203,21 @@ div.buttonBar > div {
 .widgetHolder .widget{
 	margin: 0 25px 4px 2px;
 }
+
+
+
+.collapsed  > .widgetHolder > * > .label { 
+	display: none; 
+}
+
+.collapsed  > .widgetHolder > .entity {
+	margin-left: 0px !important; 
+}
+
+.collapsed > .buttonBar { 
+	display: none;
+}
+ 
 
 .compactView .widgetHolder .widget{
 	margin-bottom: 0px;

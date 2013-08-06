@@ -282,9 +282,9 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         }
         generateLabel();
         m_helpBubbleText.setInnerHTML(m_help);
-        addStyleName(I_LayoutBundle.INSTANCE.form().emptyValue());
+        addStyleName(formCss().emptyValue());
         m_compacteModeStyle = new StyleVariable(this);
-        m_compacteModeStyle.setValue(I_LayoutBundle.INSTANCE.form().defaultView());
+        m_compacteModeStyle.setValue(formCss().defaultView());
         initHighlightingHandler();
         initButtons();
 
@@ -362,7 +362,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         style.setWidth(m_dragHelper.getOffsetWidth(), Unit.PX);
         // the dragging class will set position absolute
         style.setTop(elementTop - parentTop, Unit.PX);
-        m_dragHelper.addClassName(I_LayoutBundle.INSTANCE.form().dragHelper());
+        m_dragHelper.addClassName(formCss().dragHelper());
         style.setZIndex(com.alkacon.geranium.client.ui.css.I_LayoutBundle.INSTANCE.constants().css().zIndexDND());
         return m_dragHelper;
     }
@@ -399,13 +399,27 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     }
 
     /**
+     * Gets the parent attribute value view, or null if none exists.<p>
+     * 
+     * @return the parent attribute value view 
+     */
+    public AttributeValueView getParentView() {
+
+        Widget ancestor = getParent();
+        while ((ancestor != null) && !(ancestor instanceof AttributeValueView)) {
+            ancestor = ancestor.getParent();
+        }
+        return (AttributeValueView)ancestor;
+    }
+
+    /**
      * @see com.alkacon.geranium.client.dnd.I_Draggable#getPlaceholder(com.alkacon.geranium.client.dnd.I_DropTarget)
      */
     public Element getPlaceholder(I_DropTarget target) {
 
         m_placeHolder = DomUtil.clone(getElement());
         removeDragHelperStyles(m_placeHolder);
-        m_placeHolder.addClassName(I_LayoutBundle.INSTANCE.form().dragPlaceholder());
+        m_placeHolder.addClassName(formCss().dragPlaceholder());
         return m_placeHolder;
     }
 
@@ -504,8 +518,8 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
 
         if (m_hasError) {
             m_messageText.setInnerText("");
-            removeStyleName(I_LayoutBundle.INSTANCE.form().hasError());
-            removeStyleName(I_LayoutBundle.INSTANCE.form().hasWarning());
+            removeStyleName(formCss().hasError());
+            removeStyleName(formCss().hasWarning());
             m_hasError = false;
         }
 
@@ -518,7 +532,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
 
         m_hasValue = false;
         m_widgetHolder.clear();
-        addStyleName(I_LayoutBundle.INSTANCE.form().emptyValue());
+        addStyleName(formCss().emptyValue());
         generateLabel();
         removeValidationMessage();
     }
@@ -530,11 +544,26 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
      */
     public void setButtonsVisible(boolean visible) {
 
-        String hoverStyle = I_LayoutBundle.INSTANCE.form().hoverButton();
+        String hoverStyle = formCss().hoverButton();
         if (visible) {
             m_buttonBar.addStyleName(hoverStyle);
         } else {
             m_buttonBar.removeStyleName(hoverStyle);
+        }
+    }
+
+    /**
+     * Enables or disables the "collapsed" style, which is used for choice elements to reduce the nesting level visually.<p>
+     * 
+     * @param collapsed true if the view should be set to 'collapsed' 
+     */
+    public void setCollapsed(boolean collapsed) {
+
+        String style = formCss().collapsed();
+        if (collapsed) {
+            addStyleName(style);
+        } else {
+            removeStyleName(style);
         }
     }
 
@@ -547,16 +576,16 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
 
         switch (mode) {
             case COMPACT_MODE_FIRST_COLUMN:
-                m_compacteModeStyle.setValue(I_LayoutBundle.INSTANCE.form().firstColumn());
+                m_compacteModeStyle.setValue(formCss().firstColumn());
                 break;
             case COMPACT_MODE_SECOND_COLUMN:
-                m_compacteModeStyle.setValue(I_LayoutBundle.INSTANCE.form().secondColumn());
+                m_compacteModeStyle.setValue(formCss().secondColumn());
                 break;
             case COMPACT_MODE_NESTED:
-                m_compacteModeStyle.setValue(I_LayoutBundle.INSTANCE.form().compactView());
+                m_compacteModeStyle.setValue(formCss().compactView());
                 break;
             case COMPACT_MODE_SINGLE_LINE:
-                m_compacteModeStyle.setValue(I_LayoutBundle.INSTANCE.form().singleLine());
+                m_compacteModeStyle.setValue(formCss().singleLine());
                 break;
             default:
 
@@ -572,7 +601,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     public void setErrorMessage(String message) {
 
         m_messageText.setInnerHTML(message);
-        addStyleName(I_LayoutBundle.INSTANCE.form().hasError());
+        addStyleName(formCss().hasError());
         m_hasError = true;
     }
 
@@ -592,7 +621,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         FlowPanel entityPanel = new FlowPanel();
         m_widgetHolder.add(entityPanel);
         renderer.renderForm(value, entityPanel, m_handler, getValueIndex());
-        removeStyleName(I_LayoutBundle.INSTANCE.form().emptyValue());
+        removeStyleName(formCss().emptyValue());
     }
 
     /**
@@ -635,9 +664,9 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
             m_defaultValue = value;
             addActivationHandler();
         } else {
-            removeStyleName(I_LayoutBundle.INSTANCE.form().emptyValue());
+            removeStyleName(formCss().emptyValue());
         }
-        addStyleName(I_LayoutBundle.INSTANCE.form().simpleValue());
+        addStyleName(formCss().simpleValue());
     }
 
     /**
@@ -648,7 +677,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     public void setWarningMessage(String message) {
 
         m_messageText.setInnerText(message);
-        addStyleName(I_LayoutBundle.INSTANCE.form().hasWarning());
+        addStyleName(formCss().hasWarning());
         m_hasError = true;
     }
 
@@ -668,14 +697,14 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     public void toggleFocus(boolean focusOn) {
 
         if (focusOn) {
-            addStyleName(I_LayoutBundle.INSTANCE.form().focused());
+            addStyleName(formCss().focused());
             if (shouldDisplayTooltipAbove()) {
-                addStyleName(I_LayoutBundle.INSTANCE.form().displayAbove());
+                addStyleName(formCss().displayAbove());
             } else {
-                removeStyleName(I_LayoutBundle.INSTANCE.form().displayAbove());
+                removeStyleName(formCss().displayAbove());
             }
         } else {
-            removeStyleName(I_LayoutBundle.INSTANCE.form().focused());
+            removeStyleName(formCss().focused());
             if (m_widget != null) {
                 if (m_handler.hasSingleOptionalValue()) {
                     if (m_handler.getWidgetService().shouldRemoveLastValueAfterUnfocus(m_widget)) {
@@ -736,9 +765,9 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
             m_buttonBar.getElement().getStyle().clearDisplay();
             if (hasSortButtons || (hasAddButton && hasRemoveButton)) {
                 // set multi button mode
-                m_buttonBar.addStyleName(I_LayoutBundle.INSTANCE.form().multiButtonBar());
+                m_buttonBar.addStyleName(formCss().multiButtonBar());
             } else {
-                m_buttonBar.addStyleName(I_LayoutBundle.INSTANCE.form().multiButtonBar());
+                m_buttonBar.addStyleName(formCss().multiButtonBar());
             }
         }
     }
@@ -767,7 +796,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     @UiHandler("m_helpBubbleClose")
     protected void closeHelpBubble(ClickEvent event) {
 
-        addStyleName(I_LayoutBundle.INSTANCE.form().closedBubble());
+        addStyleName(formCss().closedBubble());
     }
 
     /**
@@ -860,7 +889,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
                 m_widget.setValue(m_defaultValue, true);
             }
             m_handler.updateButtonVisisbility();
-            removeStyleName(I_LayoutBundle.INSTANCE.form().emptyValue());
+            removeStyleName(formCss().emptyValue());
         }
     }
 
@@ -869,9 +898,8 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
      */
     void updateWidth() {
 
-        if (I_LayoutBundle.INSTANCE.form().firstColumn().equals(m_compacteModeStyle.getValue())) {
-            int width = getElement().getParentElement().getOffsetWidth()
-                - I_LayoutBundle.INSTANCE.form().SECOND_COLUMN_WIDTH();
+        if (formCss().firstColumn().equals(m_compacteModeStyle.getValue())) {
+            int width = getElement().getParentElement().getOffsetWidth() - formCss().SECOND_COLUMN_WIDTH();
             // if width could not be evaluated, fall back to a 'save' value
             if (width < 0) {
                 width = 400;
@@ -917,6 +945,16 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     }
 
     /**
+     * Returns the CSS bundle for the form editor.<p>
+     * 
+     * @return the form CSS bundle 
+     */
+    private I_LayoutBundle.I_Style formCss() {
+
+        return I_LayoutBundle.INSTANCE.form();
+    }
+
+    /**
      * Generates the attribute label.<p>
      */
     private void generateLabel() {
@@ -924,7 +962,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         HTML labelWidget = new HTML("<div title=\""
             + SafeHtmlUtils.htmlEscape(stripHtml(m_help))
             + "\" class=\""
-            + I_LayoutBundle.INSTANCE.form().label()
+            + formCss().label()
             + "\">"
             + m_label
             + "</div>");
@@ -983,7 +1021,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         style.clearPosition();
         style.clearWidth();
         style.clearZIndex();
-        helper.removeClassName(I_LayoutBundle.INSTANCE.form().dragHelper());
+        helper.removeClassName(formCss().dragHelper());
     }
 
     /**
