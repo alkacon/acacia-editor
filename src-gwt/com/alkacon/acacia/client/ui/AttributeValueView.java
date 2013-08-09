@@ -767,7 +767,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
                 // set multi button mode
                 m_buttonBar.addStyleName(formCss().multiButtonBar());
             } else {
-                m_buttonBar.addStyleName(formCss().multiButtonBar());
+                m_buttonBar.removeStyleName(formCss().multiButtonBar());
             }
         }
     }
