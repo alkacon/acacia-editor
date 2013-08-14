@@ -328,8 +328,9 @@ public class Renderer implements I_EntityRenderer {
             I_Type entityType = m_vie.getType(entity.getTypeName());
             List<String> attributeNames = entityType.getAttributeNames();
             AttributeValueView lastCompactView = null;
+            boolean collapsed = currentTab.isCollapsed()
+                && ((nextTab != null) && attributeNames.get(1).endsWith("/" + nextTab.getStartName()));
             for (final String attributeName : attributeNames) {
-                boolean collapsed = false;
                 if ((nextTab != null) && attributeName.endsWith("/" + nextTab.getStartName())) {
                     currentTab = nextTab;
                     nextTab = tabIt.hasNext() ? tabIt.next() : null;
