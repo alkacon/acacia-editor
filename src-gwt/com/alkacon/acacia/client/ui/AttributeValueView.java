@@ -34,6 +34,7 @@ import com.alkacon.acacia.client.ValueFocusHandler;
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
 import com.alkacon.acacia.client.widgets.I_FormEditWidget;
+import com.alkacon.geranium.client.I_DescendantResizeHandler;
 import com.alkacon.geranium.client.dnd.I_DragHandle;
 import com.alkacon.geranium.client.dnd.I_Draggable;
 import com.alkacon.geranium.client.dnd.I_DropTarget;
@@ -83,7 +84,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -844,8 +844,8 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
 
         Widget parent = getParent();
         while (parent != null) {
-            if (parent instanceof RequiresResize) {
-                ((RequiresResize)parent).onResize();
+            if (parent instanceof I_DescendantResizeHandler) {
+                ((I_DescendantResizeHandler)parent).onResizeDescendant();
                 break;
             }
             parent = parent.getParent();
