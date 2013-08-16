@@ -667,6 +667,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
             public void onFocus(FocusEvent event) {
 
                 ValueFocusHandler.getInstance().setFocus(AttributeValueView.this);
+                activateWidget();
             }
         });
         m_widget.setActive(active);
