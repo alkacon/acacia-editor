@@ -85,7 +85,7 @@ public class AttributeChoiceWidget extends Composite implements HasMouseOverHand
             public void onMouseOut(MouseOutEvent event) {
 
                 if (!ChoiceMenuHandler.INSTANCE.hasSubmenus(AttributeChoiceWidget.this)) {
-                    hide();
+                    ChoiceMenuHandler.INSTANCE.onMouseout(AttributeChoiceWidget.this);
                 }
             }
         });
@@ -93,7 +93,7 @@ public class AttributeChoiceWidget extends Composite implements HasMouseOverHand
 
             public void onMouseOver(MouseOverEvent event) {
 
-                show();
+                ChoiceMenuHandler.INSTANCE.onMouseover(AttributeChoiceWidget.this);
             }
         });
     }

@@ -72,6 +72,9 @@ public class ButtonBarHandler {
         }
     }
 
+    /** Global instance of the button bar handler. */
+    public static final ButtonBarHandler INSTANCE = new ButtonBarHandler();
+
     /** The timer for hiding the buttons. */
     private Timer m_timer;
 
@@ -79,7 +82,7 @@ public class ButtonBarHandler {
     private AttributeValueView m_view;
 
     /** The timeout for hiding the buttons. */
-    public static final int TIMEOUT = 500;
+    public static final int TIMEOUT = 900;
 
     /**
      * Creates an event handler for mouseover/out events which delegates its methods to this class.<p>
@@ -91,6 +94,24 @@ public class ButtonBarHandler {
     public EventHandler createEventHandler(AttributeValueView view) {
 
         return new EventHandler(view);
+    }
+
+    /**
+     * Gets the current attribute value view.<p>
+     * 
+     * @return the current view 
+     */
+    public AttributeValueView getView() {
+
+        return m_view;
+    }
+
+    /**
+     * Hides the current button bar.<p>
+     */
+    public void hideCurrent() {
+
+        changeValueView(getView(), null);
     }
 
     /**
@@ -106,7 +127,7 @@ public class ButtonBarHandler {
                 @Override
                 public void run() {
 
-                    changeValueView(getView(), null);
+                    hideCurrent();
                 }
             };
             m_timer.schedule(TIMEOUT);
@@ -139,16 +160,6 @@ public class ButtonBarHandler {
             newView.setButtonsVisible(true);
         }
         m_view = newView;
-    }
-
-    /**
-     * Gets the current attribute value view.<p>
-     * 
-     * @return the current view 
-     */
-    protected AttributeValueView getView() {
-
-        return m_view;
     }
 
     /**

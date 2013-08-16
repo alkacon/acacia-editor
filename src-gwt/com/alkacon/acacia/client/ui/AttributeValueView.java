@@ -146,7 +146,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     }
 
     /** Handler for controlling the visibility of button bars. */
-    private static ButtonBarHandler hoverHandler = new ButtonBarHandler();
+    private static ButtonBarHandler hoverHandler = ButtonBarHandler.INSTANCE;
 
     /** The first column compact view mode. */
     public static final int COMPACT_MODE_FIRST_COLUMN = 1;
@@ -259,6 +259,9 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     /** The editing widget. */
     private I_FormEditWidget m_widget;
 
+    /** Style variable to enable/disable 'collapsed' style. */
+    private StyleVariable m_collapsedStyle = new StyleVariable(this);
+
     /**
      * Constructor.<p>
      * 
@@ -291,6 +294,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         ButtonBarHandler.EventHandler handler2 = hoverHandler.createEventHandler(this);
         m_buttonBar.addDomHandler(handler2, MouseOverEvent.getType());
         m_buttonBar.addDomHandler(handler2, MouseOutEvent.getType());
+        m_collapsedStyle.setValue(formCss().uncollapsed());
     }
 
     /**
@@ -449,6 +453,17 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         return m_widget;
     }
 
+    /** 
+     * Checks whether an element is part of the menu of this attribute value view.<p>
+     * 
+     * @param elem the element to check 
+     * @return true if this element is part of the menu 
+     */
+    public boolean hasButtonElement(Element elem) {
+
+        return (m_buttonBar != null) && m_buttonBar.getElement().isOrHasChild(elem);
+    }
+
     /**
      * Returns if there is a value set for this attribute.<p>
      * 
@@ -559,12 +574,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
      */
     public void setCollapsed(boolean collapsed) {
 
-        String style = formCss().collapsed();
-        if (collapsed) {
-            addStyleName(style);
-        } else {
-            removeStyleName(style);
-        }
+        m_collapsedStyle.setValue(collapsed ? formCss().collapsed() : formCss().uncollapsed());
     }
 
     /**

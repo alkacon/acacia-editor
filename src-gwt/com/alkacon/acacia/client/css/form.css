@@ -97,14 +97,14 @@ div.attributeValue.secondColumn{
 	font-style: italic;
 }
 
-.entity .entity .attributeValue .label{
+.entity .attributeValue.uncollapsed .entity .attributeValue.uncollapsed .label{
 	font-weight: normal;
 }
 
-.entity .entity .entity .attributeValue .label{
+.entity .attributeValue.uncollapsed .entity .attributeValue.uncollapsed .entity .attributeValue.uncollapsed .label{
 	font-size: 12px;
 }
-.entity .attributeValue > div.widgetHolder{
+.entity .attributeValue.uncollapsed > div.widgetHolder{
 	position: relative;
 	padding: 2px 0px 2px 4px;
 	border-radius: value("constants.css.borderRadius");
@@ -239,11 +239,11 @@ div.buttonBar > div {
 }
 
 .attributeValue.hasError .label{
-	color: value("constants.css.borderColorHighlight");
+	color: value("constants.css.borderColorHighlight") !important;
 }
 
 .attributeValue.hasWarning .label{
-	color: #FFAA00;
+	color: #FFAA00 !important; 
 }
 
 .hasError .widgetHolder > div > .widget.input, .attributeValue.hasError .widgetHolder  .mce-tinymce, .gwt-TabLayoutPanel .gwt-TabLayoutPanelTabBar .gwt-TabLayoutPanelTab.hasError{

@@ -24,16 +24,23 @@
 
 package com.alkacon.acacia.client.ui;
 
+import com.alkacon.acacia.client.ButtonBarHandler;
 import com.alkacon.acacia.client.ChoiceMenuEntryBean;
 import com.alkacon.acacia.client.I_WidgetService;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.EventTarget;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
+import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -49,7 +56,7 @@ public class ChoiceMenuHandler implements MouseOverHandler, MouseOutHandler {
     public static final ChoiceMenuHandler INSTANCE = new ChoiceMenuHandler();
 
     /** The tineout after which the menus are hidden after a mouse out event. */
-    private static final int TIMEOUT = 600;
+    private static final int TIMEOUT = 900;
 
     /** The currently active attribute choice widget. */
     private AttributeChoiceWidget m_attributeChoiceWidget;
@@ -67,6 +74,47 @@ public class ChoiceMenuHandler implements MouseOverHandler, MouseOutHandler {
 
     /** The currently active submenus. */
     private List<ChoiceSubmenu> m_submenus = new ArrayList<ChoiceSubmenu>();
+
+    /** Flag which indicates  whether we have already installed the preview handler. */
+    private static boolean installedPreviewHandler = false;
+
+    /**
+     * Creates a new instance.<p>
+     */
+    public ChoiceMenuHandler() {
+
+        if (!installedPreviewHandler) {
+
+            Event.addNativePreviewHandler(new NativePreviewHandler() {
+
+                public void onPreviewNativeEvent(NativePreviewEvent event) {
+
+                    NativeEvent nativeEvent = event.getNativeEvent();
+                    if (event.getTypeInt() != Event.ONMOUSEDOWN) {
+                        return;
+                    }
+                    if (nativeEvent == null) {
+                        return;
+                    }
+                    EventTarget target = nativeEvent.getEventTarget();
+
+                    if (Element.is(target)) {
+                        Element targetElement = Element.as(target);
+                        AttributeValueView view = ButtonBarHandler.INSTANCE.getView();
+                        if (view == null) {
+                            return;
+                        }
+                        boolean clickedOnMenu = view.hasButtonElement(targetElement);
+                        if (!clickedOnMenu) {
+                            ChoiceMenuHandler.INSTANCE.closeAll();
+                            ButtonBarHandler.INSTANCE.hideCurrent();
+                        }
+                    }
+                }
+            });
+        }
+        installedPreviewHandler = true;
+    }
 
     /**
      * Creates a new menu entry widget.<p>
@@ -113,6 +161,21 @@ public class ChoiceMenuHandler implements MouseOverHandler, MouseOutHandler {
     public void onMouseOut(MouseOutEvent event) {
 
         onMouseout((ChoiceMenuEntryWidget)event.getSource());
+    }
+
+    /**
+     * Mouseover handler.<p>
+     * 
+     * @param attributeChoiceWidget the choice widget over which the mouseover event occurred 
+     */
+    public void onMouseover(AttributeChoiceWidget attributeChoiceWidget) {
+
+        m_mouseoutTimer.cancel();
+        if (attributeChoiceWidget != m_attributeChoiceWidget) {
+            closeAll();
+        }
+        m_attributeChoiceWidget = attributeChoiceWidget;
+        attributeChoiceWidget.show();
     }
 
     /**
@@ -177,6 +240,17 @@ public class ChoiceMenuHandler implements MouseOverHandler, MouseOutHandler {
     protected ChoiceSubmenu getLastSubmenu() {
 
         return m_submenus.get(m_submenus.size() - 1);
+    }
+
+    /**
+     * Event handler.<p>
+     * 
+     * @param widget the widget over which the event occurred
+     */
+    protected void onMouseout(AttributeChoiceWidget widget) {
+
+        m_mouseoutTimer.cancel();
+        m_mouseoutTimer.schedule(TIMEOUT);
     }
 
     /**
