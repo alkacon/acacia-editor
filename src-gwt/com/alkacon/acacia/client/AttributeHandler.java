@@ -179,14 +179,14 @@ public class AttributeHandler extends RootHandler {
         boolean mayHaveMore = ((attribute == null) || (attribute.getValueCount() < maxOccurrence));
         if (mayHaveMore) {
             if (getAttributeType().isSimpleType()) {
-                String value = m_widgetService.getDefaultAttributeValue(m_attributeName);
+                String defaultValue = m_widgetService.getDefaultAttributeValue(m_attributeName);
                 I_FormEditWidget widget = m_widgetService.getAttributeFormWidget(m_attributeName);
                 int valueIndex = -1;
                 if (reference.getElement().getNextSiblingElement() == null) {
-                    m_entity.addAttributeValue(m_attributeName, value);
+                    m_entity.addAttributeValue(m_attributeName, defaultValue);
                 } else {
                     valueIndex = reference.getValueIndex() + 1;
-                    m_entity.insertAttributeValue(m_attributeName, value, valueIndex);
+                    m_entity.insertAttributeValue(m_attributeName, defaultValue, valueIndex);
 
                 }
                 AttributeValueView valueWidget = reference;
@@ -205,7 +205,7 @@ public class AttributeHandler extends RootHandler {
                     }
 
                 }
-                valueWidget.setValueWidget(widget, value, true);
+                valueWidget.setValueWidget(widget, defaultValue, defaultValue, true);
             } else {
                 I_Entity value = m_vie.createEntity(null, m_attributeType.getId());
                 insertValueAfterReference(value, reference);
@@ -410,6 +410,7 @@ public class AttributeHandler extends RootHandler {
                 valueWidget.setValueWidget(
                     m_widgetService.getAttributeFormWidget(attributeChoice),
                     value.getAttribute(attributeChoice).getSimpleValue(),
+                    m_widgetService.getDefaultAttributeValue(attributeChoice),
                     true);
             } else {
                 valueWidget.setValueEntity(
@@ -433,7 +434,11 @@ public class AttributeHandler extends RootHandler {
                 valueWidget.setCompactMode(AttributeValueView.COMPACT_MODE_SINGLE_LINE);
             }
             parent.insert(valueWidget, targetPosition);
-            valueWidget.setValueWidget(m_widgetService.getAttributeFormWidget(m_attributeName), value, true);
+            valueWidget.setValueWidget(
+                m_widgetService.getAttributeFormWidget(m_attributeName),
+                value,
+                m_widgetService.getDefaultAttributeValue(m_attributeName),
+                true);
         } else {
             removeHandlers(currentPosition);
             I_Entity value = m_entity.getAttribute(m_attributeName).getComplexValues().get(currentPosition);
@@ -554,16 +559,12 @@ public class AttributeHandler extends RootHandler {
         }
 
         if (attribute.isSingleValue()) {
-            m_entity.removeAttribute(m_attributeName);
+
             reference.removeValue();
-            if (attribute.isSimpleValue()) {
-                reference.setValueWidget(
-                    m_widgetService.getAttributeFormWidget(m_attributeName),
-                    m_widgetService.getDefaultAttributeValue(m_attributeName),
-                    false);
-            } else {
+            if (!attribute.isSimpleValue()) {
                 removeHandlers(0);
             }
+            m_entity.removeAttribute(m_attributeName);
         } else {
             int index = reference.getValueIndex();
             if (attribute.isComplexValue()) {
@@ -720,10 +721,10 @@ public class AttributeHandler extends RootHandler {
         insertHandlers(valueWidget.getValueIndex());
 
         if (optionType.isSimpleType()) {
-            String value = m_widgetService.getDefaultAttributeValue(attributeChoice);
+            String defaultValue = m_widgetService.getDefaultAttributeValue(attributeChoice);
             I_FormEditWidget widget = m_widgetService.getAttributeFormWidget(attributeChoice);
-            choiceEntity.addAttributeValue(attributeChoice, value);
-            valueWidget.setValueWidget(widget, value, true);
+            choiceEntity.addAttributeValue(attributeChoice, defaultValue);
+            valueWidget.setValueWidget(widget, defaultValue, defaultValue, true);
         } else {
             I_Entity value = m_vie.createEntity(null, optionType.getId());
             choiceEntity.addAttributeValue(attributeChoice, value);

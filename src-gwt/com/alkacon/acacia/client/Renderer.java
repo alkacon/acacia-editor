@@ -423,6 +423,7 @@ public class Renderer implements I_EntityRenderer {
                     valueWidget.setValueWidget(
                         m_widgetService.getAttributeFormWidget(choiceAttribute.getAttributeName()),
                         choiceAttribute.getSimpleValue(),
+                        m_widgetService.getDefaultAttributeValue(choiceAttribute.getAttributeName()),
                         true);
                     if (m_widgetService.isDisplaySingleLine(choiceAttribute.getAttributeName())) {
                         valueWidget.setCompactMode(AttributeValueView.COMPACT_MODE_SINGLE_LINE);
@@ -647,6 +648,7 @@ public class Renderer implements I_EntityRenderer {
                     valueWidget.setValueWidget(
                         m_widgetService.getAttributeFormWidget(attributeName),
                         attribute.getSimpleValues().get(i),
+                        m_widgetService.getDefaultAttributeValue(attributeName),
                         true);
                     // check for compact view setting
                     if (m_widgetService.isDisplayCompact(attributeName)) {
@@ -692,6 +694,7 @@ public class Renderer implements I_EntityRenderer {
                 // create a deactivated widget, to add the attribute on click
                 valueWidget.setValueWidget(
                     m_widgetService.getAttributeFormWidget(attributeName),
+                    "",
                     m_widgetService.getDefaultAttributeValue(attributeName),
                     false);
                 // check for compact view setting

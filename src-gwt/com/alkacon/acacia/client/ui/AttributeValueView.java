@@ -545,10 +545,17 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
      */
     public void removeValue() {
 
-        m_hasValue = false;
-        m_widgetHolder.clear();
+        if (!isSimpleValue()) {
+            m_hasValue = false;
+            m_widgetHolder.clear();
+            generateLabel();
+        } else {
+            // only deactivate the widget and restore the default value
+            m_widget.setActive(false);
+            m_widget.setValue("", false);
+            addActivationHandler();
+        }
         addStyleName(formCss().emptyValue());
-        generateLabel();
         removeValidationMessage();
     }
 
@@ -639,13 +646,15 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
      * 
      * @param widget the widget
      * @param value the value
+     * @param defaultValue the default attribute value
      * @param active <code>true</code> if the widget should be activated
      */
-    public void setValueWidget(I_FormEditWidget widget, String value, boolean active) {
+    public void setValueWidget(I_FormEditWidget widget, String value, String defaultValue, boolean active) {
 
         if (m_hasValue) {
             throw new RuntimeException("Value has already been set");
         }
+        m_defaultValue = defaultValue;
         m_hasValue = true;
         m_isSimpleValue = true;
         m_widget = widget;
@@ -672,7 +681,6 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         });
         m_widget.setActive(active);
         if (!active) {
-            m_defaultValue = value;
             addActivationHandler();
         } else {
             removeStyleName(formCss().emptyValue());
@@ -896,7 +904,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         }
         if ((m_widget != null) && !m_widget.isActive()) {
             m_widget.setActive(true);
-            if (m_defaultValue != null) {
+            if ((m_defaultValue != null) && (m_defaultValue.trim().length() > 0)) {
                 m_widget.setValue(m_defaultValue, true);
             }
             m_handler.updateButtonVisisbility();

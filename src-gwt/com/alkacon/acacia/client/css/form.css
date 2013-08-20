@@ -263,15 +263,15 @@ div.buttonBar > div {
 	border-radius: 3px;
 }
 
-.attributeValue .widgetHolder  .mce-tinymce.inActive *{
-	visibility: hidden;
+.attributeValue .widgetHolder .widget.inActive .mce-tinymce{
+	overflow: hidden;
 }
 
 .attributeValue.focused > .widgetHolder > .widget .mce-tinymce {
 	border-radius: 3px 3px 0 0;
 }
 
-.widgetHolder > div > .widget.input.inActive, .attributeValue .widgetHolder  .mce-tinymce.inActive{
+.widgetHolder > div > .widget.input.inActive, .attributeValue .widgetHolder .widget.inActive  .mce-tinymce{
 	color: transparent;
 	border-color: value("constants.css.borderColor");
 }
