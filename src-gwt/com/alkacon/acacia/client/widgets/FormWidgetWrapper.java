@@ -25,6 +25,7 @@
 package com.alkacon.acacia.client.widgets;
 
 import com.alkacon.acacia.client.css.I_LayoutBundle;
+import com.alkacon.geranium.client.util.DomUtil;
 
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.logical.shared.HasResizeHandlers;
@@ -166,7 +167,7 @@ public class FormWidgetWrapper extends Composite implements I_FormEditWidget, Ha
     public void setWidgetInfo(String label, String help) {
 
         m_label.setHTML(label);
-        m_label.setTitle(help);
+        m_label.setTitle(DomUtil.stripHtml(help));
     }
 
 }
