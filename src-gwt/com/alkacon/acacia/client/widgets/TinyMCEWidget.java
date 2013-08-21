@@ -519,71 +519,60 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
                              .on(
                              'LoadContent',
                              function() {
-                             if (!self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_inline) {
-                             // firing resize event on resize of the editor iframe
-                             ed.dom
-                                 .bind(
-                                       ed.getWin(),
-                                       'resize',
-                                       function() {
-                                          self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::fireResizeEvent()();
-                                       });
-                             var content = self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_originalContent;
-                             if (content != null) {
-                              ed.setContent(content);
-                             }
-                             // ensure the body height is set to 'auto', otherwise the autoresize plugin will not work
-                             ed.getDoc().body.style.height = 'auto';
-                             }
-                             self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_initialized = true;
+                                if (!self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_inline) {
+                                    // firing resize event on resize of the editor iframe
+                                    ed.dom
+                                            .bind(
+                                                    ed.getWin(),
+                                                    'resize',
+                                                    function() {
+                                                        self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::fireResizeEvent()();
+                                                    });
+                                    var content = self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_originalContent;
+                                    if (content != null) {
+                                        ed.setContent(content);
+                                    }
+                                    // ensure the body height is set to 'auto', otherwise the autoresize plugin will not work
+                                    ed.getDoc().body.style.height = 'auto';
+                                }
+                                self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_initialized = true;
                              });
 
                              if (!self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_inline) {
 
                              ed
                              .on(
-                             'Click',
-                             function(event) {
-                             if (!self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::isActive()()) {
-                              // this may be the case if the mouse-down event has not been triggered correctly yet (IE),
-                              // trigger activation through new mouse-down
-                              self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Ljava/lang/String;Lcom/google/gwt/user/client/Element;)('mousedown', mainElement);
-                             }
-                             self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Ljava/lang/String;Lcom/google/gwt/user/client/Element;)('click', mainElement);
-                             });
+                                'Click',
+                                function(event) {
+                                    self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateFocusEvent()();
+                                });
                              ed
                              .on(
-                             'focus',
-                             function(event) {
-                             self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateFocusEvent()();
-                             });
+                                'activate',
+                                function(event) {
+                                    self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateFocusEvent()();
+                                });
                              ed
                              .on(
-                             'mousedown',
-                             function(event) {
-                             self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Ljava/lang/String;Lcom/google/gwt/user/client/Element;)('mousedown', mainElement);
-                             });
-                             ed
-                             .on(
-                             'mouseup',
-                             function(event) {
-                             self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateMouseEvent(Ljava/lang/String;Lcom/google/gwt/user/client/Element;)('mouseup', mainElement);
-                             });
+                                'focus',
+                                function(event) {
+                                    self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::propagateFocusEvent()();
+                                });
                              } else {
                              if (needsRefocus) {
                              ed
                              .on(
-                             'init',
-                             function() {
-                              self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::scheduleRefocus()();
-                             });
+                                    'init',
+                                    function() {
+                                        self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::scheduleRefocus()();
+                                    });
                              }
                              ed
                              .on(
-                             'focus',
-                             function(event) {
-                             self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::resetToolbarContainerPosition()();
-                             });
+                                'focus',
+                                function(event) {
+                                    self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::resetToolbarContainerPosition()();
+                                });
                              }
                              };
                              // set default z-index for overlay ui components
@@ -606,9 +595,11 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
      */
     private native void detachEditor() /*-{
                                        var ed = this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_editor;
+                                       if (ed != null) {
                                        ed.remove();
+                                       }
                                        // in IE somehow the whole document will be selected, empty the selection to resolve that
-                                       if ($wnd.document.selection) {
+                                       if ($wnd.document.selection!=null) {
                                        $wnd.document.selection.empty();
                                        }
                                        }-*/;
@@ -663,7 +654,8 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
                                                   var range = sel.getRangeAt(0);
                                                   return range.commonAncestorContainer;
                                                   }
-                                                  } else if ($wnd.document.selection && $wnd.document.selection.createRange) {
+                                                  } else if ($wnd.document.selection
+                                                  && $wnd.document.selection.createRange) {
                                                   var range = $wnd.document.selection.createRange();
                                                   return range.parentElement();
                                                   }
