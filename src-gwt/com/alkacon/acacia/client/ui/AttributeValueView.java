@@ -367,7 +367,6 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         // the dragging class will set position absolute
         style.setTop(elementTop - parentTop, Unit.PX);
         m_dragHelper.addClassName(formCss().dragHelper());
-        style.setZIndex(com.alkacon.geranium.client.ui.css.I_LayoutBundle.INSTANCE.constants().css().zIndexDND());
         return m_dragHelper;
     }
 
@@ -955,12 +954,11 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
 
         if (m_dragHelper != null) {
             removeDragHelperStyles(m_dragHelper);
-            // m_dragHelper.removeFromParent();
             m_dragHelper = null;
         }
         // preventing issue where mouse out was never triggered after drag and drop
-        m_moveButton.getElement().removeFromParent();
-        m_buttonBar.getElement().insertFirst(m_moveButton.getElement());
+        m_moveButton.clearHoverState();
+        setButtonsVisible(false);
     }
 
     /**
@@ -1039,7 +1037,6 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         style.clearLeft();
         style.clearPosition();
         style.clearWidth();
-        style.clearZIndex();
         helper.removeClassName(formCss().dragHelper());
     }
 

@@ -492,25 +492,21 @@ div.helpBubble{
 }
 
 /** Drag and drop styles. */
-@sprite div.entity div.attributeValue.dragPlaceholder > div {
+@sprite div.entity div.attributeValue.dragPlaceholder > div, div.entity div.attributeValue.dragPlaceholder.focused > div {
 	gwt-image: "baseImages.placeholderImage";
 	background-color: #ffffff;
 	opacity: 0.8;
 }
 
 .dragPlaceholder > div *{
-	visibility:hidden;
+	visibility:hidden !important;
 }
 
 .dragElement {
 	display: none;
 }
 
-@if user.agent ie6 {
-	.dragPlaceholder {
-		filter: literal("alpha(opacity = 50)");
-	}
-} @elif user.agent ie8 {
+@if user.agent ie8 {
 	.dragPlaceholder {
 		-ms-filter: "alpha(opacity = 50)";
 	}
@@ -520,12 +516,14 @@ div.helpBubble{
 	}
 }
 
-.dragStarted .attributeValue .buttonBar > div{
+.dragStarted .entity .attributeValue .buttonBar > div{
 	display: none;
 }
 
-.dragStarted .dragHelper.attributeValue .buttonBar > .moveHandle{
+.dragStarted .entity .dragHelper.attributeValue > .buttonBar > div.moveHandle{
 	display: inline-block;
+	border-color: transparent;
+	background: transparent;
 }
 
 /* Spreading the button bar to cover the hole attribute view element to avoid any iframe issues. */
@@ -537,6 +535,7 @@ div.helpBubble{
 
 .dragHelper.attributeValue{
 	position: absolute;
+	z-index: value("constants.css.zIndexDND");
 	opacity: 0.8;
 }
 

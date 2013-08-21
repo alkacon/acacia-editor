@@ -30,11 +30,9 @@ import com.alkacon.geranium.client.dnd.I_Draggable;
 import com.alkacon.geranium.client.dnd.I_DropTarget;
 import com.alkacon.geranium.client.ui.HighlightingBorder;
 import com.alkacon.geranium.client.util.DomUtil;
-import com.alkacon.geranium.client.util.PositionBean;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * The attribute values panel.<p>
@@ -79,11 +77,9 @@ public class ValuePanel extends FlowPanel implements I_DropTarget {
      */
     public void highlightOutline() {
 
-        m_highlighting = new HighlightingBorder(
-            PositionBean.getInnerDimensions(getElement()),
-            HighlightingBorder.BorderColor.red);
-        m_highlighting.getElement().getStyle().setZIndex(2000000);
-        RootPanel.get().add(m_highlighting);
+        m_highlighting = new HighlightingBorder(getElement(), HighlightingBorder.BorderColor.red);
+        //   m_highlighting.getElement().getStyle().setZIndex(2000000);
+        add(m_highlighting);
     }
 
     /**
@@ -142,7 +138,7 @@ public class ValuePanel extends FlowPanel implements I_DropTarget {
     public void updateHighlightingPosition() {
 
         if (m_highlighting != null) {
-            m_highlighting.setPosition(PositionBean.getInnerDimensions(getElement()));
+            m_highlighting.resetPosition();
         }
     }
 }
