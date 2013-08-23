@@ -544,21 +544,6 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     }
 
     /**
-     * Shows or hides the button bar.<p>
-     * 
-     * @param visible true if the button bar should be shown 
-     */
-    public void setButtonsVisible(boolean visible) {
-
-        String hoverStyle = formCss().hoverButton();
-        if (visible) {
-            m_buttonBar.addStyleName(hoverStyle);
-        } else {
-            m_buttonBar.removeStyleName(hoverStyle);
-        }
-    }
-
-    /**
      * Enables or disables the "collapsed" style, which is used for choice elements to reduce the nesting level visually.<p>
      * 
      * @param collapsed true if the view should be set to 'collapsed' 
@@ -754,10 +739,14 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         } else {
             m_downButton.getElement().getStyle().setDisplay(Display.NONE);
         }
-        if (hasSortButtons && (EditorBase.getDictionary() != null)) {
-            m_moveButton.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_MOVE_0));
+        if (hasSortButtons) {
+            m_moveButton.addStyleName(I_LayoutBundle.INSTANCE.form().moveHandle());
+            if (EditorBase.getDictionary() != null) {
+                m_moveButton.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_MOVE_0));
+            }
         } else {
             m_moveButton.setTitle("");
+            m_moveButton.removeStyleName(I_LayoutBundle.INSTANCE.form().moveHandle());
         }
         m_dragEnabled = hasSortButtons;
         if (!hasAddButton && !hasRemoveButton && !hasSortButtons) {
@@ -942,7 +931,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         }
         // preventing issue where mouse out was never triggered after drag and drop
         m_moveButton.clearHoverState();
-        setButtonsVisible(false);
+        ButtonBarHandler.INSTANCE.closeAll();
     }
 
     /**
@@ -974,9 +963,6 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
      * Initializes the button styling.<p>
      */
     private void initButtons() {
-
-        //   m_addButton.setImageClass(I_ImageBundle.INSTANCE.style().addIcon());
-        //   m_addButton.setButtonStyle(ButtonStyle.TRANSPARENT, null);
 
         m_addButton.addChoice(
             m_handler.getWidgetService(),

@@ -24,6 +24,8 @@
 
 package com.alkacon.acacia.client.css;
 
+import com.alkacon.geranium.client.ui.css.I_IconBundle;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.CssResource.Shared;
@@ -487,6 +489,13 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
      */
     @Source("form.css")
     I_Style form();
+
+    /**
+     * Accessor for the icon resource bundle.<p>
+     * 
+     * @return the icon resource bundle
+     */
+    I_IconBundle icons();
 
     /**
      * Access method.<p>
