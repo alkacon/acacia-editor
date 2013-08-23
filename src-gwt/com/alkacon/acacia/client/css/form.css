@@ -494,16 +494,21 @@ div.helpBubble{
 }
 
 /* Spreading the button bar to cover the hole attribute view element to avoid any iframe issues. */
-.dragStarted .dragHelper.attributeValue .buttonBar {
+.dragStarted .entity .dragHelper.attributeValue > .buttonBar{
 	left: 0px;
 	bottom: 0px;
 	text-align: right;
+	background: transparent;
+	border-color: transparent;
+	box-shadow: none;
 }
 
 .dragHelper.attributeValue{
 	position: absolute;
 	z-index: value("constants.css.zIndexDND");
 	opacity: 0.8;
+	box-shadow: 2px 2px 2px #666666;
+	border-radius: value("constants.css.borderRadius");
 }
 
 .dragHelper.attributeValue > .widgetHolder{
