@@ -24,6 +24,7 @@
 
 package com.alkacon.acacia.client.ui;
 
+import com.alkacon.acacia.client.ButtonBarHandler;
 import com.alkacon.acacia.client.ChoiceMenuEntryBean;
 import com.alkacon.acacia.client.I_WidgetService;
 import com.alkacon.acacia.client.css.I_LayoutBundle;
@@ -88,13 +89,13 @@ public class ChoiceMenuEntryWidget extends Composite {
                 public void onClick(ClickEvent event) {
 
                     selectHandler.onSuccess(menuEntry);
-                    ChoiceMenuHandler.INSTANCE.closeAll();
+                    ButtonBarHandler.INSTANCE.closeAll();
 
                 }
             });
         }
-        addDomHandler(ChoiceMenuHandler.INSTANCE, MouseOverEvent.getType());
-        addDomHandler(ChoiceMenuHandler.INSTANCE, MouseOutEvent.getType());
+        addDomHandler(ButtonBarHandler.INSTANCE, MouseOverEvent.getType());
+        addDomHandler(ButtonBarHandler.INSTANCE, MouseOutEvent.getType());
     }
 
     /**

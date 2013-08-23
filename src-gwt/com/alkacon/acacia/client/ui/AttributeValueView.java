@@ -146,9 +146,6 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         // nothing to do
     }
 
-    /** Handler for controlling the visibility of button bars. */
-    private static ButtonBarHandler hoverHandler = ButtonBarHandler.INSTANCE;
-
     /** The first column compact view mode. */
     public static final int COMPACT_MODE_FIRST_COLUMN = 1;
 
@@ -291,10 +288,8 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         m_compacteModeStyle.setValue(formCss().defaultView());
         initHighlightingHandler();
         initButtons();
-
-        ButtonBarHandler.EventHandler handler2 = hoverHandler.createEventHandler(this);
-        m_buttonBar.addDomHandler(handler2, MouseOverEvent.getType());
-        m_buttonBar.addDomHandler(handler2, MouseOutEvent.getType());
+        m_buttonBar.addDomHandler(ButtonBarHandler.INSTANCE, MouseOverEvent.getType());
+        m_buttonBar.addDomHandler(ButtonBarHandler.INSTANCE, MouseOutEvent.getType());
         m_collapsedStyle.setValue(formCss().uncollapsed());
     }
 
@@ -451,17 +446,6 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
     public I_EditWidget getValueWidget() {
 
         return m_widget;
-    }
-
-    /** 
-     * Checks whether an element is part of the menu of this attribute value view.<p>
-     * 
-     * @param elem the element to check 
-     * @return true if this element is part of the menu 
-     */
-    public boolean hasButtonElement(Element elem) {
-
-        return (m_buttonBar != null) && m_buttonBar.getElement().isOrHasChild(elem);
     }
 
     /**

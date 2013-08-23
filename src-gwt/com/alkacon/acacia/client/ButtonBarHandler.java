@@ -24,153 +24,321 @@
 
 package com.alkacon.acacia.client;
 
-import com.alkacon.acacia.client.ui.AttributeValueView;
+import com.alkacon.acacia.client.css.I_LayoutBundle;
+import com.alkacon.acacia.client.ui.AttributeChoiceWidget;
+import com.alkacon.acacia.client.ui.ChoiceMenuEntryWidget;
+import com.alkacon.acacia.client.ui.ChoiceSubmenu;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.EventTarget;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
+import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Helper class for controlling visibility of button hover bars of attribute value views.<p>
  */
-public class ButtonBarHandler {
-
-    /**
-     * Event handler class which reacts to mouseover/mouseout events by calling the corresponding methods on the instance of the surrounding class.<p>
-     */
-    public class EventHandler implements MouseOverHandler, MouseOutHandler {
-
-        /** The value view instance. */
-        private AttributeValueView m_handlerView;
-
-        /** 
-         * Creates a new instance.<p>
-         * 
-         * @param view the value view 
-         */
-        public EventHandler(AttributeValueView view) {
-
-            m_handlerView = view;
-        }
-
-        /**
-         * @see com.google.gwt.event.dom.client.MouseOutHandler#onMouseOut(com.google.gwt.event.dom.client.MouseOutEvent)
-         */
-        public void onMouseOut(MouseOutEvent event) {
-
-            ButtonBarHandler.this.onMouseOut(m_handlerView);
-        }
-
-        /**
-         * @see com.google.gwt.event.dom.client.MouseOverHandler#onMouseOver(com.google.gwt.event.dom.client.MouseOverEvent)
-         */
-        public void onMouseOver(MouseOverEvent event) {
-
-            ButtonBarHandler.this.onMouseOver(m_handlerView);
-        }
-    }
+public class ButtonBarHandler implements MouseOverHandler, MouseOutHandler {
 
     /** Global instance of the button bar handler. */
     public static final ButtonBarHandler INSTANCE = new ButtonBarHandler();
 
-    /** The timer for hiding the buttons. */
-    private Timer m_timer;
-
-    /** The current value view. */
-    private AttributeValueView m_view;
-
     /** The timeout for hiding the buttons. */
     public static final int TIMEOUT = 900;
 
-    /**
-     * Creates an event handler for mouseover/out events which delegates its methods to this class.<p>
-     * 
-     * @param view the view for which to create an event handler 
-     * 
-     * @return the event handler 
-     */
-    public EventHandler createEventHandler(AttributeValueView view) {
+    /** The visible button bar.*/
+    Widget m_buttonBar;
 
-        return new EventHandler(view);
-    }
+    /** The timer for hiding the button bar. */
+    private Timer m_buttonBarTimer;
 
-    /**
-     * Gets the current attribute value view.<p>
-     * 
-     * @return the current view 
-     */
-    public AttributeValueView getView() {
+    /** The visible choice menu. */
+    private AttributeChoiceWidget m_choice;
 
-        return m_view;
-    }
+    /** The timer for hiding the choice menu. */
+    private Timer m_choiceTimer;
+
+    /** The currently active submenus. */
+    private List<ChoiceSubmenu> m_submenus = new ArrayList<ChoiceSubmenu>();
 
     /**
-     * Hides the current button bar.<p>
+     * Constructor.<p>
      */
-    public void hideCurrent() {
+    private ButtonBarHandler() {
 
-        changeValueView(getView(), null);
-    }
+        Event.addNativePreviewHandler(new NativePreviewHandler() {
 
-    /**
-     * Handles mouseout events.<p>
-     * 
-     * @param view the view on which the event occurred 
-     */
-    public void onMouseOut(final AttributeValueView view) {
+            public void onPreviewNativeEvent(NativePreviewEvent event) {
 
-        if (m_view != null) {
-            m_timer = new Timer() {
-
-                @Override
-                public void run() {
-
-                    hideCurrent();
+                NativeEvent nativeEvent = event.getNativeEvent();
+                if (event.getTypeInt() != Event.ONMOUSEDOWN) {
+                    return;
                 }
-            };
-            m_timer.schedule(TIMEOUT);
+                if (nativeEvent == null) {
+                    return;
+                }
+                if (m_buttonBar == null) {
+                    return;
+                }
+                EventTarget target = nativeEvent.getEventTarget();
+
+                if (Element.is(target)) {
+                    Element targetElement = Element.as(target);
+                    boolean clickedOnMenu = m_buttonBar.getElement().isOrHasChild(targetElement);
+                    if (!clickedOnMenu) {
+                        closeAll();
+
+                    }
+                }
+            }
+        });
+        m_choiceTimer = new Timer() {
+
+            @Override
+            public void run() {
+
+                closeAllChoices();
+            }
+        };
+        m_buttonBarTimer = new Timer() {
+
+            @Override
+            public void run() {
+
+                closeAll();
+            }
+        };
+    }
+
+    /**
+     * Closes all visible button bars and menus.<p>
+     */
+    public void closeAll() {
+
+        if (m_buttonBar != null) {
+            setButtonBarVisibility(m_buttonBar, false);
+            m_buttonBar = null;
+        }
+        closeAllChoices();
+    }
+
+    /**
+     * @see com.google.gwt.event.dom.client.MouseOutHandler#onMouseOut(com.google.gwt.event.dom.client.MouseOutEvent)
+     */
+    public void onMouseOut(MouseOutEvent event) {
+
+        Object source = event.getSource();
+        if ((source instanceof AttributeChoiceWidget) || (source instanceof ChoiceMenuEntryWidget)) {
+            rescheduleChoiceTimer();
+        } else {
+            rescheduleButtonBarTimer();
         }
     }
 
     /**
-     * Handles mouseover events.<p>
-     * 
-     * @param view the view on which the mouseover occurred 
+     * @see com.google.gwt.event.dom.client.MouseOverHandler#onMouseOver(com.google.gwt.event.dom.client.MouseOverEvent)
      */
-    public void onMouseOver(AttributeValueView view) {
+    public void onMouseOver(MouseOverEvent event) {
 
-        changeValueView(m_view, view);
+        cancelButtonBarTimer();
+        Object source = event.getSource();
+        if (source instanceof AttributeChoiceWidget) {
+            overAttributeChoice((AttributeChoiceWidget)source);
+        } else if (source instanceof ChoiceMenuEntryWidget) {
+            overChoiceEntry((ChoiceMenuEntryWidget)source);
+        } else {
+            overButtonBar((Widget)source);
+        }
     }
 
     /**
-     * Changes the current view.<p>
+     * Adds a new submenu.<p>
      * 
-     * @param oldView the old view 
-     * @param newView the new view 
+     * @param entryWidget the entry widget whose children should be added to the submenu 
      */
-    protected void changeValueView(AttributeValueView oldView, AttributeValueView newView) {
+    protected void addSubmenu(ChoiceMenuEntryWidget entryWidget) {
 
-        cancelTimer();
-        if ((oldView != null) && (oldView != newView)) {
-            oldView.setButtonsVisible(false);
+        ChoiceMenuEntryBean menuEntry = entryWidget.getEntryBean();
+        AsyncCallback<ChoiceMenuEntryBean> selectHandler = entryWidget.getSelectHandler();
+        AttributeChoiceWidget choiceWidget = entryWidget.getAttributeChoiceWidget();
+        ChoiceSubmenu submenu = new ChoiceSubmenu(menuEntry);
+        submenu.positionDeferred(entryWidget);
+        choiceWidget.getSubmenuPanel().add(submenu);
+        m_submenus.add(submenu);
+        for (ChoiceMenuEntryBean subEntry : menuEntry.getChildren()) {
+            submenu.addChoice(new ChoiceMenuEntryWidget(
+                entryWidget.getWidgetService(),
+                subEntry,
+                selectHandler,
+                choiceWidget,
+                submenu));
         }
-        if (newView != null) {
-            newView.setButtonsVisible(true);
+    }
+
+    /**
+     * Removes unnecessary submenus when the user hovers over a given menu entry.<p>
+     * 
+     * @param entryWidget the menu entry over which the user is hovering 
+     */
+    protected void cleanUpSubmenus(ChoiceMenuEntryWidget entryWidget) {
+
+        ChoiceSubmenu submenu = entryWidget.getSubmenu();
+        // First remove all submenus which are deeper than the submenu in which the current entry is located  
+        while (!m_submenus.isEmpty() && (getLastSubmenu() != submenu)) {
+            removeSubmenu(getLastSubmenu());
         }
-        m_view = newView;
+        // if it is a root entry, switch the attribute choice widget 
+        if (submenu == null) {
+            AttributeChoiceWidget choiceWidget = entryWidget.getAttributeChoiceWidget();
+            if (choiceWidget != m_choice) {
+                closeAllChoices();
+                m_choice = choiceWidget;
+            }
+        }
+    }
+
+    /**
+     * Gets the last entry in the current list of active submenus.<p>
+     * 
+     * @return the last submenu 
+     */
+    protected ChoiceSubmenu getLastSubmenu() {
+
+        return m_submenus.get(m_submenus.size() - 1);
+    }
+
+    /**
+     * Removes a submenu and hides it.<p>
+     * 
+     * @param submenu the submenu to remove 
+     */
+    protected void removeSubmenu(ChoiceSubmenu submenu) {
+
+        submenu.removeFromParent();
+        m_submenus.remove(submenu);
+    }
+
+    /**
+     * Closes all currently active submenus and the root menu.<p>
+     */
+    void closeAllChoices() {
+
+        if (m_choice != null) {
+            m_choice.hide();
+        }
+        m_choice = null;
+        for (ChoiceSubmenu submenu : new ArrayList<ChoiceSubmenu>(m_submenus)) {
+            removeSubmenu(submenu);
+        }
     }
 
     /**
      * Cancels the timer.<p>
      */
-    private void cancelTimer() {
+    private void cancelButtonBarTimer() {
 
-        if (m_timer != null) {
-            m_timer.cancel();
-            m_timer = null;
+        m_buttonBarTimer.cancel();
+    }
+
+    /**
+     * Cancels the timer.<p>
+     */
+    private void cancelChoiceTimer() {
+
+        m_choiceTimer.cancel();
+    }
+
+    /**
+     * Handles the mouse over event for a choice widget.<p>
+     * 
+     * @param choice the event source
+     */
+    private void overAttributeChoice(AttributeChoiceWidget choice) {
+
+        cancelChoiceTimer();
+        if (choice.getParent() != m_buttonBar) {
+            closeAll();
+            m_buttonBar = choice.getParent();
+            setButtonBarVisibility(m_buttonBar, true);
+        }
+        if (m_choice != choice) {
+            closeAllChoices();
+            m_choice = choice;
+            m_choice.show();
         }
     }
 
+    /**
+     * Handles the mouse over event for a button bar.<p>
+     * 
+     * @param buttonBar the event source
+     */
+    private void overButtonBar(Widget buttonBar) {
+
+        if (buttonBar != m_buttonBar) {
+            closeAll();
+            m_buttonBar = buttonBar;
+            setButtonBarVisibility(m_buttonBar, true);
+        }
+    }
+
+    /**
+     * Handles the mouse over event for a choice menu entry.<p>
+     * 
+     * @param entryWidget the event source
+     */
+    private void overChoiceEntry(ChoiceMenuEntryWidget entryWidget) {
+
+        cancelChoiceTimer();
+        cleanUpSubmenus(entryWidget);
+        ChoiceMenuEntryBean entryBean = entryWidget.getEntryBean();
+        if (!entryBean.isLeaf()) {
+            addSubmenu(entryWidget);
+        }
+    }
+
+    /**
+     * Reschedules the timer that hides the currently visible button bar.<p>
+     */
+    private void rescheduleButtonBarTimer() {
+
+        m_buttonBarTimer.cancel();
+        m_buttonBarTimer.schedule(TIMEOUT);
+    }
+
+    /**
+     * Reschedules the timer that hides the currently visible choice menu.<p>
+     */
+    private void rescheduleChoiceTimer() {
+
+        m_choiceTimer.cancel();
+        m_choiceTimer.schedule(TIMEOUT);
+    }
+
+    /**
+     * Sets the button bar visibility.<p>
+     * 
+     * @param buttonBar the button bar
+     * @param visible <code>true</code> to show the button bar
+     */
+    private void setButtonBarVisibility(Widget buttonBar, boolean visible) {
+
+        String hoverStyle = I_LayoutBundle.INSTANCE.form().hoverButton();
+        if (visible) {
+            buttonBar.addStyleName(hoverStyle);
+        } else {
+            buttonBar.removeStyleName(hoverStyle);
+        }
+    }
 }
