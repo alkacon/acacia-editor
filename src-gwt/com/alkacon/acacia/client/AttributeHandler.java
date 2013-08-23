@@ -659,7 +659,7 @@ public class AttributeHandler extends RootHandler {
         }
         I_EntityAttribute attribute = m_entity.getAttribute(m_attributeName);
         boolean mayHaveMore = (maxOccurrence > minOccurrence)
-            && (((attribute == null) || (attribute.getValueCount() < maxOccurrence)));
+            && ((((attribute == null) && !getAttributeType().isSimpleType()) || ((attribute != null) && (attribute.getValueCount() < maxOccurrence))));
         boolean needsRemove = false;
         boolean needsSort = false;
         if ((isChoiceHandler() || !getEntityType().isChoice()) && m_entity.hasAttribute(m_attributeName)) {

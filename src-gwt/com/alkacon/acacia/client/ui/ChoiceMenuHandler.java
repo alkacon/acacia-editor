@@ -26,7 +26,6 @@ package com.alkacon.acacia.client.ui;
 
 import com.alkacon.acacia.client.ButtonBarHandler;
 import com.alkacon.acacia.client.ChoiceMenuEntryBean;
-import com.alkacon.acacia.client.I_WidgetService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -117,33 +116,6 @@ public class ChoiceMenuHandler implements MouseOverHandler, MouseOutHandler {
     }
 
     /**
-     * Creates a new menu entry widget.<p>
-     * 
-     * @param paramWidgetService the widget service 
-     * @param menuEntry the menu entry bean  
-     * @param selectHandler the select handler 
-     * @param choiceWidget the root menu 
-     * @param submenu the submenu (may be null for root menu entries)  
-     * 
-     * @return the new menu entry 
-     */
-    public ChoiceMenuEntryWidget createMenuEntryWidget(
-        I_WidgetService paramWidgetService,
-        final ChoiceMenuEntryBean menuEntry,
-        final AsyncCallback<ChoiceMenuEntryBean> selectHandler,
-        final AttributeChoiceWidget choiceWidget,
-        ChoiceSubmenu submenu) {
-
-        ChoiceMenuEntryWidget choice = new ChoiceMenuEntryWidget(
-            paramWidgetService,
-            menuEntry,
-            selectHandler,
-            choiceWidget,
-            submenu);
-        return choice;
-    }
-
-    /**
      * Checks if an attribute choice widget is currently active and has submenus.<p>
      *  
      * @param attributeChoiceWidget the attribute choice widget to check 
@@ -164,7 +136,7 @@ public class ChoiceMenuHandler implements MouseOverHandler, MouseOutHandler {
     }
 
     /**
-     * Mouseover handler.<p>
+     * Mouse over handler.<p>
      * 
      * @param attributeChoiceWidget the choice widget over which the mouseover event occurred 
      */
@@ -201,7 +173,7 @@ public class ChoiceMenuHandler implements MouseOverHandler, MouseOutHandler {
         choiceWidget.getSubmenuPanel().add(submenu);
         m_submenus.add(submenu);
         for (ChoiceMenuEntryBean subEntry : menuEntry.getChildren()) {
-            submenu.addChoice(createMenuEntryWidget(
+            submenu.addChoice(new ChoiceMenuEntryWidget(
                 entryWidget.getWidgetService(),
                 subEntry,
                 selectHandler,

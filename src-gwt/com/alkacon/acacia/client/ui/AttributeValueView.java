@@ -60,6 +60,7 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.HasMouseDownHandlers;
@@ -168,7 +169,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
 
     /** The add button. */
     @UiField
-    protected PushButton m_addButton;
+    protected AttributeChoiceWidget m_addButton;
 
     /** The attribute choice button. */
     @UiField
@@ -176,7 +177,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
 
     /** The button bar. */
     @UiField
-    protected HTMLPanel m_buttonBar;
+    protected FlowPanel m_buttonBar;
 
     /** The down button. */
     @UiField
@@ -784,19 +785,18 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
             if (hasSortButtons || (hasAddButton && hasRemoveButton)) {
                 // set multi button mode
                 m_buttonBar.addStyleName(formCss().multiButtonBar());
+                m_moveButton.getElement().getStyle().clearDisplay();
             } else {
+                m_moveButton.getElement().getStyle().setDisplay(Display.NONE);
                 m_buttonBar.removeStyleName(formCss().multiButtonBar());
             }
         }
     }
 
     /**
-     * Handles the click event to add a new attribute value.<p>
-     * 
-     * @param event the click event
+     * Adds a new attribute value.<p>
      */
-    @UiHandler("m_addButton")
-    protected void addNewAttributeValue(ClickEvent event) {
+    protected void addNewAttributeValue() {
 
         if ((m_widget != null) && !m_widget.isActive()) {
             activateWidget();
@@ -991,8 +991,36 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
      */
     private void initButtons() {
 
-        m_addButton.setImageClass(I_ImageBundle.INSTANCE.style().addIcon());
-        m_addButton.setButtonStyle(ButtonStyle.TRANSPARENT, null);
+        //   m_addButton.setImageClass(I_ImageBundle.INSTANCE.style().addIcon());
+        //   m_addButton.setButtonStyle(ButtonStyle.TRANSPARENT, null);
+
+        m_addButton.addChoice(
+            m_handler.getWidgetService(),
+            new ChoiceMenuEntryBean(m_handler.getAttributeName()),
+            new AsyncCallback<ChoiceMenuEntryBean>() {
+
+                public void onFailure(Throwable caught) {
+
+                    // will not be called 
+
+                }
+
+                public void onSuccess(ChoiceMenuEntryBean selectedEntry) {
+
+                    // nothing to do
+                }
+            });
+        m_addButton.addDomHandler(new ClickHandler() {
+
+            public void onClick(ClickEvent event) {
+
+                m_addButton.hide();
+                addNewAttributeValue();
+                event.preventDefault();
+                event.stopPropagation();
+
+            }
+        }, ClickEvent.getType());
 
         m_removeButton.setImageClass(I_ImageBundle.INSTANCE.style().removeIcon());
         m_removeButton.setButtonStyle(ButtonStyle.TRANSPARENT, null);

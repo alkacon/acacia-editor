@@ -86,10 +86,10 @@ div.attributeValue.secondColumn{
 }
 
 .attributeValue.simpleValue.singleLine .buttonBar{
-	top:6px;
+	top:4px;
 }
 .attributeValue.simpleValue.shallowWidget div.buttonBar{
-	top:2px;
+	top:1px;
 }
 
 .attributeValue.emptyValue .label{
@@ -114,15 +114,13 @@ div.attributeValue.secondColumn{
 	font-weight:bold;
 }
 
-div.buttonBar > div {
-	display:block;
-	float: right;
-}
-
 .attributeValue .buttonBar{
 	position: absolute;
+	border: 1px solid transparent;
 	top: 2px;
 	right: 2px;
+	border-radius: value("constants.css.borderRadius");
+	white-space: nowrap;
 }
 
 .attributeValue.simpleValue .buttonBar{
@@ -133,69 +131,38 @@ div.buttonBar > div {
 	top: 0px;
 }
 
-.multiButtonBar.buttonBar .buttonBarFrame{
-	display: none;
-	border: 1px solid #7788AA;
-	border-radius: 4px;
-	border-top-right-radius: 0px;
-	padding: 1px;
-	position: absolute;
-	top: 21px;
-	right: -2px;
-	background: white;
-	z-index: 10;
+
+
+
+.multiButtonBar.buttonBar.hoverButton {
+	display: block;
 	box-shadow: 2px 2px 2px #666666;
-	white-space: nowrap;
+	background: value("constants.css.backgroundColorDialog");
+	border: 1px solid value("constants.css.borderColor");
 }
 
-
-
-.multiButtonBar.buttonBar.hoverButton .buttonBarFrame{
-	display: block;
-}
-
-.buttonBarBridge{
-	display: none;
-}
-
-
-
-
-
-
-.multiButtonBar .buttonBarBridge{
-	position: absolute;
-	display: block;
-	width: 22px;
-	height: 3px;
-	top: -1px;
-	right: 0px;
-	background: white;
-}
-
-.button{
-	display: inline-block;
+.buttonBar .button{
 	cursor: pointer;
+	float: right;
 }
 
-.buttonBar > .button{
-	display: none;
+.buttonBar.multiButtonBar > .button:first-child{
+	display: block;
 }
 
 .buttonBar.multiButtonBar > .button{
 	border: 1px solid transparent;
-	border-radius: 4px;
+	border-radius: value("constants.css.borderRadius");
 	padding: 1px;
-	margin: -2px -2px 0 -2px;
-	display: inline-block;
+	margin: -1px;
+	display: none;
 	position: relative;
 }
 
 .buttonBar.multiButtonBar.hoverButton > .button{
-	border-color: #7788AA;
-	background: white;
 	border-bottom-right-radius: 0px;
 	border-bottom-left-radius: 0px;
+	display: block;
 }
 
 
@@ -235,7 +202,7 @@ div.buttonBar > div {
 
 .widgetHolder > div > .widget.input{
 	border: 1px solid #7788AA;
-	background: #ffffff;
+	background: value("constants.css.backgroundColorDialog");
 }
 
 .attributeValue.hasError .label{
@@ -259,8 +226,8 @@ div.buttonBar > div {
 
 .attributeValue .widgetHolder  .mce-tinymce{
 	border: 1px solid #7788AA;
-	background: #ffffff;
-	border-radius: 3px;
+	background: value("constants.css.backgroundColorDialog");
+	border-radius: value("constants.css.borderRadius");
 }
 
 .attributeValue .widgetHolder .widget.inActive .mce-tinymce{
@@ -268,7 +235,7 @@ div.buttonBar > div {
 }
 
 .attributeValue.focused > .widgetHolder > .widget .mce-tinymce {
-	border-radius: 3px 3px 0 0;
+	border-radius: value("constants.css.borderRadius") value("constants.css.borderRadius") 0 0;
 }
 
 .widgetHolder > div > .widget.input.inActive, .attributeValue .widgetHolder .widget.inActive  .mce-tinymce{
@@ -277,7 +244,7 @@ div.buttonBar > div {
 }
 .attributeValue > .widgetHolder > .widget .mce-tinymce.inActive{
 	height: 18px;	
-	border-radius: 3px;
+	border-radius: value("constants.css.borderRadius");
 }
 
 /* tinymce in line edit toolbar styles */
@@ -293,7 +260,7 @@ div.tinymceToolbarContainer > div{
 
 /* this styles the tinymce toolbar */
 .attributeValue .mce-tinymce > .mce-container-body > .mce-panel:first-child{
-	border-radius: 3px 3px 0px 0px;
+	border-radius: value("constants.css.borderRadius") value("constants.css.borderRadius") 0px 0px;
 	position: absolute;
     right: -1px;
     max-width:90%;
@@ -322,12 +289,12 @@ div.tinymceToolbarContainer > div{
 }
 
 .attributeValue > .widgetHolder > div > div.widget .mce-tinymce .mce-statusbar{
-	background: none repeat scroll 0 0 white;
+	background: none repeat scroll 0 0 value("constants.css.backgroundColorDialog");
     border-bottom: 1px solid #7788AA !important;
     border-right: 1px solid #7788AA !important;
     border-left: 1px solid #7788AA !important;
-    box-shadow: 0 1px 3px 0 #7788AA;
-    border-radius: 0 0 3px 3px;
+    box-shadow: 2px 2px 2px #666666;
+    border-radius: 0 0 value("constants.css.borderRadius") value("constants.css.borderRadius");
     display: none;
     left: -1px;
     position: absolute;
@@ -341,7 +308,7 @@ div.tinymceToolbarContainer > div{
 } 
 
 .attributeValue > .widgetHolder > div > div.widget .mce-tinymce, .attributeValue > .widgetHolder > div > div.widget .mce-tinymce iframe{
-	border-radius: 3px;
+	border-radius: value("constants.css.borderRadius");
 	width: 100% !important;
 }
 
@@ -359,9 +326,9 @@ div.helpBubble{
 	left: 2px;
 	display: none;
 	padding: 7px 19px 3px 5px;
-	border-radius:4px;
+	border-radius:value("constants.css.borderRadius");
 	z-index: 10;
-	box-shadow: 2px 2px 6px #666666;
+	box-shadow: 2px 2px 2px #666666;
 }
 
 .hasError .helpMessage, .hasWarning .helpMessage{
@@ -442,10 +409,10 @@ div.helpBubble{
 }
 
 .entity .attributeValue > div, .dragHelper.attributeValue > div{
-	border-radius: 4px;
+	border-radius: value("constants.css.borderRadius");
 }
 .widgetHolder .widget.input, .attributeValue .widgetHolder  .mce-tinymce{
-	border-radius: 3px;
+	border-radius: value("constants.css.borderRadius");
 }
 
 /** Browser specific styles. */
@@ -494,7 +461,7 @@ div.helpBubble{
 /** Drag and drop styles. */
 @sprite div.entity div.attributeValue.dragPlaceholder > div, div.entity div.attributeValue.dragPlaceholder.focused > div {
 	gwt-image: "baseImages.placeholderImage";
-	background-color: #ffffff;
+	background-color: value("constants.css.backgroundColorDialog");
 	opacity: 0.8;
 }
 

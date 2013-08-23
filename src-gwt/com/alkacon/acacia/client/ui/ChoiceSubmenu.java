@@ -116,7 +116,7 @@ public class ChoiceSubmenu extends Composite {
         int deltaX = 0;
         int deltaY = 0;
         referenceElement = widgetEntry.getElement();
-        com.google.gwt.dom.client.Style style = elem.getStyle();
+        Style style = elem.getStyle();
         style.setLeft(startX, Unit.PX);
         style.setTop(startY, Unit.PX);
         int myRight = elem.getAbsoluteRight();

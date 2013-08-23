@@ -35,7 +35,7 @@ import com.google.gwt.resources.client.ImageResource;
 public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_LayoutBundle {
 
     /** The attribute choice widget CSS. */
-    interface I_AttributeChoice extends CssResource {
+    interface I_AttributeChoice extends I_ButtonBar {
 
         /** 
          * Returns the attribute choice CSS class.<p>
@@ -93,6 +93,20 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
          */
         String hovering();
 
+        /** 
+         * Returns the shadow CSS class name.<p>
+         * 
+         * @return the shadow CSS class
+         */
+        String shadow();
+
+        /** 
+         * Returns the shadow bottom CSS class name.<p>
+         * 
+         * @return the shadow bottom CSS class
+         */
+        String shadowBottom();
+
         /**
          * Returns the submenu CSS class name.<p>
          * 
@@ -101,16 +115,9 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
         String submenu();
     }
 
-    /** The style CSS resource. */
+    /** The button bar CSS. */
     @Shared
-    interface I_Style extends com.alkacon.geranium.client.ui.css.I_LayoutBundle.I_DragCss, I_Widgets {
-
-        /** 
-         * Returns the attribute CSS class name.<p>
-         * 
-         * @return the attribute CSS class
-         */
-        String attribute();
+    interface I_ButtonBar extends CssResource {
 
         /**
          * Returns the button CSS class name.<p>
@@ -126,19 +133,31 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
          */
         String buttonBar();
 
-        /**
-         * Returns the button bar bridge CSS class name.<p>
+        /** 
+         * Returns the CSS class which is set when the user is hovering over a button of the button bar.<p>
          * 
-         * @return the button bar bridge CSS class
+         * @return a CSS class 
          */
-        String buttonBarBridge();
+        String hoverButton();
 
         /**
-         * Returns the button bar frame CSS class name.<p>
+         * Returns the multi button bar CSS class name.<p>
          * 
-         * @return the button bar frame CSS class
+         * @return the multi button bar CSS class
          */
-        String buttonBarFrame();
+        String multiButtonBar();
+    }
+
+    /** The style CSS resource. */
+    @Shared
+    interface I_Style extends com.alkacon.geranium.client.ui.css.I_LayoutBundle.I_DragCss, I_Widgets, I_ButtonBar {
+
+        /** 
+         * Returns the attribute CSS class name.<p>
+         * 
+         * @return the attribute CSS class
+         */
+        String attribute();
 
         /**
          * Returns the closed bubble CSS class name.<p>
@@ -245,18 +264,11 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
          */
         String hideHelpBubbles();
 
-        /** 
-         * Returns the CSS class which is set when the user is hovering over a button of the button bar.<p>
-         * 
-         * @return a CSS class 
-         */
-        String hoverButton();
-
         /**
-         * Returns the input field CSS class name.<p>
-         * 
-         * @return the input field CSS class name
-         */
+          * Returns the input field CSS class name.<p>
+          * 
+          * @return the input field CSS class name
+          */
         String input();
 
         /** 
@@ -265,13 +277,6 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
          * @return the move handle CSS class
          */
         String moveHandle();
-
-        /**
-         * Returns the multi button bar CSS class name.<p>
-         * 
-         * @return the multi button bar CSS class
-         */
-        String multiButtonBar();
 
         /**
          * Returns the CSS constant value.<p>

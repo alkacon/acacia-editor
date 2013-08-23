@@ -7,6 +7,8 @@
 		<span class="{style.attributeChoice.buttonIcon}" ui:field="m_buttonIcon"></span>
 		<div class="{style.attributeChoice.frame}">
 			<div class="{style.attributeChoice.bridge}"></div>
+			<div class="{style.attributeChoice.shadow}"></div>
+			<div class="{style.attributeChoice.shadowBottom}"></div>
 			<g:FlowPanel styleName="{style.attributeChoice.choices}" ui:field="m_choices"></g:FlowPanel>
 		</div>
 	</g:HTMLPanel>
