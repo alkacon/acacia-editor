@@ -26,7 +26,6 @@ package com.alkacon.acacia.client.ui;
 
 import com.alkacon.acacia.client.ButtonBarHandler;
 import com.alkacon.acacia.client.ChoiceMenuEntryBean;
-import com.alkacon.acacia.client.I_WidgetService;
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -54,34 +53,31 @@ public class ChoiceMenuEntryWidget extends Composite {
     /** The submenu to which this entry widget belongs. */
     private ChoiceSubmenu m_submenu;
 
-    /** The widget service to use. */
-    private I_WidgetService m_widgetService;
-
     /**
-     * Creates a new menu entry instance.<p>
-     * 
-     * @param widgetService the widget service to use 
-     * @param menuEntry the menu entry bean 
-     * @param selectHandler the select handler 
-     * @param choiceWidget the root choice menu 
-     * @param submenu the submenu for which this entry is being created 
-     */
+      * Creates a new menu entry instance.<p>
+      * 
+      * @param label the entry label 
+      * @param help the entry help text
+      * @param menuEntry the menu entry bean 
+      * @param selectHandler the select handler 
+      * @param choiceWidget the root choice menu 
+      * @param submenu the submenu for which this entry is being created 
+      */
     public ChoiceMenuEntryWidget(
-        I_WidgetService widgetService,
+        String label,
+        String help,
         final ChoiceMenuEntryBean menuEntry,
         final AsyncCallback<ChoiceMenuEntryBean> selectHandler,
         AttributeChoiceWidget choiceWidget,
         ChoiceSubmenu submenu) {
 
-        HTML baseWidget = new HTML(widgetService.getAttributeLabel(menuEntry.getPathComponent()));
+        HTML baseWidget = new HTML(label);
         initWidget(baseWidget);
         setStyleName(I_LayoutBundle.INSTANCE.attributeChoice().choice());
         m_entryBean = menuEntry;
         m_selectCallback = selectHandler;
         m_submenu = submenu;
         m_attributeChoiceWidget = choiceWidget;
-        m_widgetService = widgetService;
-        String help = widgetService.getAttributeHelp(menuEntry.getPathComponent());
         setTitle(help);
         if (menuEntry.isLeaf()) {
             baseWidget.addClickHandler(new ClickHandler() {
@@ -137,15 +133,4 @@ public class ChoiceMenuEntryWidget extends Composite {
 
         return m_submenu;
     }
-
-    /**
-     * Gets the widget service to use.<p>
-     * 
-     * @return the widget service 
-     */
-    public I_WidgetService getWidgetService() {
-
-        return m_widgetService;
-    }
-
 }

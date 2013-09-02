@@ -273,6 +273,7 @@ public class EditorBase {
             FlowPanel formPanel = new FlowPanel();
             context.add(formPanel);
             AttributeHandler.setScrollElement(scrollParent);
+            ButtonBarHandler.INSTANCE.setWidgetService(m_widgetService);
             RootHandler rootHandler = new RootHandler();
             TabbedPanel<?> formTabs = m_widgetService.getRendererForType(type).renderForm(
                 entity,
@@ -301,6 +302,7 @@ public class EditorBase {
             FlowPanel formPanel = new FlowPanel();
             context.add(formPanel);
             AttributeHandler.setScrollElement(scrollParent);
+            ButtonBarHandler.INSTANCE.setWidgetService(m_widgetService);
             RootHandler rootHandler = new RootHandler();
             m_widgetService.getRendererForType(type).renderForm(entity, formPanel, rootHandler, 0);
             m_validationHandler.setContentService(m_service);

@@ -46,7 +46,7 @@ div.hovering.attributeChoice{
 	width: 20px;
 	cursor: pointer;
 }
-@sprite .hovering span.buttonIcon{
+@sprite span.buttonIcon:hover{
 	gwt-image: "gwtImages.icons.addIconActive";
 }
 

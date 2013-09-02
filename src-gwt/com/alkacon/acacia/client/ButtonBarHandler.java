@@ -72,6 +72,9 @@ public class ButtonBarHandler implements MouseOverHandler, MouseOutHandler {
     /** The currently active submenus. */
     private List<ChoiceSubmenu> m_submenus = new ArrayList<ChoiceSubmenu>();
 
+    /** The widget service. */
+    private I_WidgetService m_widgetService;
+
     /**
      * Constructor.<p>
      */
@@ -178,7 +181,8 @@ public class ButtonBarHandler implements MouseOverHandler, MouseOutHandler {
         m_submenus.add(submenu);
         for (ChoiceMenuEntryBean subEntry : menuEntry.getChildren()) {
             submenu.addChoice(new ChoiceMenuEntryWidget(
-                entryWidget.getWidgetService(),
+                m_widgetService.getAttributeLabel(subEntry.getPathComponent()),
+                m_widgetService.getAttributeHelp(subEntry.getPathComponent()),
                 subEntry,
                 selectHandler,
                 choiceWidget,
@@ -227,6 +231,16 @@ public class ButtonBarHandler implements MouseOverHandler, MouseOutHandler {
 
         submenu.removeFromParent();
         m_submenus.remove(submenu);
+    }
+
+    /**
+     * Sets the widget service.<p>
+     * 
+     * @param widgetService the widget service
+     */
+    protected void setWidgetService(I_WidgetService widgetService) {
+
+        m_widgetService = widgetService;
     }
 
     /**

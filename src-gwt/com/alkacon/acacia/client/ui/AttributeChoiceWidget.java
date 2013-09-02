@@ -97,7 +97,13 @@ public class AttributeChoiceWidget extends Composite implements HasMouseOverHand
         ChoiceMenuEntryBean menuEntry,
         AsyncCallback<ChoiceMenuEntryBean> selectHandler) {
 
-        Widget choice = new ChoiceMenuEntryWidget(widgetService, menuEntry, selectHandler, this, null);
+        Widget choice = new ChoiceMenuEntryWidget(
+            widgetService.getAttributeLabel(menuEntry.getPathComponent()),
+            widgetService.getAttributeHelp(menuEntry.getPathComponent()),
+            menuEntry,
+            selectHandler,
+            this,
+            null);
         addChoice(choice);
     }
 
