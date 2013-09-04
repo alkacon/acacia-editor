@@ -24,6 +24,7 @@
 
 package com.alkacon.acacia.client;
 
+import com.alkacon.acacia.client.ui.InlineEditOverlay;
 import com.alkacon.acacia.client.widgets.FormWidgetWrapper;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
 import com.alkacon.acacia.client.widgets.I_FormEditWidget;
@@ -46,6 +47,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.Dictionary;
@@ -86,6 +88,9 @@ public class EditorBase {
 
     /** The VIE instance. */
     protected I_Vie m_vie;
+
+    /** The in-line edit overlay hiding other content. */
+    private InlineEditOverlay m_editOverlay;
 
     /** The content service instance. */
     private I_ContentServiceAsync m_service;
@@ -200,7 +205,7 @@ public class EditorBase {
      * 
      * @param clearEntities <code>true</code> to also clear all entities
      */
-    public void destroyFrom(boolean clearEntities) {
+    public void destroyForm(boolean clearEntities) {
 
         ValueFocusHandler.getInstance().destroy();
         if (clearEntities) {
@@ -322,6 +327,7 @@ public class EditorBase {
         I_Entity entity = m_vie.getEntity(entityId);
         if (entity != null) {
             I_Type type = m_vie.getType(entity.getTypeName());
+            ButtonBarHandler.INSTANCE.setWidgetService(m_widgetService);
             m_widgetService.getRendererForType(type).renderInline(entity, context);
         }
     }
@@ -337,6 +343,7 @@ public class EditorBase {
         I_Entity entity = m_vie.getEntity(entityId);
         if (entity != null) {
             I_Type type = m_vie.getType(entity.getTypeName());
+            ButtonBarHandler.INSTANCE.setWidgetService(m_widgetService);
             m_widgetService.getRendererForType(type).renderInline(entity, formParent);
         }
     }
@@ -367,7 +374,7 @@ public class EditorBase {
                     //   ValidationHandler.getInstance().displayErrors(null, result)
                 }
                 if (clearOnSuccess) {
-                    destroyFrom(true);
+                    destroyForm(true);
                 }
             }
         };
@@ -413,7 +420,7 @@ public class EditorBase {
 
                 callback.execute();
                 if (clearOnSuccess) {
-                    destroyFrom(true);
+                    destroyForm(true);
                 }
             }
         };
@@ -446,6 +453,18 @@ public class EditorBase {
     }
 
     /**
+     * Adds a click handler to the edit overlay.<p>
+     * 
+     * @param handler the click handler
+     * 
+     * @return the click handler registration
+     */
+    protected HandlerRegistration addOverlayClickHandler(ClickHandler handler) {
+
+        return m_editOverlay.addClickHandler(handler);
+    }
+
+    /**
      * Returns the validation handler.<p>
      * 
      * @return the validation handler
@@ -466,6 +485,17 @@ public class EditorBase {
     }
 
     /**
+     * Initializes the edit overlay to be positioned around the given element.<p>
+     * 
+     * @param element the element
+     */
+    protected void initEditOverlay(Element element) {
+
+        InlineEditOverlay.removeAll();
+        m_editOverlay = InlineEditOverlay.addOverlayForElement(element);
+    }
+
+    /**
      * Handles RPC errors.<p>
      * 
      * Override this for better error handling
@@ -475,5 +505,24 @@ public class EditorBase {
     protected void onRpcError(Throwable caught) {
 
         // doing nothing
+    }
+
+    /**
+     * Removes the edit overlay from the DOM.<p>
+     */
+    protected void removeEditOverlays() {
+
+        InlineEditOverlay.removeAll();
+        m_editOverlay = null;
+    }
+
+    /**
+     * Updates the edit overlay position.<p>
+     */
+    protected void updateOverlayPosition() {
+
+        if (m_editOverlay != null) {
+            m_editOverlay.updatePosition();
+        }
     }
 }
