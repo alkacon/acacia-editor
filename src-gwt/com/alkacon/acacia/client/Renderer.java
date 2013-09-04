@@ -26,6 +26,7 @@ package com.alkacon.acacia.client;
 
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.acacia.client.ui.AttributeValueView;
+import com.alkacon.acacia.client.ui.InlineEntityWidget;
 import com.alkacon.acacia.client.ui.ValuePanel;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
 import com.alkacon.acacia.shared.TabInfo;
@@ -278,6 +279,60 @@ public class Renderer implements I_EntityRenderer {
     }
 
     /**
+     * @see com.alkacon.acacia.client.I_EntityRenderer#renderAttributeValue(com.alkacon.vie.shared.I_Entity, java.lang.String, int, com.google.gwt.user.client.ui.Panel)
+     */
+    public void renderAttributeValue(I_Entity parentEntity, String attributeName, int attributeIndex, Panel context) {
+
+        I_Type entityType = m_vie.getType(parentEntity.getTypeName());
+        I_Type attributeType = entityType.getAttributeType(attributeName);
+        int minOccurrence = entityType.getAttributeMinOccurrence(attributeName);
+        I_EntityAttribute attribute = parentEntity.getAttribute(attributeName);
+        if ((attribute == null) && (minOccurrence > 0)) {
+            attribute = createEmptyAttribute(parentEntity, attributeName, minOccurrence);
+        }
+
+        ValuePanel attributeElement = new ValuePanel();
+        context.add(attributeElement);
+        context.addStyleName(ENTITY_CLASS);
+        RootHandler parentHandler = new RootHandler();
+        AttributeHandler handler = new AttributeHandler(m_vie, parentEntity, attributeName, m_widgetService);
+        parentHandler.setHandler(attributeIndex, attributeName, handler);
+        handler.setSingleValueIndex(attributeIndex);
+        String label = m_widgetService.getAttributeLabel(attributeName);
+        String help = m_widgetService.getAttributeHelp(attributeName);
+        if (attribute != null) {
+            I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(attributeName, attributeType);
+            AttributeValueView valueWidget = new AttributeValueView(handler, label, help);
+            if (attributeType.isChoice() && (entityType.getAttributeMaxOccurrence(attributeName) == 1)) {
+                valueWidget.setCollapsed(true);
+            }
+            attributeElement.add(valueWidget);
+            if (attribute.isSimpleValue()) {
+                valueWidget.setValueWidget(
+                    m_widgetService.getAttributeFormWidget(attributeName),
+                    attribute.getSimpleValues().get(attributeIndex),
+                    m_widgetService.getDefaultAttributeValue(attributeName),
+                    true);
+                if (m_widgetService.isDisplayCompact(attributeName)) {
+                    // widget should be displayed in compact view, using only 50% of the available width
+                    valueWidget.setCompactMode(AttributeValueView.COMPACT_MODE_FIRST_COLUMN);
+                } else {
+                    if (m_widgetService.isDisplaySingleLine(attributeName)) {
+                        valueWidget.setCompactMode(AttributeValueView.COMPACT_MODE_SINGLE_LINE);
+                    }
+                }
+            } else {
+                valueWidget.setValueEntity(renderer, attribute.getComplexValues().get(attributeIndex));
+                if (m_widgetService.isDisplayCompact(attributeName)) {
+                    valueWidget.setCompactMode(AttributeValueView.COMPACT_MODE_NESTED);
+                }
+            }
+            setAttributeChoice(valueWidget, attributeType);
+        }
+        handler.updateButtonVisisbility();
+    }
+
+    /**
      * @see com.alkacon.acacia.client.I_EntityRenderer#renderForm(com.alkacon.vie.shared.I_Entity, java.util.List, com.google.gwt.user.client.ui.Panel, com.alkacon.acacia.client.I_AttributeHandler, int)
      */
     @SuppressWarnings("unchecked")
@@ -517,18 +572,22 @@ public class Renderer implements I_EntityRenderer {
 
         I_EntityAttribute attribute = parentEntity.getAttribute(attributeName);
         if (attribute != null) {
-            if (attribute.isSimpleValue()) {
-                List<Element> elements = m_vie.getAttributeElements(parentEntity, attributeName, context);
-                for (int i = 0; i < elements.size(); i++) {
-                    Element element = elements.get(i);
-                    I_EditWidget widget = m_widgetService.getAttributeInlineWidget(
-                        attributeName,
-                        (com.google.gwt.user.client.Element)element);
-                    widget.onAttachWidget();
-                    RootPanel.detachOnWindowClose(widget.asWidget());
-                    widget.addValueChangeHandler(new WidgetChangeHandler(parentEntity, attributeName, i));
+            List<Element> elements = m_vie.getAttributeElements(parentEntity, attributeName, context);
+            if (!elements.isEmpty()) {
+                if (attribute.isSimpleValue()) {
+                    for (int i = 0; i < elements.size(); i++) {
+                        Element element = elements.get(i);
+                        I_EditWidget widget = m_widgetService.getAttributeInlineWidget(
+                            attributeName,
+                            (com.google.gwt.user.client.Element)element);
+                        widget.onAttachWidget();
+                        RootPanel.detachOnWindowClose(widget.asWidget());
+                        widget.addValueChangeHandler(new WidgetChangeHandler(parentEntity, attributeName, i));
+                    }
+                } else {
+                    // TODO: implement
                 }
-            } else {
+            } else if (attribute.isComplexValue()) {
                 for (I_Entity entity : attribute.getComplexValues()) {
                     renderInline(entity, context);
                 }
@@ -548,20 +607,27 @@ public class Renderer implements I_EntityRenderer {
 
         I_EntityAttribute attribute = parentEntity.getAttribute(attributeName);
         if (attribute != null) {
-            if (attribute.isSimpleValue()) {
-                List<Element> elements = m_vie.getAttributeElements(
-                    parentEntity,
-                    attributeName,
-                    formParent.getElement());
+            List<Element> elements = m_vie.getAttributeElements(parentEntity, attributeName, formParent.getElement());
+            if (!elements.isEmpty()) {
                 for (int i = 0; i < elements.size(); i++) {
                     Element element = elements.get(i);
-                    I_EditWidget widget = m_widgetService.getAttributeInlineWidget(
-                        attributeName,
-                        (com.google.gwt.user.client.Element)element);
-                    formParent.adoptWidget(widget);
-                    widget.addValueChangeHandler(new WidgetChangeHandler(parentEntity, attributeName, i));
+                    if (attribute.isSimpleValue()) {
+                        I_EditWidget widget = m_widgetService.getAttributeInlineWidget(
+                            attributeName,
+                            (com.google.gwt.user.client.Element)element);
+                        widget.addValueChangeHandler(new WidgetChangeHandler(parentEntity, attributeName, i));
+                        formParent.adoptWidget(widget);
+                    } else {
+                        InlineEntityWidget.createWidgetForEntity(
+                            element,
+                            formParent,
+                            parentEntity,
+                            attributeName,
+                            i,
+                            m_widgetService);
+                    }
                 }
-            } else {
+            } else if (attribute.isComplexValue()) {
                 for (I_Entity entity : attribute.getComplexValues()) {
                     renderInline(entity, formParent);
                 }

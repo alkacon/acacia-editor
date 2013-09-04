@@ -51,12 +51,6 @@ import com.google.gwt.user.client.ui.Panel;
  */
 public class NativeComplexWidgetRenderer implements I_EntityRenderer {
 
-    /** The configuration string. */
-    private String m_configuration;
-
-    /** The parsed JSON value from the configuration string. */
-    private JSONObject m_jsonConfig;
-
     /** The entity CSS class. */
     public static final String ENTITY_CLASS = I_LayoutBundle.INSTANCE.form().entity();
 
@@ -65,6 +59,12 @@ public class NativeComplexWidgetRenderer implements I_EntityRenderer {
 
     /** The widget holder CSS class. */
     public static final String WIDGET_HOLDER_CLASS = I_LayoutBundle.INSTANCE.form().widgetHolder();
+
+    /** The configuration string. */
+    private String m_configuration;
+
+    /** The parsed JSON value from the configuration string. */
+    private JSONObject m_jsonConfig;
 
     /** The native renderer instance. */
     private JavaScriptObject m_nativeInstance;
@@ -101,6 +101,14 @@ public class NativeComplexWidgetRenderer implements I_EntityRenderer {
     public String getName() {
 
         return AcaciaConstants.NATIVE_RENDERER;
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.I_EntityRenderer#renderAttributeValue(com.alkacon.vie.shared.I_Entity, java.lang.String, int, com.google.gwt.user.client.ui.Panel)
+     */
+    public void renderAttributeValue(I_Entity parentEntity, String attributeName, int attributeIndex, Panel context) {
+
+        notSupported();
     }
 
     /**
@@ -211,12 +219,12 @@ public class NativeComplexWidgetRenderer implements I_EntityRenderer {
      * @return the native renderer instance 
      */
     protected native JavaScriptObject createNativeInstance(String initCall) /*-{
-      if ($wnd[initCall]) {
-         return $wnd[initCall]();
-      } else {
-         throw ("No init function found: " + initCall);
-      }
-    }-*/;
+                                                                            if ($wnd[initCall]) {
+                                                                            return $wnd[initCall]();
+                                                                            } else {
+                                                                            throw ("No init function found: " + initCall);
+                                                                            }
+                                                                            }-*/;
 
     /** 
      * Gets the native renderer instance.<p>
@@ -248,16 +256,16 @@ public class NativeComplexWidgetRenderer implements I_EntityRenderer {
         I_Entity entity,
         I_Vie vie,
         JavaScriptObject config) /*-{
-      var entityWrapper = new $wnd.acacia.EntityWrapper();
-      entityWrapper.setEntity(entity);
-      var vieWrapper = new $wnd.acacia.VieWrapper();
-      if (nativeRenderer && nativeRenderer[renderFunction]) {
-         nativeRenderer[renderFunction](element, entityWrapper, vieWrapper,
-               config);
-      } else if ($wnd.console) {
-         $wnd.console.log("Rendering function not found: " + renderFunction);
-      }
-    }-*/;
+                                 var entityWrapper = new $wnd.acacia.EntityWrapper();
+                                 entityWrapper.setEntity(entity);
+                                 var vieWrapper = new $wnd.acacia.VieWrapper();
+                                 if (nativeRenderer && nativeRenderer[renderFunction]) {
+                                 nativeRenderer[renderFunction](element, entityWrapper, vieWrapper,
+                                 config);
+                                 } else if ($wnd.console) {
+                                 $wnd.console.log("Rendering function not found: " + renderFunction);
+                                 }
+                                 }-*/;
 
     /** 
      * Throws an error indicating that a method is not supported.<p>
@@ -266,5 +274,4 @@ public class NativeComplexWidgetRenderer implements I_EntityRenderer {
 
         throw new UnsupportedOperationException("method not supported by this renderer!");
     }
-
 }

@@ -86,6 +86,29 @@ public class AttributeHandler extends RootHandler {
     /** The parent attribute handler. */
     private I_AttributeHandler m_parentHandler;
 
+    /** The single value index. */
+    private int m_singleValueIndex;
+
+    /**
+     * Sets the single value index.<p>
+     * 
+     * @param valueIndex the value index
+     */
+    protected void setSingleValueIndex(int valueIndex) {
+
+        m_singleValueIndex = valueIndex;
+    }
+
+    /**
+     * Returns if the attribute handler is handling a single value only.<p>
+     * 
+     * @return <code>true</code> if the attribute handler is handling a single value only
+     */
+    protected boolean isSingleValueHandler() {
+
+        return m_singleValueIndex > -1;
+    }
+
     /**
      * Constructor.<p>
      * 
@@ -96,6 +119,8 @@ public class AttributeHandler extends RootHandler {
      */
     public AttributeHandler(I_Vie vie, I_Entity entity, String attributeName, I_WidgetService widgetService) {
 
+        // single value handling is disable by default
+        m_singleValueIndex = -1;
         m_vie = vie;
         m_entity = entity;
         m_attributeName = attributeName;
@@ -665,7 +690,7 @@ public class AttributeHandler extends RootHandler {
         if ((isChoiceHandler() || !getEntityType().isChoice()) && m_entity.hasAttribute(m_attributeName)) {
             int valueCount = m_entity.getAttribute(m_attributeName).getValueCount();
             needsRemove = (maxOccurrence > minOccurrence) && (valueCount > minOccurrence);
-            needsSort = valueCount > 1;
+            needsSort = !isSingleValueHandler() && (valueCount > 1);
         }
         for (AttributeValueView value : m_attributeValueViews) {
             value.updateButtonVisibility(mayHaveMore, needsRemove, needsSort);

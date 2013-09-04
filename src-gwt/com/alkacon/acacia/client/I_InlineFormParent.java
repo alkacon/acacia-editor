@@ -24,9 +24,8 @@
 
 package com.alkacon.acacia.client;
 
-import com.alkacon.acacia.client.widgets.I_EditWidget;
-
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.ui.IsWidget;
 
 /**
  * An inline form parent widget.<p>
@@ -39,7 +38,7 @@ public interface I_InlineFormParent {
      * 
      * @param widget the widget to adopt
      */
-    void adoptWidget(I_EditWidget widget);
+    void adoptWidget(IsWidget widget);
 
     /**
      * The widget element.<p>

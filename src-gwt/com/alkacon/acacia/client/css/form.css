@@ -11,10 +11,35 @@
 
 .formParent{
 	background-color: transparent !important;
+	padding: 2px 2px 0px;
+	position: relative;
+	width: value("constants.css.toolbarWidth");
+	margin: 10px auto;
+	background-color: value("constants.css.backgroundColorDialog");
+	border: 2px solid value("constants.css.borderColor");
+	border-radius: value("constants.css.borderRadius");
 }
 
 div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div.gwt-TabLayoutPanelTabBar{
 	background: transparent;
+}
+
+.formParent *, .formParent table tr td{
+	margin: 0;
+	padding: 0;
+	border: none;
+	color: value("constants.css.textColor");
+	font-family: value("constants.css.fontFamily");
+	font-size: value("constants.css.fontSize");
+	line-height: value("constants.css.lineHeight");
+	background: transparent;
+	text-align: left;
+	height: auto;
+	width: auto;
+	min-height: 0;
+	max-height: none;
+	min-width: 0;
+	max-width: none;
 }
 
 .entity{

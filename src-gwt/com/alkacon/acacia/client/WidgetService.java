@@ -141,7 +141,7 @@ public class WidgetService implements I_WidgetService {
      * @see com.alkacon.acacia.client.I_WidgetService#getAttributeInlineWidget(java.lang.String, com.google.gwt.user.client.Element)
      */
     public I_EditWidget getAttributeInlineWidget(String attributeName, Element element) {
-
+        
         if (m_attributeConfigurations != null) {
             AttributeConfiguration config = m_attributeConfigurations.get(attributeName);
             if (config != null) {
@@ -181,13 +181,13 @@ public class WidgetService implements I_WidgetService {
     /**
      * Gets the renderer instance for a specific attribute.<p>
      * 
-     * @param attribute the attribute for which we want the renderer 
+     * @param attributeName the attribute for which we want the renderer 
      * 
      * @return the renderer instance 
      */
-    public I_EntityRenderer getRendererForAttribute(String attribute) {
+    public I_EntityRenderer getRendererForAttribute(String attributeName) {
 
-        I_EntityRenderer result = m_rendererByAttribute.get(attribute);
+        I_EntityRenderer result = m_rendererByAttribute.get(attributeName);
         if (result == null) {
             return m_defaultRenderer;
         }
