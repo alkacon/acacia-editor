@@ -175,6 +175,7 @@ public class TestForms extends GWTTestCase {
             configs,
             Collections.<String, I_Type> emptyMap(),
             null,
+            false,
             "en");
         service.init(definition);
         service.addWidgetFactory("widget1", new I_WidgetFactory() {

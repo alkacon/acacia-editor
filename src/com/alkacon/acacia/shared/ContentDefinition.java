@@ -42,6 +42,9 @@ public class ContentDefinition implements IsSerializable {
     /** The entity. */
     private Entity m_entity;
 
+    /** Indicates if optional fields should be grouped together. */
+    private boolean m_groupOptionalFields;
+
     /** The content locale. */
     private String m_locale;
 
@@ -58,6 +61,7 @@ public class ContentDefinition implements IsSerializable {
      * @param configurations the attribute configurations
      * @param types the types
      * @param tabInfos the tab information beans
+     * @param groupOptionalFields <code>true</code> if optional fields should be grouped together
      * @param locale the content locale
      */
     public ContentDefinition(
@@ -65,12 +69,14 @@ public class ContentDefinition implements IsSerializable {
         Map<String, AttributeConfiguration> configurations,
         Map<String, I_Type> types,
         List<TabInfo> tabInfos,
+        boolean groupOptionalFields,
         String locale) {
 
         m_entity = entity;
         m_configurations = configurations;
         m_types = types;
         m_tabInfos = tabInfos;
+        m_groupOptionalFields = groupOptionalFields;
         m_locale = locale;
     }
 
@@ -188,5 +194,15 @@ public class ContentDefinition implements IsSerializable {
     public Map<String, I_Type> getTypes() {
 
         return m_types;
+    }
+
+    /**
+     * Returns if optional fields should be grouped together.<p>
+     * 
+     * @return <code>true</code> if optional fields should be grouped together
+     */
+    public boolean isGroupOptionalFields() {
+
+        return m_groupOptionalFields;
     }
 }
