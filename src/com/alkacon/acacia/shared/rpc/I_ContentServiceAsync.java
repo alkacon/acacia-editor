@@ -26,6 +26,7 @@ package com.alkacon.acacia.shared.rpc;
 
 import com.alkacon.acacia.shared.ContentDefinition;
 import com.alkacon.acacia.shared.Entity;
+import com.alkacon.acacia.shared.EntityHtml;
 import com.alkacon.acacia.shared.ValidationResult;
 
 import java.util.List;
@@ -62,6 +63,17 @@ public interface I_ContentServiceAsync {
      * @param callback the asynchronous callback
      */
     void saveEntity(Entity entity, AsyncCallback<ValidationResult> callback);
+
+    /**
+     * Retrieves the updated entity HTML representation.<p>
+     * The entity data will be validated but not persisted on the server.<p>
+     * 
+     * @param entity the entity
+     * @param contextUri the context URI
+     * @param htmlContextInfo information about the HTML context
+     * @param callback the asynchronous callback
+     */
+    void updateEntityHtml(Entity entity, String contextUri, String htmlContextInfo, AsyncCallback<EntityHtml> callback);
 
     /**
      * Validates the given entities and returns maps of error and warning messages in case of invalid attributes.<p>

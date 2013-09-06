@@ -156,9 +156,9 @@ public class NativeComplexWidgetRenderer implements I_EntityRenderer {
     }
 
     /**
-     * @see com.alkacon.acacia.client.I_EntityRenderer#renderInline(com.alkacon.vie.shared.I_Entity, com.alkacon.acacia.client.I_InlineFormParent)
+     * @see com.alkacon.acacia.client.I_EntityRenderer#renderInline(com.alkacon.vie.shared.I_Entity, com.alkacon.acacia.client.I_InlineFormParent, com.alkacon.acacia.client.I_InlineHtmlUpdateHandler)
      */
-    public void renderInline(I_Entity entity, I_InlineFormParent formParent) {
+    public void renderInline(I_Entity entity, I_InlineFormParent formParent, I_InlineHtmlUpdateHandler updateHandler) {
 
         notSupported();
     }
@@ -178,12 +178,13 @@ public class NativeComplexWidgetRenderer implements I_EntityRenderer {
     }
 
     /**
-     * @see com.alkacon.acacia.client.I_EntityRenderer#renderInline(com.alkacon.vie.shared.I_Entity, java.lang.String, com.alkacon.acacia.client.I_InlineFormParent, int, int)
+     * @see com.alkacon.acacia.client.I_EntityRenderer#renderInline(com.alkacon.vie.shared.I_Entity, java.lang.String, com.alkacon.acacia.client.I_InlineFormParent, com.alkacon.acacia.client.I_InlineHtmlUpdateHandler, int, int)
      */
     public void renderInline(
         I_Entity parentEntity,
         String attributeName,
         I_InlineFormParent formParent,
+        I_InlineHtmlUpdateHandler updateHandler,
         int minOccurrence,
         int maxOccurrence) {
 

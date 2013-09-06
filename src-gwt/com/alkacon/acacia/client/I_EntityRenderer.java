@@ -106,8 +106,9 @@ public interface I_EntityRenderer {
      * 
      * @param entity the entity to render
      * @param formParent formParent the form parent widget
+     * @param updateHandler handles updates on the HTML required  due to entity data changes
      */
-    void renderInline(I_Entity entity, I_InlineFormParent formParent);
+    void renderInline(I_Entity entity, I_InlineFormParent formParent, I_InlineHtmlUpdateHandler updateHandler);
 
     /**
      * Injects editing widgets into the given DOM context to enable editing of the given entity attribute.<p>
@@ -126,6 +127,7 @@ public interface I_EntityRenderer {
      * @param parentEntity the parent entity 
      * @param attributeName the attribute name
      * @param formParent the form parent widget
+     * @param updateHandler handles updates on the HTML required  due to entity data changes
      * @param minOccurrence the minimum occurrence of this attribute
      * @param maxOccurrence the maximum occurrence of this attribute
      */
@@ -133,6 +135,7 @@ public interface I_EntityRenderer {
         I_Entity parentEntity,
         String attributeName,
         I_InlineFormParent formParent,
+        I_InlineHtmlUpdateHandler updateHandler,
         int minOccurrence,
         int maxOccurrence);
 }

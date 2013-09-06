@@ -31,6 +31,7 @@ import com.alkacon.acacia.client.widgets.I_FormEditWidget;
 import com.alkacon.acacia.client.widgets.StringWidget;
 import com.alkacon.acacia.client.widgets.TinyMCEWidget;
 import com.alkacon.acacia.shared.ContentDefinition;
+import com.alkacon.acacia.shared.EntityHtml;
 import com.alkacon.acacia.shared.TabInfo;
 import com.alkacon.acacia.shared.ValidationResult;
 import com.alkacon.acacia.shared.rpc.I_ContentServiceAsync;
@@ -60,7 +61,7 @@ import com.google.gwt.user.client.ui.Panel;
 /**
  * The content editor base.<p>
  */
-public class EditorBase {
+public class EditorBase implements I_InlineHtmlUpdateHandler {
 
     /** Message constant for key in the resource bundle. */
     public static final String GUI_CHOICE_ADD_CHOICE_0 = "GUI_CHOICE_ADD_CHOICE_0"; //Add choice
@@ -75,6 +76,9 @@ public class EditorBase {
     public static final String GUI_VIEW_DELETE_0 = "GUI_VIEW_DELETE_0"; //Delete
 
     /** Message constant for key in the resource bundle. */
+    public static final String GUI_VIEW_EDIT_0 = "GUI_VIEW_EDIT_0"; // Edit
+
+    /** Message constant for key in the resource bundle. */
     public static final String GUI_VIEW_MOVE_0 = "GUI_VIEW_MOVE_0"; //Move
 
     /** Message constant for key in the resource bundle. */
@@ -85,6 +89,9 @@ public class EditorBase {
 
     /** The localized dictionary. */
     private static Dictionary m_dictionary;
+
+    /** The id of the edited entity. */
+    protected String m_entityId;
 
     /** The VIE instance. */
     protected I_Vie m_vie;
@@ -214,6 +221,16 @@ public class EditorBase {
     }
 
     /**
+     * Returns the currently edited entity.<p>
+     * 
+     * @return the currently edited entity
+     */
+    public Entity getCurrentEntity() {
+
+        return (Entity)m_vie.getEntity(m_entityId);
+    }
+
+    /**
      * Returns the content service instance.<p>
      * 
      * @return the content service
@@ -259,6 +276,14 @@ public class EditorBase {
         m_vie.registerTypes(baseType, definition.getTypes());
         m_vie.registerTypes(baseType, definition.getTypes());
         m_vie.registerEntity(definition.getEntity());
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.I_InlineHtmlUpdateHandler#reinitWidgets(com.alkacon.acacia.client.I_InlineFormParent)
+     */
+    public void reinitWidgets(I_InlineFormParent formParent) {
+
+        renderInlineEntity(m_entityId, formParent);
     }
 
     /**
@@ -342,9 +367,13 @@ public class EditorBase {
 
         I_Entity entity = m_vie.getEntity(entityId);
         if (entity != null) {
+            RootHandler rootHandler = new RootHandler();
+            m_validationHandler.setContentService(m_service);
+            m_validationHandler.registerEntity(entity);
+            m_validationHandler.setRootHandler(rootHandler);
             I_Type type = m_vie.getType(entity.getTypeName());
             ButtonBarHandler.INSTANCE.setWidgetService(m_widgetService);
-            m_widgetService.getRendererForType(type).renderInline(entity, formParent);
+            m_widgetService.getRendererForType(type).renderInline(entity, formParent, this);
         }
     }
 
@@ -453,6 +482,31 @@ public class EditorBase {
     }
 
     /**
+    * @see com.alkacon.acacia.client.I_InlineHtmlUpdateHandler#updateHtml(com.alkacon.acacia.client.I_InlineFormParent, com.google.gwt.user.client.Command)
+    */
+    public void updateHtml(final I_InlineFormParent formParent, final Command onSuccess) {
+
+        AsyncCallback<EntityHtml> callback = new AsyncCallback<EntityHtml>() {
+
+            public void onFailure(Throwable caught) {
+
+                onRpcError(caught);
+            }
+
+            public void onSuccess(EntityHtml result) {
+
+                formParent.replaceHtml(result.getHtmlContent());
+                onSuccess.execute();
+            }
+        };
+        getService().updateEntityHtml(
+            com.alkacon.acacia.shared.Entity.serializeEntity(getCurrentEntity()),
+            getContextUri(),
+            getHtmlContextInfo(),
+            callback);
+    }
+
+    /**
      * Adds a click handler to the edit overlay.<p>
      * 
      * @param handler the click handler
@@ -462,6 +516,32 @@ public class EditorBase {
     protected HandlerRegistration addOverlayClickHandler(ClickHandler handler) {
 
         return m_editOverlay.addClickHandler(handler);
+    }
+
+    /**
+     * Returns the context URI.<p>
+     * Needed when updating the HTML due to content data changes.<p>
+     * 
+     * Override to supply the required info.<p>
+     * 
+     * @return the context URI
+     */
+    protected String getContextUri() {
+
+        return "";
+    }
+
+    /**
+     * Returns the in-line HTML context info.<p>
+     * Needed when updating the HTML due to content data changes.<p>
+     * 
+     * Override to supply the required info.<p>
+     * 
+     * @return the HTML context info
+     */
+    protected String getHtmlContextInfo() {
+
+        return "";
     }
 
     /**

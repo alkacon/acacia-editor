@@ -25,18 +25,23 @@
 package com.alkacon.acacia.client.ui;
 
 import com.alkacon.acacia.client.AttributeHandler;
+import com.alkacon.acacia.client.EditorBase;
 import com.alkacon.acacia.client.I_InlineFormParent;
+import com.alkacon.acacia.client.I_InlineHtmlUpdateHandler;
 import com.alkacon.acacia.client.I_WidgetService;
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.geranium.client.I_DescendantResizeHandler;
 import com.alkacon.geranium.client.ui.I_Button.ButtonStyle;
 import com.alkacon.geranium.client.ui.PushButton;
+import com.alkacon.geranium.client.ui.css.I_ImageBundle;
 import com.alkacon.geranium.client.util.DomUtil;
 import com.alkacon.geranium.client.util.PositionBean;
 import com.alkacon.vie.client.Entity;
 import com.alkacon.vie.client.Vie;
 import com.alkacon.vie.shared.I_Entity;
 import com.alkacon.vie.shared.I_Type;
+
+import java.util.List;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
@@ -51,6 +56,8 @@ import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -82,6 +89,55 @@ public class InlineEntityWidget extends Composite {
         }
     }
 
+    /**
+     * Timer to update the HTML.<p>
+     */
+    protected class UpdateTimer extends Timer {
+
+        /** Indicates if the timer is scheduled. */
+        private boolean m_scheduled;
+
+        /**
+         * @see com.google.gwt.user.client.Timer#cancel()
+         */
+        @Override
+        public void cancel() {
+
+            m_scheduled = false;
+            super.cancel();
+        }
+
+        /**
+         * Returns if the timer is already scheduled.<p>
+         * 
+         * @return <code>true</code> if the timer is scheduled
+         */
+        public boolean isScheduled() {
+
+            return m_scheduled;
+        }
+
+        /**
+         * @see com.google.gwt.user.client.Timer#run()
+         */
+        @Override
+        public void run() {
+
+            m_scheduled = false;
+            runHtmlUpdate();
+        }
+
+        /**
+         * @see com.google.gwt.user.client.Timer#schedule(int)
+         */
+        @Override
+        public void schedule(int delayMillis) {
+
+            m_scheduled = true;
+            super.schedule(delayMillis);
+        }
+    }
+
     /** The pop-up panel. */
     PopupPanel m_popup;
 
@@ -97,14 +153,29 @@ public class InlineEntityWidget extends Composite {
     /** The change handler registration. */
     private HandlerRegistration m_entityChangeHandlerRegistration;
 
+    /** The parent widget. */
+    private I_InlineFormParent m_formParent;
+
     /** Indicates if the content has been changed while the edit pop-up was shown. */
     private boolean m_hasChanges;
+
+    /** Handles HTML updates if required. */
+    private I_InlineHtmlUpdateHandler m_htmlUpdateHandler;
 
     /** The parent of the entity to edit. */
     private I_Entity m_parentEntity;
 
+    /** Flag indicating the popup has been closed. */
+    private boolean m_popupClosed;
+
     /** The reference DOM element, will be highlighted during editing. */
     private Element m_referenceElement;
+
+    /** Flag indicating an HTML update is running. */
+    private boolean m_runningUpdate;
+
+    /** Schedules the HTML update. */
+    private UpdateTimer m_updateTimer;
 
     /** The widget service. */
     private I_WidgetService m_widgetService;
@@ -113,27 +184,37 @@ public class InlineEntityWidget extends Composite {
      * Constructor.<p>
      * 
      * @param referenceElement the reference DOM element, will be highlighted during editing
+     * @param formParent the parent widget
      * @param parentEntity the parent of the entity to edit
      * @param attributeName the attribute name
      * @param attributeIndex the attribute value index
+     * @param htmlUpdateHandler handles HTML updates if required
      * @param widgetService the widget service
      */
     private InlineEntityWidget(
         Element referenceElement,
+        I_InlineFormParent formParent,
         I_Entity parentEntity,
         String attributeName,
         int attributeIndex,
+        I_InlineHtmlUpdateHandler htmlUpdateHandler,
         I_WidgetService widgetService) {
 
         m_parentEntity = parentEntity;
         m_attributeName = attributeName;
         m_attributeIndex = attributeIndex;
         m_referenceElement = referenceElement;
+        m_formParent = formParent;
+        m_htmlUpdateHandler = htmlUpdateHandler;
         m_widgetService = widgetService;
         m_button = new PushButton();
-        m_button.setText("Click Me!");
+        if (EditorBase.getDictionary() != null) {
+            m_button.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_EDIT_0)
+                + " "
+                + m_widgetService.getAttributeLabel(attributeName));
+        }
+        m_button.setImageClass(I_ImageBundle.INSTANCE.style().editIcon());
         m_button.setButtonStyle(ButtonStyle.TRANSPARENT, null);
-
         m_button.addClickHandler(new ClickHandler() {
 
             public void onClick(ClickEvent event) {
@@ -142,6 +223,7 @@ public class InlineEntityWidget extends Composite {
             }
         });
         initWidget(m_button);
+        m_updateTimer = new UpdateTimer();
     }
 
     /**
@@ -152,6 +234,7 @@ public class InlineEntityWidget extends Composite {
      * @param parentEntity the parent entity
      * @param attributeName the attribute name
      * @param attributeIndex the attribute value index
+     * @param htmlUpdateHandler handles HTML updates if required
      * @param widgetService the widget service
      * 
      * @return the widget instance
@@ -162,13 +245,16 @@ public class InlineEntityWidget extends Composite {
         I_Entity parentEntity,
         String attributeName,
         int attributeIndex,
+        I_InlineHtmlUpdateHandler htmlUpdateHandler,
         I_WidgetService widgetService) {
 
         InlineEntityWidget widget = new InlineEntityWidget(
             element,
+            formParent,
             parentEntity,
             attributeName,
             attributeIndex,
+            htmlUpdateHandler,
             widgetService);
         element.getParentElement().insertAfter(widget.getElement(), element);
         formParent.adoptWidget(widget);
@@ -177,26 +263,112 @@ public class InlineEntityWidget extends Composite {
     }
 
     /**
-     * Cleanup after the edit pop-up was opened.<p>
+     * Positions the given pop-up relative to the reference element.<p>
      */
-    void onPopupClose() {
+    void positionPopup() {
 
-        InlineEditOverlay.removeLastOverlay();
-        if (m_entityChangeHandlerRegistration != null) {
-            m_entityChangeHandlerRegistration.removeHandler();
+        if (m_referenceElement != null) {
+            int windowHeight = Window.getClientHeight();
+            int scrollTop = Window.getScrollTop();
+            int referenceHeight = m_referenceElement.getOffsetHeight();
+            int contentHeight = m_popup.getOffsetHeight();
+            int top = m_referenceElement.getAbsoluteTop();
+            if (((windowHeight + scrollTop) < (top + referenceHeight + contentHeight + 20))
+                && ((contentHeight + 40) < top)) {
+                top = top - contentHeight - 5;
+            } else {
+                top = top + referenceHeight + 5;
+            }
+            m_popup.center();
+            m_popup.setPopupPosition(m_popup.getPopupLeft(), top);
+            if (((contentHeight + top) - scrollTop) > windowHeight) {
+                Window.scrollTo(Window.getScrollLeft(), ((contentHeight + top) - windowHeight) + 20);
+            }
+        } else {
+            m_popup.center();
         }
-        if (m_hasChanges) {
-            Window.alert("Requires updated HTML");
+    }
+
+    /**
+     * Repositions the edit overlay after the HTML has been updated.<p>
+     */
+    void afterHtmlUpdate() {
+
+        m_runningUpdate = false;
+        List<Element> elements = Vie.getInstance().getAttributeElements(
+            m_parentEntity,
+            m_attributeName,
+            m_formParent.getElement());
+        if (m_popupClosed) {
+            // the form popup has already been closed, reinitialize the editing widgets for updated HTML
+            InlineEditOverlay.updateCurrentOverlayPosition();
+            m_htmlUpdateHandler.reinitWidgets(m_formParent);
+        } else {
+            if (m_referenceElement != null) {
+                InlineEditOverlay.removeLastOverlay();
+            }
+            if (elements.size() > m_attributeIndex) {
+                m_referenceElement = elements.get(m_attributeIndex);
+                InlineEditOverlay.addOverlayForElement(m_referenceElement);
+                positionPopup();
+            } else {
+                m_referenceElement = null;
+                InlineEditOverlay.updateCurrentOverlayPosition();
+            }
         }
-        m_popup = null;
     }
 
     /**
      * Sets the changed flag.<p>
      */
-    void setChanged() {
+    void onEntityChange() {
 
+        if (m_updateTimer.isScheduled()) {
+            m_updateTimer.cancel();
+        }
+        m_updateTimer.schedule(150);
         m_hasChanges = true;
+    }
+
+    /**
+     * Cleanup after the edit pop-up was opened.<p>
+     */
+    void onPopupClose() {
+
+        if (m_referenceElement != null) {
+            InlineEditOverlay.removeLastOverlay();
+        }
+        InlineEditOverlay.updateCurrentOverlayPosition();
+        if (m_entityChangeHandlerRegistration != null) {
+            m_entityChangeHandlerRegistration.removeHandler();
+        }
+        if (!m_runningUpdate) {
+            if (m_hasChanges) {
+                m_htmlUpdateHandler.reinitWidgets(m_formParent);
+            } else {
+                m_button.setVisible(true);
+            }
+        }
+        m_popup = null;
+    }
+
+    /**
+     * Updates the HTML according to the entity data.<p>
+     */
+    void runHtmlUpdate() {
+
+        if (m_runningUpdate) {
+            m_updateTimer.schedule(50);
+        } else {
+            m_runningUpdate = true;
+            m_htmlUpdateHandler.updateHtml(m_formParent, new Command() {
+
+                public void execute() {
+
+                    afterHtmlUpdate();
+                }
+            });
+        }
     }
 
     /**
@@ -217,7 +389,7 @@ public class InlineEntityWidget extends Composite {
 
             public void onValueChange(ValueChangeEvent<Entity> event) {
 
-                setChanged();
+                onEntityChange();
             }
         });
         I_Type type = Vie.getInstance().getType(m_parentEntity.getTypeName());
@@ -261,26 +433,8 @@ public class InlineEntityWidget extends Composite {
         InlineEditOverlay.addOverlayForElement(m_referenceElement);
         positionPopup();
         m_popup.getElement().getStyle().setZIndex(I_LayoutBundle.INSTANCE.constants().css().zIndexPopup());
-
-    }
-
-    /**
-     * Positions the given pop-up relative to the reference element.<p>
-     */
-    protected void positionPopup() {
-
-        int windowHeight = Window.getClientHeight();
-        int scrollTop = Window.getScrollTop();
-        int referenceHeight = m_referenceElement.getOffsetHeight();
-        int contentHeight = m_popup.getOffsetHeight();
-        int top = m_referenceElement.getAbsoluteTop();
-        if (((windowHeight + scrollTop) < (top + referenceHeight + contentHeight + 20)) && ((contentHeight + 40) < top)) {
-            top = top - contentHeight - 5;
-        } else {
-            top = top + referenceHeight + 5;
-        }
-        m_popup.center();
-        m_popup.setPopupPosition(m_popup.getPopupLeft(), top);
+        m_popupClosed = false;
+        m_button.setVisible(false);
     }
 
     /**
@@ -299,7 +453,7 @@ public class InlineEntityWidget extends Composite {
             leftOffset = positioningParent.getAbsoluteLeft();
         }
         getElement().getStyle().setPosition(Position.ABSOLUTE);
-        getElement().getStyle().setTop(position.getTop() - topOffset, Unit.PX);
-        getElement().getStyle().setLeft(position.getLeft() - leftOffset, Unit.PX);
+        getElement().getStyle().setTop((position.getTop() - topOffset) + 5, Unit.PX);
+        getElement().getStyle().setLeft(((position.getLeft() - leftOffset) + position.getWidth()) - 25, Unit.PX);
     }
 }

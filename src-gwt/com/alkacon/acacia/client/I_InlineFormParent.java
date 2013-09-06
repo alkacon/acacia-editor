@@ -46,4 +46,12 @@ public interface I_InlineFormParent {
      * @return the widget element
      */
     Element getElement();
+
+    /** 
+     * Replaces the inner HTML of widget to reflect content data changes.<p>
+     * 
+     * @param html the element HTML
+     */
+    void replaceHtml(String html);
+
 }

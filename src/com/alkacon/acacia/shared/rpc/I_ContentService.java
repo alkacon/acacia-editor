@@ -26,6 +26,7 @@ package com.alkacon.acacia.shared.rpc;
 
 import com.alkacon.acacia.shared.ContentDefinition;
 import com.alkacon.acacia.shared.Entity;
+import com.alkacon.acacia.shared.EntityHtml;
 import com.alkacon.acacia.shared.ValidationResult;
 
 import java.util.List;
@@ -73,6 +74,20 @@ public interface I_ContentService extends RemoteService {
      * @throws Exception if something goes wrong processing the request
      */
     ValidationResult saveEntity(Entity entity) throws Exception;
+
+    /**
+     * Retrieves the updated entity HTML representation.<p>
+     * The entity data will be validated but not persisted on the server.<p>
+     * 
+     * @param entity the entity
+     * @param contextUri the context URI
+     * @param htmlContextInfo information about the HTML context
+     * 
+     * @return the HTML representation including the validation result
+     * 
+     * @throws Exception if something goes wrong processing the request
+     */
+    EntityHtml updateEntityHtml(Entity entity, String contextUri, String htmlContextInfo) throws Exception;
 
     /**
      * Validates the given entities and returns maps of error and warning messages in case of invalid attributes.<p>

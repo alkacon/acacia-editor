@@ -159,6 +159,16 @@ public class InlineEditOverlay extends Composite implements HasClickHandlers {
     }
 
     /**
+     * Updates the current overlay's position.<p>
+     */
+    public static void updateCurrentOverlayPosition() {
+
+        if (!m_overlays.isEmpty()) {
+            m_overlays.get(m_overlays.size() - 1).updatePosition();
+        }
+    }
+
+    /**
      * @see com.google.gwt.event.dom.client.HasClickHandlers#addClickHandler(com.google.gwt.event.dom.client.ClickHandler)
      */
     public HandlerRegistration addClickHandler(ClickHandler handler) {

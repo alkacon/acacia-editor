@@ -542,9 +542,9 @@ public class Renderer implements I_EntityRenderer {
     }
 
     /**
-     * @see com.alkacon.acacia.client.I_EntityRenderer#renderInline(com.alkacon.vie.shared.I_Entity, com.alkacon.acacia.client.I_InlineFormParent)
+     * @see com.alkacon.acacia.client.I_EntityRenderer#renderInline(com.alkacon.vie.shared.I_Entity, com.alkacon.acacia.client.I_InlineFormParent, com.alkacon.acacia.client.I_InlineHtmlUpdateHandler)
      */
-    public void renderInline(I_Entity entity, I_InlineFormParent formParent) {
+    public void renderInline(I_Entity entity, I_InlineFormParent formParent, I_InlineHtmlUpdateHandler updateHandler) {
 
         I_Type entityType = m_vie.getType(entity.getTypeName());
         List<String> attributeNames = entityType.getAttributeNames();
@@ -555,6 +555,7 @@ public class Renderer implements I_EntityRenderer {
                 entity,
                 attributeName,
                 formParent,
+                updateHandler,
                 entityType.getAttributeMinOccurrence(attributeName),
                 entityType.getAttributeMaxOccurrence(attributeName));
         }
@@ -585,7 +586,7 @@ public class Renderer implements I_EntityRenderer {
                         widget.addValueChangeHandler(new WidgetChangeHandler(parentEntity, attributeName, i));
                     }
                 } else {
-                    // TODO: implement
+                    // currently not supported
                 }
             } else if (attribute.isComplexValue()) {
                 for (I_Entity entity : attribute.getComplexValues()) {
@@ -596,12 +597,13 @@ public class Renderer implements I_EntityRenderer {
     }
 
     /**
-     * @see com.alkacon.acacia.client.I_EntityRenderer#renderInline(com.alkacon.vie.shared.I_Entity, java.lang.String, com.alkacon.acacia.client.I_InlineFormParent, int, int)
+     * @see com.alkacon.acacia.client.I_EntityRenderer#renderInline(com.alkacon.vie.shared.I_Entity, java.lang.String, com.alkacon.acacia.client.I_InlineFormParent, com.alkacon.acacia.client.I_InlineHtmlUpdateHandler, int, int)
      */
     public void renderInline(
         I_Entity parentEntity,
         String attributeName,
         I_InlineFormParent formParent,
+        I_InlineHtmlUpdateHandler updateHandler,
         int minOccurrence,
         int maxOccurrence) {
 
@@ -624,12 +626,13 @@ public class Renderer implements I_EntityRenderer {
                             parentEntity,
                             attributeName,
                             i,
+                            updateHandler,
                             m_widgetService);
                     }
                 }
             } else if (attribute.isComplexValue()) {
                 for (I_Entity entity : attribute.getComplexValues()) {
-                    renderInline(entity, formParent);
+                    renderInline(entity, formParent, updateHandler);
                 }
             }
         }
