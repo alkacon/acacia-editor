@@ -342,6 +342,7 @@ public class InlineEntityWidget extends Composite {
         if (m_entityChangeHandlerRegistration != null) {
             m_entityChangeHandlerRegistration.removeHandler();
         }
+        AttributeHandler.setResizeHandler(null);
         if (!m_runningUpdate) {
             if (m_hasChanges) {
                 m_htmlUpdateHandler.reinitWidgets(m_formParent);
