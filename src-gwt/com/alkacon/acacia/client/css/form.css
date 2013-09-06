@@ -9,15 +9,23 @@
  
 .attribute, .defaultView{}
 
-.formParent{
+div.formParent{
 	background-color: transparent !important;
 	padding: 2px 2px 0px;
 	position: relative;
 	width: value("constants.css.toolbarWidth");
 	margin: 10px auto;
-	background-color: value("constants.css.backgroundColorDialog");
 	border: 2px solid value("constants.css.borderColor");
 	border-radius: value("constants.css.borderRadius");
+}
+
+div.gwt-TabLayoutPanel div.formParent{
+	padding: 0px;
+	width: auto;
+	margin: 0;
+	background-color: transparent;
+	border: none;
+	border-radius: 0;
 }
 
 div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div.gwt-TabLayoutPanelTabBar{
