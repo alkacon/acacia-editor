@@ -32,6 +32,7 @@ import com.alkacon.acacia.client.I_WidgetService;
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.geranium.client.I_DescendantResizeHandler;
 import com.alkacon.geranium.client.ui.I_Button.ButtonStyle;
+import com.alkacon.geranium.client.ui.Popup;
 import com.alkacon.geranium.client.ui.PushButton;
 import com.alkacon.geranium.client.ui.css.I_ImageBundle;
 import com.alkacon.geranium.client.util.DomUtil;
@@ -44,7 +45,6 @@ import com.alkacon.vie.shared.I_Type;
 import java.util.List;
 
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -139,7 +139,7 @@ public class InlineEntityWidget extends Composite {
     }
 
     /** The pop-up panel. */
-    PopupPanel m_popup;
+    Popup m_popup;
 
     /** The attribute value index. */
     private int m_attributeIndex;
@@ -173,6 +173,9 @@ public class InlineEntityWidget extends Composite {
 
     /** Flag indicating an HTML update is running. */
     private boolean m_runningUpdate;
+
+    /** The dialog title. */
+    private String m_title;
 
     /** Schedules the HTML update. */
     private UpdateTimer m_updateTimer;
@@ -208,10 +211,12 @@ public class InlineEntityWidget extends Composite {
         m_htmlUpdateHandler = htmlUpdateHandler;
         m_widgetService = widgetService;
         m_button = new PushButton();
+        m_title = "";
         if (EditorBase.getDictionary() != null) {
-            m_button.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_EDIT_0)
+            m_title = EditorBase.getDictionary().get(EditorBase.GUI_VIEW_EDIT_0)
                 + " "
-                + m_widgetService.getAttributeLabel(attributeName));
+                + m_widgetService.getAttributeLabel(attributeName);
+            m_button.setTitle(m_title);
         }
         m_button.setImageClass(I_ImageBundle.INSTANCE.style().editIcon());
         m_button.setButtonStyle(ButtonStyle.TRANSPARENT, null);
@@ -260,33 +265,6 @@ public class InlineEntityWidget extends Composite {
         formParent.adoptWidget(widget);
         widget.positionWidget(element);
         return widget;
-    }
-
-    /**
-     * Positions the given pop-up relative to the reference element.<p>
-     */
-    void positionPopup() {
-
-        if (m_referenceElement != null) {
-            int windowHeight = Window.getClientHeight();
-            int scrollTop = Window.getScrollTop();
-            int referenceHeight = m_referenceElement.getOffsetHeight();
-            int contentHeight = m_popup.getOffsetHeight();
-            int top = m_referenceElement.getAbsoluteTop();
-            if (((windowHeight + scrollTop) < (top + referenceHeight + contentHeight + 20))
-                && ((contentHeight + 40) < top)) {
-                top = top - contentHeight - 5;
-            } else {
-                top = top + referenceHeight + 5;
-            }
-            m_popup.center();
-            m_popup.setPopupPosition(m_popup.getPopupLeft(), top);
-            if (((contentHeight + top) - scrollTop) > windowHeight) {
-                Window.scrollTo(Window.getScrollLeft(), ((contentHeight + top) - windowHeight) + 20);
-            }
-        } else {
-            m_popup.center();
-        }
     }
 
     /**
@@ -354,6 +332,33 @@ public class InlineEntityWidget extends Composite {
     }
 
     /**
+     * Positions the given pop-up relative to the reference element.<p>
+     */
+    void positionPopup() {
+
+        if (m_referenceElement != null) {
+            PositionBean referencePosition = PositionBean.getInnerDimensions(m_referenceElement);
+            int windowHeight = Window.getClientHeight();
+            int scrollTop = Window.getScrollTop();
+            int contentHeight = m_popup.getOffsetHeight();
+            int top = referencePosition.getTop();
+            if (((windowHeight + scrollTop) < (top + referencePosition.getHeight() + contentHeight + 20))
+                && ((contentHeight + 40) < top)) {
+                top = top - contentHeight - 5;
+            } else {
+                top = top + referencePosition.getHeight() + 5;
+            }
+            m_popup.center();
+            m_popup.setPopupPosition(m_popup.getPopupLeft(), top);
+            if (((contentHeight + top) - scrollTop) > windowHeight) {
+                Window.scrollTo(Window.getScrollLeft(), ((contentHeight + top) - windowHeight) + 20);
+            }
+        } else {
+            m_popup.center();
+        }
+    }
+
+    /**
      * Updates the HTML according to the entity data.<p>
      */
     void runHtmlUpdate() {
@@ -377,7 +382,10 @@ public class InlineEntityWidget extends Composite {
      */
     void showEditPopup() {
 
-        m_popup = new PopupPanel(true, true);
+        m_popup = new Popup(m_title, -1);
+        m_popup.setModal(true);
+        m_popup.setAutoHideEnabled(true);
+        m_popup.removePadding();
         m_popup.addCloseHandler(new CloseHandler<PopupPanel>() {
 
             public void onClose(CloseEvent<PopupPanel> event) {
@@ -396,27 +404,11 @@ public class InlineEntityWidget extends Composite {
         I_Type type = Vie.getInstance().getType(m_parentEntity.getTypeName());
         FlowPanel formPanel = new FormPanel();
         formPanel.setStyleName(I_LayoutBundle.INSTANCE.form().formParent());
-        m_popup.setWidget(formPanel);
-        PushButton closeButton = new PushButton();
-        closeButton.setTitle("Close");
+        formPanel.getElement().getStyle().setMargin(0, Unit.PX);
+        formPanel.getElement().getStyle().setBorderWidth(0, Unit.PX);
+        m_popup.add(formPanel);
+        m_popup.addDialogClose(null);
         I_LayoutBundle.INSTANCE.dialogCss().ensureInjected();
-        closeButton.setImageClass(I_LayoutBundle.INSTANCE.dialogCss().closePopupImage());
-        closeButton.setButtonStyle(ButtonStyle.TRANSPARENT, null);
-        closeButton.addClickHandler(new ClickHandler() {
-
-            /**
-             * @see com.google.gwt.event.dom.client.ClickHandler#onClick(com.google.gwt.event.dom.client.ClickEvent)
-             */
-            public void onClick(ClickEvent event) {
-
-                m_popup.hide();
-            }
-        });
-        Style closeStyle = closeButton.getElement().getStyle();
-        closeStyle.setPosition(Position.ABSOLUTE);
-        closeStyle.setRight(-15, Unit.PX);
-        closeStyle.setTop(-15, Unit.PX);
-        formPanel.add(closeButton);
         m_popup.show();
         AttributeHandler.setScrollElement(formPanel.getElement());
         AttributeHandler.setResizeHandler(new ResizeHandler() {
@@ -445,7 +437,7 @@ public class InlineEntityWidget extends Composite {
      */
     private void positionWidget(Element reference) {
 
-        PositionBean position = PositionBean.generatePositionInfo(reference);
+        PositionBean position = PositionBean.getInnerDimensions(m_referenceElement);
         int topOffset = 0;
         int leftOffset = 0;
         Element positioningParent = DomUtil.getPositioningParent(reference);
