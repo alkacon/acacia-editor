@@ -45,7 +45,6 @@ import com.alkacon.vie.shared.I_Type;
 import java.util.List;
 
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -227,6 +226,7 @@ public class InlineEntityWidget extends Composite {
                 showEditPopup();
             }
         });
+        m_button.addStyleName(I_LayoutBundle.INSTANCE.form().editButton());
         initWidget(m_button);
         m_updateTimer = new UpdateTimer();
     }
@@ -338,6 +338,7 @@ public class InlineEntityWidget extends Composite {
 
         if (m_referenceElement != null) {
             PositionBean referencePosition = PositionBean.getInnerDimensions(m_referenceElement);
+            int currentTop = m_popup.getAbsoluteTop();
             int windowHeight = Window.getClientHeight();
             int scrollTop = Window.getScrollTop();
             int contentHeight = m_popup.getOffsetHeight();
@@ -345,8 +346,16 @@ public class InlineEntityWidget extends Composite {
             if (((windowHeight + scrollTop) < (top + referencePosition.getHeight() + contentHeight + 20))
                 && ((contentHeight + 40) < top)) {
                 top = top - contentHeight - 5;
+                if ((currentTop < top) && ((top - currentTop) < 200)) {
+                    // keep the current position
+                    top = currentTop;
+                }
             } else {
                 top = top + referencePosition.getHeight() + 5;
+                if ((currentTop > top) && ((currentTop - top) < 200)) {
+                    // keep the current position
+                    top = currentTop;
+                }
             }
             m_popup.center();
             m_popup.setPopupPosition(m_popup.getPopupLeft(), top);
@@ -382,6 +391,7 @@ public class InlineEntityWidget extends Composite {
      */
     void showEditPopup() {
 
+        m_button.clearHoverState();
         m_popup = new Popup(m_title, -1);
         m_popup.setModal(true);
         m_popup.setAutoHideEnabled(true);
@@ -445,7 +455,6 @@ public class InlineEntityWidget extends Composite {
             topOffset = positioningParent.getAbsoluteTop();
             leftOffset = positioningParent.getAbsoluteLeft();
         }
-        getElement().getStyle().setPosition(Position.ABSOLUTE);
         getElement().getStyle().setTop((position.getTop() - topOffset) + 5, Unit.PX);
         getElement().getStyle().setLeft(((position.getLeft() - leftOffset) + position.getWidth()) - 25, Unit.PX);
     }
