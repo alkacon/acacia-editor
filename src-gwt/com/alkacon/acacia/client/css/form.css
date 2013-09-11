@@ -267,14 +267,15 @@ div.editButton.cmsState{
 	border: 1px solid #7788AA;
 	background: value("constants.css.backgroundColorDialog");
 	border-radius: value("constants.css.borderRadius");
+	width: auto !important;
 }
 
 .attributeValue .widgetHolder .widget.inActive .mce-tinymce{
 	overflow: hidden;
 }
 
-.attributeValue.focused > .widgetHolder > .widget .mce-tinymce {
-	border-radius: value("constants.css.borderRadius") value("constants.css.borderRadius") 0 0;
+.attributeValue.focused > .widgetHolder > div > .widget .mce-tinymce {
+	border-radius: value("constants.css.borderRadius") 0 0 0;
 }
 
 .widgetHolder > div > .widget.input.inActive, .attributeValue .widgetHolder .widget.inActive  .mce-tinymce{
@@ -320,6 +321,7 @@ div.tinymceToolbarContainer > div{
 
 .attributeValue .mce-tinymce .mce-edit-area{
 	border-top: none;
+	background: transparent;
 }
 
 .attributeValue.focused > .widgetHolder > div > div.widget .mce-tinymce > .mce-container-body > .mce-panel:first-child, 
@@ -346,7 +348,7 @@ div.tinymceToolbarContainer > div{
 	margin-right: 8px;
 } 
 
-.attributeValue > .widgetHolder > div > div.widget .mce-tinymce, .attributeValue > .widgetHolder > div > div.widget .mce-tinymce iframe{
+.attributeValue > .widgetHolder > div > div.widget .mce-tinymce iframe{
 	border-radius: value("constants.css.borderRadius");
 	width: 100% !important;
 }
