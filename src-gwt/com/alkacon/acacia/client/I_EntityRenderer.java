@@ -31,7 +31,6 @@ import com.alkacon.vie.shared.I_Entity;
 
 import java.util.List;
 
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.Panel;
 
 /**
@@ -97,29 +96,10 @@ public interface I_EntityRenderer {
      * Injects editing widgets into the given DOM context to enable editing of the given entity.<p>
      * 
      * @param entity the entity to render
-     * @param context the context DOM element
-     */
-    void renderInline(I_Entity entity, Element context);
-
-    /**
-     * Injects editing widgets into the given DOM context to enable editing of the given entity.<p>
-     * 
-     * @param entity the entity to render
      * @param formParent formParent the form parent widget
      * @param updateHandler handles updates on the HTML required  due to entity data changes
      */
     void renderInline(I_Entity entity, I_InlineFormParent formParent, I_InlineHtmlUpdateHandler updateHandler);
-
-    /**
-     * Injects editing widgets into the given DOM context to enable editing of the given entity attribute.<p>
-     * 
-     * @param parentEntity the parent entity 
-     * @param attributeName the attribute name
-     * @param context the context DOM element
-     * @param minOccurrence the minimum occurrence of this attribute
-     * @param maxOccurrence the maximum occurrence of this attribute
-     */
-    void renderInline(I_Entity parentEntity, String attributeName, Element context, int minOccurrence, int maxOccurrence);
 
     /**
      * Injects editing widgets into the given DOM context to enable editing of the given entity attribute.<p>

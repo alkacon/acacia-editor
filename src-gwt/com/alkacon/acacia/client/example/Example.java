@@ -24,6 +24,7 @@
 
 package com.alkacon.acacia.client.example;
 
+import com.alkacon.acacia.client.FormParent;
 import com.alkacon.acacia.client.I_EntityRenderer;
 import com.alkacon.acacia.client.I_WidgetFactory;
 import com.alkacon.acacia.client.Renderer;
@@ -121,8 +122,9 @@ public class Example implements EntryPoint {
         });
         I_EntityRenderer defaultRenderer = new Renderer(vie, service);
         service.setDefaultRenderer(defaultRenderer);
+        FormParent formParent = new FormParent(RootPanel.get("inline_form"));
         I_EntityRenderer renderer = service.getRendererForType(vie.getType(personTypeName));
-        renderer.renderInline(person, RootPanel.getBodyElement());
+        renderer.renderInline(person, formParent, null);
 
         ((Entity)person).addValueChangeHandler(new ValueChangeHandler<Entity>() {
 

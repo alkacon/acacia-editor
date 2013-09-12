@@ -148,33 +148,11 @@ public class NativeComplexWidgetRenderer implements I_EntityRenderer {
     }
 
     /**
-     * @see com.alkacon.acacia.client.I_EntityRenderer#renderInline(com.alkacon.vie.shared.I_Entity, com.google.gwt.dom.client.Element)
-     */
-    public void renderInline(I_Entity entity, Element context) {
-
-        notSupported();
-    }
-
-    /**
      * @see com.alkacon.acacia.client.I_EntityRenderer#renderInline(com.alkacon.vie.shared.I_Entity, com.alkacon.acacia.client.I_InlineFormParent, com.alkacon.acacia.client.I_InlineHtmlUpdateHandler)
      */
     public void renderInline(I_Entity entity, I_InlineFormParent formParent, I_InlineHtmlUpdateHandler updateHandler) {
 
         notSupported();
-    }
-
-    /**
-     * @see com.alkacon.acacia.client.I_EntityRenderer#renderInline(com.alkacon.vie.shared.I_Entity, java.lang.String, com.google.gwt.dom.client.Element, int, int)
-     */
-    public void renderInline(
-        I_Entity parentEntity,
-        String attributeName,
-        Element context,
-        int minOccurrence,
-        int maxOccurrence) {
-
-        notSupported();
-
     }
 
     /**

@@ -345,22 +345,6 @@ public class EditorBase implements I_InlineHtmlUpdateHandler {
      * Renders the entity form within the given context.<p>
      * 
      * @param entityId the entity id
-     * @param context the context element
-     */
-    public void renderInlineEntity(String entityId, Element context) {
-
-        I_Entity entity = m_vie.getEntity(entityId);
-        if (entity != null) {
-            I_Type type = m_vie.getType(entity.getTypeName());
-            ButtonBarHandler.INSTANCE.setWidgetService(m_widgetService);
-            m_widgetService.getRendererForType(type).renderInline(entity, context);
-        }
-    }
-
-    /**
-     * Renders the entity form within the given context.<p>
-     * 
-     * @param entityId the entity id
      * @param formParent the form parent widget
      */
     public void renderInlineEntity(String entityId, I_InlineFormParent formParent) {

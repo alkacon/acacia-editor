@@ -7,24 +7,26 @@
 	src="com.alkacon.acacia.AcaciaExample/com.alkacon.acacia.AcaciaExample.nocache.js"></script>
 </head>
 <body>
-	<div class="entitiy" about="myPerson" typeof="type:person">
-		<div class="label">http://person/firstname</div>
-		<div class="widgetHolder">
-			<div property="person:firstname">Hans</div>
-		</div>
-		<div class="label">http://person/lastname</div>
-		<div class="widgetHolder">
-			<div property="person:lastname">Albers</div>
-		</div>
-		<div property="person:address" typeof="type:address" about="myAdress">
-		<div class="label">http://address/city</div>
-		<div class="widgetHolder">
-			<div property="address:city">Hamburg</div>
-		</div>
-		<div class="label">http://address/country</div>
-		<div class="widgetHolder">
-			<div property="address:country">Deatuschland</div>
-		</div>
+	<div id="inline_form">
+		<div class="entitiy" about="myPerson" typeof="type:person">
+			<div class="label">http://person/firstname</div>
+			<div class="widgetHolder">
+				<div property="person:firstname">Hans</div>
+			</div>
+			<div class="label">http://person/lastname</div>
+			<div class="widgetHolder">
+				<div property="person:lastname">Albers</div>
+			</div>
+			<div property="person:address" typeof="type:address" about="myAdress">
+				<div class="label">http://address/city</div>
+				<div class="widgetHolder">
+					<div property="address:city">Hamburg</div>
+				</div>
+				<div class="label">http://address/country</div>
+				<div class="widgetHolder">
+					<div property="address:country">Deatuschland</div>
+				</div>
+			</div>
 		</div>
 	</div>
 </body>

@@ -77,37 +77,17 @@ public class AttributeHandler extends RootHandler {
     /** The entity type. */
     private I_Type m_entityType;
 
-    /** The VIE instance. */
-    private I_Vie m_vie;
-
-    /** The widget service. */
-    private I_WidgetService m_widgetService;
-
     /** The parent attribute handler. */
     private I_AttributeHandler m_parentHandler;
 
     /** The single value index. */
     private int m_singleValueIndex;
 
-    /**
-     * Sets the single value index.<p>
-     * 
-     * @param valueIndex the value index
-     */
-    protected void setSingleValueIndex(int valueIndex) {
+    /** The VIE instance. */
+    private I_Vie m_vie;
 
-        m_singleValueIndex = valueIndex;
-    }
-
-    /**
-     * Returns if the attribute handler is handling a single value only.<p>
-     * 
-     * @return <code>true</code> if the attribute handler is handling a single value only
-     */
-    protected boolean isSingleValueHandler() {
-
-        return m_singleValueIndex > -1;
-    }
+    /** The widget service. */
+    private I_WidgetService m_widgetService;
 
     /**
      * Constructor.<p>
@@ -695,6 +675,26 @@ public class AttributeHandler extends RootHandler {
         for (AttributeValueView value : m_attributeValueViews) {
             value.updateButtonVisibility(mayHaveMore, needsRemove, needsSort);
         }
+    }
+
+    /**
+     * Returns if the attribute handler is handling a single value only.<p>
+     * 
+     * @return <code>true</code> if the attribute handler is handling a single value only
+     */
+    protected boolean isSingleValueHandler() {
+
+        return m_singleValueIndex > -1;
+    }
+
+    /**
+     * Sets the single value index.<p>
+     * 
+     * @param valueIndex the value index
+     */
+    protected void setSingleValueIndex(int valueIndex) {
+
+        m_singleValueIndex = valueIndex;
     }
 
     /**

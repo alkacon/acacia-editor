@@ -56,7 +56,6 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * Renders the widgets for an in-line form.<p>
@@ -523,25 +522,6 @@ public class Renderer implements I_EntityRenderer {
     }
 
     /**
-     * @see com.alkacon.acacia.client.I_EntityRenderer#renderInline(com.alkacon.vie.shared.I_Entity, com.google.gwt.dom.client.Element)
-     */
-    public void renderInline(I_Entity entity, Element context) {
-
-        I_Type entityType = m_vie.getType(entity.getTypeName());
-        List<String> attributeNames = entityType.getAttributeNames();
-        for (String attributeName : attributeNames) {
-            I_Type attributeType = entityType.getAttributeType(attributeName);
-            I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(attributeName, attributeType);
-            renderer.renderInline(
-                entity,
-                attributeName,
-                context,
-                entityType.getAttributeMinOccurrence(attributeName),
-                entityType.getAttributeMaxOccurrence(attributeName));
-        }
-    }
-
-    /**
      * @see com.alkacon.acacia.client.I_EntityRenderer#renderInline(com.alkacon.vie.shared.I_Entity, com.alkacon.acacia.client.I_InlineFormParent, com.alkacon.acacia.client.I_InlineHtmlUpdateHandler)
      */
     public void renderInline(I_Entity entity, I_InlineFormParent formParent, I_InlineHtmlUpdateHandler updateHandler) {
@@ -558,41 +538,6 @@ public class Renderer implements I_EntityRenderer {
                 updateHandler,
                 entityType.getAttributeMinOccurrence(attributeName),
                 entityType.getAttributeMaxOccurrence(attributeName));
-        }
-    }
-
-    /**
-     * @see com.alkacon.acacia.client.I_EntityRenderer#renderInline(com.alkacon.vie.shared.I_Entity, java.lang.String, com.google.gwt.dom.client.Element, int, int)
-     */
-    public void renderInline(
-        I_Entity parentEntity,
-        String attributeName,
-        Element context,
-        int minOccurrence,
-        int maxOccurrence) {
-
-        I_EntityAttribute attribute = parentEntity.getAttribute(attributeName);
-        if (attribute != null) {
-            List<Element> elements = m_vie.getAttributeElements(parentEntity, attributeName, context);
-            if (!elements.isEmpty()) {
-                if (attribute.isSimpleValue()) {
-                    for (int i = 0; i < elements.size(); i++) {
-                        Element element = elements.get(i);
-                        I_EditWidget widget = m_widgetService.getAttributeInlineWidget(
-                            attributeName,
-                            (com.google.gwt.user.client.Element)element);
-                        widget.onAttachWidget();
-                        RootPanel.detachOnWindowClose(widget.asWidget());
-                        widget.addValueChangeHandler(new WidgetChangeHandler(parentEntity, attributeName, i));
-                    }
-                } else {
-                    // currently not supported
-                }
-            } else if (attribute.isComplexValue()) {
-                for (I_Entity entity : attribute.getComplexValues()) {
-                    renderInline(entity, context);
-                }
-            }
         }
     }
 
