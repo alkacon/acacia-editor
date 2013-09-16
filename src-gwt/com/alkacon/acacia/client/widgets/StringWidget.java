@@ -35,8 +35,8 @@ import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -87,9 +87,9 @@ public class StringWidget extends A_EditWidget {
         // Initialization code
         if (!m_valueChangeHandlerInitialized) {
             m_valueChangeHandlerInitialized = true;
-            addDomHandler(new KeyUpHandler() {
+            addDomHandler(new KeyDownHandler() {
 
-                /** The courser position. */
+                /** The text selection range. */
                 protected JavaScriptObject m_range;
 
                 /** The Element of this widget. */
@@ -98,9 +98,9 @@ public class StringWidget extends A_EditWidget {
                 /** Helper text area to store the text that should be pasted. */
                 protected TextArea m_helpfield;
 
-                public void onKeyUp(KeyUpEvent event) {
+                public void onKeyDown(KeyDownEvent event) {
 
-                    // check if something is paste to the field
+                    // check if something was pasted to the field
                     if (event.isShiftKeyDown() || event.isControlKeyDown()) {
                         int charCode = event.getNativeEvent().getCharCode();
                         if ((charCode == 'v') || (charCode == 45)) {
@@ -138,7 +138,7 @@ public class StringWidget extends A_EditWidget {
                     });
                 }
 
-            }, KeyUpEvent.getType());
+            }, KeyDownEvent.getType());
 
             addDomHandler(new ChangeHandler() {
 
