@@ -278,12 +278,17 @@ public class Renderer implements I_EntityRenderer {
     }
 
     /**
-     * @see com.alkacon.acacia.client.I_EntityRenderer#renderAttributeValue(com.alkacon.vie.shared.I_Entity, java.lang.String, int, com.google.gwt.user.client.ui.Panel)
+     * @see com.alkacon.acacia.client.I_EntityRenderer#renderAttributeValue(com.alkacon.vie.shared.I_Entity, com.alkacon.acacia.client.AttributeHandler, int, com.google.gwt.user.client.ui.Panel)
      */
-    public void renderAttributeValue(I_Entity parentEntity, String attributeName, int attributeIndex, Panel context) {
+    public void renderAttributeValue(
+        I_Entity parentEntity,
+        AttributeHandler attributeHandler,
+        int attributeIndex,
+        Panel context) {
 
         I_Type entityType = m_vie.getType(parentEntity.getTypeName());
-        I_Type attributeType = entityType.getAttributeType(attributeName);
+        I_Type attributeType = attributeHandler.getAttributeType();
+        String attributeName = attributeHandler.getAttributeName();
         int minOccurrence = entityType.getAttributeMinOccurrence(attributeName);
         I_EntityAttribute attribute = parentEntity.getAttribute(attributeName);
         if ((attribute == null) && (minOccurrence > 0)) {
@@ -294,14 +299,13 @@ public class Renderer implements I_EntityRenderer {
         context.add(attributeElement);
         context.addStyleName(ENTITY_CLASS);
         RootHandler parentHandler = new RootHandler();
-        AttributeHandler handler = new AttributeHandler(m_vie, parentEntity, attributeName, m_widgetService);
-        parentHandler.setHandler(attributeIndex, attributeName, handler);
-        handler.setSingleValueIndex(attributeIndex);
+        parentHandler.setHandler(attributeIndex, attributeName, attributeHandler);
+        attributeHandler.setSingleValueIndex(attributeIndex);
         String label = m_widgetService.getAttributeLabel(attributeName);
         String help = m_widgetService.getAttributeHelp(attributeName);
         if (attribute != null) {
             I_EntityRenderer renderer = m_widgetService.getRendererForAttribute(attributeName, attributeType);
-            AttributeValueView valueWidget = new AttributeValueView(handler, label, help);
+            AttributeValueView valueWidget = new AttributeValueView(attributeHandler, label, help);
             if (attributeType.isChoice() && (entityType.getAttributeMaxOccurrence(attributeName) == 1)) {
                 valueWidget.setCollapsed(true);
             }
@@ -328,7 +332,7 @@ public class Renderer implements I_EntityRenderer {
             }
             setAttributeChoice(valueWidget, attributeType);
         }
-        handler.updateButtonVisisbility();
+        attributeHandler.updateButtonVisisbility();
     }
 
     /**
@@ -565,11 +569,16 @@ public class Renderer implements I_EntityRenderer {
                         widget.addValueChangeHandler(new WidgetChangeHandler(parentEntity, attributeName, i));
                         formParent.adoptWidget(widget);
                     } else {
+                        AttributeHandler handler = new AttributeHandler(
+                            m_vie,
+                            parentEntity,
+                            attributeName,
+                            m_widgetService);
                         InlineEntityWidget.createWidgetForEntity(
                             element,
                             formParent,
                             parentEntity,
-                            attributeName,
+                            handler,
                             i,
                             updateHandler,
                             m_widgetService);
@@ -579,6 +588,19 @@ public class Renderer implements I_EntityRenderer {
                 for (I_Entity entity : attribute.getComplexValues()) {
                     renderInline(entity, formParent, updateHandler);
                 }
+            }
+        } else {
+            List<Element> elements = m_vie.getAttributeElements(parentEntity, attributeName, formParent.getElement());
+            if (!elements.isEmpty() && (elements.size() == 1)) {
+                AttributeHandler handler = new AttributeHandler(m_vie, parentEntity, attributeName, m_widgetService);
+                InlineEntityWidget.createWidgetForEntity(
+                    elements.get(0),
+                    formParent,
+                    parentEntity,
+                    handler,
+                    -1,
+                    updateHandler,
+                    m_widgetService);
             }
         }
 

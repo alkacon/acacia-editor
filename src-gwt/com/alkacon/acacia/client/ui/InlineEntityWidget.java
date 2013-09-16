@@ -25,6 +25,8 @@
 package com.alkacon.acacia.client.ui;
 
 import com.alkacon.acacia.client.AttributeHandler;
+import com.alkacon.acacia.client.ButtonBarHandler;
+import com.alkacon.acacia.client.ChoiceMenuEntryBean;
 import com.alkacon.acacia.client.EditorBase;
 import com.alkacon.acacia.client.I_InlineFormParent;
 import com.alkacon.acacia.client.I_InlineHtmlUpdateHandler;
@@ -35,7 +37,6 @@ import com.alkacon.geranium.client.ui.I_Button.ButtonStyle;
 import com.alkacon.geranium.client.ui.Popup;
 import com.alkacon.geranium.client.ui.PushButton;
 import com.alkacon.geranium.client.ui.css.I_ImageBundle;
-import com.alkacon.geranium.client.util.DomUtil;
 import com.alkacon.geranium.client.util.PositionBean;
 import com.alkacon.vie.client.Entity;
 import com.alkacon.vie.client.Vie;
@@ -44,10 +45,14 @@ import com.alkacon.vie.shared.I_Type;
 
 import java.util.List;
 
+import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
@@ -55,9 +60,13 @@ import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -137,17 +146,52 @@ public class InlineEntityWidget extends Composite {
         }
     }
 
+    /**
+     * The UI binder interface.<p>
+     */
+    interface InlineEntityWidgetUiBinder extends UiBinder<FlowPanel, InlineEntityWidget> {
+        // nothing to do
+    }
+
+    /** The UI binder instance. */
+    private static InlineEntityWidgetUiBinder uiBinder = GWT.create(InlineEntityWidgetUiBinder.class);
+
+    /** The add button. */
+    @UiField
+    protected AttributeChoiceWidget m_addButton;
+
+    /** The attribute choice button. */
+    @UiField
+    protected AttributeChoiceWidget m_attributeChoice;
+
+    /** The down button. */
+    @UiField
+    protected PushButton m_downButton;
+
+    /** The injected button. */
+    @UiField
+    protected PushButton m_editButton;
+
+    /** The remove button. */
+    @UiField
+    protected PushButton m_removeButton;
+
+    /** The move button. */
+    @UiField
+    protected PushButton m_targetButton;
+
+    /** The up button. */
+    @UiField
+    protected PushButton m_upButton;
+
     /** The pop-up panel. */
     Popup m_popup;
 
+    /** The handler of the attribute to edit. */
+    private AttributeHandler m_attributeHandler;
+
     /** The attribute value index. */
     private int m_attributeIndex;
-
-    /** The name of the attribute to edit. */
-    private String m_attributeName;
-
-    /** The injected button. */
-    private PushButton m_button;
 
     /** The change handler registration. */
     private HandlerRegistration m_entityChangeHandlerRegistration;
@@ -170,6 +214,9 @@ public class InlineEntityWidget extends Composite {
     /** The reference DOM element, will be highlighted during editing. */
     private Element m_referenceElement;
 
+    /** Flag indicating it is required to open the edit popup aftera HTML update. */
+    private boolean m_requireShowPopup;
+
     /** Flag indicating an HTML update is running. */
     private boolean m_runningUpdate;
 
@@ -188,7 +235,7 @@ public class InlineEntityWidget extends Composite {
      * @param referenceElement the reference DOM element, will be highlighted during editing
      * @param formParent the parent widget
      * @param parentEntity the parent of the entity to edit
-     * @param attributeName the attribute name
+     * @param attributeHandler the attribute handler
      * @param attributeIndex the attribute value index
      * @param htmlUpdateHandler handles HTML updates if required
      * @param widgetService the widget service
@@ -197,38 +244,25 @@ public class InlineEntityWidget extends Composite {
         Element referenceElement,
         I_InlineFormParent formParent,
         I_Entity parentEntity,
-        String attributeName,
+        AttributeHandler attributeHandler,
         int attributeIndex,
         I_InlineHtmlUpdateHandler htmlUpdateHandler,
         I_WidgetService widgetService) {
 
+        initWidget(uiBinder.createAndBindUi(this));
         m_parentEntity = parentEntity;
-        m_attributeName = attributeName;
+        m_attributeHandler = attributeHandler;
         m_attributeIndex = attributeIndex;
         m_referenceElement = referenceElement;
         m_formParent = formParent;
         m_htmlUpdateHandler = htmlUpdateHandler;
         m_widgetService = widgetService;
-        m_button = new PushButton();
         m_title = "";
-        if (EditorBase.getDictionary() != null) {
-            m_title = EditorBase.getDictionary().get(EditorBase.GUI_VIEW_EDIT_0)
-                + " "
-                + m_widgetService.getAttributeLabel(attributeName);
-            m_button.setTitle(m_title);
-        }
-        m_button.setImageClass(I_ImageBundle.INSTANCE.style().editIcon());
-        m_button.setButtonStyle(ButtonStyle.TRANSPARENT, null);
-        m_button.addClickHandler(new ClickHandler() {
-
-            public void onClick(ClickEvent event) {
-
-                showEditPopup();
-            }
-        });
-        m_button.addStyleName(I_LayoutBundle.INSTANCE.form().editButton());
-        initWidget(m_button);
         m_updateTimer = new UpdateTimer();
+        m_popupClosed = true;
+        initButtons();
+        addDomHandler(ButtonBarHandler.INSTANCE, MouseOverEvent.getType());
+        addDomHandler(ButtonBarHandler.INSTANCE, MouseOutEvent.getType());
     }
 
     /**
@@ -237,7 +271,7 @@ public class InlineEntityWidget extends Composite {
      * @param element the context element
      * @param formParent the parent widget
      * @param parentEntity the parent entity
-     * @param attributeName the attribute name
+     * @param attributeHandler the attribute handler
      * @param attributeIndex the attribute value index
      * @param htmlUpdateHandler handles HTML updates if required
      * @param widgetService the widget service
@@ -248,7 +282,7 @@ public class InlineEntityWidget extends Composite {
         Element element,
         I_InlineFormParent formParent,
         I_Entity parentEntity,
-        String attributeName,
+        AttributeHandler attributeHandler,
         int attributeIndex,
         I_InlineHtmlUpdateHandler htmlUpdateHandler,
         I_WidgetService widgetService) {
@@ -257,14 +291,76 @@ public class InlineEntityWidget extends Composite {
             element,
             formParent,
             parentEntity,
-            attributeName,
+            attributeHandler,
             attributeIndex,
             htmlUpdateHandler,
             widgetService);
-        element.getParentElement().insertAfter(widget.getElement(), element);
-        formParent.adoptWidget(widget);
-        widget.positionWidget(element);
+        InlineEditOverlay.getRootOvelay().addButton(widget, element.getAbsoluteTop());
+        attributeHandler.updateButtonVisibilty(widget);
         return widget;
+    }
+
+    /**
+     * Updates the visibility of the add, remove, up and down buttons.<p>
+     * 
+     * @param hasAddButton <code>true</code> if the add button should be visible
+     * @param hasRemoveButton <code>true</code> if the remove button should be visible
+     * @param hasSortButtons <code>true</code> if the sort buttons should be visible
+     */
+    public void updateButtonVisibility(boolean hasAddButton, boolean hasRemoveButton, boolean hasSortButtons) {
+
+        //        if (hasAddButton && m_isChoice) {
+        //            m_attributeChoice.getElement().getStyle().clearDisplay();
+        //        } else {
+        m_attributeChoice.getElement().getStyle().setDisplay(Display.NONE);
+        //        }
+        if (hasAddButton) {
+            m_addButton.getElement().getStyle().clearDisplay();
+        } else {
+            m_addButton.getElement().getStyle().setDisplay(Display.NONE);
+        }
+
+        if (hasRemoveButton) {
+            m_removeButton.getElement().getStyle().clearDisplay();
+        } else {
+            m_removeButton.getElement().getStyle().setDisplay(Display.NONE);
+        }
+        if (hasSortButtons && (m_attributeIndex != 0)) {
+            m_upButton.getElement().getStyle().clearDisplay();
+        } else {
+            m_upButton.getElement().getStyle().setDisplay(Display.NONE);
+        }
+        if (hasSortButtons && (getElement().getNextSibling() != null)) {
+            m_downButton.getElement().getStyle().clearDisplay();
+        } else {
+            m_downButton.getElement().getStyle().setDisplay(Display.NONE);
+        }
+
+        if (hasAddButton || hasRemoveButton || hasSortButtons) {
+            // set multi button mode
+            addStyleName(I_LayoutBundle.INSTANCE.form().multiButtonBar());
+            m_targetButton.getElement().getStyle().clearDisplay();
+        } else {
+            m_targetButton.getElement().getStyle().setDisplay(Display.NONE);
+            removeStyleName(I_LayoutBundle.INSTANCE.form().multiButtonBar());
+        }
+    }
+
+    /**
+     * Positions the widget button above the reference element.<p>
+     */
+    protected void positionWidget() {
+
+        InlineEditOverlay.getRootOvelay().setButtonPosition(this, m_referenceElement.getAbsoluteTop());
+    }
+
+    /** Adds a new attribute value. */
+    void addNewAttributeValue() {
+
+        m_attributeHandler.addNewAttributeValue(m_attributeIndex);
+        m_requireShowPopup = true;
+        m_attributeIndex += 1;
+        runHtmlUpdate();
     }
 
     /**
@@ -275,12 +371,21 @@ public class InlineEntityWidget extends Composite {
         m_runningUpdate = false;
         List<Element> elements = Vie.getInstance().getAttributeElements(
             m_parentEntity,
-            m_attributeName,
+            m_attributeHandler.getAttributeName(),
             m_formParent.getElement());
         if (m_popupClosed) {
             // the form popup has already been closed, reinitialize the editing widgets for updated HTML
             InlineEditOverlay.updateCurrentOverlayPosition();
-            m_htmlUpdateHandler.reinitWidgets(m_formParent);
+            if (m_requireShowPopup) {
+                if (elements.size() > m_attributeIndex) {
+                    m_referenceElement = elements.get(m_attributeIndex);
+                }
+                showEditPopup(null);
+                m_hasChanges = true;
+            } else {
+                InlineEditOverlay.getRootOvelay().clearButtonPanel();
+                m_htmlUpdateHandler.reinitWidgets(m_formParent);
+            }
         } else {
             if (m_referenceElement != null) {
                 InlineEditOverlay.removeLastOverlay();
@@ -323,12 +428,22 @@ public class InlineEntityWidget extends Composite {
         AttributeHandler.setResizeHandler(null);
         if (!m_runningUpdate) {
             if (m_hasChanges) {
+                InlineEditOverlay.getRootOvelay().clearButtonPanel();
                 m_htmlUpdateHandler.reinitWidgets(m_formParent);
-            } else {
-                m_button.setVisible(true);
             }
         }
         m_popup = null;
+    }
+
+    /** Handles the remove attribute click.<p>
+     * 
+     * @param event the click event
+     */
+    @UiHandler("m_removeButton")
+    void onRemoveClick(ClickEvent event) {
+
+        m_attributeHandler.removeAttributeValue(m_attributeIndex);
+        runHtmlUpdate();
     }
 
     /**
@@ -388,10 +503,13 @@ public class InlineEntityWidget extends Composite {
 
     /**
      * Opens the form popup.<p>
+     * 
+     * @param clickEvent the click event
      */
-    void showEditPopup() {
+    @UiHandler("m_editButton")
+    void showEditPopup(ClickEvent clickEvent) {
 
-        m_button.clearHoverState();
+        m_editButton.clearHoverState();
         m_popup = new Popup(m_title, -1);
         m_popup.setModal(true);
         m_popup.setAutoHideEnabled(true);
@@ -404,6 +522,7 @@ public class InlineEntityWidget extends Composite {
             }
         });
         m_hasChanges = false;
+        m_requireShowPopup = false;
         m_entityChangeHandlerRegistration = ((Entity)m_parentEntity).addValueChangeHandler(new ValueChangeHandler<Entity>() {
 
             public void onValueChange(ValueChangeEvent<Entity> event) {
@@ -430,32 +549,73 @@ public class InlineEntityWidget extends Composite {
         });
         m_widgetService.getRendererForType(type).renderAttributeValue(
             m_parentEntity,
-            m_attributeName,
+            m_attributeHandler,
             m_attributeIndex,
             formPanel);
         InlineEditOverlay.addOverlayForElement(m_referenceElement);
         positionPopup();
         m_popup.getElement().getStyle().setZIndex(I_LayoutBundle.INSTANCE.constants().css().zIndexPopup());
         m_popupClosed = false;
-        m_button.setVisible(false);
     }
 
     /**
-     * Positions the widget button above the reference element.<p>
-     * 
-     * @param reference the reference element
+     * Initializes the button styling.<p>
      */
-    private void positionWidget(Element reference) {
+    private void initButtons() {
 
-        PositionBean position = PositionBean.getInnerDimensions(m_referenceElement);
-        int topOffset = 0;
-        int leftOffset = 0;
-        Element positioningParent = DomUtil.getPositioningParent(reference);
-        if (positioningParent != null) {
-            topOffset = positioningParent.getAbsoluteTop();
-            leftOffset = positioningParent.getAbsoluteLeft();
+        m_addButton.addChoice(
+            m_attributeHandler.getWidgetService(),
+            new ChoiceMenuEntryBean(m_attributeHandler.getAttributeName()),
+            new AsyncCallback<ChoiceMenuEntryBean>() {
+
+                public void onFailure(Throwable caught) {
+
+                    // will not be called 
+
+                }
+
+                public void onSuccess(ChoiceMenuEntryBean selectedEntry) {
+
+                    // nothing to do
+                }
+            });
+        m_addButton.addDomHandler(new ClickHandler() {
+
+            public void onClick(ClickEvent event) {
+
+                m_addButton.hide();
+                addNewAttributeValue();
+                event.preventDefault();
+                event.stopPropagation();
+
+            }
+        }, ClickEvent.getType());
+
+        m_editButton.setImageClass(I_ImageBundle.INSTANCE.style().editIcon());
+        m_editButton.setButtonStyle(ButtonStyle.TRANSPARENT, null);
+
+        m_targetButton.setImageClass(I_ImageBundle.INSTANCE.style().bullsEyeIcon());
+        m_targetButton.setButtonStyle(ButtonStyle.TRANSPARENT, null);
+
+        m_removeButton.setImageClass(I_ImageBundle.INSTANCE.style().removeIcon());
+        m_removeButton.setButtonStyle(ButtonStyle.TRANSPARENT, null);
+
+        m_upButton.setImageClass(I_ImageBundle.INSTANCE.style().arrowUpIcon());
+        m_upButton.setButtonStyle(ButtonStyle.TRANSPARENT, null);
+
+        m_downButton.setImageClass(I_ImageBundle.INSTANCE.style().arrowDownIcon());
+        m_downButton.setButtonStyle(ButtonStyle.TRANSPARENT, null);
+
+        if (EditorBase.getDictionary() != null) {
+            m_addButton.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_ADD_0));
+            m_removeButton.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_DELETE_0));
+            m_upButton.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_MOVE_UP_0));
+            m_downButton.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_MOVE_DOWN_0));
+            m_title = EditorBase.getDictionary().get(EditorBase.GUI_VIEW_EDIT_0)
+                + " "
+                + m_widgetService.getAttributeLabel(m_attributeHandler.getAttributeName());
+            m_editButton.setTitle(m_title);
+            m_targetButton.setTitle(m_title);
         }
-        getElement().getStyle().setTop((position.getTop() - topOffset) + 5, Unit.PX);
-        getElement().getStyle().setLeft(((position.getLeft() - leftOffset) + position.getWidth()) - 25, Unit.PX);
     }
 }

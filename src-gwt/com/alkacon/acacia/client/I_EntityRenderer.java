@@ -76,11 +76,15 @@ public interface I_EntityRenderer {
      * Renders a single attribute value. Used for inline editing to show a fragment of the form.<p>
      * 
      * @param parentEntity the parent entity
-     * @param attributeName the attribute to render
+     * @param attributeHandler the attribute handler
      * @param attributeIndex the value index
      * @param context the parent widget
      */
-    void renderAttributeValue(I_Entity parentEntity, String attributeName, int attributeIndex, Panel context);
+    void renderAttributeValue(
+        I_Entity parentEntity,
+        AttributeHandler attributeHandler,
+        int attributeIndex,
+        Panel context);
 
     /**
      * Renders the given entity into a form.<p>

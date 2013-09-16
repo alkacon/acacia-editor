@@ -197,13 +197,6 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
         String dragOverlay();
 
         /**
-         * Returns the edit button CSS class name.<p>
-         * 
-         * @return the edit button CSS class name
-         */
-        String editButton();
-
-        /**
          * Returns the CSS constant value.<p>
          * 
          * @return the CSS constant value
@@ -286,6 +279,13 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
          * @return the move handle CSS class
          */
         String moveHandle();
+
+        /**
+         * Returns the overlay button bar CSS class name.<p>
+         * 
+         * @return the overlay button bar CSS class name
+         */
+        String overlayButtonBar();
 
         /**
          * Returns the CSS constant value.<p>

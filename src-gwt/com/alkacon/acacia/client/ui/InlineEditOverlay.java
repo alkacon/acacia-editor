@@ -27,6 +27,7 @@
 
 package com.alkacon.acacia.client.ui;
 
+import com.alkacon.geranium.client.util.ClientStringUtil;
 import com.alkacon.geranium.client.util.DomUtil;
 import com.alkacon.geranium.client.util.PositionBean;
 
@@ -36,6 +37,7 @@ import java.util.List;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -45,6 +47,8 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -54,7 +58,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class InlineEditOverlay extends Composite implements HasClickHandlers {
 
     /** The ui binder. */
-    interface I_CmsInlineEditOverlayUiBinder extends UiBinder<Widget, InlineEditOverlay> {
+    interface I_CmsInlineEditOverlayUiBinder extends UiBinder<HTMLPanel, InlineEditOverlay> {
         // nothing to do
     }
 
@@ -80,8 +84,19 @@ public class InlineEditOverlay extends Composite implements HasClickHandlers {
     @UiField
     protected Element m_overlayTop;
 
+    /** The button bar element. */
+    @UiField
+    protected Element m_buttonBar;
+
+    /** The edit button panel. */
+    @UiField
+    FlowPanel m_buttonPanel;
+
     /** The element to surround with the overlay. */
     private Element m_element;
+
+    /** The main panel. */
+    private HTMLPanel m_main;
 
     /** The overlay offset. */
     private int m_offset = 3;
@@ -105,12 +120,22 @@ public class InlineEditOverlay extends Composite implements HasClickHandlers {
      */
     public InlineEditOverlay(Element element) {
 
-        initWidget(uiBinder.createAndBindUi(this));
+        m_main = uiBinder.createAndBindUi(this);
+        initWidget(m_main);
         m_element = element;
         m_overlayLeftStyle = m_overlayLeft.getStyle();
         m_overlayBottomStyle = m_overlayBottom.getStyle();
         m_overlayRightStyle = m_overlayRight.getStyle();
         m_overlayTopStyle = m_overlayTop.getStyle();
+        m_buttonBar.getStyle().setDisplay(Display.NONE);
+        m_buttonPanel.addDomHandler(new ClickHandler() {
+
+            public void onClick(ClickEvent event) {
+
+                // prevent the click event to propagated from the button panel to the main widget
+                event.stopPropagation();
+            }
+        }, ClickEvent.getType());
     }
 
     /**
@@ -131,6 +156,16 @@ public class InlineEditOverlay extends Composite implements HasClickHandlers {
         overlay.updatePosition();
         overlay.checkZIndex();
         return overlay;
+    }
+
+    /**
+     * Returns the root overlay if available.<p>
+     * 
+     * @return the root overlay
+     */
+    public static InlineEditOverlay getRootOvelay() {
+
+        return m_overlays.isEmpty() ? null : m_overlays.get(0);
     }
 
     /**
@@ -169,6 +204,30 @@ public class InlineEditOverlay extends Composite implements HasClickHandlers {
     }
 
     /**
+     * Adds a button widget to the button panel.<p>
+     *  
+     * @param widget the button widget
+     * @param absoluteTop the absolute top position
+     */
+    public void addButton(InlineEntityWidget widget, int absoluteTop) {
+
+        m_buttonBar.getStyle().clearDisplay();
+        widget.getElement().getStyle().setTop(
+            absoluteTop - ClientStringUtil.parseInt(m_buttonBar.getStyle().getTop()),
+            Unit.PX);
+        m_buttonPanel.add(widget);
+    }
+
+    /**
+     * Clears and hides the button panel.<p>
+     */
+    public void clearButtonPanel() {
+
+        m_buttonPanel.clear();
+        m_buttonBar.getStyle().setDisplay(Display.NONE);
+    }
+
+    /**
      * @see com.google.gwt.event.dom.client.HasClickHandlers#addClickHandler(com.google.gwt.event.dom.client.ClickHandler)
      */
     public HandlerRegistration addClickHandler(ClickHandler handler) {
@@ -196,6 +255,21 @@ public class InlineEditOverlay extends Composite implements HasClickHandlers {
     }
 
     /**
+     * Updates the position of the given button widget.<p>
+     * 
+     * @param widget the button widget
+     * @param absoluteTop the top absolute top position
+     */
+    public void setButtonPosition(InlineEntityWidget widget, int absoluteTop) {
+
+        if (m_buttonPanel.getWidgetIndex(widget) > -1) {
+            widget.getElement().getStyle().setTop(
+                absoluteTop - ClientStringUtil.parseInt(m_buttonBar.getStyle().getTop()),
+                Unit.PX);
+        }
+    }
+
+    /**
      * Sets the overlay offset.<p>
      * 
      * @param offset the offset
@@ -211,6 +285,11 @@ public class InlineEditOverlay extends Composite implements HasClickHandlers {
     public void updatePosition() {
 
         setPosition(PositionBean.getInnerDimensions(m_element));
+        for (Widget widget : m_buttonPanel) {
+            if (widget instanceof InlineEntityWidget) {
+                ((InlineEntityWidget)widget).positionWidget();
+            }
+        }
     }
 
     /**
@@ -259,5 +338,10 @@ public class InlineEditOverlay extends Composite implements HasClickHandlers {
         m_overlayRightStyle.setLeft(posX + width + m_offset, Unit.PX);
         m_overlayRightStyle.setWidth(useWidth - posX - width - m_offset, Unit.PX);
         m_overlayRightStyle.setHeight(useHeight, Unit.PX);
+
+        m_buttonBar.getStyle().setTop(posY, Unit.PX);
+        m_buttonBar.getStyle().setHeight(height, Unit.PX);
+        m_buttonBar.getStyle().setLeft((posX + width) + (3 * m_offset), Unit.PX);
+
     }
 }

@@ -26,6 +26,7 @@ package com.alkacon.acacia.client;
 
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.acacia.client.ui.AttributeValueView;
+import com.alkacon.acacia.client.ui.InlineEntityWidget;
 import com.alkacon.acacia.client.widgets.I_FormEditWidget;
 import com.alkacon.acacia.shared.Type;
 import com.alkacon.geranium.client.dnd.DNDHandler;
@@ -217,6 +218,38 @@ public class AttributeHandler extends RootHandler {
             }
         }
         updateButtonVisisbility();
+    }
+
+    /**
+     * Adds a new attribute value below the reference index.<p>
+     * 
+     * @param referenceIndex the reference value index
+     */
+    public void addNewAttributeValue(int referenceIndex) {
+
+        // make sure not to add more values than allowed
+        int maxOccurrence = getEntityType().getAttributeMaxOccurrence(m_attributeName);
+        I_EntityAttribute attribute = m_entity.getAttribute(m_attributeName);
+        boolean mayHaveMore = ((attribute == null) || (attribute.getValueCount() < maxOccurrence));
+        if (mayHaveMore) {
+            if (getAttributeType().isSimpleType()) {
+                String defaultValue = m_widgetService.getDefaultAttributeValue(m_attributeName);
+                if ((attribute == null) || (attribute.getValueCount() == (referenceIndex + 1))) {
+                    m_entity.addAttributeValue(m_attributeName, defaultValue);
+                } else {
+                    m_entity.insertAttributeValue(m_attributeName, defaultValue, referenceIndex + 1);
+
+                }
+            } else {
+                I_Entity value = m_vie.createEntity(null, m_attributeType.getId());
+                if ((attribute == null) || (attribute.getValueCount() == (referenceIndex + 1))) {
+                    m_entity.addAttributeValue(m_attributeName, value);
+                } else {
+                    m_entity.insertAttributeValue(m_attributeName, value, referenceIndex + 1);
+                }
+                insertHandlers(referenceIndex + 1);
+            }
+        }
     }
 
     /**
@@ -588,6 +621,28 @@ public class AttributeHandler extends RootHandler {
     }
 
     /**
+     * Removes the attribute value with the given index.<p>
+     * This will not execute any DOM manipulations.<p>
+     * 
+     * @param valueIndex the index of the attribute value to remove
+     */
+    public void removeAttributeValue(int valueIndex) {
+
+        I_EntityAttribute attribute = m_entity.getAttribute(m_attributeName);
+        if (attribute.isSingleValue()) {
+            if (attribute.isComplexValue()) {
+                removeHandlers(0);
+            }
+            m_entity.removeAttribute(m_attributeName);
+        } else {
+            if (attribute.isComplexValue()) {
+                removeHandlers(valueIndex);
+            }
+            m_entity.removeAttributeValue(m_attributeName, valueIndex);
+        }
+    }
+
+    /**
      * Sets the error message for the given value index.<p>
      * 
      * @param valueIndex the value index
@@ -649,9 +704,11 @@ public class AttributeHandler extends RootHandler {
     }
 
     /**
-     * Updates the add, remove and sort button visibility on all registered attribute value views.<p>
+     * Updates the add, remove and sort button visibility on the given inline widget or all registered attribute value views.<p>
+     * 
+     * @param inlineWidget the inline widget
      */
-    public void updateButtonVisisbility() {
+    public void updateButtonVisibilty(InlineEntityWidget inlineWidget) {
 
         int minOccurrence = 0;
         int maxOccurrence = 0;
@@ -672,9 +729,21 @@ public class AttributeHandler extends RootHandler {
             needsRemove = (maxOccurrence > minOccurrence) && (valueCount > minOccurrence);
             needsSort = !isSingleValueHandler() && (valueCount > 1);
         }
-        for (AttributeValueView value : m_attributeValueViews) {
-            value.updateButtonVisibility(mayHaveMore, needsRemove, needsSort);
+        if (inlineWidget != null) {
+            inlineWidget.updateButtonVisibility(mayHaveMore, needsRemove, needsSort);
+        } else {
+            for (AttributeValueView value : m_attributeValueViews) {
+                value.updateButtonVisibility(mayHaveMore, needsRemove, needsSort);
+            }
         }
+    }
+
+    /**
+     * Updates the add, remove and sort button visibility on all registered attribute value views.<p>
+     */
+    public void updateButtonVisisbility() {
+
+        updateButtonVisibilty(null);
     }
 
     /**

@@ -104,9 +104,13 @@ public class NativeComplexWidgetRenderer implements I_EntityRenderer {
     }
 
     /**
-     * @see com.alkacon.acacia.client.I_EntityRenderer#renderAttributeValue(com.alkacon.vie.shared.I_Entity, java.lang.String, int, com.google.gwt.user.client.ui.Panel)
+     * @see com.alkacon.acacia.client.I_EntityRenderer#renderAttributeValue(com.alkacon.vie.shared.I_Entity, com.alkacon.acacia.client.AttributeHandler, int, com.google.gwt.user.client.ui.Panel)
      */
-    public void renderAttributeValue(I_Entity parentEntity, String attributeName, int attributeIndex, Panel context) {
+    public void renderAttributeValue(
+        I_Entity parentEntity,
+        AttributeHandler attributeHandler,
+        int attributeIndex,
+        Panel context) {
 
         notSupported();
     }

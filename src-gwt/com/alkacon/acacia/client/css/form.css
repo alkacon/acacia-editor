@@ -148,12 +148,15 @@ div.attributeValue.secondColumn{
 }
 
 .attributeValue .buttonBar{
-	position: absolute;
-	border: 1px solid transparent;
 	top: 2px;
 	right: 2px;
+}
+.attributeValue div.buttonBar, div.buttonBar{
+	position: absolute;
 	border-radius: value("constants.css.borderRadius");
 	white-space: nowrap;
+	border: 1px solid transparent;
+	width: auto;
 }
 
 .attributeValue.simpleValue .buttonBar{
@@ -164,20 +167,11 @@ div.attributeValue.secondColumn{
 	top: 0px;
 }
 
-
-
-
-.multiButtonBar.buttonBar.hoverButton, .editButton.cmsState {
+.multiButtonBar.buttonBar.hoverButton{
 	display: block;
 	box-shadow: 2px 2px 2px #666666;
 	background: value("constants.css.backgroundColorDialog");
 	border: 1px solid value("constants.css.borderColor");
-}
-
-div.editButton.cmsState{
-	border-radius: value("constants.css.borderRadius");
-	position: absolute;
-	box-shadow: none;
 }
 
 .buttonBar .button{
@@ -570,4 +564,12 @@ div.helpBubble{
 	background: transparent;
 }
 
-
+div.overlayButtonBar{
+	position: absolute;
+	background: #E1E4E8;
+	width: 26px;
+	border-radius:value("constants.css.borderRadius");
+	top: 0px;
+	left: 0px;
+	bottom:0px;
+}
