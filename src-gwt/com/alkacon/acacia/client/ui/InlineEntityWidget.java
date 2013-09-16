@@ -301,14 +301,34 @@ public class InlineEntityWidget extends Composite {
     }
 
     /**
+     * Returns the attribute value index.<p>
+     * 
+     * @return the attribute value index
+     */
+    public int getAttributeIndex() {
+
+        return m_attributeIndex;
+    }
+
+    /**
      * Updates the visibility of the add, remove, up and down buttons.<p>
      * 
+     * @param hasEditButton <code>true</code> if the edit button should be visible
      * @param hasAddButton <code>true</code> if the add button should be visible
      * @param hasRemoveButton <code>true</code> if the remove button should be visible
      * @param hasSortButtons <code>true</code> if the sort buttons should be visible
      */
-    public void updateButtonVisibility(boolean hasAddButton, boolean hasRemoveButton, boolean hasSortButtons) {
+    public void updateButtonVisibility(
+        boolean hasEditButton,
+        boolean hasAddButton,
+        boolean hasRemoveButton,
+        boolean hasSortButtons) {
 
+        if (hasEditButton) {
+            m_editButton.getElement().getStyle().clearDisplay();
+        } else {
+            m_editButton.getElement().getStyle().setDisplay(Display.NONE);
+        }
         //        if (hasAddButton && m_isChoice) {
         //            m_attributeChoice.getElement().getStyle().clearDisplay();
         //        } else {
@@ -336,7 +356,7 @@ public class InlineEntityWidget extends Composite {
             m_downButton.getElement().getStyle().setDisplay(Display.NONE);
         }
 
-        if (hasAddButton || hasRemoveButton || hasSortButtons) {
+        if (hasEditButton && (hasAddButton || hasRemoveButton || hasSortButtons)) {
             // set multi button mode
             addStyleName(I_LayoutBundle.INSTANCE.form().multiButtonBar());
             m_targetButton.getElement().getStyle().clearDisplay();

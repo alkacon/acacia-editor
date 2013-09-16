@@ -26,7 +26,6 @@ package com.alkacon.acacia.client.ui;
 
 import com.alkacon.acacia.client.ButtonBarHandler;
 import com.alkacon.acacia.client.ChoiceMenuEntryBean;
-import com.alkacon.acacia.client.EditorBase;
 import com.alkacon.acacia.client.I_WidgetService;
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 
@@ -78,9 +77,6 @@ public class AttributeChoiceWidget extends Composite implements HasMouseOverHand
     public AttributeChoiceWidget() {
 
         initWidget(uiBinder.createAndBindUi(this));
-        if (EditorBase.getDictionary() != null) {
-            m_buttonIcon.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_CHOICE_ADD_CHOICE_0));
-        }
         addMouseOutHandler(ButtonBarHandler.INSTANCE);
         addMouseOverHandler(ButtonBarHandler.INSTANCE);
     }

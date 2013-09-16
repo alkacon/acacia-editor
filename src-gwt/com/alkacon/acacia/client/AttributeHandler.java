@@ -730,7 +730,8 @@ public class AttributeHandler extends RootHandler {
             needsSort = !isSingleValueHandler() && (valueCount > 1);
         }
         if (inlineWidget != null) {
-            inlineWidget.updateButtonVisibility(mayHaveMore, needsRemove, needsSort);
+            boolean mayEdit = (attribute != null) && (attribute.getValueCount() > inlineWidget.getAttributeIndex());
+            inlineWidget.updateButtonVisibility(mayEdit, mayHaveMore, needsRemove, needsSort);
         } else {
             for (AttributeValueView value : m_attributeValueViews) {
                 value.updateButtonVisibility(mayHaveMore, needsRemove, needsSort);

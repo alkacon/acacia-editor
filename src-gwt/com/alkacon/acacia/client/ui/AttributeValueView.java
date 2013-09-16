@@ -1006,6 +1006,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
 
         if (EditorBase.getDictionary() != null) {
             m_addButton.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_ADD_0));
+            m_attributeChoice.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_CHOICE_ADD_CHOICE_0));
             m_removeButton.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_DELETE_0));
             m_helpBubbleClose.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_CLOSE_0));
             m_upButton.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_MOVE_UP_0));
