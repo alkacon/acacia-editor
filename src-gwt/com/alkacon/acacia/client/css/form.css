@@ -570,8 +570,8 @@ div.helpBubble{
 div.overlayButtonBar{
 	position: absolute;
 	background: #E1E4E8;
-	width: 26px;
-	border-radius:value("constants.css.borderRadius");
+	width: 27px;
+	border-radius: 0px value("constants.css.borderRadius") value("constants.css.borderRadius") 0px;
 	top: 0px;
 	left: 0px;
 	bottom:0px;

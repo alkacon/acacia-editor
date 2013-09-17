@@ -300,7 +300,7 @@ public class ButtonBarHandler implements MouseOverHandler, MouseOutHandler {
      */
     private void overButtonBar(Widget buttonBar) {
 
-        if (buttonBar != m_buttonBar) {
+        if ((m_buttonBar == null) || (buttonBar.getElement() != m_buttonBar.getElement())) {
             closeAll();
             m_buttonBar = buttonBar;
             setButtonBarVisibility(m_buttonBar, true);

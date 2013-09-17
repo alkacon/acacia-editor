@@ -62,11 +62,34 @@ public class InlineEditOverlay extends Composite implements HasClickHandlers {
         // nothing to do
     }
 
+    /** The width rquired by the button bar. */
+    private static final int BUTTON_BAR_WIDTH = 28;
+
     /** List of present overlays. */
     private static List<InlineEditOverlay> m_overlays = new ArrayList<InlineEditOverlay>();
 
     /** The ui binder instance. */
     private static I_CmsInlineEditOverlayUiBinder uiBinder = GWT.create(I_CmsInlineEditOverlayUiBinder.class);
+
+    /** Bottom border. */
+    @UiField
+    protected Element m_borderBottom;
+
+    /** Left border. */
+    @UiField
+    protected Element m_borderLeft;
+
+    /** Right border. */
+    @UiField
+    protected Element m_borderRight;
+
+    /** Top border. */
+    @UiField
+    protected Element m_borderTop;
+
+    /** The button bar element. */
+    @UiField
+    protected Element m_buttonBar;
 
     /** Edit overlay. */
     @UiField
@@ -84,16 +107,27 @@ public class InlineEditOverlay extends Composite implements HasClickHandlers {
     @UiField
     protected Element m_overlayTop;
 
-    /** The button bar element. */
-    @UiField
-    protected Element m_buttonBar;
-
     /** The edit button panel. */
     @UiField
     FlowPanel m_buttonPanel;
 
+    /** Style of border. */
+    private Style m_borderBottomStyle;
+
+    /** Style of border. */
+    private Style m_borderLeftStyle;
+
+    /** Style of border. */
+    private Style m_borderRightStyle;
+
+    /** Style of border. */
+    private Style m_borderTopStyle;
+
     /** The element to surround with the overlay. */
     private Element m_element;
+
+    /** Flag indicating this overlay has a button bar. */
+    private boolean m_hasButtonBar;
 
     /** The main panel. */
     private HTMLPanel m_main;
@@ -101,16 +135,16 @@ public class InlineEditOverlay extends Composite implements HasClickHandlers {
     /** The overlay offset. */
     private int m_offset = 3;
 
-    /** Style of image overlay. */
+    /** Style of overlay. */
     private Style m_overlayBottomStyle;
 
-    /** Style of image overlay. */
+    /** Style of overlay. */
     private Style m_overlayLeftStyle;
 
-    /** Style of image overlay. */
+    /** Style of overlay. */
     private Style m_overlayRightStyle;
 
-    /** Style of image overlay. */
+    /** Style of overlay. */
     private Style m_overlayTopStyle;
 
     /**
@@ -127,6 +161,10 @@ public class InlineEditOverlay extends Composite implements HasClickHandlers {
         m_overlayBottomStyle = m_overlayBottom.getStyle();
         m_overlayRightStyle = m_overlayRight.getStyle();
         m_overlayTopStyle = m_overlayTop.getStyle();
+        m_borderBottomStyle = m_borderBottom.getStyle();
+        m_borderLeftStyle = m_borderLeft.getStyle();
+        m_borderRightStyle = m_borderRight.getStyle();
+        m_borderTopStyle = m_borderTop.getStyle();
         m_buttonBar.getStyle().setDisplay(Display.NONE);
         m_buttonPanel.addDomHandler(new ClickHandler() {
 
@@ -211,20 +249,11 @@ public class InlineEditOverlay extends Composite implements HasClickHandlers {
      */
     public void addButton(InlineEntityWidget widget, int absoluteTop) {
 
-        m_buttonBar.getStyle().clearDisplay();
+        setButtonBarVisible(true);
         widget.getElement().getStyle().setTop(
             absoluteTop - ClientStringUtil.parseInt(m_buttonBar.getStyle().getTop()),
             Unit.PX);
         m_buttonPanel.add(widget);
-    }
-
-    /**
-     * Clears and hides the button panel.<p>
-     */
-    public void clearButtonPanel() {
-
-        m_buttonPanel.clear();
-        m_buttonBar.getStyle().setDisplay(Display.NONE);
     }
 
     /**
@@ -252,6 +281,15 @@ public class InlineEditOverlay extends Composite implements HasClickHandlers {
         if (zIndex > 100000) {
             getElement().getStyle().setZIndex(zIndex);
         }
+    }
+
+    /**
+     * Clears and hides the button panel.<p>
+     */
+    public void clearButtonPanel() {
+
+        m_buttonPanel.clear();
+        setButtonBarVisible(false);
     }
 
     /**
@@ -293,6 +331,36 @@ public class InlineEditOverlay extends Composite implements HasClickHandlers {
     }
 
     /**
+     * Sets button bar visibility.<p>
+     * 
+     * @param visible <code>true</code> to set the button bar visible
+     */
+    private void setButtonBarVisible(boolean visible) {
+
+        if (m_hasButtonBar != visible) {
+            m_hasButtonBar = visible;
+            if (m_hasButtonBar) {
+
+                m_buttonBar.getStyle().clearDisplay();
+                int width = ClientStringUtil.parseInt(m_borderTopStyle.getWidth()) + BUTTON_BAR_WIDTH;
+                m_borderTopStyle.setWidth(width, Unit.PX);
+                m_borderBottomStyle.setWidth(width, Unit.PX);
+                m_borderRightStyle.setLeft(
+                    ClientStringUtil.parseInt(m_borderRightStyle.getLeft()) + BUTTON_BAR_WIDTH,
+                    Unit.PX);
+            } else {
+                m_buttonBar.getStyle().setDisplay(Display.NONE);
+                int width = ClientStringUtil.parseInt(m_borderTopStyle.getWidth()) - BUTTON_BAR_WIDTH;
+                m_borderTopStyle.setWidth(width, Unit.PX);
+                m_borderBottomStyle.setWidth(width, Unit.PX);
+                m_borderRightStyle.setLeft(
+                    ClientStringUtil.parseInt(m_borderRightStyle.getLeft()) - BUTTON_BAR_WIDTH,
+                    Unit.PX);
+            }
+        }
+    }
+
+    /**
      * Sets position and size of the overlay area.<p>
      * 
      * @param position the position of highlighted area
@@ -326,22 +394,49 @@ public class InlineEditOverlay extends Composite implements HasClickHandlers {
         m_overlayLeftStyle.setWidth(posX - m_offset, Unit.PX);
         m_overlayLeftStyle.setHeight(useHeight, Unit.PX);
 
+        m_borderLeftStyle.setHeight(height + (2 * m_offset), Unit.PX);
+        m_borderLeftStyle.setTop(posY - (2 * m_offset), Unit.PX);
+        m_borderLeftStyle.setLeft(posX - (2 * m_offset), Unit.PX);
+
         m_overlayTopStyle.setLeft(posX - m_offset, Unit.PX);
-        m_overlayTopStyle.setWidth(width + m_offset + m_offset, Unit.PX);
+        m_overlayTopStyle.setWidth(width + (2 * m_offset), Unit.PX);
         m_overlayTopStyle.setHeight(posY - m_offset, Unit.PX);
+
+        m_borderTopStyle.setLeft(posX - m_offset, Unit.PX);
+        m_borderTopStyle.setTop(posY - (2 * m_offset), Unit.PX);
+        if (m_hasButtonBar) {
+            m_borderTopStyle.setWidth(width + (2 * m_offset) + BUTTON_BAR_WIDTH, Unit.PX);
+        } else {
+            m_borderTopStyle.setWidth(width + (2 * m_offset), Unit.PX);
+        }
 
         m_overlayBottomStyle.setLeft(posX - m_offset, Unit.PX);
         m_overlayBottomStyle.setWidth(width + m_offset + m_offset, Unit.PX);
         m_overlayBottomStyle.setHeight(useHeight - posY - height - m_offset, Unit.PX);
         m_overlayBottomStyle.setTop(posY + height + m_offset, Unit.PX);
 
+        m_borderBottomStyle.setLeft(posX - m_offset, Unit.PX);
+        m_borderBottomStyle.setTop((posY + height) + m_offset, Unit.PX);
+        if (m_hasButtonBar) {
+            m_borderBottomStyle.setWidth(width + (2 * m_offset) + BUTTON_BAR_WIDTH, Unit.PX);
+        } else {
+            m_borderBottomStyle.setWidth(width + (2 * m_offset), Unit.PX);
+        }
+
         m_overlayRightStyle.setLeft(posX + width + m_offset, Unit.PX);
         m_overlayRightStyle.setWidth(useWidth - posX - width - m_offset, Unit.PX);
         m_overlayRightStyle.setHeight(useHeight, Unit.PX);
 
-        m_buttonBar.getStyle().setTop(posY, Unit.PX);
-        m_buttonBar.getStyle().setHeight(height, Unit.PX);
-        m_buttonBar.getStyle().setLeft((posX + width) + (3 * m_offset), Unit.PX);
+        m_borderRightStyle.setHeight(height + (2 * m_offset), Unit.PX);
+        m_borderRightStyle.setTop(posY - (2 * m_offset), Unit.PX);
+        if (m_hasButtonBar) {
+            m_borderRightStyle.setLeft(posX + width + m_offset + BUTTON_BAR_WIDTH, Unit.PX);
+        } else {
+            m_borderRightStyle.setLeft(posX + width + m_offset, Unit.PX);
+        }
 
+        m_buttonBar.getStyle().setTop(posY - m_offset, Unit.PX);
+        m_buttonBar.getStyle().setHeight(height + (2 * m_offset), Unit.PX);
+        m_buttonBar.getStyle().setLeft(posX + width + m_offset + 1, Unit.PX);
     }
 }
