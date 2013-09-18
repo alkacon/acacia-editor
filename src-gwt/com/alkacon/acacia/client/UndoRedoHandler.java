@@ -290,6 +290,7 @@ public class UndoRedoHandler implements HasValueChangeHandlers<UndoRedoState> {
         m_editor = editor;
         m_rootHandler = rootHandler;
         m_current = new Change(Entity.serializeEntity(m_entity), null, null);
+        fireStateChange();
     }
 
     /**

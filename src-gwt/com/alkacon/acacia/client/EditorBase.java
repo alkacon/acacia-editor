@@ -312,14 +312,20 @@ public class EditorBase implements I_InlineHtmlUpdateHandler {
      */
     public void renderEntityForm(String entityId, List<TabInfo> tabInfos, Panel context, Element scrollParent) {
 
-        m_entity = (Entity)m_vie.getEntity(entityId);
-        if (m_entity != null) {
+        Entity entity = (Entity)m_vie.getEntity(entityId);
+        if (entity != null) {
+            boolean initUndo = (m_entity == null) || !entity.getId().equals(m_entity.getId());
+            m_entity = entity;
             I_Type type = m_vie.getType(m_entity.getTypeName());
             m_formPanel = new FlowPanel();
             context.add(m_formPanel);
             AttributeHandler.setScrollElement(scrollParent);
             ButtonBarHandler.INSTANCE.setWidgetService(m_widgetService);
-            m_rootHandler = new RootHandler();
+            if (m_rootHandler == null) {
+                m_rootHandler = new RootHandler();
+            } else {
+                m_rootHandler.clearHandlers();
+            }
             m_tabInfos = tabInfos;
             m_formTabs = m_widgetService.getRendererForType(type).renderForm(
                 m_entity,
@@ -330,7 +336,9 @@ public class EditorBase implements I_InlineHtmlUpdateHandler {
             m_validationHandler.registerEntity(m_entity);
             m_validationHandler.setRootHandler(m_rootHandler);
             m_validationHandler.setFormTabPanel(m_formTabs);
-            UndoRedoHandler.getInstance().initialize(m_entity, this, m_rootHandler);
+            if (initUndo) {
+                UndoRedoHandler.getInstance().initialize(m_entity, this, m_rootHandler);
+            }
         }
     }
 
@@ -343,14 +351,20 @@ public class EditorBase implements I_InlineHtmlUpdateHandler {
      */
     public void renderEntityForm(String entityId, Panel context, Element scrollParent) {
 
-        m_entity = (Entity)m_vie.getEntity(entityId);
-        if (m_entity != null) {
+        Entity entity = (Entity)m_vie.getEntity(entityId);
+        if (entity != null) {
+            boolean initUndo = (m_entity == null) || !entity.getId().equals(m_entity.getId());
+            m_entity = entity;
             I_Type type = m_vie.getType(m_entity.getTypeName());
             m_formPanel = new FlowPanel();
             context.add(m_formPanel);
             AttributeHandler.setScrollElement(scrollParent);
             ButtonBarHandler.INSTANCE.setWidgetService(m_widgetService);
-            m_rootHandler = new RootHandler();
+            if (m_rootHandler == null) {
+                m_rootHandler = new RootHandler();
+            } else {
+                m_rootHandler.clearHandlers();
+            }
             m_widgetService.getRendererForType(type).renderForm(m_entity, m_formPanel, m_rootHandler, 0);
             m_formTabs = null;
             m_tabInfos = null;
@@ -358,7 +372,9 @@ public class EditorBase implements I_InlineHtmlUpdateHandler {
             m_validationHandler.registerEntity(m_entity);
             m_validationHandler.setRootHandler(m_rootHandler);
             m_validationHandler.setFormTabPanel(null);
-            UndoRedoHandler.getInstance().initialize(m_entity, this, m_rootHandler);
+            if (initUndo) {
+                UndoRedoHandler.getInstance().initialize(m_entity, this, m_rootHandler);
+            }
         }
     }
 
@@ -370,15 +386,16 @@ public class EditorBase implements I_InlineHtmlUpdateHandler {
      */
     public void renderInlineEntity(String entityId, I_InlineFormParent formParent) {
 
-        I_Entity entity = m_vie.getEntity(entityId);
-        if (entity != null) {
-            RootHandler rootHandler = new RootHandler();
+        m_entity = (Entity)m_vie.getEntity(entityId);
+        if (m_entity != null) {
+            m_rootHandler = new RootHandler();
             m_validationHandler.setContentService(m_service);
-            m_validationHandler.registerEntity(entity);
-            m_validationHandler.setRootHandler(rootHandler);
-            I_Type type = m_vie.getType(entity.getTypeName());
+            m_validationHandler.registerEntity(m_entity);
+            m_validationHandler.setRootHandler(m_rootHandler);
+            I_Type type = m_vie.getType(m_entity.getTypeName());
             ButtonBarHandler.INSTANCE.setWidgetService(m_widgetService);
-            m_widgetService.getRendererForType(type).renderInline(entity, formParent, this);
+            m_widgetService.getRendererForType(type).renderInline(m_entity, formParent, this);
+            UndoRedoHandler.getInstance().initialize(m_entity, this, m_rootHandler);
         }
     }
 

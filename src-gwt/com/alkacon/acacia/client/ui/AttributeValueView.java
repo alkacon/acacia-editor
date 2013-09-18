@@ -103,7 +103,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
          */
         public void onValueChange(ValueChangeEvent<String> event) {
 
-            getHandler().changeValue(AttributeValueView.this, event.getValue());
+            getHandler().handleValueChange(AttributeValueView.this, event.getValue());
             removeValidationMessage();
         }
     }

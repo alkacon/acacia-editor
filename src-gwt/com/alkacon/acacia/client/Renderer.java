@@ -140,11 +140,8 @@ public class Renderer implements I_EntityRenderer {
      */
     protected class WidgetChangeHandler implements ValueChangeHandler<String> {
 
-        /** The attribute name. */
-        private String m_attributeName;
-
-        /** The entity. */
-        private I_Entity m_entity;
+        /** The attribute handler. */
+        private AttributeHandler m_attributeHandler;
 
         /** The value index. */
         private int m_valueIndex;
@@ -152,14 +149,12 @@ public class Renderer implements I_EntityRenderer {
         /**
          * Constructor.<p>
          * 
-         * @param entity the entity
-         * @param attributeName the attribute name
+         * @param attributeHandler the attribute handler
          * @param valueIndex the value index, only relevant for in-line rendering
          */
-        protected WidgetChangeHandler(I_Entity entity, String attributeName, int valueIndex) {
+        protected WidgetChangeHandler(AttributeHandler attributeHandler, int valueIndex) {
 
-            m_entity = entity;
-            m_attributeName = attributeName;
+            m_attributeHandler = attributeHandler;
             m_valueIndex = valueIndex;
         }
 
@@ -168,7 +163,7 @@ public class Renderer implements I_EntityRenderer {
          */
         public void onValueChange(ValueChangeEvent<String> event) {
 
-            m_entity.setAttributeValue(m_attributeName, event.getValue(), m_valueIndex);
+            m_attributeHandler.handleValueChange(m_valueIndex, event.getValue());
         }
     }
 
@@ -560,20 +555,16 @@ public class Renderer implements I_EntityRenderer {
         if (attribute != null) {
             List<Element> elements = m_vie.getAttributeElements(parentEntity, attributeName, formParent.getElement());
             if (!elements.isEmpty()) {
+                AttributeHandler handler = new AttributeHandler(m_vie, parentEntity, attributeName, m_widgetService);
                 for (int i = 0; i < elements.size(); i++) {
                     Element element = elements.get(i);
                     if (attribute.isSimpleValue()) {
                         I_EditWidget widget = m_widgetService.getAttributeInlineWidget(
                             attributeName,
                             (com.google.gwt.user.client.Element)element);
-                        widget.addValueChangeHandler(new WidgetChangeHandler(parentEntity, attributeName, i));
+                        widget.addValueChangeHandler(new WidgetChangeHandler(handler, i));
                         formParent.adoptWidget(widget);
                     } else {
-                        AttributeHandler handler = new AttributeHandler(
-                            m_vie,
-                            parentEntity,
-                            attributeName,
-                            m_widgetService);
                         InlineEntityWidget.createWidgetForEntity(
                             element,
                             formParent,

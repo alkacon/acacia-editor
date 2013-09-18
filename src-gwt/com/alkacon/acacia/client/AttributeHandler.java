@@ -292,21 +292,32 @@ public class AttributeHandler extends RootHandler {
     }
 
     /**
-     * Changes the attribute value.<p>
+     * Handles value changes from the view.<p>
      * 
      * @param reference the attribute value reference
      * @param value the value
      */
-    public void changeValue(AttributeValueView reference, String value) {
+    public void handleValueChange(AttributeValueView reference, String value) {
 
-        changeEntityValue(value, reference.getValueIndex());
+        handleValueChange(reference.getValueIndex(), value);
+    }
+
+    /**
+     * Handles value changes from the view.<p>
+     * 
+     * @param valueIndex the value index
+     * @param value the value
+     */
+    public void handleValueChange(int valueIndex, String value) {
+
+        changeEntityValue(value, valueIndex);
         UndoRedoHandler handler = UndoRedoHandler.getInstance();
         if (handler.isIntitalized()) {
             handler.addChange(m_entity.getId()
                 + "/"
                 + m_attributeName.substring(m_attributeName.lastIndexOf("/") + 1)
                 + "["
-                + (reference.getValueIndex() + 1)
+                + (valueIndex + 1)
                 + "]", ChangeType.value);
         }
     }
