@@ -24,6 +24,7 @@
 
 package com.alkacon.acacia.client;
 
+import com.alkacon.acacia.client.UndoRedoHandler.ChangeType;
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.acacia.client.ui.AttributeValueView;
 import com.alkacon.acacia.client.ui.InlineEntityWidget;
@@ -216,6 +217,17 @@ public class AttributeHandler extends RootHandler {
                 I_Entity value = m_vie.createEntity(null, m_attributeType.getId());
                 insertValueAfterReference(value, reference);
             }
+            UndoRedoHandler handler = UndoRedoHandler.getInstance();
+            if (handler.isIntitalized()) {
+                handler.addChange(
+                    m_entity.getId()
+                        + "/"
+                        + m_attributeName.substring(m_attributeName.lastIndexOf("/") + 1)
+                        + "["
+                        + (reference.getValueIndex() + 2)
+                        + "]",
+                    ChangeType.add);
+            }
         }
         updateButtonVisisbility();
     }
@@ -267,6 +279,16 @@ public class AttributeHandler extends RootHandler {
             addComplexChoiceValue(reference, choicePath);
         }
         updateButtonVisisbility();
+        UndoRedoHandler handler = UndoRedoHandler.getInstance();
+        if (handler.isIntitalized()) {
+            handler.addChange(m_entity.getId()
+                + "/"
+                + m_attributeName.substring(m_attributeName.lastIndexOf("/") + 1)
+                + "["
+                + (reference.getValueIndex() + 2)
+                + "]", ChangeType.choice);
+        }
+
     }
 
     /**
@@ -277,16 +299,28 @@ public class AttributeHandler extends RootHandler {
      */
     public void changeValue(AttributeValueView reference, String value) {
 
-        if (getEntityType().isChoice()) {
-            I_Entity choice = m_entity.getAttribute(Type.CHOICE_ATTRIBUTE_NAME).getComplexValues().get(
-                reference.getValueIndex());
-            String attributeName = getChoiceName(reference.getValueIndex());
-            if (attributeName != null) {
-                choice.setAttributeValue(attributeName, value, 0);
-            }
-        } else {
-            m_entity.setAttributeValue(m_attributeName, value, reference.getValueIndex());
+        changeEntityValue(value, reference.getValueIndex());
+        UndoRedoHandler handler = UndoRedoHandler.getInstance();
+        if (handler.isIntitalized()) {
+            handler.addChange(m_entity.getId()
+                + "/"
+                + m_attributeName.substring(m_attributeName.lastIndexOf("/") + 1)
+                + "["
+                + (reference.getValueIndex() + 1)
+                + "]", ChangeType.value);
         }
+    }
+
+    /**
+     * Applies a value change to the entity data as well as to the value view widget.<p>
+     * 
+     * @param value the value
+     * @param valueIndex the value index
+     */
+    public void changeValue(String value, int valueIndex) {
+
+        m_attributeValueViews.get(valueIndex).getValueWidget().setValue(value, false);
+        changeEntityValue(value, valueIndex);
     }
 
     /**
@@ -402,6 +436,18 @@ public class AttributeHandler extends RootHandler {
     }
 
     /**
+     * Returns if there is a value view widget registered for the given index.<p>
+     * 
+     * @param valueIndex the value index
+     * 
+     * @return <code>true</code> if there is a value view widget registered for the given index
+     */
+    public boolean hasValueView(int valueIndex) {
+
+        return m_attributeValueViews.size() > valueIndex;
+    }
+
+    /**
      * Returns if this is a choice handler.<p>
      * 
      * @return <code>true</code> if this is a choice handler
@@ -494,6 +540,12 @@ public class AttributeHandler extends RootHandler {
 
         }
         updateButtonVisisbility();
+        UndoRedoHandler handler = UndoRedoHandler.getInstance();
+        if (handler.isIntitalized()) {
+            handler.addChange(
+                m_entity.getId() + "/" + m_attributeName.substring(m_attributeName.lastIndexOf("/") + 1),
+                ChangeType.sort);
+        }
     }
 
     /**
@@ -529,7 +581,12 @@ public class AttributeHandler extends RootHandler {
 
             }
         }).run(200);
-
+        UndoRedoHandler handler = UndoRedoHandler.getInstance();
+        if (handler.isIntitalized()) {
+            handler.addChange(
+                m_entity.getId() + "/" + m_attributeName.substring(m_attributeName.lastIndexOf("/") + 1),
+                ChangeType.sort);
+        }
     }
 
     /**
@@ -565,6 +622,12 @@ public class AttributeHandler extends RootHandler {
 
             }
         }).run(200);
+        UndoRedoHandler handler = UndoRedoHandler.getInstance();
+        if (handler.isIntitalized()) {
+            handler.addChange(
+                m_entity.getId() + "/" + m_attributeName.substring(m_attributeName.lastIndexOf("/") + 1),
+                ChangeType.sort);
+        }
     }
 
     /**
@@ -617,6 +680,15 @@ public class AttributeHandler extends RootHandler {
         if (removeParent && (parentHandler != null) && (parentView != null)) {
             parentHandler.removeAttributeValue(parentView);
             parentView.setCollapsed(false);
+        }
+        UndoRedoHandler handler = UndoRedoHandler.getInstance();
+        if (handler.isIntitalized()) {
+            handler.addChange(m_entity.getId()
+                + "/"
+                + m_attributeName.substring(m_attributeName.lastIndexOf("/") + 1)
+                + "["
+                + (reference.getValueIndex() + 1)
+                + "]", ChangeType.remove);
         }
     }
 
@@ -860,6 +932,25 @@ public class AttributeHandler extends RootHandler {
         insertValueAfterReference(value, reference);
         if (getMaxOccurence() == 1) {
             reference.setCollapsed(true);
+        }
+    }
+
+    /**
+     * Changes the attribute value.<p>
+     * 
+     * @param valueIndex the attribute value index
+     * @param value the value
+     */
+    private void changeEntityValue(String value, int valueIndex) {
+
+        if (getEntityType().isChoice()) {
+            I_Entity choice = m_entity.getAttribute(Type.CHOICE_ATTRIBUTE_NAME).getComplexValues().get(valueIndex);
+            String attributeName = getChoiceName(valueIndex);
+            if (attributeName != null) {
+                choice.setAttributeValue(attributeName, value, 0);
+            }
+        } else {
+            m_entity.setAttributeValue(m_attributeName, value, valueIndex);
         }
     }
 

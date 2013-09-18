@@ -76,6 +76,44 @@ public class Entity implements I_Entity, Serializable {
     }
 
     /**
+     * Returns the value of a simple attribute for the given path or <code>null</code>, if the value does not exist.<p>
+     * 
+     * @param entity the entity to get the value from
+     * @param pathElements the path elements
+     * 
+     * @return the value
+     */
+    public static String getValueForPath(I_Entity entity, String[] pathElements) {
+
+        String result = null;
+        if ((pathElements != null) && (pathElements.length >= 1)) {
+            String attributeName = pathElements[0];
+            int index = ContentDefinition.extractIndex(attributeName);
+            if (index > 0) {
+                index--;
+            }
+            attributeName = entity.getTypeName() + "/" + ContentDefinition.removeIndex(attributeName);
+            I_EntityAttribute attribute = entity.getAttribute(attributeName);
+            if (!((attribute == null) || (attribute.isComplexValue() && (pathElements.length == 1)))) {
+                if (attribute.isSimpleValue()) {
+                    if ((pathElements.length == 1) && (attribute.getValueCount() > 0)) {
+                        List<String> values = attribute.getSimpleValues();
+                        result = values.get(index);
+                    }
+                } else if (attribute.getValueCount() > (index)) {
+                    String[] childPathElements = new String[pathElements.length - 1];
+                    for (int i = 1; i < pathElements.length; i++) {
+                        childPathElements[i - 1] = pathElements[i];
+                    }
+                    List<I_Entity> values = attribute.getComplexValues();
+                    result = getValueForPath(values.get(index), childPathElements);
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
      * Returns a serializable version of the given entity.<p>
      * 
      * @param entity the entity
@@ -181,6 +219,37 @@ public class Entity implements I_Entity, Serializable {
                 List<I_Entity> values = attribute.getComplexValues();
                 for (I_Entity value : values) {
                     result.addAttributeValue(attribute.getAttributeName(), value.createDeepCopy(null));
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+
+        boolean result = false;
+        if (obj instanceof Entity) {
+            Entity test = (Entity)obj;
+            if (m_simpleAttributes.keySet().equals(test.m_simpleAttributes.keySet())
+                && m_entityAttributes.keySet().equals(test.m_entityAttributes.keySet())) {
+                result = true;
+                for (String attributeName : m_simpleAttributes.keySet()) {
+                    if (!m_simpleAttributes.get(attributeName).equals(test.m_simpleAttributes.get(attributeName))) {
+                        result = false;
+                        break;
+                    }
+                }
+                if (result) {
+                    for (String attributeName : m_entityAttributes.keySet()) {
+                        if (!m_entityAttributes.get(attributeName).equals(test.m_entityAttributes.get(attributeName))) {
+                            result = false;
+                            break;
+                        }
+                    }
                 }
             }
         }

@@ -50,12 +50,42 @@ public class RootHandler implements I_AttributeHandler {
     }
 
     /**
+     * Clears the handler hierarchy.
+     */
+    public void clearHandlers() {
+
+        for (Map<String, AttributeHandler> handlers : m_handlers) {
+            for (AttributeHandler handler : handlers.values()) {
+                handler.clearHandlers();
+            }
+            handlers.clear();
+        }
+        m_handlers.clear();
+        m_handlers.add(new HashMap<String, AttributeHandler>());
+    }
+
+    /**
      * @see com.alkacon.acacia.client.I_AttributeHandler#getChildHandler(java.lang.String, int)
      */
     public AttributeHandler getChildHandler(String attributeName, int index) {
 
         if (m_handlers.size() > index) {
             return m_handlers.get(index).get(attributeName);
+        }
+        return null;
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.I_AttributeHandler#getChildHandlerBySimpleName(java.lang.String, int)
+     */
+    public AttributeHandler getChildHandlerBySimpleName(String name, int index) {
+
+        if (m_handlers.size() > index) {
+            for (String attributeName : m_handlers.get(index).keySet()) {
+                if (attributeName.equals(name) || attributeName.endsWith(name)) {
+                    return m_handlers.get(index).get(attributeName);
+                }
+            }
         }
         return null;
     }
@@ -80,6 +110,34 @@ public class RootHandler implements I_AttributeHandler {
                 attributeName = Type.CHOICE_ATTRIBUTE_NAME;
             }
             handler = handler.getChildHandler(attributeName, index);
+            index = nextIndex;
+        }
+        return (AttributeHandler)handler;
+    }
+
+    /**
+     * Returns the attribute handler to the given simple path.<p>
+     * 
+     * @param pathNames the simple path elements
+     * 
+     * @return the attribute handler
+     */
+    public AttributeHandler getHandlersBySimplePath(String[] pathNames) {
+
+        I_AttributeHandler handler = this;
+        int index = 0;
+        for (int i = 0; i < pathNames.length; i++) {
+            String attributeName = pathNames[i];
+            int nextIndex = ContentDefinition.extractIndex(attributeName);
+            if (nextIndex > 0) {
+                nextIndex--;
+            }
+            attributeName = ContentDefinition.removeIndex(attributeName);
+            if ((handler instanceof AttributeHandler) && ((AttributeHandler)handler).getAttributeType().isChoice()) {
+                // in case of a choice attribute, skip to the next level
+                attributeName = Type.CHOICE_ATTRIBUTE_NAME;
+            }
+            handler = handler.getChildHandlerBySimpleName(attributeName, index);
             index = nextIndex;
         }
         return (AttributeHandler)handler;

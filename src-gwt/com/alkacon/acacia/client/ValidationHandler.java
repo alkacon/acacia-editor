@@ -96,6 +96,9 @@ public final class ValidationHandler implements ValueChangeHandler<I_Entity>, Ha
     /** The handler registration. */
     private HandlerRegistration m_handlerRegistration;
 
+    /** Indicates validation is paused. */
+    private boolean m_paused;
+
     /** The root attribute handler. */
     private RootHandler m_rootHandler;
 
@@ -182,11 +185,13 @@ public final class ValidationHandler implements ValueChangeHandler<I_Entity>, Ha
      */
     public void onValueChange(final ValueChangeEvent<I_Entity> event) {
 
-        if (m_validationTimer != null) {
-            m_validationTimer.cancel();
+        if (!m_paused) {
+            if (m_validationTimer != null) {
+                m_validationTimer.cancel();
+            }
+            m_validationTimer = new ValidationTimer(event.getValue());
+            m_validationTimer.schedule(300);
         }
-        m_validationTimer = new ValidationTimer(event.getValue());
-        m_validationTimer.schedule(300);
     }
 
     /**
@@ -206,6 +211,7 @@ public final class ValidationHandler implements ValueChangeHandler<I_Entity>, Ha
         if (m_handlerRegistration != null) {
             m_handlerRegistration.removeHandler();
         }
+        m_paused = false;
         m_handlerRegistration = ((HasValueChangeHandlers<I_Entity>)entity).addValueChangeHandler(this);
     }
 
@@ -227,6 +233,29 @@ public final class ValidationHandler implements ValueChangeHandler<I_Entity>, Ha
     public void setFormTabPanel(TabbedPanel<?> tabPanel) {
 
         m_formTabPanel = tabPanel;
+    }
+
+    /**
+     * Sets the validation to pause.<p>
+     * 
+     * @param paused <code>true</code> to pause the validation
+     * @param entity the entity will be revalidated when setting paused to <code>false</code>
+     */
+    public void setPaused(boolean paused, I_Entity entity) {
+
+        if (paused != m_paused) {
+            m_paused = paused;
+            if (m_paused) {
+                if (m_validationTimer != null) {
+                    m_validationTimer.cancel();
+                    m_validationTimer = null;
+                }
+            } else {
+                m_validationTimer = new ValidationTimer(entity);
+                m_validationTimer.schedule(300);
+            }
+
+        }
     }
 
     /**
@@ -267,8 +296,7 @@ public final class ValidationHandler implements ValueChangeHandler<I_Entity>, Ha
 
                     public void onFailure(Throwable caught) {
 
-                        // TODO: Auto-generated method stub
-
+                        // can be ignored
                     }
 
                     public void onSuccess(ValidationResult result) {

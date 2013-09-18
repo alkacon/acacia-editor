@@ -40,6 +40,16 @@ public interface I_AttributeHandler {
     AttributeHandler getChildHandler(String attributeName, int index);
 
     /**
+     * Returns the child handler by simple name.<p>
+     * 
+     * @param name the name
+     * @param index the value index
+     * 
+     * @return the child handler if present
+     */
+    AttributeHandler getChildHandlerBySimpleName(String name, int index);
+
+    /**
      * Inserts a handler map at the given index.<p>
      * 
      * @param index the value index

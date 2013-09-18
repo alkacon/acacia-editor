@@ -99,8 +99,23 @@ public class EditorBase implements I_InlineHtmlUpdateHandler {
     /** The in-line edit overlay hiding other content. */
     private InlineEditOverlay m_editOverlay;
 
+    /** The edited entity. */
+    private Entity m_entity;
+
+    /** The form panel. */
+    private FlowPanel m_formPanel;
+
+    /** The tab panel if tabs are used. */
+    private TabbedPanel<?> m_formTabs;
+
+    /** The root attribute handler. */
+    private RootHandler m_rootHandler;
+
     /** The content service instance. */
     private I_ContentServiceAsync m_service;
+
+    /** The tab infos. */
+    private List<TabInfo> m_tabInfos;
 
     /** The validation handler. */
     private ValidationHandler m_validationHandler;
@@ -297,23 +312,25 @@ public class EditorBase implements I_InlineHtmlUpdateHandler {
      */
     public void renderEntityForm(String entityId, List<TabInfo> tabInfos, Panel context, Element scrollParent) {
 
-        I_Entity entity = m_vie.getEntity(entityId);
-        if (entity != null) {
-            I_Type type = m_vie.getType(entity.getTypeName());
-            FlowPanel formPanel = new FlowPanel();
-            context.add(formPanel);
+        m_entity = (Entity)m_vie.getEntity(entityId);
+        if (m_entity != null) {
+            I_Type type = m_vie.getType(m_entity.getTypeName());
+            m_formPanel = new FlowPanel();
+            context.add(m_formPanel);
             AttributeHandler.setScrollElement(scrollParent);
             ButtonBarHandler.INSTANCE.setWidgetService(m_widgetService);
-            RootHandler rootHandler = new RootHandler();
-            TabbedPanel<?> formTabs = m_widgetService.getRendererForType(type).renderForm(
-                entity,
-                tabInfos,
-                formPanel,
-                rootHandler,
+            m_rootHandler = new RootHandler();
+            m_tabInfos = tabInfos;
+            m_formTabs = m_widgetService.getRendererForType(type).renderForm(
+                m_entity,
+                m_tabInfos,
+                m_formPanel,
+                m_rootHandler,
                 0);
-            m_validationHandler.registerEntity(entity);
-            m_validationHandler.setRootHandler(rootHandler);
-            m_validationHandler.setFormTabPanel(formTabs);
+            m_validationHandler.registerEntity(m_entity);
+            m_validationHandler.setRootHandler(m_rootHandler);
+            m_validationHandler.setFormTabPanel(m_formTabs);
+            UndoRedoHandler.getInstance().initialize(m_entity, this, m_rootHandler);
         }
     }
 
@@ -326,18 +343,22 @@ public class EditorBase implements I_InlineHtmlUpdateHandler {
      */
     public void renderEntityForm(String entityId, Panel context, Element scrollParent) {
 
-        I_Entity entity = m_vie.getEntity(entityId);
-        if (entity != null) {
-            I_Type type = m_vie.getType(entity.getTypeName());
-            FlowPanel formPanel = new FlowPanel();
-            context.add(formPanel);
+        m_entity = (Entity)m_vie.getEntity(entityId);
+        if (m_entity != null) {
+            I_Type type = m_vie.getType(m_entity.getTypeName());
+            m_formPanel = new FlowPanel();
+            context.add(m_formPanel);
             AttributeHandler.setScrollElement(scrollParent);
             ButtonBarHandler.INSTANCE.setWidgetService(m_widgetService);
-            RootHandler rootHandler = new RootHandler();
-            m_widgetService.getRendererForType(type).renderForm(entity, formPanel, rootHandler, 0);
+            m_rootHandler = new RootHandler();
+            m_widgetService.getRendererForType(type).renderForm(m_entity, m_formPanel, m_rootHandler, 0);
+            m_formTabs = null;
+            m_tabInfos = null;
             m_validationHandler.setContentService(m_service);
-            m_validationHandler.registerEntity(entity);
-            m_validationHandler.setRootHandler(rootHandler);
+            m_validationHandler.registerEntity(m_entity);
+            m_validationHandler.setRootHandler(m_rootHandler);
+            m_validationHandler.setFormTabPanel(null);
+            UndoRedoHandler.getInstance().initialize(m_entity, this, m_rootHandler);
         }
     }
 
@@ -359,6 +380,35 @@ public class EditorBase implements I_InlineHtmlUpdateHandler {
             ButtonBarHandler.INSTANCE.setWidgetService(m_widgetService);
             m_widgetService.getRendererForType(type).renderInline(entity, formParent, this);
         }
+    }
+
+    /**
+     * Re-renders the form with the given entity data.<p>
+     * 
+     * @param newContent the entity data
+     */
+    public void rerenderForm(I_Entity newContent) {
+
+        m_validationHandler.setPaused(true, m_entity);
+        m_vie.changeEntityContentValues(m_entity, newContent);
+        I_Type type = m_vie.getType(m_entity.getTypeName());
+        if ((m_tabInfos != null) && !m_tabInfos.isEmpty()) {
+            int currentTab = m_formTabs.getSelectedIndex();
+            m_formPanel.clear();
+            m_rootHandler.clearHandlers();
+            m_formTabs = m_widgetService.getRendererForType(type).renderForm(
+                m_entity,
+                m_tabInfos,
+                m_formPanel,
+                m_rootHandler,
+                0);
+            m_formTabs.selectTab(currentTab);
+        } else {
+            m_formPanel.clear();
+            m_rootHandler.clearHandlers();
+            m_widgetService.getRendererForType(type).renderForm(m_entity, m_tabInfos, m_formPanel, m_rootHandler, 0);
+        }
+        m_validationHandler.setPaused(false, m_entity);
     }
 
     /**
