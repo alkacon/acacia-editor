@@ -52,6 +52,9 @@ import com.google.gwt.user.client.Timer;
  */
 public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandlers {
 
+    /** Use as option to disallow any HTML or formatting the content. */
+    public static final String NO_HTML_EDIT = "no_html_edit";
+
     /** The minimum editor height. */
     private static final int MIN_EDITOR_HEIGHT = 70;
 
@@ -95,7 +98,7 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
     private boolean m_inline;
 
     /** The editor options. */
-    private JavaScriptObject m_options;
+    private Object m_options;
 
     /** The in line editing toolbar container. */
     private Element m_toolbarContainer;
@@ -106,7 +109,7 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
      * @param element the DOM element
      * @param options the tinyMCE editor options to extend the default settings
      */
-    public TinyMCEWidget(Element element, JavaScriptObject options) {
+    public TinyMCEWidget(Element element, Object options) {
 
         this(element, options, true);
     }
@@ -116,7 +119,7 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
      * 
      * @param options the tinyMCE editor options to extend the default settings
      */
-    public TinyMCEWidget(JavaScriptObject options) {
+    public TinyMCEWidget(Object options) {
 
         this(DOM.createDiv(), options, false);
     }
@@ -128,7 +131,7 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
      * @param options the tinyMCE editor options to extend the default settings
      * @param inline flag indicating if in line editing is used
      */
-    private TinyMCEWidget(Element element, JavaScriptObject options, boolean inline) {
+    private TinyMCEWidget(Element element, Object options, boolean inline) {
 
         super(element);
         m_originalContent = "";
@@ -469,7 +472,18 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
                              delete options.editorHeight;
                              }
                              // default options:
-                             var defaults = {
+                             var defaults;
+                             if (@com.alkacon.acacia.client.widgets.TinyMCEWidget::NO_HTML_EDIT == options) {
+                             // disallow any formatting
+                             defaults = {
+                             selector : mainElement.tagName+"#"+ elementId,
+                             toolbar : "undo,redo",
+                             menubar : false,
+                             toolbar_items_size : 'small'
+                             };
+                             options = null;
+                             } else {
+                             defaults = {
                              elements : elementId,
                              relative_urls : false,
                              remove_script_host : false,
@@ -481,7 +495,7 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
                              menubar : false,
                              toolbar_items_size : 'small'
                              };
-
+                             }
                              if (this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_inline) {
                              self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_currentContent = mainElement.innerHTML;
                              defaults.inline = true;
@@ -604,7 +618,7 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
                                        ed.remove();
                                        }
                                        // in IE somehow the whole document will be selected, empty the selection to resolve that
-                                       if ($wnd.document.selection!=null) {
+                                       if ($wnd.document.selection != null) {
                                        $wnd.document.selection.empty();
                                        }
                                        }-*/;
