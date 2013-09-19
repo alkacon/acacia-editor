@@ -82,6 +82,9 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
     /** The element to store the widget content in. */
     private Element m_contentElement;
 
+    /** Indicates the value has been set from external, not from within the widget. */
+    private boolean m_externalValueChange;
+
     /** Indicating if the widget has been attached yet. */
     private boolean m_hasBeenAttached;
 
@@ -236,11 +239,13 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
             // editor has not been initialized yet
             m_originalContent = value;
         } else {
+            m_externalValueChange = true;
             setContent(value);
         }
         if (fireEvents) {
             fireValueChange(true);
         }
+
     }
 
     /**
@@ -609,7 +614,8 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
      */
     private void fireChangeFromNative() {
 
-        if (m_initialized) {
+        // skip firing the change event, if the external flag is set
+        if (m_initialized && !m_externalValueChange) {
             Scheduler.get().scheduleDeferred(new ScheduledCommand() {
 
                 public void execute() {
@@ -622,6 +628,8 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
                 }
             });
         }
+        // reset the external flag
+        m_externalValueChange = false;
     }
 
     /**
