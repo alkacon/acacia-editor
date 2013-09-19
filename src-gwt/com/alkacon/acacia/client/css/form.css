@@ -297,15 +297,29 @@ div.tinymceToolbarContainer > div{
 
 /* this styles the tinymce toolbar */
 .attributeValue .mce-tinymce > .mce-container-body > .mce-panel:first-child{
-	border-radius: value("constants.css.borderRadius") value("constants.css.borderRadius") 0px 0px;
 	position: absolute;
     right: -1px;
-    max-width:90%;
+    width:90%;
+    display: none;
+}
+
+.attributeValue .mce-tinymce > .mce-container-body > .mce-panel:first-child > .mce-container-body{
+	background: inherit;
+    bottom: 0;
+    max-width: 100%;
+    position: absolute;
+    right: 0;
     border-top: 1px solid #7788AA;
     border-right: 1px solid #7788AA;
     border-left: 1px solid #7788AA;
-    margin-top:-29px;
-    display: none;
+    border-radius: value("constants.css.borderRadius") value("constants.css.borderRadius") 0px 0px;
+}
+
+.attributeValue .mce-tinymce > .mce-container-body.mce-fullscreen > .mce-panel:first-child > .mce-container-body{
+	border: none;
+	position: static;
+    width: 100%;
+    background: transparent;
 }
 
 .attributeValue .mce-tinymce > .mce-container-body.mce-fullscreen > .mce-panel:first-child{
