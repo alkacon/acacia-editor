@@ -33,11 +33,12 @@ import com.alkacon.geranium.client.util.DomUtil;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * The attribute values panel.<p>
  */
-public class ValuePanel extends FlowPanel implements I_DropTarget {
+public class ValuePanel extends FlowPanel implements I_DropTarget, I_HasResizeOnShow {
 
     /** The current place holder. */
     protected Element m_placeholder;
@@ -130,6 +131,18 @@ public class ValuePanel extends FlowPanel implements I_DropTarget {
 
         // handle vertical orientation only
         m_placeholderIndex = DomUtil.positionElementInside(m_placeholder, getElement(), m_placeholderIndex, -1, y);
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.ui.I_HasResizeOnShow#resizeOnShow()
+     */
+    public void resizeOnShow() {
+
+        for (Widget w : this) {
+            if (w instanceof I_HasResizeOnShow) {
+                ((I_HasResizeOnShow)w).resizeOnShow();
+            }
+        }
     }
 
     /**

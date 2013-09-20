@@ -85,13 +85,14 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
  * UI object holding an attribute value.<p>
  */
 public class AttributeValueView extends Composite
-implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownHandlers {
+implements I_Draggable, I_HasResizeOnShow, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownHandlers {
 
     /**
      * The widget value change handler.<p>
@@ -210,13 +211,16 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
 
     /** The widget holder elemenet. */
     @UiField
-    protected FlowPanel m_widgetHolder;
+    protected SimplePanel m_widgetHolder;
 
     /** The currently running animation. */
     Animation m_currentAnimation;
 
     /** The activation mouse down handler registration. */
     private HandlerRegistration m_activationHandlerRegistration;
+
+    /** Style variable to enable/disable 'collapsed' style. */
+    private StyleVariable m_collapsedStyle = new StyleVariable(this);
 
     /** The compact view style variable. */
     private StyleVariable m_compacteModeStyle;
@@ -256,9 +260,6 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
 
     /** The editing widget. */
     private I_FormEditWidget m_widget;
-
-    /** Style variable to enable/disable 'collapsed' style. */
-    private StyleVariable m_collapsedStyle = new StyleVariable(this);
 
     /**
      * Constructor.<p>
@@ -531,8 +532,7 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
 
         if (!isSimpleValue()) {
             m_hasValue = false;
-            m_widgetHolder.clear();
-            generateLabel();
+            clearWidgetHolder();
         } else {
             // only deactivate the widget and restore the default value
             m_widget.setActive(false);
@@ -541,6 +541,28 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         }
         addStyleName(formCss().emptyValue());
         removeValidationMessage();
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.ui.I_HasResizeOnShow#resizeOnShow()
+     */
+    public void resizeOnShow() {
+
+        // call resize on all children implementing com.alkacon.acacia.client.ui.I_HasResizeOnShow
+        if (hasValue()) {
+            if (isSimpleValue()) {
+                if (m_widget instanceof I_HasResizeOnShow) {
+                    ((I_HasResizeOnShow)m_widget).resizeOnShow();
+                }
+            } else {
+                FlowPanel context = (FlowPanel)m_widgetHolder.getWidget();
+                for (Widget w : context) {
+                    if (w instanceof I_HasResizeOnShow) {
+                        ((I_HasResizeOnShow)w).resizeOnShow();
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -932,6 +954,16 @@ implements I_Draggable, HasMouseOverHandlers, HasMouseOutHandlers, HasMouseDownH
         // preventing issue where mouse out was never triggered after drag and drop
         m_moveButton.clearHoverState();
         ButtonBarHandler.INSTANCE.closeAll();
+    }
+
+    /**
+     * Clears the widget holder.<p>
+     */
+    private void clearWidgetHolder() {
+
+        if (m_widgetHolder.getWidget() != null) {
+            m_widgetHolder.remove(m_widgetHolder.getWidget());
+        }
     }
 
     /**

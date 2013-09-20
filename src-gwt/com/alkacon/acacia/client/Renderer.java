@@ -26,12 +26,12 @@ package com.alkacon.acacia.client;
 
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.acacia.client.ui.AttributeValueView;
+import com.alkacon.acacia.client.ui.I_HasResizeOnShow;
 import com.alkacon.acacia.client.ui.InlineEntityWidget;
 import com.alkacon.acacia.client.ui.ValuePanel;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
 import com.alkacon.acacia.shared.TabInfo;
 import com.alkacon.acacia.shared.Type;
-import com.alkacon.geranium.client.ui.FlowPanel;
 import com.alkacon.geranium.client.ui.TabbedPanel;
 import com.alkacon.geranium.client.ui.TabbedPanel.TabbedPanelStyle;
 import com.alkacon.geranium.client.util.PositionBean;
@@ -55,12 +55,46 @@ import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Renders the widgets for an in-line form.<p>
  */
 public class Renderer implements I_EntityRenderer {
+
+    /**
+     * Calls resize on tab selection on the tabs child hierarchy.<p> 
+     */
+    protected class TabSelectionHandler implements SelectionHandler<Integer> {
+
+        /** The tabbed panel. */
+        private TabbedPanel<FlowPanel> m_tabsPanel;
+
+        /**
+         * Constructor.<p>
+         * 
+         * @param tabsPanel the tabbed panel
+         */
+        TabSelectionHandler(TabbedPanel<FlowPanel> tabsPanel) {
+
+            m_tabsPanel = tabsPanel;
+        }
+
+        /**
+         * @see com.google.gwt.event.logical.shared.SelectionHandler#onSelection(com.google.gwt.event.logical.shared.SelectionEvent)
+         */
+        public void onSelection(SelectionEvent<Integer> event) {
+
+            FlowPanel tab = m_tabsPanel.getWidget(event.getSelectedItem().intValue());
+            for (Widget w : tab) {
+                if (w instanceof I_HasResizeOnShow) {
+                    ((I_HasResizeOnShow)w).resizeOnShow();
+                }
+            }
+        }
+    }
 
     /**
      * Handles the size of a tabbed panel.<p>
@@ -121,7 +155,7 @@ public class Renderer implements I_EntityRenderer {
         }
 
         /**
-         * Triggers the tab panel height adjustment scheduled after the browsers event loop.
+         * Triggers the tab panel height adjustment scheduled after the browsers event loop.<p>
          */
         private void triggerHeightAdjustment() {
 
@@ -372,6 +406,7 @@ public class Renderer implements I_EntityRenderer {
                 }
             }, 200);
             AttributeHandler.setResizeHandler(tabSizeHandler);
+            tabbedPanel.addSelectionHandler(new TabSelectionHandler(tabbedPanel));
             tabbedPanel.getElement().getStyle().setBorderWidth(0, Unit.PX);
             Iterator<TabInfo> tabIt = tabInfos.iterator();
             TabInfo currentTab = tabIt.next();

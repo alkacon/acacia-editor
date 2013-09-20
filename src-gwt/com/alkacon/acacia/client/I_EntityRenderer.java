@@ -25,12 +25,12 @@
 package com.alkacon.acacia.client;
 
 import com.alkacon.acacia.shared.TabInfo;
-import com.alkacon.geranium.client.ui.FlowPanel;
 import com.alkacon.geranium.client.ui.TabbedPanel;
 import com.alkacon.vie.shared.I_Entity;
 
 import java.util.List;
 
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
 
 /**

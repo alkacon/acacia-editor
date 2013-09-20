@@ -27,7 +27,6 @@ package com.alkacon.acacia.client;
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.acacia.shared.AcaciaConstants;
 import com.alkacon.acacia.shared.TabInfo;
-import com.alkacon.geranium.client.ui.FlowPanel;
 import com.alkacon.geranium.client.ui.TabbedPanel;
 import com.alkacon.vie.client.I_Vie;
 import com.alkacon.vie.client.Vie;
@@ -40,6 +39,7 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
 
 /**
