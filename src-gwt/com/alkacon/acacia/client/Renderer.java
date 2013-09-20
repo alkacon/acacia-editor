@@ -70,7 +70,7 @@ public class Renderer implements I_EntityRenderer {
     protected class TabSelectionHandler implements SelectionHandler<Integer> {
 
         /** The tabbed panel. */
-        private TabbedPanel<FlowPanel> m_tabsPanel;
+        TabbedPanel<FlowPanel> m_tabsPanel;
 
         /**
          * Constructor.<p>
@@ -85,14 +85,21 @@ public class Renderer implements I_EntityRenderer {
         /**
          * @see com.google.gwt.event.logical.shared.SelectionHandler#onSelection(com.google.gwt.event.logical.shared.SelectionEvent)
          */
-        public void onSelection(SelectionEvent<Integer> event) {
+        public void onSelection(final SelectionEvent<Integer> event) {
 
-            FlowPanel tab = m_tabsPanel.getWidget(event.getSelectedItem().intValue());
-            for (Widget w : tab) {
-                if (w instanceof I_HasResizeOnShow) {
-                    ((I_HasResizeOnShow)w).resizeOnShow();
+            Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+
+                public void execute() {
+
+                    FlowPanel tab = m_tabsPanel.getWidget(event.getSelectedItem().intValue());
+                    for (Widget w : tab) {
+                        if (w instanceof I_HasResizeOnShow) {
+                            ((I_HasResizeOnShow)w).resizeOnShow();
+                        }
+                    }
                 }
-            }
+            });
+
         }
     }
 

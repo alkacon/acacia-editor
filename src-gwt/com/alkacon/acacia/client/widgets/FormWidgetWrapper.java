@@ -25,6 +25,7 @@
 package com.alkacon.acacia.client.widgets;
 
 import com.alkacon.acacia.client.css.I_LayoutBundle;
+import com.alkacon.acacia.client.ui.I_HasResizeOnShow;
 import com.alkacon.geranium.client.util.DomUtil;
 
 import com.google.gwt.event.dom.client.FocusHandler;
@@ -39,7 +40,7 @@ import com.google.gwt.user.client.ui.HTML;
 /** 
  * Wraps an edit widget to supply a widget label.<p>
  **/
-public class FormWidgetWrapper extends Composite implements I_FormEditWidget, HasResizeHandlers {
+public class FormWidgetWrapper extends Composite implements I_FormEditWidget, HasResizeHandlers, I_HasResizeOnShow {
 
     /** The edit widget. */
     private I_EditWidget m_editWidget;
@@ -126,6 +127,16 @@ public class FormWidgetWrapper extends Composite implements I_FormEditWidget, Ha
     public void onAttachWidget() {
 
         super.onAttach();
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.ui.I_HasResizeOnShow#resizeOnShow()
+     */
+    public void resizeOnShow() {
+
+        if (m_editWidget instanceof I_HasResizeOnShow) {
+            ((I_HasResizeOnShow)m_editWidget).resizeOnShow();
+        }
     }
 
     /**
