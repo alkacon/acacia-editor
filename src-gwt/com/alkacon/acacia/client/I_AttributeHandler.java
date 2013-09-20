@@ -71,4 +71,12 @@ public interface I_AttributeHandler {
      * @param handler the handler
      */
     void setHandler(int index, String attributeName, AttributeHandler handler);
+
+    /**
+     * Sets the handler by id.<p>
+     * 
+     * @param attributeName the attribute name
+     * @param handler the handler
+     */
+    void setHandlerById(String attributeName, AttributeHandler handler);
 }

@@ -85,7 +85,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -211,7 +211,7 @@ implements I_Draggable, I_HasResizeOnShow, HasMouseOverHandlers, HasMouseOutHand
 
     /** The widget holder elemenet. */
     @UiField
-    protected SimplePanel m_widgetHolder;
+    protected FlowPanel m_widgetHolder;
 
     /** The currently running animation. */
     Animation m_currentAnimation;
@@ -532,7 +532,7 @@ implements I_Draggable, I_HasResizeOnShow, HasMouseOverHandlers, HasMouseOutHand
 
         if (!isSimpleValue()) {
             m_hasValue = false;
-            clearWidgetHolder();
+            m_widgetHolder.clear();
         } else {
             // only deactivate the widget and restore the default value
             m_widget.setActive(false);
@@ -555,10 +555,13 @@ implements I_Draggable, I_HasResizeOnShow, HasMouseOverHandlers, HasMouseOutHand
                     ((I_HasResizeOnShow)m_widget).resizeOnShow();
                 }
             } else {
-                FlowPanel context = (FlowPanel)m_widgetHolder.getWidget();
-                for (Widget w : context) {
-                    if (w instanceof I_HasResizeOnShow) {
-                        ((I_HasResizeOnShow)w).resizeOnShow();
+                for (Widget panel : m_widgetHolder) {
+                    if (panel instanceof HasWidgets.ForIsWidget) {
+                        for (Widget w : (HasWidgets.ForIsWidget)panel) {
+                            if (w instanceof I_HasResizeOnShow) {
+                                ((I_HasResizeOnShow)w).resizeOnShow();
+                            }
+                        }
                     }
                 }
             }
@@ -954,16 +957,6 @@ implements I_Draggable, I_HasResizeOnShow, HasMouseOverHandlers, HasMouseOutHand
         // preventing issue where mouse out was never triggered after drag and drop
         m_moveButton.clearHoverState();
         ButtonBarHandler.INSTANCE.closeAll();
-    }
-
-    /**
-     * Clears the widget holder.<p>
-     */
-    private void clearWidgetHolder() {
-
-        if (m_widgetHolder.getWidget() != null) {
-            m_widgetHolder.remove(m_widgetHolder.getWidget());
-        }
     }
 
     /**

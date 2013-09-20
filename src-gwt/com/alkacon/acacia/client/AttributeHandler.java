@@ -29,6 +29,7 @@ import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.acacia.client.ui.AttributeValueView;
 import com.alkacon.acacia.client.ui.InlineEntityWidget;
 import com.alkacon.acacia.client.widgets.I_FormEditWidget;
+import com.alkacon.acacia.shared.ContentDefinition;
 import com.alkacon.acacia.shared.Type;
 import com.alkacon.geranium.client.dnd.DNDHandler;
 import com.alkacon.geranium.client.dnd.DNDHandler.Orientation;
@@ -174,6 +175,27 @@ public class AttributeHandler extends RootHandler {
     }
 
     /**
+     * Returns the entity id.<p>
+     * 
+     * @return the entity id
+     */
+    public String getEntityId() {
+
+        return m_entity.getId();
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.RootHandler#setHandlerById(java.lang.String, com.alkacon.acacia.client.AttributeHandler)
+     */
+    @Override
+    public void setHandlerById(String attributeName, AttributeHandler handler) {
+
+        if (m_parentHandler != null) {
+            m_parentHandler.setHandlerById(attributeName, handler);
+        }
+    }
+
+    /**
      * Adds a new attribute value below the reference view.<p>
      * 
      * @param reference the reference value view
@@ -214,19 +236,19 @@ public class AttributeHandler extends RootHandler {
                 }
                 valueWidget.setValueWidget(widget, defaultValue, defaultValue, true);
             } else {
-                I_Entity value = m_vie.createEntity(null, m_attributeType.getId());
+                I_Entity value = m_vie.createEntity(
+                    ContentDefinition.generateEntityId(m_entity, getAttributeType(), reference.getValueIndex() + 1),
+                    getAttributeType().getId());
                 insertValueAfterReference(value, reference);
             }
             UndoRedoHandler handler = UndoRedoHandler.getInstance();
             if (handler.isIntitalized()) {
-                handler.addChange(
-                    m_entity.getId()
-                        + "/"
-                        + m_attributeName.substring(m_attributeName.lastIndexOf("/") + 1)
-                        + "["
-                        + (reference.getValueIndex() + 2)
-                        + "]",
-                    ChangeType.add);
+                handler.addChange(m_entity.getId()
+                    + "/"
+                    + m_attributeName
+                    + "["
+                    + (reference.getValueIndex() + 1)
+                    + "]", ChangeType.add);
             }
         }
         updateButtonVisisbility();
@@ -253,7 +275,9 @@ public class AttributeHandler extends RootHandler {
 
                 }
             } else {
-                I_Entity value = m_vie.createEntity(null, m_attributeType.getId());
+                I_Entity value = m_vie.createEntity(
+                    ContentDefinition.generateEntityId(m_entity, getAttributeType(), referenceIndex + 1),
+                    m_attributeType.getId());
                 if ((attribute == null) || (attribute.getValueCount() == (referenceIndex + 1))) {
                     m_entity.addAttributeValue(m_attributeName, value);
                 } else {
@@ -281,12 +305,9 @@ public class AttributeHandler extends RootHandler {
         updateButtonVisisbility();
         UndoRedoHandler handler = UndoRedoHandler.getInstance();
         if (handler.isIntitalized()) {
-            handler.addChange(m_entity.getId()
-                + "/"
-                + m_attributeName.substring(m_attributeName.lastIndexOf("/") + 1)
-                + "["
-                + (reference.getValueIndex() + 2)
-                + "]", ChangeType.choice);
+            handler.addChange(
+                m_entity.getId() + "/" + m_attributeName + "[" + (reference.getValueIndex() + 1) + "]",
+                ChangeType.choice);
         }
 
     }
@@ -313,12 +334,7 @@ public class AttributeHandler extends RootHandler {
         changeEntityValue(value, valueIndex);
         UndoRedoHandler handler = UndoRedoHandler.getInstance();
         if (handler.isIntitalized()) {
-            handler.addChange(m_entity.getId()
-                + "/"
-                + m_attributeName.substring(m_attributeName.lastIndexOf("/") + 1)
-                + "["
-                + (valueIndex + 1)
-                + "]", ChangeType.value);
+            handler.addChange(m_entity.getId() + "/" + m_attributeName + "[" + valueIndex + "]", ChangeType.value);
         }
     }
 
@@ -345,7 +361,9 @@ public class AttributeHandler extends RootHandler {
         I_Entity parentValue = value;
         for (String attributeChoice : choicePath) {
             I_Type choiceType = m_vie.getType(parentValue.getTypeName()).getAttributeType(Type.CHOICE_ATTRIBUTE_NAME);
-            I_Entity choice = m_vie.createEntity(null, choiceType.getId());
+            I_Entity choice = m_vie.createEntity(
+                ContentDefinition.generateEntityId(parentValue, choiceType, 0),
+                choiceType.getId());
             parentValue.addAttributeValue(Type.CHOICE_ATTRIBUTE_NAME, choice);
             I_Type choiceOptionType = choiceType.getAttributeType(attributeChoice);
             if (choiceOptionType.isSimpleType()) {
@@ -353,7 +371,9 @@ public class AttributeHandler extends RootHandler {
                 choice.addAttributeValue(attributeChoice, choiceValue);
                 break;
             } else {
-                I_Entity choiceValue = m_vie.createEntity(null, choiceOptionType.getId());
+                I_Entity choiceValue = m_vie.createEntity(
+                    ContentDefinition.generateEntityId(choice, choiceOptionType, 0),
+                    choiceOptionType.getId());
                 choice.addAttributeValue(attributeChoice, choiceValue);
                 parentValue = choiceValue;
             }
@@ -553,9 +573,7 @@ public class AttributeHandler extends RootHandler {
         updateButtonVisisbility();
         UndoRedoHandler handler = UndoRedoHandler.getInstance();
         if (handler.isIntitalized()) {
-            handler.addChange(
-                m_entity.getId() + "/" + m_attributeName.substring(m_attributeName.lastIndexOf("/") + 1),
-                ChangeType.sort);
+            handler.addChange(m_entity.getId() + "/" + m_attributeName + "[0]", ChangeType.sort);
         }
     }
 
@@ -594,9 +612,7 @@ public class AttributeHandler extends RootHandler {
         }).run(200);
         UndoRedoHandler handler = UndoRedoHandler.getInstance();
         if (handler.isIntitalized()) {
-            handler.addChange(
-                m_entity.getId() + "/" + m_attributeName.substring(m_attributeName.lastIndexOf("/") + 1),
-                ChangeType.sort);
+            handler.addChange(m_entity.getId() + "/" + m_attributeName, ChangeType.sort);
         }
     }
 
@@ -635,9 +651,7 @@ public class AttributeHandler extends RootHandler {
         }).run(200);
         UndoRedoHandler handler = UndoRedoHandler.getInstance();
         if (handler.isIntitalized()) {
-            handler.addChange(
-                m_entity.getId() + "/" + m_attributeName.substring(m_attributeName.lastIndexOf("/") + 1),
-                ChangeType.sort);
+            handler.addChange(m_entity.getId() + "/" + m_attributeName, ChangeType.sort);
         }
     }
 
@@ -694,12 +708,7 @@ public class AttributeHandler extends RootHandler {
         }
         UndoRedoHandler handler = UndoRedoHandler.getInstance();
         if (handler.isIntitalized()) {
-            handler.addChange(m_entity.getId()
-                + "/"
-                + m_attributeName.substring(m_attributeName.lastIndexOf("/") + 1)
-                + "["
-                + (reference.getValueIndex() + 1)
-                + "]", ChangeType.remove);
+            handler.addChange(m_entity.getId() + "/" + m_attributeName, ChangeType.remove);
         }
     }
 
@@ -876,8 +885,10 @@ public class AttributeHandler extends RootHandler {
 
         String attributeChoice = choicePath.get(0);
         I_Type optionType = getAttributeType().getAttributeType(attributeChoice);
-
-        I_Entity choiceEntity = m_vie.createEntity(null, getAttributeType().getId());
+        int valueIndex = reference.getValueIndex() + 1;
+        I_Entity choiceEntity = m_vie.createEntity(
+            ContentDefinition.generateEntityId(m_entity, getAttributeType(), valueIndex),
+            getAttributeType().getId());
         AttributeValueView valueWidget = reference;
         if (reference.hasValue()) {
             valueWidget = new AttributeValueView(
@@ -893,7 +904,7 @@ public class AttributeHandler extends RootHandler {
         for (ChoiceMenuEntryBean menuEntry : menuEntries) {
             valueWidget.addChoice(m_widgetService, menuEntry);
         }
-        int valueIndex = reference.getValueIndex() + 1;
+
         m_entity.insertAttributeValue(m_attributeName, choiceEntity, valueIndex);
         ((FlowPanel)reference.getParent()).insert(valueWidget, valueIndex);
         insertHandlers(valueWidget.getValueIndex());
@@ -904,7 +915,9 @@ public class AttributeHandler extends RootHandler {
             choiceEntity.addAttributeValue(attributeChoice, defaultValue);
             valueWidget.setValueWidget(widget, defaultValue, defaultValue, true);
         } else {
-            I_Entity value = m_vie.createEntity(null, optionType.getId());
+            I_Entity value = m_vie.createEntity(
+                ContentDefinition.generateEntityId(choiceEntity, optionType, 0),
+                optionType.getId());
             choiceEntity.addAttributeValue(attributeChoice, value);
             List<String> remainingAttributeNames = tail(choicePath);
             createNestedEntitiesForChoicePath(value, remainingAttributeNames);
@@ -923,11 +936,15 @@ public class AttributeHandler extends RootHandler {
      */
     private void addComplexChoiceValue(AttributeValueView reference, List<String> choicePath) {
 
-        I_Entity value = m_vie.createEntity(null, getAttributeType().getId());
+        I_Entity value = m_vie.createEntity(
+            ContentDefinition.generateEntityId(m_entity, getAttributeType(), reference.getValueIndex() + 1),
+            getAttributeType().getId());
         I_Entity parentValue = value;
         for (String attributeChoice : choicePath) {
             I_Type choiceType = m_vie.getType(parentValue.getTypeName()).getAttributeType(Type.CHOICE_ATTRIBUTE_NAME);
-            I_Entity choice = m_vie.createEntity(null, choiceType.getId());
+            I_Entity choice = m_vie.createEntity(
+                ContentDefinition.generateEntityId(parentValue, choiceType, 0),
+                choiceType.getId());
             parentValue.addAttributeValue(Type.CHOICE_ATTRIBUTE_NAME, choice);
             I_Type choiceOptionType = choiceType.getAttributeType(attributeChoice);
             if (choiceOptionType.isSimpleType()) {
@@ -935,7 +952,9 @@ public class AttributeHandler extends RootHandler {
                 choice.addAttributeValue(attributeChoice, choiceValue);
                 break;
             } else {
-                I_Entity choiceValue = m_vie.createEntity(null, choiceOptionType.getId());
+                I_Entity choiceValue = m_vie.createEntity(
+                    ContentDefinition.generateEntityId(choice, choiceOptionType, 0),
+                    choiceOptionType.getId());
                 choice.addAttributeValue(attributeChoice, choiceValue);
                 parentValue = choiceValue;
             }

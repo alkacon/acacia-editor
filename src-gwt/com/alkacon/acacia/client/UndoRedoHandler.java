@@ -113,7 +113,7 @@ public class UndoRedoHandler implements HasValueChangeHandlers<UndoRedoState> {
         private Entity m_entityData;
 
         /** The path elements. */
-        private String[] m_pathElements;
+        private String m_handlerId;
 
         /** The change type. */
         private ChangeType m_type;
@@ -122,12 +122,12 @@ public class UndoRedoHandler implements HasValueChangeHandlers<UndoRedoState> {
          * Constructor.<p>
          * 
          * @param entityData the chane entity data
-         * @param pathElements the path elements
+         * @param entityId the path elements
          * @param type the change type
          */
-        Change(Entity entityData, String[] pathElements, ChangeType type) {
+        Change(Entity entityData, String entityId, ChangeType type) {
 
-            m_pathElements = pathElements;
+            m_handlerId = entityId;
             m_type = type;
             m_entityData = entityData;
         }
@@ -147,9 +147,9 @@ public class UndoRedoHandler implements HasValueChangeHandlers<UndoRedoState> {
          * 
          * @return the path elements
          */
-        public String[] getPathElements() {
+        public String getHandlerId() {
 
-            return m_pathElements;
+            return m_handlerId;
         }
 
         /**
@@ -220,8 +220,7 @@ public class UndoRedoHandler implements HasValueChangeHandlers<UndoRedoState> {
         Entity currentData = Entity.serializeEntity(m_entity);
         if (!currentData.equals(m_current.getEntityData())) {
             m_undo.push(m_current);
-            String[] pathElements = valuePath.substring(m_entity.getId().length() + 1).split("/");
-            m_current = new Change(currentData, pathElements, changeType);
+            m_current = new Change(currentData, valuePath, changeType);
             m_redo.clear();
             fireStateChange();
         }
@@ -311,7 +310,7 @@ public class UndoRedoHandler implements HasValueChangeHandlers<UndoRedoState> {
         if (!m_redo.isEmpty()) {
             m_undo.push(m_current);
             m_current = m_redo.pop();
-            changeEntityContentValues(m_current.getEntityData(), m_current.getPathElements(), m_current.getType());
+            changeEntityContentValues(m_current.getEntityData(), m_current.getHandlerId(), m_current.getType());
             fireStateChange();
         }
     }
@@ -323,10 +322,10 @@ public class UndoRedoHandler implements HasValueChangeHandlers<UndoRedoState> {
 
         if (hasUndo()) {
             ChangeType type = m_current.getType();
-            String[] pathElements = m_current.getPathElements();
+            String handlerId = m_current.getHandlerId();
             m_redo.push(m_current);
             m_current = m_undo.pop();
-            changeEntityContentValues(m_current.getEntityData(), pathElements, type);
+            changeEntityContentValues(m_current.getEntityData(), handlerId, type);
             fireStateChange();
         }
     }
@@ -351,19 +350,21 @@ public class UndoRedoHandler implements HasValueChangeHandlers<UndoRedoState> {
      * @param pathElements the value path elements
      * @param type the change type
      */
-    private void changeEntityContentValues(Entity newContent, String[] pathElements, ChangeType type) {
+    private void changeEntityContentValues(Entity newContent, String pathElements, ChangeType type) {
 
         switch (type) {
             case value:
-                AttributeHandler handler = m_rootHandler.getHandlersBySimplePath(pathElements);
-                String value = Entity.getValueForPath(newContent, pathElements);
-                int valueIndex = ContentDefinition.extractIndex(pathElements[pathElements.length - 1]);
-                if (valueIndex > 0) {
-                    valueIndex--;
-                }
-                if ((handler != null) && handler.hasValueView(valueIndex) && (value != null)) {
-                    handler.changeValue(value, valueIndex);
-                    break;
+                int valueIndex = ContentDefinition.extractIndex(pathElements);
+                pathElements = ContentDefinition.removeIndex(pathElements);
+                String attributeName = "";
+                AttributeHandler handler = m_rootHandler.getHandlerById(pathElements);
+                Entity entity = newContent.getEntityById(pathElements);
+                if ((entity != null) && (entity.getAttribute(attributeName) != null)) {
+                    String value = entity.getAttribute(attributeName).getSimpleValues().get(valueIndex);
+                    if ((handler != null) && handler.hasValueView(valueIndex) && (value != null)) {
+                        handler.changeValue(value, valueIndex);
+                        break;
+                    }
                 }
                 //$FALL-THROUGH$
             default:

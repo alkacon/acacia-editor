@@ -37,6 +37,9 @@ import java.util.Map;
  */
 public class RootHandler implements I_AttributeHandler {
 
+    /** The attribute handler by id. */
+    private Map<String, AttributeHandler> m_handlerById;
+
     /** The sub handlers. */
     private List<Map<String, AttributeHandler>> m_handlers;
 
@@ -47,6 +50,7 @@ public class RootHandler implements I_AttributeHandler {
 
         m_handlers = new ArrayList<Map<String, AttributeHandler>>();
         m_handlers.add(new HashMap<String, AttributeHandler>());
+        m_handlerById = new HashMap<String, AttributeHandler>();
     }
 
     /**
@@ -62,6 +66,7 @@ public class RootHandler implements I_AttributeHandler {
         }
         m_handlers.clear();
         m_handlers.add(new HashMap<String, AttributeHandler>());
+        m_handlerById.clear();
     }
 
     /**
@@ -88,6 +93,18 @@ public class RootHandler implements I_AttributeHandler {
             }
         }
         return null;
+    }
+
+    /**
+     * Returns the handler for the given id.<p>
+     * 
+     * @param handlerId the handler id
+     * 
+     * @return the handler
+     */
+    public AttributeHandler getHandlerById(String handlerId) {
+
+        return m_handlerById.get(handlerId);
     }
 
     /**
@@ -170,6 +187,15 @@ public class RootHandler implements I_AttributeHandler {
 
         m_handlers.get(index).put(attributeName, handler);
         handler.setParentHandler(this);
+        setHandlerById(attributeName, handler);
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.I_AttributeHandler#setHandlerById(java.lang.String, com.alkacon.acacia.client.AttributeHandler)
+     */
+    public void setHandlerById(String attributeName, AttributeHandler handler) {
+
+        m_handlerById.put(handler.getEntityId() + "/" + attributeName, handler);
     }
 
     /**
@@ -186,6 +212,7 @@ public class RootHandler implements I_AttributeHandler {
                 m_handlers.add(new HashMap<String, AttributeHandler>());
             }
         }
+        m_handlerById.clear();
     }
 
 }

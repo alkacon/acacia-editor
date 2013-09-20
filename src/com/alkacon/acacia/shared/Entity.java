@@ -286,6 +286,35 @@ public class Entity implements I_Entity, Serializable {
     }
 
     /**
+     * Returns this or a child entity with the given id.<p>
+     * Will return <code>null</code> if no entity with the given id is present.<p>
+     * 
+     * @param entityId the entity id
+     * 
+     * @return the entity
+     */
+    public Entity getEntityById(String entityId) {
+
+        Entity result = null;
+        if (m_id.equals(entityId)) {
+            result = this;
+        } else {
+            for (List<Entity> children : m_entityAttributes.values()) {
+                for (Entity child : children) {
+                    result = child.getEntityById(entityId);
+                    if (result != null) {
+                        break;
+                    }
+                }
+                if (result != null) {
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
      * @see com.alkacon.vie.shared.I_Entity#getId()
      */
     public String getId() {
