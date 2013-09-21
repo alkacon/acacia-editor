@@ -25,7 +25,6 @@
 package com.alkacon.acacia.client;
 
 import com.alkacon.acacia.client.UndoRedoHandler.UndoRedoState;
-import com.alkacon.acacia.shared.ContentDefinition;
 import com.alkacon.acacia.shared.Entity;
 import com.alkacon.vie.shared.I_Entity;
 
@@ -108,28 +107,47 @@ public class UndoRedoHandler implements HasValueChangeHandlers<UndoRedoState> {
      * Representing a change stack entry.<p>
      */
     private class Change {
+    	
+    	/** The attribute name. */
+        private String m_attributeName;
 
         /** The entity data. */
         private Entity m_entityData;
 
-        /** The path elements. */
-        private String m_handlerId;
+        /** The entity id. */
+        private String m_entityId;
 
         /** The change type. */
         private ChangeType m_type;
+        
+        /** The value index. */
+        private int m_valueIndex;
 
         /**
          * Constructor.<p>
          * 
          * @param entityData the chane entity data
-         * @param entityId the path elements
+         * @param entityId the entity id
+         * @param attriuteName the attribute name
+         * @param valueIndex the value index
          * @param type the change type
          */
-        Change(Entity entityData, String entityId, ChangeType type) {
+        Change(Entity entityData, String entityId, String attributeName, int valueIndex, ChangeType type) {
 
-            m_handlerId = entityId;
+            m_entityId = entityId;
+            m_attributeName=attributeName;
+            m_valueIndex=valueIndex;
             m_type = type;
             m_entityData = entityData;
+        }
+        
+        /**
+         * Returns the attribute name.<p>
+         * 
+         * @return the attribute name
+         */
+        public String getAttributeName(){
+        	return m_attributeName;
         }
 
         /**
@@ -143,13 +161,13 @@ public class UndoRedoHandler implements HasValueChangeHandlers<UndoRedoState> {
         }
 
         /**
-         * Returns the change value path elements.<p>
+         * Returns the change entity id.<p>
          * 
-         * @return the path elements
+         * @return the entity id
          */
-        public String getHandlerId() {
+        public String getEntityId() {
 
-            return m_handlerId;
+            return m_entityId;
         }
 
         /**
@@ -160,6 +178,15 @@ public class UndoRedoHandler implements HasValueChangeHandlers<UndoRedoState> {
         public ChangeType getType() {
 
             return m_type;
+        }
+        
+        /**
+         * Returns the value index.<p>
+         * 
+         * @return the value index
+         */
+        public int getValueIndex(){
+        	return m_valueIndex;
         }
     }
 
@@ -215,12 +242,12 @@ public class UndoRedoHandler implements HasValueChangeHandlers<UndoRedoState> {
      * @param valuePath the entity value path
      * @param changeType the change type
      */
-    public void addChange(String valuePath, ChangeType changeType) {
+    public void addChange(String valuePath, String attributeName, int valueIndex, ChangeType changeType) {
 
         Entity currentData = Entity.serializeEntity(m_entity);
         if (!currentData.equals(m_current.getEntityData())) {
             m_undo.push(m_current);
-            m_current = new Change(currentData, valuePath, changeType);
+            m_current = new Change(currentData, valuePath, attributeName, valueIndex, changeType);
             m_redo.clear();
             fireStateChange();
         }
@@ -288,7 +315,7 @@ public class UndoRedoHandler implements HasValueChangeHandlers<UndoRedoState> {
         m_entity = entity;
         m_editor = editor;
         m_rootHandler = rootHandler;
-        m_current = new Change(Entity.serializeEntity(m_entity), null, null);
+        m_current = new Change(Entity.serializeEntity(m_entity), null, null,0, null);
         fireStateChange();
     }
 
@@ -310,7 +337,7 @@ public class UndoRedoHandler implements HasValueChangeHandlers<UndoRedoState> {
         if (!m_redo.isEmpty()) {
             m_undo.push(m_current);
             m_current = m_redo.pop();
-            changeEntityContentValues(m_current.getEntityData(), m_current.getHandlerId(), m_current.getType());
+            changeEntityContentValues(m_current.getEntityData(), m_current.getEntityId(),m_current.getAttributeName(), m_current.getValueIndex(), m_current.getType());
             fireStateChange();
         }
     }
@@ -322,10 +349,12 @@ public class UndoRedoHandler implements HasValueChangeHandlers<UndoRedoState> {
 
         if (hasUndo()) {
             ChangeType type = m_current.getType();
-            String handlerId = m_current.getHandlerId();
+            String entityId = m_current.getEntityId();
+            String attributeName=m_current.getAttributeName();
+            int valueIndex=m_current.getValueIndex();
             m_redo.push(m_current);
             m_current = m_undo.pop();
-            changeEntityContentValues(m_current.getEntityData(), handlerId, type);
+            changeEntityContentValues(m_current.getEntityData(), entityId, attributeName, valueIndex, type);
             fireStateChange();
         }
     }
@@ -347,18 +376,15 @@ public class UndoRedoHandler implements HasValueChangeHandlers<UndoRedoState> {
      * Sets the editor to the given state.<p>
      * 
      * @param newContent the state content
-     * @param pathElements the value path elements
+     * @param entityId the value path elements
      * @param type the change type
      */
-    private void changeEntityContentValues(Entity newContent, String pathElements, ChangeType type) {
+    private void changeEntityContentValues(Entity newContent, String entityId, String attributeName, int valueIndex, ChangeType type) {
 
         switch (type) {
             case value:
-                int valueIndex = ContentDefinition.extractIndex(pathElements);
-                pathElements = ContentDefinition.removeIndex(pathElements);
-                String attributeName = "";
-                AttributeHandler handler = m_rootHandler.getHandlerById(pathElements);
-                Entity entity = newContent.getEntityById(pathElements);
+                AttributeHandler handler = m_rootHandler.getHandlerById(entityId, attributeName);
+                Entity entity = newContent.getEntityById(entityId);
                 if ((entity != null) && (entity.getAttribute(attributeName) != null)) {
                     String value = entity.getAttribute(attributeName).getSimpleValues().get(valueIndex);
                     if ((handler != null) && handler.hasValueView(valueIndex) && (value != null)) {

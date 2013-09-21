@@ -102,9 +102,9 @@ public class RootHandler implements I_AttributeHandler {
      * 
      * @return the handler
      */
-    public AttributeHandler getHandlerById(String handlerId) {
+    public AttributeHandler getHandlerById(String handlerId, String attributeName) {
 
-        return m_handlerById.get(handlerId);
+        return m_handlerById.get(handlerId+"/"+attributeName);
     }
 
     /**

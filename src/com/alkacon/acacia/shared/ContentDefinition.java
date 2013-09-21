@@ -24,7 +24,6 @@
 
 package com.alkacon.acacia.shared;
 
-import com.alkacon.vie.shared.I_Entity;
 import com.alkacon.vie.shared.I_Type;
 
 import java.util.List;
@@ -110,26 +109,6 @@ public class ContentDefinition implements IsSerializable {
             }
         }
         return index;
-    }
-
-    /**
-     * Generates an entity id for the given parent, attribute type and value index.<p>
-     * The id will represent the path to the value.<p>
-     * 
-     * @param parent the parent entity
-     * @param attributeType the attribute type
-     * @param valueIndex the value index
-     * 
-     * @return the new id
-     */
-    public static String generateEntityId(I_Entity parent, I_Type attributeType, int valueIndex) {
-
-        return parent.getId()
-            + "/"
-            + attributeType.getId().substring(attributeType.getId().lastIndexOf("/") + 1)
-            + "["
-            + (valueIndex + 1)
-            + "]";
     }
 
     /**

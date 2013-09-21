@@ -30,7 +30,6 @@ import com.alkacon.acacia.client.ui.I_HasResizeOnShow;
 import com.alkacon.acacia.client.ui.InlineEntityWidget;
 import com.alkacon.acacia.client.ui.ValuePanel;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
-import com.alkacon.acacia.shared.ContentDefinition;
 import com.alkacon.acacia.shared.TabInfo;
 import com.alkacon.acacia.shared.Type;
 import com.alkacon.geranium.client.ui.TabbedPanel;
@@ -660,9 +659,7 @@ public class Renderer implements I_EntityRenderer {
             result = parentEntity.getAttribute(attributeName);
         } else {
             for (int i = 0; i < minOccurrence; i++) {
-                parentEntity.addAttributeValue(attributeName, m_vie.createEntity(
-                    ContentDefinition.generateEntityId(parentEntity, attributeType, i),
-                    attributeType.getId()));
+                parentEntity.addAttributeValue(attributeName, m_vie.createEntity(null, attributeType.getId()));
             }
             result = parentEntity.getAttribute(attributeName);
         }
