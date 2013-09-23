@@ -604,8 +604,19 @@ public class Renderer implements I_EntityRenderer {
                         I_EditWidget widget = m_widgetService.getAttributeInlineWidget(
                             attributeName,
                             (com.google.gwt.user.client.Element)element);
-                        widget.addValueChangeHandler(new WidgetChangeHandler(handler, i));
-                        formParent.adoptWidget(widget);
+                        if (widget != null) {
+                            widget.addValueChangeHandler(new WidgetChangeHandler(handler, i));
+                            formParent.adoptWidget(widget);
+                        } else {
+                            InlineEntityWidget.createWidgetForEntity(
+                                element,
+                                formParent,
+                                parentEntity,
+                                handler,
+                                i,
+                                updateHandler,
+                                m_widgetService);
+                        }
                     } else {
                         InlineEntityWidget.createWidgetForEntity(
                             element,

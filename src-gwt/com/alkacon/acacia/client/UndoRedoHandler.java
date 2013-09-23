@@ -107,8 +107,8 @@ public class UndoRedoHandler implements HasValueChangeHandlers<UndoRedoState> {
      * Representing a change stack entry.<p>
      */
     private class Change {
-    	
-    	/** The attribute name. */
+
+        /** The attribute name. */
         private String m_attributeName;
 
         /** The entity data. */
@@ -119,7 +119,7 @@ public class UndoRedoHandler implements HasValueChangeHandlers<UndoRedoState> {
 
         /** The change type. */
         private ChangeType m_type;
-        
+
         /** The value index. */
         private int m_valueIndex;
 
@@ -128,26 +128,27 @@ public class UndoRedoHandler implements HasValueChangeHandlers<UndoRedoState> {
          * 
          * @param entityData the chane entity data
          * @param entityId the entity id
-         * @param attriuteName the attribute name
+         * @param attributeName the attribute name
          * @param valueIndex the value index
          * @param type the change type
          */
         Change(Entity entityData, String entityId, String attributeName, int valueIndex, ChangeType type) {
 
             m_entityId = entityId;
-            m_attributeName=attributeName;
-            m_valueIndex=valueIndex;
+            m_attributeName = attributeName;
+            m_valueIndex = valueIndex;
             m_type = type;
             m_entityData = entityData;
         }
-        
+
         /**
          * Returns the attribute name.<p>
          * 
          * @return the attribute name
          */
-        public String getAttributeName(){
-        	return m_attributeName;
+        public String getAttributeName() {
+
+            return m_attributeName;
         }
 
         /**
@@ -179,14 +180,15 @@ public class UndoRedoHandler implements HasValueChangeHandlers<UndoRedoState> {
 
             return m_type;
         }
-        
+
         /**
          * Returns the value index.<p>
          * 
          * @return the value index
          */
-        public int getValueIndex(){
-        	return m_valueIndex;
+        public int getValueIndex() {
+
+            return m_valueIndex;
         }
     }
 
@@ -240,6 +242,8 @@ public class UndoRedoHandler implements HasValueChangeHandlers<UndoRedoState> {
      * Adds a change to the undo stack.<p>
      * 
      * @param valuePath the entity value path
+     * @param attributeName the attribute name
+     * @param valueIndex the value index
      * @param changeType the change type
      */
     public void addChange(String valuePath, String attributeName, int valueIndex, ChangeType changeType) {
@@ -315,7 +319,7 @@ public class UndoRedoHandler implements HasValueChangeHandlers<UndoRedoState> {
         m_entity = entity;
         m_editor = editor;
         m_rootHandler = rootHandler;
-        m_current = new Change(Entity.serializeEntity(m_entity), null, null,0, null);
+        m_current = new Change(Entity.serializeEntity(m_entity), null, null, 0, null);
         fireStateChange();
     }
 
@@ -337,7 +341,12 @@ public class UndoRedoHandler implements HasValueChangeHandlers<UndoRedoState> {
         if (!m_redo.isEmpty()) {
             m_undo.push(m_current);
             m_current = m_redo.pop();
-            changeEntityContentValues(m_current.getEntityData(), m_current.getEntityId(),m_current.getAttributeName(), m_current.getValueIndex(), m_current.getType());
+            changeEntityContentValues(
+                m_current.getEntityData(),
+                m_current.getEntityId(),
+                m_current.getAttributeName(),
+                m_current.getValueIndex(),
+                m_current.getType());
             fireStateChange();
         }
     }
@@ -350,8 +359,8 @@ public class UndoRedoHandler implements HasValueChangeHandlers<UndoRedoState> {
         if (hasUndo()) {
             ChangeType type = m_current.getType();
             String entityId = m_current.getEntityId();
-            String attributeName=m_current.getAttributeName();
-            int valueIndex=m_current.getValueIndex();
+            String attributeName = m_current.getAttributeName();
+            int valueIndex = m_current.getValueIndex();
             m_redo.push(m_current);
             m_current = m_undo.pop();
             changeEntityContentValues(m_current.getEntityData(), entityId, attributeName, valueIndex, type);
@@ -377,9 +386,16 @@ public class UndoRedoHandler implements HasValueChangeHandlers<UndoRedoState> {
      * 
      * @param newContent the state content
      * @param entityId the value path elements
+     * @param attributeName the attribute name
+     * @param valueIndex the value index
      * @param type the change type
      */
-    private void changeEntityContentValues(Entity newContent, String entityId, String attributeName, int valueIndex, ChangeType type) {
+    private void changeEntityContentValues(
+        Entity newContent,
+        String entityId,
+        String attributeName,
+        int valueIndex,
+        ChangeType type) {
 
         switch (type) {
             case value:

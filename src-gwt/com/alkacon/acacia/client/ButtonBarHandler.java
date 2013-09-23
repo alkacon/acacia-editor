@@ -28,6 +28,7 @@ import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.acacia.client.ui.AttributeChoiceWidget;
 import com.alkacon.acacia.client.ui.ChoiceMenuEntryWidget;
 import com.alkacon.acacia.client.ui.ChoiceSubmenu;
+import com.alkacon.acacia.client.ui.InlineEntityWidget;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -353,6 +354,9 @@ public class ButtonBarHandler implements MouseOverHandler, MouseOutHandler {
             buttonBar.addStyleName(hoverStyle);
         } else {
             buttonBar.removeStyleName(hoverStyle);
+        }
+        if (buttonBar instanceof InlineEntityWidget) {
+            ((InlineEntityWidget)buttonBar).setContentHighlightingVisible(visible);
         }
     }
 }

@@ -33,6 +33,7 @@ import com.alkacon.acacia.client.I_InlineHtmlUpdateHandler;
 import com.alkacon.acacia.client.I_WidgetService;
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.geranium.client.I_DescendantResizeHandler;
+import com.alkacon.geranium.client.ui.HighlightingBorder;
 import com.alkacon.geranium.client.ui.I_Button.ButtonStyle;
 import com.alkacon.geranium.client.ui.Popup;
 import com.alkacon.geranium.client.ui.PushButton;
@@ -70,6 +71,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * Widget allowing form based editing for parts of a content to enhance the in-line editing.<p>
@@ -183,6 +185,9 @@ public class InlineEntityWidget extends Composite {
     /** The up button. */
     @UiField
     protected PushButton m_upButton;
+
+    /** The highlighting border widget. */
+    HighlightingBorder m_highlighting;
 
     /** The pop-up panel. */
     Popup m_popup;
@@ -308,6 +313,30 @@ public class InlineEntityWidget extends Composite {
     public int getAttributeIndex() {
 
         return m_attributeIndex;
+    }
+
+    /**
+     * Sets the visibility of the reference element highlighting border.<p>
+     * 
+     * @param visible <code>true</code> to show the highlighting
+     */
+    public void setContentHighlightingVisible(boolean visible) {
+
+        if (visible) {
+            if (m_highlighting == null) {
+                m_highlighting = new HighlightingBorder(
+                    PositionBean.getInnerDimensions(m_referenceElement),
+                    HighlightingBorder.BorderColor.red);
+                RootPanel.get().add(m_highlighting);
+            } else {
+                m_highlighting.setPosition(PositionBean.getInnerDimensions(m_referenceElement));
+            }
+        } else {
+            if (m_highlighting != null) {
+                m_highlighting.removeFromParent();
+                m_highlighting = null;
+            }
+        }
     }
 
     /**

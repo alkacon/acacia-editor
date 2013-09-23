@@ -79,7 +79,6 @@ public class ValuePanel extends FlowPanel implements I_DropTarget, I_HasResizeOn
     public void highlightOutline() {
 
         m_highlighting = new HighlightingBorder(getElement(), HighlightingBorder.BorderColor.red);
-        //   m_highlighting.getElement().getStyle().setZIndex(2000000);
         add(m_highlighting);
     }
 

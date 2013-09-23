@@ -98,13 +98,14 @@ public class RootHandler implements I_AttributeHandler {
     /**
      * Returns the handler for the given id.<p>
      * 
-     * @param handlerId the handler id
+     * @param entityId the entity id
+     * @param attributeName the attribute name
      * 
      * @return the handler
      */
-    public AttributeHandler getHandlerById(String handlerId, String attributeName) {
+    public AttributeHandler getHandlerById(String entityId, String attributeName) {
 
-        return m_handlerById.get(handlerId+"/"+attributeName);
+        return m_handlerById.get(entityId + "/" + attributeName);
     }
 
     /**

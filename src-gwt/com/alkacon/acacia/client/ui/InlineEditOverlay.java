@@ -32,7 +32,9 @@ import com.alkacon.geranium.client.util.DomUtil;
 import com.alkacon.geranium.client.util.PositionBean;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
@@ -123,6 +125,9 @@ public class InlineEditOverlay extends Composite implements HasClickHandlers {
     /** Style of border. */
     private Style m_borderTopStyle;
 
+    /** Map of attached edit buttons and their absolute top positions. */
+    private Map<InlineEntityWidget, Integer> m_buttons;
+
     /** The element to surround with the overlay. */
     private Element m_element;
 
@@ -174,6 +179,7 @@ public class InlineEditOverlay extends Composite implements HasClickHandlers {
                 event.stopPropagation();
             }
         }, ClickEvent.getType());
+        m_buttons = new HashMap<InlineEntityWidget, Integer>();
     }
 
     /**
@@ -194,6 +200,22 @@ public class InlineEditOverlay extends Composite implements HasClickHandlers {
         overlay.updatePosition();
         overlay.checkZIndex();
         return overlay;
+    }
+
+    /**
+     * @see com.google.gwt.user.client.ui.UIObject#setVisible(boolean)
+     */
+    @Override
+    public void setVisible(boolean visible) {
+
+        super.setVisible(visible);
+        if (!visible && m_hasButtonBar) {
+            for (Widget widget : m_buttonPanel) {
+                if (widget instanceof InlineEntityWidget) {
+                    ((InlineEntityWidget)widget).setContentHighlightingVisible(false);
+                }
+            }
+        }
     }
 
     /**
@@ -250,10 +272,8 @@ public class InlineEditOverlay extends Composite implements HasClickHandlers {
     public void addButton(InlineEntityWidget widget, int absoluteTop) {
 
         setButtonBarVisible(true);
-        widget.getElement().getStyle().setTop(
-            absoluteTop - ClientStringUtil.parseInt(m_buttonBar.getStyle().getTop()),
-            Unit.PX);
         m_buttonPanel.add(widget);
+        setButtonPosition(widget, absoluteTop);
     }
 
     /**
@@ -289,6 +309,7 @@ public class InlineEditOverlay extends Composite implements HasClickHandlers {
     public void clearButtonPanel() {
 
         m_buttonPanel.clear();
+        m_buttons.clear();
         setButtonBarVisible(false);
     }
 
@@ -302,7 +323,7 @@ public class InlineEditOverlay extends Composite implements HasClickHandlers {
 
         if (m_buttonPanel.getWidgetIndex(widget) > -1) {
             widget.getElement().getStyle().setTop(
-                absoluteTop - ClientStringUtil.parseInt(m_buttonBar.getStyle().getTop()),
+                getAvailablePosition(widget, absoluteTop) - ClientStringUtil.parseInt(m_buttonBar.getStyle().getTop()),
                 Unit.PX);
         }
     }
@@ -328,6 +349,34 @@ public class InlineEditOverlay extends Composite implements HasClickHandlers {
                 ((InlineEntityWidget)widget).positionWidget();
             }
         }
+    }
+
+    /**
+     * Returns the available absolute top position for the given button.<p>
+     * 
+     * @param widget the button widget
+     * @param absoluteTop the proposed position
+     * 
+     * @return the available position
+     */
+    private int getAvailablePosition(InlineEntityWidget widget, int absoluteTop) {
+
+        m_buttons.remove(widget);
+        boolean positionBlocked = true;
+        while (positionBlocked) {
+            positionBlocked = false;
+            for (int pos : m_buttons.values()) {
+                if (((pos - 24) < absoluteTop) && (absoluteTop < (pos + 24))) {
+                    positionBlocked = true;
+                    break;
+                }
+            }
+            if (positionBlocked) {
+                absoluteTop += 25;
+            }
+        }
+        m_buttons.put(widget, new Integer(absoluteTop));
+        return absoluteTop;
     }
 
     /**
