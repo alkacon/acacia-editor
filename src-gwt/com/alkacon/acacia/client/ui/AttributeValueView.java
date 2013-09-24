@@ -35,6 +35,7 @@ import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
 import com.alkacon.acacia.client.widgets.I_FormEditWidget;
 import com.alkacon.geranium.client.I_DescendantResizeHandler;
+import com.alkacon.geranium.client.I_HasResizeOnShow;
 import com.alkacon.geranium.client.dnd.I_DragHandle;
 import com.alkacon.geranium.client.dnd.I_Draggable;
 import com.alkacon.geranium.client.dnd.I_DropTarget;
@@ -544,8 +545,8 @@ implements I_Draggable, I_HasResizeOnShow, HasMouseOverHandlers, HasMouseOutHand
     }
 
     /**
-     * @see com.alkacon.acacia.client.ui.I_HasResizeOnShow#resizeOnShow()
-     */
+    * @see com.alkacon.geranium.client.I_HasResizeOnShow#resizeOnShow()
+    */
     public void resizeOnShow() {
 
         // call resize on all children implementing com.alkacon.acacia.client.ui.I_HasResizeOnShow

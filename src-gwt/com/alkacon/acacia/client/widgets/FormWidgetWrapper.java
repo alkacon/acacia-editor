@@ -25,7 +25,7 @@
 package com.alkacon.acacia.client.widgets;
 
 import com.alkacon.acacia.client.css.I_LayoutBundle;
-import com.alkacon.acacia.client.ui.I_HasResizeOnShow;
+import com.alkacon.geranium.client.I_HasResizeOnShow;
 import com.alkacon.geranium.client.util.DomUtil;
 
 import com.google.gwt.event.dom.client.FocusHandler;
@@ -130,7 +130,7 @@ public class FormWidgetWrapper extends Composite implements I_FormEditWidget, Ha
     }
 
     /**
-     * @see com.alkacon.acacia.client.ui.I_HasResizeOnShow#resizeOnShow()
+     * @see com.alkacon.geranium.client.I_HasResizeOnShow#resizeOnShow()
      */
     public void resizeOnShow() {
 

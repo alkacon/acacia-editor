@@ -26,12 +26,12 @@ package com.alkacon.acacia.client;
 
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.acacia.client.ui.AttributeValueView;
-import com.alkacon.acacia.client.ui.I_HasResizeOnShow;
 import com.alkacon.acacia.client.ui.InlineEntityWidget;
 import com.alkacon.acacia.client.ui.ValuePanel;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
 import com.alkacon.acacia.shared.TabInfo;
 import com.alkacon.acacia.shared.Type;
+import com.alkacon.geranium.client.I_HasResizeOnShow;
 import com.alkacon.geranium.client.ui.TabbedPanel;
 import com.alkacon.geranium.client.ui.TabbedPanel.TabbedPanelStyle;
 import com.alkacon.geranium.client.util.PositionBean;
