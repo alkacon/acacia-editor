@@ -557,7 +557,7 @@ public class AttributeHandler extends RootHandler {
         updateButtonVisisbility();
         UndoRedoHandler handler = UndoRedoHandler.getInstance();
         if (handler.isIntitalized()) {
-            handler.addChange(m_entity.getId(),m_attributeName,0, ChangeType.sort);
+            handler.addChange(m_entity.getId(), m_attributeName, 0, ChangeType.sort);
         }
     }
 
@@ -596,7 +596,7 @@ public class AttributeHandler extends RootHandler {
         }).run(200);
         UndoRedoHandler handler = UndoRedoHandler.getInstance();
         if (handler.isIntitalized()) {
-            handler.addChange(m_entity.getId(),m_attributeName,0, ChangeType.sort);
+            handler.addChange(m_entity.getId(), m_attributeName, 0, ChangeType.sort);
         }
     }
 
@@ -635,7 +635,7 @@ public class AttributeHandler extends RootHandler {
         }).run(200);
         UndoRedoHandler handler = UndoRedoHandler.getInstance();
         if (handler.isIntitalized()) {
-            handler.addChange(m_entity.getId(), m_attributeName,0, ChangeType.sort);
+            handler.addChange(m_entity.getId(), m_attributeName, 0, ChangeType.sort);
         }
     }
 
@@ -797,7 +797,7 @@ public class AttributeHandler extends RootHandler {
         }
         I_EntityAttribute attribute = m_entity.getAttribute(m_attributeName);
         boolean mayHaveMore = (maxOccurrence > minOccurrence)
-            && ((((attribute == null) && !getAttributeType().isSimpleType()) || ((attribute != null) && (attribute.getValueCount() < maxOccurrence))));
+            && ((((attribute == null) && (!getAttributeType().isSimpleType() || (inlineWidget != null))) || ((attribute != null) && (attribute.getValueCount() < maxOccurrence))));
         boolean needsRemove = false;
         boolean needsSort = false;
         if ((isChoiceHandler() || !getEntityType().isChoice()) && m_entity.hasAttribute(m_attributeName)) {
