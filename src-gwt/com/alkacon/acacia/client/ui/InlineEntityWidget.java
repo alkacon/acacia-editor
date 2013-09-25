@@ -178,10 +178,6 @@ public class InlineEntityWidget extends Composite {
     @UiField
     protected PushButton m_removeButton;
 
-    /** The move button. */
-    @UiField
-    protected PushButton m_targetButton;
-
     /** The up button. */
     @UiField
     protected PushButton m_upButton;
@@ -388,10 +384,10 @@ public class InlineEntityWidget extends Composite {
         if (hasEditButton && (hasAddButton || hasRemoveButton || hasSortButtons)) {
             // set multi button mode
             addStyleName(I_LayoutBundle.INSTANCE.form().multiButtonBar());
-            m_targetButton.getElement().getStyle().clearDisplay();
+            m_editButton.setImageClass(I_ImageBundle.INSTANCE.style().bullsEyeIcon());
         } else {
-            m_targetButton.getElement().getStyle().setDisplay(Display.NONE);
             removeStyleName(I_LayoutBundle.INSTANCE.form().multiButtonBar());
+            m_editButton.setImageClass(I_ImageBundle.INSTANCE.style().editIcon());
         }
     }
 
@@ -643,9 +639,6 @@ public class InlineEntityWidget extends Composite {
         m_editButton.setImageClass(I_ImageBundle.INSTANCE.style().editIcon());
         m_editButton.setButtonStyle(ButtonStyle.TRANSPARENT, null);
 
-        m_targetButton.setImageClass(I_ImageBundle.INSTANCE.style().bullsEyeIcon());
-        m_targetButton.setButtonStyle(ButtonStyle.TRANSPARENT, null);
-
         m_removeButton.setImageClass(I_ImageBundle.INSTANCE.style().removeIcon());
         m_removeButton.setButtonStyle(ButtonStyle.TRANSPARENT, null);
 
@@ -664,7 +657,6 @@ public class InlineEntityWidget extends Composite {
                 + " "
                 + m_widgetService.getAttributeLabel(m_attributeHandler.getAttributeName());
             m_editButton.setTitle(m_title);
-            m_targetButton.setTitle(m_title);
         }
     }
 }

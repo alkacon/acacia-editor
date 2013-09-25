@@ -590,3 +590,21 @@ div.overlayButtonBar{
 	left: 0px;
 	bottom:0px;
 }
+
+div.overlayButtonPanel{
+	position:absolute;
+	top:0px;
+	right: -25px;
+	width: 110px;
+}
+div.overlayButtonPanel > div{
+	height: 22px;
+	position: absolute;
+	right: 0px;
+}
+
+@sprite .overlayButtonPanel .multiButtonBar .cmsState:first-child.cmsState-down span, .overlayButtonPanel .multiButtonBar .cmsState:first-child.cmsState-up-hovering span, .overlayButtonPanel .multiButtonBar .cmsState:first-child.cmsState-down-hovering span{
+    gwt-image: "icons.editIconActive";
+    display: inline-block;
+    vertical-align: middle;
+}

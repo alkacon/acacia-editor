@@ -288,6 +288,13 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
         String overlayButtonBar();
 
         /**
+         * Returns the overlay button panel CSS class name.<p>
+         * 
+         * @return the overlay button panel CSS class name
+         */
+        String overlayButtonPanel();
+
+        /**
          * Returns the CSS constant value.<p>
          * 
          * @return the CSS constant value

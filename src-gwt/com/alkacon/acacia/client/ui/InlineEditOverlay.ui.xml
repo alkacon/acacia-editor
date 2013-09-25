@@ -30,18 +30,6 @@
 		div.buttonParent{
 			position: absolute;
 		}
-		div.buttonPanel{
-			position:absolute;
-			top:0px;
-			right: -25px;
-			width: 110px;
-		}
-		div.buttonPanel > div{
-			height: 22px;
-			position: absolute;
-			right: 0px;
-			
-		}
 		div.borderHorizontal{
 			position: absolute;
 			height: 3px;
@@ -75,7 +63,7 @@
 		<div ui:field="m_borderLeft" class="{style.borderLeft}" />
 		<div ui:field="m_buttonBar" class="{style.buttonParent}">
 			<div class="{main.form.overlayButtonBar}" /> 
-			<g:FlowPanel ui:field="m_buttonPanel" styleName="{style.buttonPanel}"/>
+			<g:FlowPanel ui:field="m_buttonPanel" styleName="{main.form.overlayButtonPanel}"/>
 		</div>
 	</g:HTMLPanel>
 </ui:UiBinder> 
