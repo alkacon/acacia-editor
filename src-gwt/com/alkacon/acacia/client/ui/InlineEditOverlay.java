@@ -368,11 +368,9 @@ public class InlineEditOverlay extends Composite implements HasClickHandlers {
             for (int pos : m_buttons.values()) {
                 if (((pos - 24) < absoluteTop) && (absoluteTop < (pos + 24))) {
                     positionBlocked = true;
+                    absoluteTop = pos + 25;
                     break;
                 }
-            }
-            if (positionBlocked) {
-                absoluteTop += 25;
             }
         }
         m_buttons.put(widget, new Integer(absoluteTop));
