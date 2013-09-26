@@ -477,6 +477,9 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
                              // disallow any formatting
                              defaults = {
                              selector : mainElement.tagName+"#"+ elementId,
+                             entity_encoding : "raw",
+                             mode : "exact",
+                             plugins : "paste",
                              toolbar : "undo,redo",
                              menubar : false,
                              toolbar_items_size : 'small'
