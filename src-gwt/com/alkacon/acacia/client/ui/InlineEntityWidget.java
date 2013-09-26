@@ -440,8 +440,8 @@ public class InlineEntityWidget extends Composite {
                 InlineEditOverlay.addOverlayForElement(m_referenceElement);
                 positionPopup();
             } else {
-                m_referenceElement = null;
-                InlineEditOverlay.updateCurrentOverlayPosition();
+                m_referenceElement = m_formParent.getElement();
+                InlineEditOverlay.addOverlayForElement(m_referenceElement);
             }
         }
     }
@@ -488,6 +488,7 @@ public class InlineEntityWidget extends Composite {
     void onRemoveClick(ClickEvent event) {
 
         m_attributeHandler.removeAttributeValue(m_attributeIndex);
+        setContentHighlightingVisible(false);
         runHtmlUpdate();
     }
 

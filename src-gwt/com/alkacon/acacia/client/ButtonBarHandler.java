@@ -358,5 +358,8 @@ public class ButtonBarHandler implements MouseOverHandler, MouseOutHandler {
         if (buttonBar instanceof InlineEntityWidget) {
             ((InlineEntityWidget)buttonBar).setContentHighlightingVisible(visible);
         }
+        if (buttonBar.getParent() instanceof InlineEntityWidget) {
+            ((InlineEntityWidget)buttonBar.getParent()).setContentHighlightingVisible(visible);
+        }
     }
 }
