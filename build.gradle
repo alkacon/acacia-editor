@@ -1,0 +1,163 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+//apply plugin: 'signing'
+
+product_name = "Acacia Editor"
+sourceCompatibility = 1.6
+version = 2.0
+buildDir = "../../buildAcacia"
+
+repositories {
+    maven {
+        url 'http://localhost:8081/nexus/content/repositories/releases'
+    }
+	mavenCentral()
+}
+
+configurations {
+	compile {
+		description = 'Includes all dependencies required for compile and runtime'
+		transitive = false
+	}
+    
+    testCompile {
+        description = 'Includes all dependencies required for testing'
+        transitive = false
+    }
+}
+
+dependencies {
+	compile group: 'com.google.gwt', name: 'gwt-dev', version: '2.5.1'
+	compile group: 'com.google.gwt', name: 'gwt-user', version: '2.5.1'
+	compile group: 'com.google.gwt', name: 'gwt-servlet', version: '2.5.1'
+    compile group: 'org.timepedia.exporter', name: 'gwtexporter', version: '2.4.0'
+    compile group: 'com.google.guava', name: 'guava', version: '14.0.1'
+    compile group: 'com.google.guava', name: 'guava-gwt', version: '14.0.1'
+    compile group: 'com.alkacon', name: 'geranium-client', version: '2.0'
+    compile group: 'com.alkacon', name: 'wrapper-client', version: '2.0'
+    
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+}
+
+sourceSets{
+	main {
+		java.srcDir 'src'
+		java.srcDir 'src-gwt'
+		resources.srcDir 'src'
+		resources.srcDir 'src-gwt'
+	}
+}
+
+jar {
+	manifest {
+		attributes 'Implementation-Title': 'Alkacon Acacia Editor',
+			'Implementation-Version': version
+	}
+	baseName 'acacia-client'
+	from (sourceSets.main.allSource){
+        include '**/*.java'
+	}
+	exclude '**/.gitignore'
+}
+
+task serverJar (type: Jar, dependsOn: compileJava){
+    manifest {
+        attributes 'Implementation-Title': 'Alkacon Acacia Editor',
+            'Implementation-Version': version
+    }
+    baseName 'acacia-server'
+    from sourceSets.main.output
+    includeEmptyDirs false
+    exclude '**/.gitignore'
+    exclude '**/client/*'
+    exclude '**/*.gwt.xml'
+}
+
+javadoc {
+	project.configure(options) {
+		memberLevel = org.gradle.external.javadoc.JavadocMemberLevel.PROTECTED
+		charSet = "UTF-8"
+		docTitle = "$product_name"
+		windowTitle = "$product_name"
+		header = "<b>$product_name</b>"
+		author = "true"
+		use = "true"
+	}
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+	classifier = 'javadoc'
+	from "${buildDir}/docs/javadoc"
+    baseName 'acacia-client'
+}
+
+task sourcesJar(type: Jar) {
+	from sourceSets.main.allSource
+	classifier = 'sources'
+    baseName 'acacia-client'
+}
+
+artifacts {
+	archives jar
+    archives serverJar
+	archives javadocJar
+	archives sourcesJar
+}
+
+//signing {
+//	sign configurations.archives
+//}
+
+uploadArchives {
+	repositories {
+		mavenDeployer {
+		//	beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+ 
+			repository(url: "http://localhost:8081/nexus/content/repositories/releases") {
+			  authentication(userName: 'deployment', password: 'deployment123')
+			}
+            addFilter('client'){artifact, file ->
+                artifact.name.contains('client')
+            }
+            addFilter('server'){artifact, file ->
+                artifact.name.contains('server')
+            }
+            pom.project{
+                name 'Acacia Editor'
+                packaging 'jar'
+                description= 'A GWT based resource editor.'
+                url 'http://www.github.com/alkacon/acacia-editor'
+                scm {
+                    url 'scm:git@github.com:alkacon/acacia-editor.git'
+                    connection 'scm:git@github.com:alkacon/acacia-editor.git'
+                    developerConnection 'scm:git@github.com:alkacon/acacia-editor.git'
+                }
+  
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution 'repo'
+                    }
+                }
+  
+                developers {
+                    developer {
+                        id 'tHerrmann'
+                        name 'Tobias Herrmann'
+                    }
+                }
+            }
+            
+			pom('client').groupId= 'com.alkacon'
+            
+            pom('server').groupId= 'com.alkacon'
+		}
+	}
+}
+
+// fixed issue with libraries containing both .java and .class files
+tasks.withType(JavaCompile) {
+	options.compilerArgs += ["-sourcepath", ""]
+}
+

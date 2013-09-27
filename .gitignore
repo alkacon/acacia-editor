@@ -1,2 +1,4 @@
 /gwt-unitCache
 /BuildAcacia
+/.gradle
+/.settings/gradle
