@@ -227,6 +227,8 @@ public class InlineEntityWidget extends Composite {
     /** Schedules the HTML update. */
     private UpdateTimer m_updateTimer;
 
+    private Timer m_overlayTimer;
+
     /** The widget service. */
     private I_WidgetService m_widgetService;
 
@@ -413,6 +415,10 @@ public class InlineEntityWidget extends Composite {
      */
     void afterHtmlUpdate() {
 
+        if (m_overlayTimer != null) {
+            m_overlayTimer.cancel();
+            m_overlayTimer = null;
+        }
         m_runningUpdate = false;
         List<Element> elements = Vie.getInstance().getAttributeElements(
             m_parentEntity,
@@ -435,14 +441,23 @@ public class InlineEntityWidget extends Composite {
             if (m_referenceElement != null) {
                 InlineEditOverlay.removeLastOverlay();
             }
+            final InlineEditOverlay overlay;
             if (elements.size() > m_attributeIndex) {
                 m_referenceElement = elements.get(m_attributeIndex);
-                InlineEditOverlay.addOverlayForElement(m_referenceElement);
-                positionPopup();
+                overlay = InlineEditOverlay.addOverlayForElement(m_referenceElement);
             } else {
                 m_referenceElement = m_formParent.getElement();
-                InlineEditOverlay.addOverlayForElement(m_referenceElement);
+                overlay = InlineEditOverlay.addOverlayForElement(m_referenceElement);
             }
+            m_overlayTimer = new Timer() {
+
+                @Override
+                public void run() {
+
+                    overlay.updatePosition();
+                }
+            };
+            m_overlayTimer.schedule(200);
         }
     }
 
@@ -581,6 +596,7 @@ public class InlineEntityWidget extends Composite {
         formPanel.setStyleName(I_LayoutBundle.INSTANCE.form().formParent());
         formPanel.getElement().getStyle().setMargin(0, Unit.PX);
         formPanel.getElement().getStyle().setBorderWidth(0, Unit.PX);
+        formPanel.getElement().getStyle().setPropertyPx("minHeight", 30);
         m_popup.add(formPanel);
         m_popup.addDialogClose(null);
         I_LayoutBundle.INSTANCE.dialogCss().ensureInjected();
