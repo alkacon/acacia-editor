@@ -534,6 +534,7 @@ implements I_Draggable, I_HasResizeOnShow, HasMouseOverHandlers, HasMouseOutHand
         if (!isSimpleValue()) {
             m_hasValue = false;
             m_widgetHolder.clear();
+            generateLabel();
         } else {
             // only deactivate the widget and restore the default value
             m_widget.setActive(false);
