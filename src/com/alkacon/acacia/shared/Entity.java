@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Serializable entity implementation.<p>
@@ -479,7 +480,45 @@ public class Entity implements I_Entity, Serializable {
      */
     public String toJSON() {
 
-        // TODO: Auto-generated method stub
-        return null;
+        StringBuffer result = new StringBuffer();
+        result.append("{\n");
+        for (Entry<String, List<String>> simpleEntry : m_simpleAttributes.entrySet()) {
+            result.append("\"").append(simpleEntry.getKey()).append("\"").append(": [\n");
+            boolean firstValue = true;
+            for (String value : simpleEntry.getValue()) {
+                if (firstValue) {
+                    firstValue = false;
+                } else {
+                    result.append(",\n");
+                }
+                result.append("\"").append(value).append("\"");
+            }
+            result.append("],\n");
+        }
+        for (Entry<String, List<Entity>> entityEntry : m_entityAttributes.entrySet()) {
+            result.append("\"").append(entityEntry.getKey()).append("\"").append(": [\n");
+            boolean firstValue = true;
+            for (Entity value : entityEntry.getValue()) {
+                if (firstValue) {
+                    firstValue = false;
+                } else {
+                    result.append(",\n");
+                }
+                result.append(value.toJSON());
+            }
+            result.append("],\n");
+        }
+        result.append("\"id\": \"").append(m_id).append("\"");
+        result.append("}");
+        return result.toString();
+    }
+
+    /**
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+
+        return toJSON();
     }
 }
