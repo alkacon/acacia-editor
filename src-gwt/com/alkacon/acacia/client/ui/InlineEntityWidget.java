@@ -206,6 +206,9 @@ public class InlineEntityWidget extends Composite {
     /** Handles HTML updates if required. */
     private I_InlineHtmlUpdateHandler m_htmlUpdateHandler;
 
+    /** A timer to update the overlay position. */
+    private Timer m_overlayTimer;
+
     /** The parent of the entity to edit. */
     private I_Entity m_parentEntity;
 
@@ -226,8 +229,6 @@ public class InlineEntityWidget extends Composite {
 
     /** Schedules the HTML update. */
     private UpdateTimer m_updateTimer;
-
-    private Timer m_overlayTimer;
 
     /** The widget service. */
     private I_WidgetService m_widgetService;
