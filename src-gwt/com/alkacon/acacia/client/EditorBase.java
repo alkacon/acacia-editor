@@ -570,6 +570,21 @@ public class EditorBase implements I_InlineHtmlUpdateHandler {
     }
 
     /**
+     * Clears the editor.<p>
+     */
+    protected void clearEditor() {
+
+        removeEditOverlays();
+        UndoRedoHandler.getInstance().clear();
+        m_entity = null;
+        m_entityId = null;
+        m_tabInfos = null;
+        m_rootHandler = null;
+        m_formPanel = null;
+        m_formTabs = null;
+    }
+
+    /**
      * Returns the context URI.<p>
      * Needed when updating the HTML due to content data changes.<p>
      * 
