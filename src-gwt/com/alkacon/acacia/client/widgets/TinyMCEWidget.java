@@ -25,6 +25,8 @@
 package com.alkacon.acacia.client.widgets;
 
 import com.alkacon.acacia.client.css.I_LayoutBundle;
+import com.alkacon.geranium.client.util.DomUtil;
+import com.alkacon.geranium.client.util.DomUtil.Style;
 import com.alkacon.geranium.client.util.PositionBean;
 
 import com.google.gwt.core.client.JavaScriptObject;
@@ -338,7 +340,7 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
                     if (isAttached()) {
                         m_editorHeight = calculateEditorHeight();
                         m_id = ensureId(getMainElement());
-                        m_width = getElement().getOffsetWidth() - 2;
+                        m_width = calculateWidth();
                         checkLibraries();
                         initNative();
                         if (!m_active) {
@@ -449,6 +451,26 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
 
         int result = getElement().getOffsetHeight() + 30;
         return result > MIN_EDITOR_HEIGHT ? result : MIN_EDITOR_HEIGHT;
+    }
+
+    /**
+     * Calculates the widget width.<p>
+     * 
+     * @return the widget width
+     */
+    int calculateWidth() {
+
+        int result;
+        if (m_inline && DomUtil.getCurrentStyle(getElement(), Style.display).equals("inline")) {
+            com.google.gwt.dom.client.Element parentBlock = getElement().getParentElement();
+            while (DomUtil.getCurrentStyle(parentBlock, Style.display).equals("inline")) {
+                parentBlock = parentBlock.getParentElement();
+            }
+            result = parentBlock.getOffsetWidth();
+        } else {
+            result = getElement().getOffsetWidth();
+        }
+        return result - 2;
     }
 
     /**
