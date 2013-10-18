@@ -37,6 +37,7 @@ import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.event.shared.SimpleEventBus;
+import com.google.gwt.user.client.Timer;
 
 /**
  * Handler for the undo redo function.<p>
@@ -100,6 +101,65 @@ public class UndoRedoHandler implements HasValueChangeHandlers<UndoRedoState> {
         public boolean hasUndo() {
 
             return m_hasUndo;
+        }
+    }
+
+    /**
+     * A timer to delay the addition of a change.<p> 
+     */
+    protected class ChangeTimer extends Timer {
+
+        /** The attribute name. */
+        private String m_attributeName;
+
+        /** The change type. */
+        private ChangeType m_changeType;
+
+        /** The value index. */
+        private int m_valueIndex;
+
+        /** The value path. */
+        private String m_valuePath;
+
+        /**
+         * Constructor.<p>
+         * 
+         * @param valuePath the entity value path
+         * @param attributeName the attribute name
+         * @param valueIndex the value index
+         * @param changeType the change type
+         */
+        protected ChangeTimer(String valuePath, String attributeName, int valueIndex, ChangeType changeType) {
+
+            m_valuePath = valuePath;
+            m_attributeName = attributeName;
+            m_valueIndex = valueIndex;
+            m_changeType = changeType;
+        }
+
+        /**
+         * @see com.google.gwt.user.client.Timer#run()
+         */
+        @Override
+        public void run() {
+
+            internalAddChange(m_valuePath, m_attributeName, m_valueIndex, m_changeType);
+        }
+
+        /**
+         * Checks whether the timer change properties match the given ones.<p>
+         * 
+         * @param valuePath the entity value path
+         * @param attributeName the attribute name
+         * @param valueIndex the value index
+         * 
+         * @return <code>true</code> if the timer change properties match the given ones
+         */
+        protected boolean matches(String valuePath, String attributeName, int valueIndex) {
+
+            return m_valuePath.equals(valuePath)
+                && m_attributeName.equals(attributeName)
+                && (m_valueIndex == valueIndex);
         }
     }
 
@@ -192,8 +252,14 @@ public class UndoRedoHandler implements HasValueChangeHandlers<UndoRedoState> {
         }
     }
 
+    /** The change timer delay. */
+    private static final int CHANGE_TIMER_DELAY = 300;
+
     /** The static instance. */
     private static UndoRedoHandler INSTANCE;
+
+    /** The ad change timer. */
+    private ChangeTimer m_changeTimer;
 
     /** The current data state. */
     private Change m_current;
@@ -248,12 +314,26 @@ public class UndoRedoHandler implements HasValueChangeHandlers<UndoRedoState> {
      */
     public void addChange(String valuePath, String attributeName, int valueIndex, ChangeType changeType) {
 
-        Entity currentData = Entity.serializeEntity(m_entity);
-        if (!currentData.equals(m_current.getEntityData())) {
-            m_undo.push(m_current);
-            m_current = new Change(currentData, valuePath, attributeName, valueIndex, changeType);
-            m_redo.clear();
-            fireStateChange();
+        if (ChangeType.value.equals(changeType)) {
+            if (m_changeTimer != null) {
+                if (!m_changeTimer.matches(valuePath, attributeName, valueIndex)) {
+                    // only in case the change properties of the timer do not match the current change, 
+                    // add the last change and start a new timer
+                    m_changeTimer.cancel();
+                    m_changeTimer.run();
+                    m_changeTimer = new ChangeTimer(valuePath, attributeName, valueIndex, changeType);
+                    m_changeTimer.schedule(CHANGE_TIMER_DELAY);
+                }
+            } else {
+                m_changeTimer = new ChangeTimer(valuePath, attributeName, valueIndex, changeType);
+                m_changeTimer.schedule(CHANGE_TIMER_DELAY);
+            }
+        } else {
+            if (m_changeTimer != null) {
+                m_changeTimer.cancel();
+                m_changeTimer.run();
+            }
+            internalAddChange(valuePath, attributeName, valueIndex, changeType);
         }
     }
 
@@ -379,6 +459,26 @@ public class UndoRedoHandler implements HasValueChangeHandlers<UndoRedoState> {
     protected final <H extends EventHandler> HandlerRegistration addHandler(final H handler, GwtEvent.Type<H> type) {
 
         return ensureHandlers().addHandlerToSource(type, this, handler);
+    }
+
+    /**
+     * Internally adds a change to the undo stack.<p>
+     * 
+     * @param valuePath the entity value path
+     * @param attributeName the attribute name
+     * @param valueIndex the value index
+     * @param changeType the change type
+     */
+    void internalAddChange(String valuePath, String attributeName, int valueIndex, ChangeType changeType) {
+
+        m_changeTimer = null;
+        Entity currentData = Entity.serializeEntity(m_entity);
+        if (!currentData.equals(m_current.getEntityData())) {
+            m_undo.push(m_current);
+            m_current = new Change(currentData, valuePath, attributeName, valueIndex, changeType);
+            m_redo.clear();
+            fireStateChange();
+        }
     }
 
     /**
