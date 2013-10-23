@@ -502,6 +502,7 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
                              entity_encoding : "raw",
                              mode : "exact",
                              plugins : "paste",
+                             paste_as_text: true,
                              toolbar : "undo,redo",
                              menubar : false,
                              toolbar_items_size : 'small'
@@ -517,6 +518,7 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
                              mode : "exact",
                              theme : "modern",
                              plugins : "autolink,lists,pagebreak,layer,table,save,hr,image,link,emoticons,spellchecker,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,noneditable,visualchars,nonbreaking,template,wordcount,advlist",
+                             paste_as_text: true,
                              menubar : false,
                              toolbar_items_size : 'small'
                              };
