@@ -600,6 +600,11 @@ div.overlayButtonPanel{
 	right: -25px;
 	width: 110px;
 }
+div.overlayButtonPanel, div.overlayButtonPanel * {
+	box-sizing: content-box;
+	-moz-box-sizing: content-box;
+}
+
 div.overlayButtonPanel > div{
 	height: 22px;
 	position: absolute;
