@@ -125,8 +125,8 @@ implements I_Draggable, I_HasResizeOnShow, HasMouseOverHandlers, HasMouseOutHand
 
             setImageClass(I_ImageBundle.INSTANCE.style().bullsEyeIcon());
             setButtonStyle(ButtonStyle.TRANSPARENT, null);
-            if (EditorBase.getDictionary() != null) {
-                setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_MOVE_0));
+            if (EditorBase.hasDictionary()) {
+                setTitle(EditorBase.getMessageForKey(EditorBase.GUI_VIEW_MOVE_1, getLabel()));
             }
             m_draggable = draggable;
         }
@@ -768,8 +768,8 @@ implements I_Draggable, I_HasResizeOnShow, HasMouseOverHandlers, HasMouseOutHand
         }
         if (hasSortButtons) {
             m_moveButton.addStyleName(I_LayoutBundle.INSTANCE.form().moveHandle());
-            if (EditorBase.getDictionary() != null) {
-                m_moveButton.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_MOVE_0));
+            if (EditorBase.hasDictionary()) {
+                m_moveButton.setTitle(EditorBase.getMessageForKey(EditorBase.GUI_VIEW_MOVE_1, m_label));
             }
         } else {
             m_moveButton.setTitle("");
@@ -815,6 +815,16 @@ implements I_Draggable, I_HasResizeOnShow, HasMouseOverHandlers, HasMouseOutHand
     protected void closeHelpBubble(ClickEvent event) {
 
         addStyleName(formCss().closedBubble());
+    }
+
+    /**
+     * Returns the attribute label.<p>
+     * 
+     * @return the attribute label
+     */
+    protected String getLabel() {
+
+        return m_label;
     }
 
     /**
@@ -1031,13 +1041,13 @@ implements I_Draggable, I_HasResizeOnShow, HasMouseOverHandlers, HasMouseOutHand
         m_helpBubbleClose.setImageClass(I_ImageBundle.INSTANCE.style().closeIcon());
         m_helpBubbleClose.setButtonStyle(ButtonStyle.TRANSPARENT, null);
 
-        if (EditorBase.getDictionary() != null) {
-            m_addButton.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_ADD_0));
-            m_attributeChoice.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_CHOICE_ADD_CHOICE_0));
-            m_removeButton.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_DELETE_0));
-            m_helpBubbleClose.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_CLOSE_0));
-            m_upButton.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_MOVE_UP_0));
-            m_downButton.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_MOVE_DOWN_0));
+        if (EditorBase.hasDictionary()) {
+            m_addButton.setTitle(EditorBase.getMessageForKey(EditorBase.GUI_VIEW_ADD_1, m_label));
+            m_attributeChoice.setTitle(EditorBase.getMessageForKey(EditorBase.GUI_CHOICE_ADD_CHOICE_1, m_label));
+            m_removeButton.setTitle(EditorBase.getMessageForKey(EditorBase.GUI_VIEW_DELETE_1, m_label));
+            m_helpBubbleClose.setTitle(EditorBase.getMessageForKey(EditorBase.GUI_VIEW_CLOSE_0));
+            m_upButton.setTitle(EditorBase.getMessageForKey(EditorBase.GUI_VIEW_MOVE_UP_0, m_label));
+            m_downButton.setTitle(EditorBase.getMessageForKey(EditorBase.GUI_VIEW_MOVE_DOWN_0, m_label));
         }
     }
 

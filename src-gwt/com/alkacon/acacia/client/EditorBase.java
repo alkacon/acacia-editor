@@ -64,22 +64,22 @@ import com.google.gwt.user.client.ui.Panel;
 public class EditorBase implements I_InlineHtmlUpdateHandler {
 
     /** Message constant for key in the resource bundle. */
-    public static final String GUI_CHOICE_ADD_CHOICE_0 = "GUI_CHOICE_ADD_CHOICE_0"; //Add choice
+    public static final String GUI_CHOICE_ADD_CHOICE_1 = "GUI_CHOICE_ADD_CHOICE_1"; //Add choice {0}
 
     /** Message constant for key in the resource bundle. */
-    public static final String GUI_VIEW_ADD_0 = "GUI_VIEW_ADD_0"; //Add
+    public static final String GUI_VIEW_ADD_1 = "GUI_VIEW_ADD_1"; //Add {0}
 
     /** Message constant for key in the resource bundle. */
     public static final String GUI_VIEW_CLOSE_0 = "GUI_VIEW_CLOSE_0"; //Close
 
     /** Message constant for key in the resource bundle. */
-    public static final String GUI_VIEW_DELETE_0 = "GUI_VIEW_DELETE_0"; //Delete
+    public static final String GUI_VIEW_DELETE_1 = "GUI_VIEW_DELETE_1"; //Delete {0}
 
     /** Message constant for key in the resource bundle. */
-    public static final String GUI_VIEW_EDIT_0 = "GUI_VIEW_EDIT_0"; // Edit
+    public static final String GUI_VIEW_EDIT_1 = "GUI_VIEW_EDIT_1"; // Edit {0}
 
     /** Message constant for key in the resource bundle. */
-    public static final String GUI_VIEW_MOVE_0 = "GUI_VIEW_MOVE_0"; //Move
+    public static final String GUI_VIEW_MOVE_1 = "GUI_VIEW_MOVE_1"; //Move {0}
 
     /** Message constant for key in the resource bundle. */
     public static final String GUI_VIEW_MOVE_DOWN_0 = "GUI_VIEW_MOVE_DOWN_0"; //Move down
@@ -177,13 +177,38 @@ public class EditorBase implements I_InlineHtmlUpdateHandler {
     }
 
     /**
-     * Returns the m_dictionary.<p>
-     *
-     * @return the m_dictionary
+     * Returns if the messages dictionary is set.<p>
+     * 
+     * @return <code>true</code> if the messages dictionary is set
      */
-    public static Dictionary getDictionary() {
+    public static boolean hasDictionary() {
 
-        return m_dictionary;
+        return m_dictionary != null;
+    }
+
+    /**
+     * Returns the formated message.<p>
+     * 
+     * @param key the message key
+     * @param args  the parameters to insert into the placeholders
+     * 
+     * @return the formated message
+     */
+    public static String getMessageForKey(String key, Object... args) {
+
+        String result = null;
+        if (hasDictionary()) {
+            result = m_dictionary.get(key);
+            if ((result != null) && (args != null) && (args.length > 0)) {
+                for (int i = 0; i < args.length; i++) {
+                    result = result.replace("{" + i + "}", String.valueOf(args[i]));
+                }
+            }
+        }
+        if (result == null) {
+            result = "";
+        }
+        return result;
     }
 
     /**

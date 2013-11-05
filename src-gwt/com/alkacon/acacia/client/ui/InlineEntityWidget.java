@@ -666,14 +666,13 @@ public class InlineEntityWidget extends Composite {
         m_downButton.setImageClass(I_ImageBundle.INSTANCE.style().arrowDownIcon());
         m_downButton.setButtonStyle(ButtonStyle.TRANSPARENT, null);
 
-        if (EditorBase.getDictionary() != null) {
-            m_addButton.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_ADD_0));
-            m_removeButton.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_DELETE_0));
-            m_upButton.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_MOVE_UP_0));
-            m_downButton.setTitle(EditorBase.getDictionary().get(EditorBase.GUI_VIEW_MOVE_DOWN_0));
-            m_title = EditorBase.getDictionary().get(EditorBase.GUI_VIEW_EDIT_0)
-                + " "
-                + m_widgetService.getAttributeLabel(m_attributeHandler.getAttributeName());
+        if (EditorBase.hasDictionary()) {
+            String label = m_widgetService.getAttributeLabel(m_attributeHandler.getAttributeName());
+            m_addButton.setTitle(EditorBase.getMessageForKey(EditorBase.GUI_VIEW_ADD_1, label));
+            m_removeButton.setTitle(EditorBase.getMessageForKey(EditorBase.GUI_VIEW_DELETE_1, label));
+            m_upButton.setTitle(EditorBase.getMessageForKey(EditorBase.GUI_VIEW_MOVE_UP_0));
+            m_downButton.setTitle(EditorBase.getMessageForKey(EditorBase.GUI_VIEW_MOVE_DOWN_0));
+            m_title = EditorBase.getMessageForKey(EditorBase.GUI_VIEW_EDIT_1, label);
             m_editButton.setTitle(m_title);
         }
     }
