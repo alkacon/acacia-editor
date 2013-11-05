@@ -600,7 +600,7 @@ public class Renderer implements I_EntityRenderer {
                 AttributeHandler handler = new AttributeHandler(m_vie, parentEntity, attributeName, m_widgetService);
                 for (int i = 0; i < elements.size(); i++) {
                     Element element = elements.get(i);
-                    if (attribute.isSimpleValue()) {
+                    if (attribute.isSimpleValue() && element.getInnerHTML().equals(attribute.getSimpleValues().get(i))) {
                         I_EditWidget widget = m_widgetService.getAttributeInlineWidget(
                             attributeName,
                             (com.google.gwt.user.client.Element)element);
@@ -628,7 +628,8 @@ public class Renderer implements I_EntityRenderer {
                             m_widgetService);
                     }
                 }
-            } else if (attribute.isComplexValue()) {
+            }
+            if (attribute.isComplexValue()) {
                 for (I_Entity entity : attribute.getComplexValues()) {
                     renderInline(entity, formParent, updateHandler);
                 }
