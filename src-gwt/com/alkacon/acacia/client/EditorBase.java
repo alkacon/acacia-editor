@@ -87,6 +87,9 @@ public class EditorBase implements I_InlineHtmlUpdateHandler {
     /** Message constant for key in the resource bundle. */
     public static final String GUI_VIEW_MOVE_UP_0 = "GUI_VIEW_MOVE_UP_0"; //Move up
 
+    /** The inline edit focus marker. */
+    private static final String INLINE_EDIT_FOCUS_MARKER = "shouldFocusOnInlineEdit";
+
     /** The localized dictionary. */
     private static Dictionary m_dictionary;
 
@@ -177,16 +180,6 @@ public class EditorBase implements I_InlineHtmlUpdateHandler {
     }
 
     /**
-     * Returns if the messages dictionary is set.<p>
-     * 
-     * @return <code>true</code> if the messages dictionary is set
-     */
-    public static boolean hasDictionary() {
-
-        return m_dictionary != null;
-    }
-
-    /**
      * Returns the formated message.<p>
      * 
      * @param key the message key
@@ -212,6 +205,26 @@ public class EditorBase implements I_InlineHtmlUpdateHandler {
     }
 
     /**
+     * Returns if the messages dictionary is set.<p>
+     * 
+     * @return <code>true</code> if the messages dictionary is set
+     */
+    public static boolean hasDictionary() {
+
+        return m_dictionary != null;
+    }
+
+    /**
+     * Marks the given element to receive focus once the inline editing is initialized.<p>
+     * 
+     * @param element the element to mark
+     */
+    public static void markForInlineFocus(Element element) {
+
+        element.setAttribute("rel", INLINE_EDIT_FOCUS_MARKER);
+    }
+
+    /**
      * Sets the m_dictionary.<p>
      *
      * @param dictionary the m_dictionary to set
@@ -219,6 +232,18 @@ public class EditorBase implements I_InlineHtmlUpdateHandler {
     public static void setDictionary(Dictionary dictionary) {
 
         m_dictionary = dictionary;
+    }
+
+    /**
+     * Checks whether the given element is marked to receive focus once the inline editing is initialized.<p>
+     * 
+     * @param element the element to check
+     * 
+     * @return <code>true</code> if the given element is marked to receive focus once the inline editing is initialized
+     */
+    public static boolean shouldFocusOnInlineEdit(Element element) {
+
+        return INLINE_EDIT_FOCUS_MARKER.equals(element.getAttribute("rel"));
     }
 
     /**

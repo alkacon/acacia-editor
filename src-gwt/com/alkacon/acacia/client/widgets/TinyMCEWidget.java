@@ -24,6 +24,7 @@
 
 package com.alkacon.acacia.client.widgets;
 
+import com.alkacon.acacia.client.EditorBase;
 import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.geranium.client.util.DomUtil;
 import com.alkacon.geranium.client.util.DomUtil.Style;
@@ -35,6 +36,8 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.event.logical.shared.HasResizeHandlers;
 import com.google.gwt.event.logical.shared.ResizeEvent;
@@ -318,10 +321,9 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
      * 
      * @return <code>true</code> if the main element contains the current text selection
      */
-    protected boolean hasCurrentSelectionRange() {
+    protected boolean shouldReceiveFocus() {
 
-        Element rangeParent = getCurrentRangeParent();
-        return (rangeParent != null) && getMainElement().isOrHasChild(rangeParent);
+        return m_inline && EditorBase.shouldFocusOnInlineEdit(getElement());
     }
 
     /**
@@ -352,8 +354,19 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
                         m_id = ensureId(getMainElement());
                         m_width = calculateWidth();
                         checkLibraries();
-                        if (isInline() && (DomUtil.getCurrentStyleInt(getElement(), Style.zIndex) < 1)) {
-                            getElement().getStyle().setZIndex(1);
+                        if (isInline()) {
+                            if (DomUtil.getCurrentStyleInt(getElement(), Style.zIndex) < 1) {
+                                getElement().getStyle().setZIndex(1);
+                            }
+                            addDomHandler(new ClickHandler() {
+
+                                public void onClick(ClickEvent event) {
+
+                                    // prevent event propagation while editing inline, to avoid following links in ancestor nodes
+                                    event.stopPropagation();
+                                    event.preventDefault();
+                                }
+                            }, ClickEvent.getType());
                         }
                         initNative();
                         if (!m_active) {
@@ -492,7 +505,7 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
     native void initNative() /*-{
 
                              var self = this;
-                             var needsRefocus = self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::hasCurrentSelectionRange()();
+                             var needsRefocus = self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::shouldReceiveFocus()();
                              var elementId = self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_id;
                              var mainElement = $wnd.document.getElementById(elementId);
                              var editorHeight = self.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_editorHeight
@@ -703,26 +716,6 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
                                        var editor = this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_editor;
                                        return editor.getContent();
                                        }-*/;
-
-    /**
-     * Returns the parent element to the current selection range.<p>
-     * 
-     * @return the parent element
-     */
-    private native Element getCurrentRangeParent()/*-{
-                                                  if ($wnd.getSelection) {
-                                                  var sel = $wnd.getSelection();
-                                                  if (sel.getRangeAt && sel.rangeCount) {
-                                                  var range = sel.getRangeAt(0);
-                                                  return range.commonAncestorContainer;
-                                                  }
-                                                  } else if ($wnd.document.selection
-                                                  && $wnd.document.selection.createRange) {
-                                                  var range = $wnd.document.selection.createRange();
-                                                  return range.parentElement();
-                                                  }
-                                                  return null;
-                                                  }-*/;
 
     /**
      * Resets the in line editing toolbar position.<p>
