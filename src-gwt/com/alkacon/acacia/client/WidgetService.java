@@ -141,7 +141,7 @@ public class WidgetService implements I_WidgetService {
      * @see com.alkacon.acacia.client.I_WidgetService#getAttributeInlineWidget(java.lang.String, com.google.gwt.user.client.Element)
      */
     public I_EditWidget getAttributeInlineWidget(String attributeName, Element element) {
-        
+
         if (m_attributeConfigurations != null) {
             AttributeConfiguration config = m_attributeConfigurations.get(attributeName);
             if (config != null) {
@@ -151,8 +151,8 @@ public class WidgetService implements I_WidgetService {
                 }
             }
         }
-        // no configuration or widget factory found, return default string widget 
-        return new StringWidget(element);
+        // no widget configured 
+        return null;
     }
 
     /**
@@ -297,9 +297,9 @@ public class WidgetService implements I_WidgetService {
      * @param message the message to log 
      */
     private native void log(String message) /*-{
-      if ($wnd.console) {
-         $wnd.console.log(message);
-      }
-    }-*/;
+                                            if ($wnd.console) {
+                                            $wnd.console.log(message);
+                                            }
+                                            }-*/;
 
 }

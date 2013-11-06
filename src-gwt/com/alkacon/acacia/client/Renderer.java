@@ -55,6 +55,7 @@ import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
@@ -600,11 +601,15 @@ public class Renderer implements I_EntityRenderer {
                 AttributeHandler handler = new AttributeHandler(m_vie, parentEntity, attributeName, m_widgetService);
                 for (int i = 0; i < elements.size(); i++) {
                     Element element = elements.get(i);
-                    if (attribute.isSimpleValue() && element.getInnerHTML().equals(attribute.getSimpleValues().get(i))) {
-                        I_EditWidget widget = m_widgetService.getAttributeInlineWidget(
-                            attributeName,
-                            (com.google.gwt.user.client.Element)element);
-                        if (widget != null) {
+                    I_EditWidget widget = m_widgetService.getAttributeInlineWidget(
+                        attributeName,
+                        (com.google.gwt.user.client.Element)element);
+                    if (attribute.isSimpleValue() && (widget != null)) {
+                        Element tempSpan = DOM.createSpan();
+                        tempSpan.setInnerHTML(attribute.getSimpleValues().get(i));
+                        String value = tempSpan.getInnerHTML();
+                        // verify the current value equals the element content
+                        if (element.getInnerHTML().equals(value)) {
                             widget.addValueChangeHandler(new WidgetChangeHandler(handler, i));
                             formParent.adoptWidget(widget);
                         } else {
