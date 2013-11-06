@@ -438,28 +438,39 @@ public class InlineEntityWidget extends Composite {
                 InlineEditOverlay.getRootOvelay().clearButtonPanel();
                 m_htmlUpdateHandler.reinitWidgets(m_formParent);
             }
+
         } else {
             if (m_referenceElement != null) {
                 InlineEditOverlay.removeLastOverlay();
             }
-            final InlineEditOverlay overlay;
             if (elements.size() > m_attributeIndex) {
                 m_referenceElement = elements.get(m_attributeIndex);
-                overlay = InlineEditOverlay.addOverlayForElement(m_referenceElement);
+                InlineEditOverlay.addOverlayForElement(m_referenceElement);
             } else {
                 m_referenceElement = m_formParent.getElement();
-                overlay = InlineEditOverlay.addOverlayForElement(m_referenceElement);
+                InlineEditOverlay.addOverlayForElement(m_referenceElement);
             }
-            m_overlayTimer = new Timer() {
-
-                @Override
-                public void run() {
-
-                    overlay.updatePosition();
-                }
-            };
-            m_overlayTimer.schedule(200);
         }
+        // schedule to update the ovelay position
+        m_overlayTimer = new Timer() {
+
+            /** Timer run counter. */
+            private int timerRuns = 0;
+
+            /**
+             * @see com.google.gwt.user.client.Timer#run()
+             */
+            @Override
+            public void run() {
+
+                InlineEditOverlay.updateCurrentOverlayPosition();
+                if (timerRuns > 3) {
+                    cancel();
+                }
+                timerRuns++;
+            }
+        };
+        m_overlayTimer.scheduleRepeating(100);
     }
 
     /**
