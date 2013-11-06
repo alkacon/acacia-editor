@@ -32,7 +32,7 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 	background: transparent;
 }
 
-.formParent *, .formParent table tr td, .formParent input[type="text"]{
+.formParent *, .formParent table tr td, .formParent input[type="text"], .inlineEditOverlay, .inlineEditOverlay *{
 	margin: 0;
 	padding: 0;
 	border: none;
@@ -48,6 +48,8 @@ div.formParent div.gwt-TabLayoutPanel, div.formParent div.gwt-TabLayoutPanel div
 	max-height: none;
 	min-width: 0;
 	max-width: none;
+	box-sizing: content-box;
+	-moz-box-sizing: content-box;
 }
 .formParent input[type="text"]:focus, .formParent input[type="text"]:hover, .formParent input[type="text"]{
 	outline: none;
@@ -582,6 +584,13 @@ div.helpBubble{
 	height: 100%;
 	width: 100%;
 	background: transparent;
+}
+
+div.inlineEditOverlay {
+	position:absolute;
+	top:0px;
+	left:0px;
+	z-index: 160000;
 }
 
 div.overlayButtonBar{

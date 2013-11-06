@@ -267,6 +267,13 @@ public interface I_LayoutBundle extends com.alkacon.geranium.client.ui.css.I_Lay
         String hideHelpBubbles();
 
         /**
+         * Returns the inline edit overlay CSS class name.<p>
+         * 
+         * @return the inline edit overlay CSS class
+         */
+        String inlineEditOverlay();
+
+        /**
           * Returns the input field CSS class name.<p>
           * 
           * @return the input field CSS class name
