@@ -39,6 +39,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.GwtEvent;
@@ -165,6 +166,12 @@ public class TestForms extends GWTTestCase {
 
                 // TODO: Auto-generated method stub
 
+            }
+
+            public boolean owns(Element element) {
+
+                // TODO Auto-generated method stub
+                return false;
             }
         };
         Map<String, AttributeConfiguration> configs = new HashMap<String, AttributeConfiguration>();
