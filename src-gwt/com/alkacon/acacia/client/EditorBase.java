@@ -724,6 +724,7 @@ public class EditorBase implements I_InlineHtmlUpdateHandler {
              */
             void handleResize() {
 
+                m_resizeTimer = null;
                 InlineEditOverlay.updateCurrentOverlayPosition();
             }
         });
