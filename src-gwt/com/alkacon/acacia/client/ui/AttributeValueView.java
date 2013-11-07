@@ -513,6 +513,17 @@ implements I_Draggable, I_HasResizeOnShow, HasMouseOverHandlers, HasMouseOutHand
     }
 
     /**
+     * Checks if the attribute value view's widget "owns" the given element.<p>
+     * 
+     * @param element the element to check  
+     * @return true if the widget owns the element 
+     */
+    public boolean owns(Element element) {
+
+        return (m_widget != null) && m_widget.owns(element);
+    }
+
+    /**
      * Removes any present error message.<p>
      */
     public void removeValidationMessage() {

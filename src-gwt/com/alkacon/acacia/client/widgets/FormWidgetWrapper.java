@@ -28,6 +28,7 @@ import com.alkacon.acacia.client.css.I_LayoutBundle;
 import com.alkacon.geranium.client.I_HasResizeOnShow;
 import com.alkacon.geranium.client.util.DomUtil;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.logical.shared.HasResizeHandlers;
 import com.google.gwt.event.logical.shared.ResizeHandler;
@@ -127,6 +128,14 @@ public class FormWidgetWrapper extends Composite implements I_FormEditWidget, Ha
     public void onAttachWidget() {
 
         super.onAttach();
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.widgets.I_EditWidget#owns(com.google.gwt.dom.client.Element)
+     */
+    public boolean owns(Element element) {
+
+        return (m_editWidget != null) && m_editWidget.owns(element);
     }
 
     /**

@@ -50,14 +50,6 @@ public abstract class A_EditWidget extends FocusWidget implements I_EditWidget {
     }
 
     /**
-     * @see com.alkacon.acacia.client.widgets.I_EditWidget#onAttachWidget()
-     */
-    public void onAttachWidget() {
-
-        super.onAttach();
-    }
-
-    /**
      * @see com.google.gwt.event.logical.shared.HasValueChangeHandlers#addValueChangeHandler(com.google.gwt.event.logical.shared.ValueChangeHandler)
      */
     public abstract HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> handler);
@@ -68,6 +60,22 @@ public abstract class A_EditWidget extends FocusWidget implements I_EditWidget {
     public String getValue() {
 
         return getElement().getInnerText().trim();
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.widgets.I_EditWidget#onAttachWidget()
+     */
+    public void onAttachWidget() {
+
+        super.onAttach();
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.widgets.I_EditWidget#owns(com.google.gwt.dom.client.Element)
+     */
+    public boolean owns(com.google.gwt.dom.client.Element element) {
+
+        return false;
     }
 
     /**

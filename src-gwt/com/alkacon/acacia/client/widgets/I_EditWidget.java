@@ -24,6 +24,7 @@
 
 package com.alkacon.acacia.client.widgets;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.HasFocusHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -53,6 +54,17 @@ public interface I_EditWidget extends HasValue<String>, HasFocusHandlers, IsWidg
      */
     @SuppressWarnings("javadoc")
     void onAttachWidget();
+
+    /**
+     * Returns true if the element should be logically counted as part of the widget for the purpose of determining whether a mouse click is "outside".
+     * 
+     * For example, this is needed if the widget uses a popup.
+     * 
+     * @param element the element to check 
+     * 
+     * @return true if the element counts as part of the widget 
+     */
+    boolean owns(Element element);
 
     /**
      * Sets the widget active/inactive.<p>

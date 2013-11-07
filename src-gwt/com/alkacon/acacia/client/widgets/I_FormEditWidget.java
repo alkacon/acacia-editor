@@ -24,6 +24,7 @@
 
 package com.alkacon.acacia.client.widgets;
 
+
 /**
  * An editing widget including the label. To be used for form based editing only.<p>
  */
@@ -36,4 +37,5 @@ public interface I_FormEditWidget extends I_EditWidget {
      * @param help the widget help text
      */
     void setWidgetInfo(String label, String help);
+
 }

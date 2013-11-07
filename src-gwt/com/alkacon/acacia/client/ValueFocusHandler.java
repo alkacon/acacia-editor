@@ -129,7 +129,8 @@ public class ValueFocusHandler implements MouseOverHandler, MouseOutHandler, Mou
 
         event.stopPropagation();
         if (RootPanel.get().equals(event.getSource())) {
-            if (m_currentFocus != null) {
+            com.google.gwt.dom.client.Element element = com.google.gwt.dom.client.Element.as(event.getNativeEvent().getEventTarget());
+            if ((m_currentFocus != null) && !m_currentFocus.owns(element)) {
                 m_currentFocus.toggleFocus(false);
                 m_currentFocus = null;
             }
