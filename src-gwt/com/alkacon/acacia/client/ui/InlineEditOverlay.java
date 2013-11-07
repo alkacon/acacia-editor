@@ -128,6 +128,9 @@ public class InlineEditOverlay extends Composite implements HasClickHandlers {
     /** Map of attached edit buttons and their absolute top positions. */
     private Map<InlineEntityWidget, Integer> m_buttons;
 
+    /** The current overlay position. */
+    private PositionBean m_currentPosition;
+
     /** The element to surround with the overlay. */
     private Element m_element;
 
@@ -203,27 +206,11 @@ public class InlineEditOverlay extends Composite implements HasClickHandlers {
     }
 
     /**
-     * @see com.google.gwt.user.client.ui.UIObject#setVisible(boolean)
-     */
-    @Override
-    public void setVisible(boolean visible) {
-
-        super.setVisible(visible);
-        if (!visible && m_hasButtonBar) {
-            for (Widget widget : m_buttonPanel) {
-                if (widget instanceof InlineEntityWidget) {
-                    ((InlineEntityWidget)widget).setContentHighlightingVisible(false);
-                }
-            }
-        }
-    }
-
-    /**
      * Returns the root overlay if available.<p>
      * 
      * @return the root overlay
      */
-    public static InlineEditOverlay getRootOvelay() {
+    public static InlineEditOverlay getRootOverlay() {
 
         return m_overlays.isEmpty() ? null : m_overlays.get(0);
     }
@@ -322,9 +309,12 @@ public class InlineEditOverlay extends Composite implements HasClickHandlers {
     public void setButtonPosition(InlineEntityWidget widget, int absoluteTop) {
 
         if (m_buttonPanel.getWidgetIndex(widget) > -1) {
-            widget.getElement().getStyle().setTop(
-                getAvailablePosition(widget, absoluteTop) - ClientStringUtil.parseInt(m_buttonBar.getStyle().getTop()),
-                Unit.PX);
+            int positionTop = getAvailablePosition(widget, absoluteTop)
+                - ClientStringUtil.parseInt(m_buttonBar.getStyle().getTop());
+            widget.getElement().getStyle().setTop(positionTop, Unit.PX);
+            if (ClientStringUtil.parseInt(m_buttonBar.getStyle().getHeight()) < (positionTop + 20)) {
+                increaseOverlayHeight(positionTop + 20);
+            }
         }
     }
 
@@ -336,6 +326,22 @@ public class InlineEditOverlay extends Composite implements HasClickHandlers {
     public void setOffset(int offset) {
 
         m_offset = offset;
+    }
+
+    /**
+     * @see com.google.gwt.user.client.ui.UIObject#setVisible(boolean)
+     */
+    @Override
+    public void setVisible(boolean visible) {
+
+        super.setVisible(visible);
+        if (!visible && m_hasButtonBar) {
+            for (Widget widget : m_buttonPanel) {
+                if (widget instanceof InlineEntityWidget) {
+                    ((InlineEntityWidget)widget).setContentHighlightingVisible(false);
+                }
+            }
+        }
     }
 
     /**
@@ -378,6 +384,19 @@ public class InlineEditOverlay extends Composite implements HasClickHandlers {
     }
 
     /**
+     * Increases the overlay height to make space for edit buttons.<p>
+     * 
+     * @param height the height to set
+     */
+    private void increaseOverlayHeight(int height) {
+
+        if (m_currentPosition != null) {
+            m_currentPosition.setHeight(height);
+            setPosition(m_currentPosition);
+        }
+    }
+
+    /**
      * Sets button bar visibility.<p>
      * 
      * @param visible <code>true</code> to set the button bar visible
@@ -414,6 +433,7 @@ public class InlineEditOverlay extends Composite implements HasClickHandlers {
      */
     private void setPosition(PositionBean position) {
 
+        m_currentPosition = position;
         setSelectPosition(position.getLeft(), position.getTop(), position.getHeight(), position.getWidth());
     }
 

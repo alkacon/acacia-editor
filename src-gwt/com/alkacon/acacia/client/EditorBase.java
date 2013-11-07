@@ -49,11 +49,15 @@ import java.util.List;
 import java.util.Set;
 
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.Dictionary;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
@@ -110,6 +114,9 @@ public class EditorBase implements I_InlineHtmlUpdateHandler {
 
     /** The tab panel if tabs are used. */
     private TabbedPanel<?> m_formTabs;
+
+    /** The window resize handler registration. */
+    private HandlerRegistration m_resizeHandlerRegistration;
 
     /** The root attribute handler. */
     private RootHandler m_rootHandler;
@@ -689,6 +696,37 @@ public class EditorBase implements I_InlineHtmlUpdateHandler {
 
         InlineEditOverlay.removeAll();
         m_editOverlay = InlineEditOverlay.addOverlayForElement(element);
+        if (m_resizeHandlerRegistration != null) {
+            m_resizeHandlerRegistration.removeHandler();
+        }
+        // add a handler to ensure the edit overlays get adjusted to changed window size
+        m_resizeHandlerRegistration = Window.addResizeHandler(new ResizeHandler() {
+
+            private Timer m_resizeTimer;
+
+            public void onResize(ResizeEvent event) {
+
+                if (m_resizeTimer == null) {
+                    m_resizeTimer = new Timer() {
+
+                        @Override
+                        public void run() {
+
+                            handleResize();
+                        }
+                    };
+                    m_resizeTimer.schedule(300);
+                }
+            }
+
+            /**
+             * Handles the window resize.<p>
+             */
+            void handleResize() {
+
+                InlineEditOverlay.updateCurrentOverlayPosition();
+            }
+        });
     }
 
     /**
@@ -710,6 +748,10 @@ public class EditorBase implements I_InlineHtmlUpdateHandler {
 
         InlineEditOverlay.removeAll();
         m_editOverlay = null;
+        if (m_resizeHandlerRegistration != null) {
+            m_resizeHandlerRegistration.removeHandler();
+            m_resizeHandlerRegistration = null;
+        }
     }
 
     /**

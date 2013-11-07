@@ -299,7 +299,7 @@ public class InlineEntityWidget extends Composite {
             attributeIndex,
             htmlUpdateHandler,
             widgetService);
-        InlineEditOverlay.getRootOvelay().addButton(widget, element.getAbsoluteTop());
+        InlineEditOverlay.getRootOverlay().addButton(widget, element.getAbsoluteTop());
         attributeHandler.updateButtonVisibilty(widget);
         return widget;
     }
@@ -399,7 +399,7 @@ public class InlineEntityWidget extends Composite {
      */
     protected void positionWidget() {
 
-        InlineEditOverlay.getRootOvelay().setButtonPosition(this, m_referenceElement.getAbsoluteTop());
+        InlineEditOverlay.getRootOverlay().setButtonPosition(this, m_referenceElement.getAbsoluteTop());
     }
 
     /** Adds a new attribute value. */
@@ -435,7 +435,7 @@ public class InlineEntityWidget extends Composite {
                 showEditPopup(null);
                 m_hasChanges = true;
             } else {
-                InlineEditOverlay.getRootOvelay().clearButtonPanel();
+                InlineEditOverlay.getRootOverlay().clearButtonPanel();
                 m_htmlUpdateHandler.reinitWidgets(m_formParent);
             }
 
@@ -500,7 +500,7 @@ public class InlineEntityWidget extends Composite {
         AttributeHandler.setResizeHandler(null);
         if (!m_runningUpdate) {
             if (m_hasChanges) {
-                InlineEditOverlay.getRootOvelay().clearButtonPanel();
+                InlineEditOverlay.getRootOverlay().clearButtonPanel();
                 m_htmlUpdateHandler.reinitWidgets(m_formParent);
             }
         }
