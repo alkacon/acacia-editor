@@ -607,9 +607,10 @@ public class Renderer implements I_EntityRenderer {
                     if (attribute.isSimpleValue() && (widget != null)) {
                         Element tempSpan = DOM.createSpan();
                         tempSpan.setInnerHTML(attribute.getSimpleValues().get(i));
-                        String value = tempSpan.getInnerHTML();
+                        String value = tempSpan.getInnerHTML().trim();
                         // verify the current value equals the element content
-                        if (element.getInnerHTML().equals(value)) {
+                        String innerHtml = element.getInnerHTML().trim();
+                        if (innerHtml.equals(value)) {
                             widget.addValueChangeHandler(new WidgetChangeHandler(handler, i));
                             formParent.adoptWidget(widget);
                         } else {
