@@ -162,23 +162,26 @@ public class Example implements EntryPoint {
             "string",
             null,
             "",
-            "wide"));
+            "wide",
+            true));
         attributes.put(lastNameAttribute, new AttributeConfiguration(
             "Lastname",
             "The lastname",
             "string",
             null,
             "",
-            "wide"));
+            "wide",
+            true));
 
-        attributes.put(cityAttribute, new AttributeConfiguration("City", "The city", "string", null, "", "wide"));
+        attributes.put(cityAttribute, new AttributeConfiguration("City", "The city", "string", null, "", "wide", true));
         attributes.put(countryAttribute, new AttributeConfiguration(
             "Country",
             "The country",
             "select",
             "de=Deustchland|fr=Frankreich|it=Italien",
             "",
-            "wide"));
+            "wide",
+            true));
 
         com.alkacon.acacia.shared.Entity addressEntity = new com.alkacon.acacia.shared.Entity(
             "myAdress",

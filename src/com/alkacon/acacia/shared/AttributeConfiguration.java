@@ -49,6 +49,9 @@ public class AttributeConfiguration implements IsSerializable {
     /** The widget name. */
     private String m_widgetName;
 
+    /** The visibility flag. */
+    private boolean m_visible;
+
     /**
      * Constructor.<p>
      * 
@@ -58,6 +61,7 @@ public class AttributeConfiguration implements IsSerializable {
      * @param widgetConfig the widget configuration
      * @param defaultValue the attribute default value
      * @param displayType the display type
+     * @param visible if the attribute should be visible in the editor
      */
     public AttributeConfiguration(
         String label,
@@ -65,7 +69,8 @@ public class AttributeConfiguration implements IsSerializable {
         String widgetName,
         String widgetConfig,
         String defaultValue,
-        String displayType) {
+        String displayType,
+        boolean visible) {
 
         m_label = label;
         m_help = help;
@@ -73,6 +78,7 @@ public class AttributeConfiguration implements IsSerializable {
         m_widgetConfig = widgetConfig;
         m_defaultValue = defaultValue;
         m_displayType = displayType;
+        m_visible = visible;
     }
 
     /**
@@ -171,6 +177,16 @@ public class AttributeConfiguration implements IsSerializable {
     public String getDisplayType() {
 
         return m_displayType;
+    }
+
+    /**
+     * Returns if the given attribute should be visible in the editor.<p>
+     * 
+     * @return <code>true</code> if the given attribute should be visible in the editor
+     */
+    public boolean isVisible() {
+
+        return m_visible;
     }
 
 }

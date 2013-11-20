@@ -427,6 +427,10 @@ public class Renderer implements I_EntityRenderer {
             boolean collapsed = currentTab.isCollapsed()
                 && ((nextTab != null) && attributeNames.get(1).endsWith("/" + nextTab.getStartName()));
             for (final String attributeName : attributeNames) {
+                if (!m_widgetService.isVisible(attributeName)) {
+                    // attributes configured as invisible, will be skipped
+                    continue;
+                }
                 if ((nextTab != null) && attributeName.endsWith("/" + nextTab.getStartName())) {
                     currentTab = nextTab;
                     nextTab = tabIt.hasNext() ? tabIt.next() : null;
@@ -536,6 +540,10 @@ public class Renderer implements I_EntityRenderer {
         } else {
             List<String> attributeNames = entityType.getAttributeNames();
             for (String attributeName : attributeNames) {
+                if (!m_widgetService.isVisible(attributeName)) {
+                    // attributes configured as invisible, will be skipped
+                    continue;
+                }
                 int minOccurrence = entityType.getAttributeMinOccurrence(attributeName);
                 I_EntityAttribute attribute = entity.getAttribute(attributeName);
                 if ((attribute == null) && (minOccurrence > 0)) {

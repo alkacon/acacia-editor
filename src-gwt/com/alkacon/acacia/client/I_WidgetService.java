@@ -144,6 +144,15 @@ public interface I_WidgetService {
     boolean isDisplaySingleLine(String attributeName);
 
     /**
+     * Returns if the given attribute should be visible in the editor.<p>
+     * 
+     * @param attributeName the attribute name
+     * 
+     * @return <code>true</code> if the given attribute should be visible in the editor
+     */
+    boolean isVisible(String attributeName);
+
+    /**
      * Registers a complex widget attribute which should be handled by a special renderer.<p>
      * 
      * @param attrName the attribute name 

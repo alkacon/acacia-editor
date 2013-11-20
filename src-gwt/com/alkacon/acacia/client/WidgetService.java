@@ -48,17 +48,17 @@ public class WidgetService implements I_WidgetService {
     /** The in-line renderer. */
     private I_EntityRenderer m_defaultRenderer;
 
-    /** Map of renderer by type name. */
-    private Map<String, I_EntityRenderer> m_rendererByType;
-
-    /** The registered widget factories. */
-    private Map<String, I_WidgetFactory> m_widgetFactories;
-
     /** Renderers by attribute. */
     private Map<String, I_EntityRenderer> m_rendererByAttribute = new HashMap<String, I_EntityRenderer>();
 
+    /** Map of renderer by type name. */
+    private Map<String, I_EntityRenderer> m_rendererByType;
+
     /** Map of renderers by name. */
     private Map<String, I_EntityRenderer> m_renderers = new HashMap<String, I_EntityRenderer>();
+
+    /** The registered widget factories. */
+    private Map<String, I_WidgetFactory> m_widgetFactories;
 
     /**
      * Constructor.<p>
@@ -249,6 +249,18 @@ public class WidgetService implements I_WidgetService {
             }
         }
         return false;
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.I_WidgetService#isVisible(java.lang.String)
+     */
+    public boolean isVisible(String attributeName) {
+
+        boolean result = true;
+        if (m_attributeConfigurations.containsKey(attributeName)) {
+            result = m_attributeConfigurations.get(attributeName).isVisible();
+        }
+        return result;
     }
 
     /** 
