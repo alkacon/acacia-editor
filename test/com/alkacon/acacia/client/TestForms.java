@@ -168,8 +168,8 @@ public class TestForms extends GWTTestCase {
             }
         };
         Map<String, AttributeConfiguration> configs = new HashMap<String, AttributeConfiguration>();
-        configs.put("attribute1", new AttributeConfiguration("label", "help", "widget1", "", ""));
-        configs.put("attribute2", new AttributeConfiguration("label", "help", "widget2", "", ""));
+        configs.put("attribute1", new AttributeConfiguration("label", "help", "widget1", "", "", true));
+        configs.put("attribute2", new AttributeConfiguration("label", "help", "widget2", "", "", true));
         ContentDefinition definition = new ContentDefinition(
             null,
             configs,

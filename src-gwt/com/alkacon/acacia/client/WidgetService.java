@@ -193,6 +193,18 @@ public class WidgetService implements I_WidgetService {
 
         m_attributeConfigurations = definition.getConfigurations();
     }
+    
+    /**
+     * @see com.alkacon.acacia.client.I_WidgetService#isVisible(java.lang.String)
+     */
+    public boolean isVisible(String attributeName) {
+
+        boolean result = true;
+        if (m_attributeConfigurations.containsKey(attributeName)) {
+            result = m_attributeConfigurations.get(attributeName).isVisible();
+        }
+        return result;
+    }
 
     /**
      * Adds the default complex type renderer.<p>

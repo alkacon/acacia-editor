@@ -117,6 +117,15 @@ public interface I_WidgetService {
      * @return the renderer
      */
     I_EntityRenderer getRendererForType(I_Type entityType);
+    
+    /**
+     * Returns if the given attribute should be visible in the editor.<p>
+     * 
+     * @param attributeName the attribute name
+     * 
+     * @return <code>true</code> if the given attribute should be visible in the editor
+     */
+    boolean isVisible(String attributeName);
 
     /**
      * Sets the widget factories.<p>

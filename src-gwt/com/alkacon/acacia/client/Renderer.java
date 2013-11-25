@@ -312,6 +312,10 @@ public class Renderer implements I_EntityRenderer {
             I_Type entityType = m_vie.getType(entity.getTypeName());
             List<String> attributeNames = entityType.getAttributeNames();
             for (final String attributeName : attributeNames) {
+                if (!m_widgetService.isVisible(attributeName)) {
+                    // attributes configured as invisible, will be skipped
+                    continue;
+                }
                 boolean collapsed = false;
                 if ((nextTab != null) && attributeName.endsWith("/" + nextTab.getStartName())) {
                     currentTab = nextTab;
@@ -428,6 +432,10 @@ public class Renderer implements I_EntityRenderer {
         } else {
             List<String> attributeNames = entityType.getAttributeNames();
             for (String attributeName : attributeNames) {
+                if (!m_widgetService.isVisible(attributeName)) {
+                    // attributes configured as invisible, will be skipped
+                    continue;
+                }
                 int minOccurrence = entityType.getAttributeMinOccurrence(attributeName);
                 I_EntityAttribute attribute = entity.getAttribute(attributeName);
                 if ((attribute == null) && (minOccurrence > 0)) {
