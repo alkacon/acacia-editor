@@ -158,7 +158,7 @@ public class Renderer implements I_EntityRenderer {
 
             int tabIndex = m_tabbedPanel.getSelectedIndex();
             FlowPanel tab = m_tabbedPanel.getWidget(tabIndex);
-            int height = PositionBean.getInnerDimensions(tab.getElement()).getHeight();
+            int height = PositionBean.getInnerDimensions(tab.getElement(), 1, false).getHeight();
             m_context.getElement().getStyle().setHeight(50 + height, Unit.PX);
         }
 

@@ -253,7 +253,7 @@ public class UndoRedoHandler implements HasValueChangeHandlers<UndoRedoState> {
     }
 
     /** The change timer delay. */
-    private static final int CHANGE_TIMER_DELAY = 300;
+    private static final int CHANGE_TIMER_DELAY = 500;
 
     /** The static instance. */
     private static UndoRedoHandler INSTANCE;
