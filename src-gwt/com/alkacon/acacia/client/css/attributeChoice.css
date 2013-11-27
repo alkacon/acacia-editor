@@ -173,27 +173,14 @@ div.choice{
 }
 
 
-/** Browser specific styles. */
-@if user.agent gecko1_8 gecko{
-	/** firefox **/
-	div.choice{
-		background-image: literal("-moz-linear-gradient(")value("form.PARENT_GRADIENT") literal(")");
-	}
-} @elif user.agent safari {
-	/** chrome, safari etc. **/
-	div.choice{
-		background-image: literal("-webkit-linear-gradient(")value("form.PARENT_GRADIENT") literal(")");
-	}
-} @elif user.agent opera {
-	/** opera */
-	div.choice{
-		background-image: literal("-o-linear-gradient(")value("form.PARENT_GRADIENT") literal(")");
-	}
-} @elif user.agent ie9 {
-	/** ie9 */
-	div.choice{
-		background-image: value("form.PARENT_GRADIENT_IE9");
-	}
+/** joined vendor prefix style, for better fall back behavior */
+div.choice{
+	background-image: value("form.PARENT_GRADIENT_IE9");
+	background-image: literal("-moz-linear-gradient(")value("form.PARENT_GRADIENT") literal(")");
+	background-image: literal("-ms-linear-gradient(")value("form.PARENT_GRADIENT") literal(")");
+	background-image: literal("-webkit-linear-gradient(")value("form.PARENT_GRADIENT") literal(")");
+	background-image: literal("-o-linear-gradient(")value("form.PARENT_GRADIENT") literal(")");
+	background-image: literal("linear-gradient(")value("form.PARENT_GRADIENT") literal(")");
 }
 
 div.choice:hover{

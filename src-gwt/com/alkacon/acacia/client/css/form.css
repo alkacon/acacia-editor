@@ -473,47 +473,24 @@ div.helpBubble{
 	border-radius: value("constants.css.borderRadius");
 }
 
-/** Browser specific styles. */
-@if user.agent gecko1_8 gecko{
-	/** firefox **/
-	.formParent{
-		background-image: literal("-moz-linear-gradient(")PARENT_GRADIENT literal(")") !important;
-	}
-	.entity .attributeValue.focused > .widgetHolder, .dragHelper.attributeValue > .widgetHolder{
-		background-image: literal("-moz-linear-gradient(")FOCUS_GRADIENT literal(")");
-	}
-} @elif user.agent safari {
-	/** chrome, safari etc. **/
-	.formParent{
-		background-image: literal("-webkit-linear-gradient(")PARENT_GRADIENT literal(")") !important;
-	}
-	.entity .attributeValue.focused > .widgetHolder, .dragHelper.attributeValue > .widgetHolder{
-		background-image: literal("-webkit-linear-gradient(")FOCUS_GRADIENT literal(")");
-	}
-} @elif user.agent opera {
-	/** opera */
-	.formParent{
-		background-image: literal("-o-linear-gradient(")PARENT_GRADIENT literal(")") !important;
-	}
-	.entity .attributeValue.focused > .widgetHolder, .dragHelper.attributeValue > .widgetHolder{
-		background-image: literal("-o-linear-gradient(")FOCUS_GRADIENT literal(")");
-	}
-} @elif user.agent ie9 {
-	/** ie9 */
-	div.formParent{
-		background-image: PARENT_GRADIENT_IE9 !important;
-	}
-	.entity .attributeValue.focused > .widgetHolder, .dragHelper.attributeValue > .widgetHolder{
-		background-image: FOCUS_GRADIENT_IE9;
-	}
-} @else {
-	/** ie8, ie7 */
-	div.formParent{
-		background: #EEEEEE !important;
-	}
-	.entity .attributeValue.focused > .widgetHolder, .dragHelper.attributeValue > .widgetHolder{
-		background: #F4F7F9;
-	}
+/** joined vendor prefix style, for better fall back behavior */
+.formParent{
+	background: #EEEEEE !important;
+	background-image: PARENT_GRADIENT_IE9 !important;
+	background-image: literal("-moz-linear-gradient(")PARENT_GRADIENT literal(")") !important;
+	background-image: literal("-ms-linear-gradient(")PARENT_GRADIENT literal(")") !important;
+	background-image: literal("-webkit-linear-gradient(")PARENT_GRADIENT literal(")") !important;
+	background-image: literal("-o-linear-gradient(")PARENT_GRADIENT literal(")") !important;
+	background-image: literal("linear-gradient(")PARENT_GRADIENT literal(")") !important;
+}
+.entity .attributeValue.focused > .widgetHolder, .dragHelper.attributeValue > .widgetHolder{
+	background: #F4F7F9;
+	background-image: FOCUS_GRADIENT_IE9;
+	background-image: literal("-moz-linear-gradient(")FOCUS_GRADIENT literal(")");
+	background-image: literal("-ms-linear-gradient(")FOCUS_GRADIENT literal(")");
+	background-image: literal("-webkit-linear-gradient(")FOCUS_GRADIENT literal(")");
+	background-image: literal("-o-linear-gradient(")FOCUS_GRADIENT literal(")");
+	background-image: literal("linear-gradient(")FOCUS_GRADIENT literal(")");
 }
 
 /** Drag and drop styles. */
