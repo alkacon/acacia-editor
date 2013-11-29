@@ -601,9 +601,7 @@ public class Renderer implements I_EntityRenderer {
                 AttributeHandler handler = new AttributeHandler(m_vie, parentEntity, attributeName, m_widgetService);
                 for (int i = 0; i < elements.size(); i++) {
                     Element element = elements.get(i);
-                    I_EditWidget widget = m_widgetService.getAttributeInlineWidget(
-                        attributeName,
-                        (com.google.gwt.user.client.Element)element);
+                    I_EditWidget widget = m_widgetService.getAttributeInlineWidget(attributeName, element);
                     if (attribute.isSimpleValue() && (widget != null)) {
                         Element tempSpan = DOM.createSpan();
                         tempSpan.setInnerHTML(attribute.getSimpleValues().get(i));

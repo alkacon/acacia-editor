@@ -24,10 +24,10 @@
 
 package com.alkacon.acacia.client.widgets;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.FocusWidget;
 
 /**

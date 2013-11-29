@@ -54,19 +54,39 @@ public class FormWidgetWrapper extends Composite implements I_FormEditWidget, Ha
 
     /**
      * Constructor.<p>
-     * 
-     * @param editWidget the edit widget to wrap
      */
-    public FormWidgetWrapper(I_EditWidget editWidget) {
+    public FormWidgetWrapper() {
 
         m_mainPanel = new FlowPanel();
         m_label = new HTML();
         m_label.setStyleName(I_LayoutBundle.INSTANCE.form().label());
         m_mainPanel.add(m_label);
+        initWidget(m_mainPanel);
+    }
+
+    /**
+     * Constructor.<p>
+     * 
+     * @param editWidget the edit widget to wrap
+     */
+    public FormWidgetWrapper(I_EditWidget editWidget) {
+
+        this();
+        setEditWidget(editWidget);
+    }
+
+    /**
+     * The edit widget needs to set, before the widget may be used.<p>
+     * 
+     * @param editWidget the edit widget to wrap
+     */
+    public void setEditWidget(I_EditWidget editWidget) {
+
+        // the edit widget may be set only once
+        assert m_editWidget == null;
         m_editWidget = editWidget;
         m_mainPanel.add(m_editWidget);
         m_editWidget.asWidget().addStyleName(I_LayoutBundle.INSTANCE.form().widget());
-        initWidget(m_mainPanel);
     }
 
     /**
@@ -74,6 +94,8 @@ public class FormWidgetWrapper extends Composite implements I_FormEditWidget, Ha
      */
     public HandlerRegistration addFocusHandler(FocusHandler handler) {
 
+        // make sure the widget has been initialized
+        assert m_editWidget != null;
         return m_editWidget.addFocusHandler(handler);
     }
 
@@ -82,6 +104,8 @@ public class FormWidgetWrapper extends Composite implements I_FormEditWidget, Ha
      */
     public HandlerRegistration addResizeHandler(ResizeHandler handler) {
 
+        // make sure the widget has been initialized
+        assert m_editWidget != null;
         if (m_editWidget instanceof HasResizeHandlers) {
             return ((HasResizeHandlers)m_editWidget).addResizeHandler(handler);
         }
@@ -93,6 +117,8 @@ public class FormWidgetWrapper extends Composite implements I_FormEditWidget, Ha
      */
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> handler) {
 
+        // make sure the widget has been initialized
+        assert m_editWidget != null;
         return m_editWidget.addValueChangeHandler(handler);
     }
 
@@ -103,6 +129,8 @@ public class FormWidgetWrapper extends Composite implements I_FormEditWidget, Ha
      */
     public I_EditWidget getEditWidget() {
 
+        // make sure the widget has been initialized
+        assert m_editWidget != null;
         return m_editWidget;
     }
 
@@ -111,6 +139,8 @@ public class FormWidgetWrapper extends Composite implements I_FormEditWidget, Ha
      */
     public String getValue() {
 
+        // make sure the widget has been initialized
+        assert m_editWidget != null;
         return m_editWidget.getValue();
     }
 
@@ -119,6 +149,8 @@ public class FormWidgetWrapper extends Composite implements I_FormEditWidget, Ha
      */
     public boolean isActive() {
 
+        // make sure the widget has been initialized
+        assert m_editWidget != null;
         return m_editWidget.isActive();
     }
 
@@ -135,6 +167,8 @@ public class FormWidgetWrapper extends Composite implements I_FormEditWidget, Ha
      */
     public boolean owns(Element element) {
 
+        // make sure the widget has been initialized
+        assert m_editWidget != null;
         return (m_editWidget != null) && m_editWidget.owns(element);
     }
 
@@ -143,6 +177,8 @@ public class FormWidgetWrapper extends Composite implements I_FormEditWidget, Ha
      */
     public void resizeOnShow() {
 
+        // make sure the widget has been initialized
+        assert m_editWidget != null;
         if (m_editWidget instanceof I_HasResizeOnShow) {
             ((I_HasResizeOnShow)m_editWidget).resizeOnShow();
         }
@@ -153,6 +189,8 @@ public class FormWidgetWrapper extends Composite implements I_FormEditWidget, Ha
      */
     public void setActive(boolean active) {
 
+        // make sure the widget has been initialized
+        assert m_editWidget != null;
         m_editWidget.setActive(active);
     }
 
@@ -161,6 +199,8 @@ public class FormWidgetWrapper extends Composite implements I_FormEditWidget, Ha
      */
     public void setName(String name) {
 
+        // make sure the widget has been initialized
+        assert m_editWidget != null;
         m_editWidget.setName(name);
 
     }
@@ -170,6 +210,8 @@ public class FormWidgetWrapper extends Composite implements I_FormEditWidget, Ha
      */
     public void setValue(String value) {
 
+        // make sure the widget has been initialized
+        assert m_editWidget != null;
         m_editWidget.setValue(value);
     }
 
@@ -178,6 +220,8 @@ public class FormWidgetWrapper extends Composite implements I_FormEditWidget, Ha
      */
     public void setValue(String value, boolean fireEvent) {
 
+        // make sure the widget has been initialized
+        assert m_editWidget != null;
         m_editWidget.setValue(value, fireEvent);
     }
 

@@ -35,7 +35,7 @@ import com.alkacon.vie.shared.I_Type;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.gwt.user.client.Element;
+import com.google.gwt.dom.client.Element;
 
 /**
  * Service providing form widget renderer for entity attributes.<p>
@@ -138,7 +138,7 @@ public class WidgetService implements I_WidgetService {
     }
 
     /**
-     * @see com.alkacon.acacia.client.I_WidgetService#getAttributeInlineWidget(java.lang.String, com.google.gwt.user.client.Element)
+     * @see com.alkacon.acacia.client.I_WidgetService#getAttributeInlineWidget(java.lang.String, com.google.gwt.dom.client.Element)
      */
     public I_EditWidget getAttributeInlineWidget(String attributeName, Element element) {
 

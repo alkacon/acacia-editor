@@ -192,7 +192,7 @@ public class TestForms extends GWTTestCase {
                 return widget1;
             }
 
-            public I_EditWidget createInlineWidget(String configuration, com.google.gwt.user.client.Element element) {
+            public I_EditWidget createInlineWidget(String configuration, Element element) {
 
                 // TODO: Auto-generated method stub
                 return null;
@@ -205,7 +205,7 @@ public class TestForms extends GWTTestCase {
                 return new FormWidgetWrapper(new StringWidget());
             }
 
-            public I_EditWidget createInlineWidget(String configuration, com.google.gwt.user.client.Element element) {
+            public I_EditWidget createInlineWidget(String configuration, Element element) {
 
                 // TODO: Auto-generated method stub
                 return null;

@@ -42,11 +42,11 @@ import com.alkacon.vie.shared.I_Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -573,9 +573,9 @@ public class AttributeHandler extends RootHandler {
             return;
         }
         reference.hideAllButtons();
-        Element parent = (Element)reference.getElement().getParentElement();
+        Element parent = reference.getElement().getParentElement();
         parent.getStyle().setPosition(Position.RELATIVE);
-        final Element placeHolder = (Element)reference.getPlaceholder(null);
+        final Element placeHolder = reference.getPlaceholder(null);
         int top = reference.getElement().getOffsetTop();
         int left = reference.getElement().getOffsetLeft();
         int width = reference.getOffsetWidth();
@@ -612,9 +612,9 @@ public class AttributeHandler extends RootHandler {
             return;
         }
         reference.hideAllButtons();
-        Element parent = (Element)reference.getElement().getParentElement();
+        Element parent = reference.getElement().getParentElement();
         parent.getStyle().setPosition(Position.RELATIVE);
-        final Element placeHolder = (Element)reference.getPlaceholder(null);
+        final Element placeHolder = reference.getPlaceholder(null);
         int top = reference.getElement().getOffsetTop();
         int left = reference.getElement().getOffsetLeft();
         int width = reference.getOffsetWidth();

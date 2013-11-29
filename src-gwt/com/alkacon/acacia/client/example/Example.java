@@ -48,9 +48,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 

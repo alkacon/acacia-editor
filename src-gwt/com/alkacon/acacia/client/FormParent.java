@@ -24,8 +24,8 @@
 
 package com.alkacon.acacia.client;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -126,7 +126,7 @@ public class FormParent extends ComplexPanel implements I_InlineFormParent {
 
         // Use the contained widget's element as the composite's element,
         // effectively merging them within the DOM.
-        setElement(widget.getElement());
+        setElement((Element)widget.getElement());
 
         adopt(widget);
 

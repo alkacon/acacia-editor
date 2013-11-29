@@ -31,7 +31,7 @@ import com.alkacon.vie.shared.I_Type;
 
 import java.util.Map;
 
-import com.google.gwt.user.client.Element;
+import com.google.gwt.dom.client.Element;
 
 /**
  * Provides widget renderer for entity attributes.<p>

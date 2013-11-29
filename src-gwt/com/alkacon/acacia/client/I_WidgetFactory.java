@@ -27,7 +27,7 @@ package com.alkacon.acacia.client;
 import com.alkacon.acacia.client.widgets.I_EditWidget;
 import com.alkacon.acacia.client.widgets.I_FormEditWidget;
 
-import com.google.gwt.user.client.Element;
+import com.google.gwt.dom.client.Element;
 
 /**
  * Generates an editing widget with the given configuration.<p>
