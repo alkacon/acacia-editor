@@ -346,7 +346,6 @@ public class EditorBase implements I_InlineHtmlUpdateHandler {
         m_widgetService.addConfigurations(definition.getConfigurations());
         I_Type baseType = definition.getTypes().get(definition.getEntityTypeName());
         m_vie.registerTypes(baseType, definition.getTypes());
-        m_vie.registerTypes(baseType, definition.getTypes());
         m_vie.registerEntity(definition.getEntity());
     }
 

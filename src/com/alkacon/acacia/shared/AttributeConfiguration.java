@@ -43,14 +43,17 @@ public class AttributeConfiguration implements IsSerializable {
     /** The attribute label. */
     private String m_label;
 
+    /** States if the attribute should be synchronized across all locales. */
+    private boolean m_localeSynchronized;
+
+    /** The visibility flag. */
+    private boolean m_visible;
+
     /** The widget configuration. */
     private String m_widgetConfig;
 
     /** The widget name. */
     private String m_widgetName;
-
-    /** The visibility flag. */
-    private boolean m_visible;
 
     /**
      * Constructor.<p>
@@ -62,6 +65,7 @@ public class AttributeConfiguration implements IsSerializable {
      * @param defaultValue the attribute default value
      * @param displayType the display type
      * @param visible if the attribute should be visible in the editor
+     * @param localSynchronized if the attribute should be synchronized across all locales
      */
     public AttributeConfiguration(
         String label,
@@ -70,7 +74,8 @@ public class AttributeConfiguration implements IsSerializable {
         String widgetConfig,
         String defaultValue,
         String displayType,
-        boolean visible) {
+        boolean visible,
+        boolean localSynchronized) {
 
         m_label = label;
         m_help = help;
@@ -79,6 +84,7 @@ public class AttributeConfiguration implements IsSerializable {
         m_defaultValue = defaultValue;
         m_displayType = displayType;
         m_visible = visible;
+        m_localeSynchronized = localSynchronized;
     }
 
     /**
@@ -97,6 +103,16 @@ public class AttributeConfiguration implements IsSerializable {
     public String getDefaultValue() {
 
         return m_defaultValue;
+    }
+
+    /**
+     * Returns the widget display type.<p>
+     * 
+     * @return the widget display type
+     */
+    public String getDisplayType() {
+
+        return m_displayType;
     }
 
     /**
@@ -160,23 +176,13 @@ public class AttributeConfiguration implements IsSerializable {
     }
 
     /**
-     * Sets the widget display type.<p>
+     * Returns if the attribute should be synchronized across all locales.<p>
      * 
-     * @param displayType the widget display type
+     * @return <code>true</code> if the attribute should be synchronized across all locales
      */
-    public void setDisplayType(String displayType) {
+    public boolean isLocaleSynchronized() {
 
-        m_displayType = displayType;
-    }
-
-    /**
-     * Returns the widget display type.<p>
-     * 
-     * @return the widget display type
-     */
-    public String getDisplayType() {
-
-        return m_displayType;
+        return m_localeSynchronized;
     }
 
     /**
@@ -187,6 +193,16 @@ public class AttributeConfiguration implements IsSerializable {
     public boolean isVisible() {
 
         return m_visible;
+    }
+
+    /**
+     * Sets the widget display type.<p>
+     * 
+     * @param displayType the widget display type
+     */
+    public void setDisplayType(String displayType) {
+
+        m_displayType = displayType;
     }
 
 }

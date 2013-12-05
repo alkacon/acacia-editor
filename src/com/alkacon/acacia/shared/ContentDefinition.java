@@ -39,8 +39,11 @@ public class ContentDefinition implements IsSerializable {
     /** The attribute configurations. */
     private Map<String, AttributeConfiguration> m_configurations;
 
+    /** The locale specific entities. */
+    private Map<String, Entity> m_entities;
+
     /** The entity. */
-    private Entity m_entity;
+    private String m_entityId;
 
     /** Indicates if optional fields should be grouped together. */
     private boolean m_groupOptionalFields;
@@ -57,7 +60,8 @@ public class ContentDefinition implements IsSerializable {
     /**
      * Constructor.<p>
      * 
-     * @param entity the entity
+     * @param entityId the entity id
+     * @param entities the locale specific entities
      * @param configurations the attribute configurations
      * @param types the types
      * @param tabInfos the tab information beans
@@ -65,14 +69,16 @@ public class ContentDefinition implements IsSerializable {
      * @param locale the content locale
      */
     public ContentDefinition(
-        Entity entity,
+        String entityId,
+        Map<String, Entity> entities,
         Map<String, AttributeConfiguration> configurations,
         Map<String, I_Type> types,
         List<TabInfo> tabInfos,
         boolean groupOptionalFields,
         String locale) {
 
-        m_entity = entity;
+        m_entityId = entityId;
+        m_entities = entities;
         m_configurations = configurations;
         m_types = types;
         m_tabInfos = tabInfos;
@@ -137,13 +143,23 @@ public class ContentDefinition implements IsSerializable {
     }
 
     /**
+     * Returns the locale specific entities of the content.<p>
+     * 
+     * @return the locale specific entities of the content
+     */
+    public Map<String, Entity> getEntities() {
+
+        return m_entities;
+    }
+
+    /**
      * Returns the entity.<p>
      *
      * @return the entity
      */
     public Entity getEntity() {
 
-        return m_entity;
+        return m_entities.get(m_entityId);
     }
 
     /**
@@ -153,7 +169,7 @@ public class ContentDefinition implements IsSerializable {
      */
     public String getEntityId() {
 
-        return m_entity.getId();
+        return m_entityId;
     }
 
     /**
@@ -163,7 +179,7 @@ public class ContentDefinition implements IsSerializable {
      */
     public String getEntityTypeName() {
 
-        return m_entity.getTypeName();
+        return getEntity().getTypeName();
     }
 
     /**

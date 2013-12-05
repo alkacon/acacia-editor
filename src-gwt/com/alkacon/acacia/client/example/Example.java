@@ -44,6 +44,7 @@ import com.alkacon.vie.client.Vie;
 import com.alkacon.vie.shared.I_Entity;
 import com.alkacon.vie.shared.I_Type;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -163,7 +164,8 @@ public class Example implements EntryPoint {
             null,
             "",
             "wide",
-            true));
+            true,
+            false));
         attributes.put(lastNameAttribute, new AttributeConfiguration(
             "Lastname",
             "The lastname",
@@ -171,9 +173,18 @@ public class Example implements EntryPoint {
             null,
             "",
             "wide",
-            true));
+            true,
+            false));
 
-        attributes.put(cityAttribute, new AttributeConfiguration("City", "The city", "string", null, "", "wide", true));
+        attributes.put(cityAttribute, new AttributeConfiguration(
+            "City",
+            "The city",
+            "string",
+            null,
+            "",
+            "wide",
+            true,
+            false));
         attributes.put(countryAttribute, new AttributeConfiguration(
             "Country",
             "The country",
@@ -181,7 +192,8 @@ public class Example implements EntryPoint {
             "de=Deustchland|fr=Frankreich|it=Italien",
             "",
             "wide",
-            true));
+            true,
+            false));
 
         com.alkacon.acacia.shared.Entity addressEntity = new com.alkacon.acacia.shared.Entity(
             "myAdress",
@@ -194,7 +206,14 @@ public class Example implements EntryPoint {
         personEntity.setAttributeValue(firstnameAttribute, "Hans");
         personEntity.setAttributeValue(lastNameAttribute, "Albers");
         personEntity.setAttributeValue(addressAttribute, addressEntity);
-        return new ContentDefinition(personEntity, attributes, types, null, false, "de");
+        return new ContentDefinition(
+            personEntity.getId(),
+            Collections.singletonMap(personEntity.getId(), personEntity),
+            attributes,
+            types,
+            null,
+            false,
+            "de");
     }
 
     /**
