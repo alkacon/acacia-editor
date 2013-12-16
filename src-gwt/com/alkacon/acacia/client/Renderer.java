@@ -329,7 +329,7 @@ public class Renderer implements I_EntityRenderer {
         int minOccurrence = entityType.getAttributeMinOccurrence(attributeName);
         I_EntityAttribute attribute = parentEntity.getAttribute(attributeName);
         if ((attribute == null) && (minOccurrence > 0)) {
-            attribute = createEmptyAttribute(parentEntity, attributeName, minOccurrence);
+            attribute = createEmptyAttribute(parentEntity, attributeName, attributeHandler, minOccurrence);
         }
 
         ValuePanel attributeElement = new ValuePanel();
@@ -351,7 +351,9 @@ public class Renderer implements I_EntityRenderer {
                 valueWidget.setValueWidget(
                     m_widgetService.getAttributeFormWidget(attributeName),
                     attribute.getSimpleValues().get(attributeIndex),
-                    m_widgetService.getDefaultAttributeValue(attributeName),
+                    m_widgetService.getDefaultAttributeValue(
+                        attributeName,
+                        attributeHandler.getSimplePath(attributeIndex)),
                     true);
                 if (m_widgetService.isDisplayCompact(attributeName)) {
                     // widget should be displayed in compact view, using only 50% of the available width
@@ -466,7 +468,7 @@ public class Renderer implements I_EntityRenderer {
                     ValuePanel attributeElement = new ValuePanel();
                     tabPanel.add(attributeElement);
                     if ((attribute == null) && (minOccurrence > 0)) {
-                        attribute = createEmptyAttribute(entity, attributeName, minOccurrence);
+                        attribute = createEmptyAttribute(entity, attributeName, handler, minOccurrence);
                     }
                     lastCompactView = renderAttribute(
                         entityType,
@@ -523,7 +525,9 @@ public class Renderer implements I_EntityRenderer {
                     valueWidget.setValueWidget(
                         m_widgetService.getAttributeFormWidget(choiceAttribute.getAttributeName()),
                         choiceAttribute.getSimpleValue(),
-                        m_widgetService.getDefaultAttributeValue(choiceAttribute.getAttributeName()),
+                        m_widgetService.getDefaultAttributeValue(
+                            choiceAttribute.getAttributeName(),
+                            handler.getSimplePath(attributeIndex)),
                         true);
                     if (m_widgetService.isDisplaySingleLine(choiceAttribute.getAttributeName())) {
                         valueWidget.setCompactMode(AttributeValueView.COMPACT_MODE_SINGLE_LINE);
@@ -546,14 +550,14 @@ public class Renderer implements I_EntityRenderer {
                 }
                 int minOccurrence = entityType.getAttributeMinOccurrence(attributeName);
                 I_EntityAttribute attribute = entity.getAttribute(attributeName);
+                AttributeHandler handler = new AttributeHandler(m_vie, entity, attributeName, m_widgetService);
+                parentHandler.setHandler(attributeIndex, attributeName, handler);
                 if ((attribute == null) && (minOccurrence > 0)) {
-                    attribute = createEmptyAttribute(entity, attributeName, minOccurrence);
+                    attribute = createEmptyAttribute(entity, attributeName, handler, minOccurrence);
                 }
                 I_Type attributeType = entityType.getAttributeType(attributeName);
                 ValuePanel attributeElement = new ValuePanel();
                 context.add(attributeElement);
-                AttributeHandler handler = new AttributeHandler(m_vie, entity, attributeName, m_widgetService);
-                parentHandler.setHandler(attributeIndex, attributeName, handler);
                 lastCompactView = renderAttribute(
                     entityType,
                     attributeType,
@@ -668,17 +672,24 @@ public class Renderer implements I_EntityRenderer {
      * 
      * @param parentEntity the parent entity
      * @param attributeName the attribute name
+     * @param handler the attribute handler
      * @param minOccurrence the minimum occurrence of the attribute
      * 
      * @return the entity attribute
      */
-    protected I_EntityAttribute createEmptyAttribute(I_Entity parentEntity, String attributeName, int minOccurrence) {
+    protected I_EntityAttribute createEmptyAttribute(
+        I_Entity parentEntity,
+        String attributeName,
+        AttributeHandler handler,
+        int minOccurrence) {
 
         I_EntityAttribute result = null;
         I_Type attributeType = m_vie.getType(parentEntity.getTypeName()).getAttributeType(attributeName);
         if (attributeType.isSimpleType()) {
             for (int i = 0; i < minOccurrence; i++) {
-                parentEntity.addAttributeValue(attributeName, m_widgetService.getDefaultAttributeValue(attributeName));
+                parentEntity.addAttributeValue(
+                    attributeName,
+                    m_widgetService.getDefaultAttributeValue(attributeName, handler.getSimplePath(i)));
             }
             result = parentEntity.getAttribute(attributeName);
         } else {
@@ -741,7 +752,7 @@ public class Renderer implements I_EntityRenderer {
                     valueWidget.setValueWidget(
                         m_widgetService.getAttributeFormWidget(attributeName),
                         attribute.getSimpleValues().get(i),
-                        m_widgetService.getDefaultAttributeValue(attributeName),
+                        m_widgetService.getDefaultAttributeValue(attributeName, handler.getSimplePath(i)),
                         true);
                     // check for compact view setting
                     if (m_widgetService.isDisplayCompact(attributeName)) {
@@ -788,7 +799,7 @@ public class Renderer implements I_EntityRenderer {
                 valueWidget.setValueWidget(
                     m_widgetService.getAttributeFormWidget(attributeName),
                     "",
-                    m_widgetService.getDefaultAttributeValue(attributeName),
+                    m_widgetService.getDefaultAttributeValue(attributeName, handler.getSimplePath(0)),
                     false);
                 // check for compact view setting
                 if (m_widgetService.isDisplayCompact(attributeName)) {

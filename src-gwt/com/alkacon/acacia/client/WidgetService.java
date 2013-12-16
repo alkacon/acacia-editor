@@ -71,6 +71,14 @@ public class WidgetService implements I_WidgetService {
     }
 
     /**
+     * @see com.alkacon.acacia.client.I_WidgetService#addChangedOrderPath(java.lang.String)
+     */
+    public void addChangedOrderPath(String valuePath) {
+
+        // not implemented
+    }
+
+    /**
      * @see com.alkacon.acacia.client.I_WidgetService#addConfigurations(java.util.Map)
      */
     public void addConfigurations(Map<String, AttributeConfiguration> configurations) {
@@ -170,9 +178,9 @@ public class WidgetService implements I_WidgetService {
     }
 
     /**
-     * @see com.alkacon.acacia.client.I_WidgetService#getDefaultAttributeValue(java.lang.String)
+     * @see com.alkacon.acacia.client.I_WidgetService#getDefaultAttributeValue(java.lang.String, java.lang.String)
      */
-    public String getDefaultAttributeValue(String attributeName) {
+    public String getDefaultAttributeValue(String attributeName, String simpleValuePath) {
 
         AttributeConfiguration config = m_attributeConfigurations.get(attributeName);
         return (config != null) && (config.getDefaultValue() != null) ? config.getDefaultValue() : "";

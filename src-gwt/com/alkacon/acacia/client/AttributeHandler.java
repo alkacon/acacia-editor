@@ -174,27 +174,6 @@ public class AttributeHandler extends RootHandler {
     }
 
     /**
-     * Returns the entity id.<p>
-     * 
-     * @return the entity id
-     */
-    public String getEntityId() {
-
-        return m_entity.getId();
-    }
-
-    /**
-     * @see com.alkacon.acacia.client.RootHandler#setHandlerById(java.lang.String, com.alkacon.acacia.client.AttributeHandler)
-     */
-    @Override
-    public void setHandlerById(String attributeName, AttributeHandler handler) {
-
-        if (m_parentHandler != null) {
-            m_parentHandler.setHandlerById(attributeName, handler);
-        }
-    }
-
-    /**
      * Adds a new attribute value below the reference view.<p>
      * 
      * @param reference the reference value view
@@ -207,15 +186,20 @@ public class AttributeHandler extends RootHandler {
         boolean mayHaveMore = ((attribute == null) || (attribute.getValueCount() < maxOccurrence));
         if (mayHaveMore) {
             if (getAttributeType().isSimpleType()) {
-                String defaultValue = m_widgetService.getDefaultAttributeValue(m_attributeName);
+                int valueIndex = reference.getValueIndex() + 1;
+                String defaultValue = m_widgetService.getDefaultAttributeValue(
+                    m_attributeName,
+                    getSimplePath(valueIndex));
                 I_FormEditWidget widget = m_widgetService.getAttributeFormWidget(m_attributeName);
-                int valueIndex = -1;
+
+                boolean insertLast = false;
                 if (reference.getElement().getNextSiblingElement() == null) {
                     m_entity.addAttributeValue(m_attributeName, defaultValue);
+                    insertLast = true;
                 } else {
                     valueIndex = reference.getValueIndex() + 1;
                     m_entity.insertAttributeValue(m_attributeName, defaultValue, valueIndex);
-
+                    m_widgetService.addChangedOrderPath(getSimplePath(-1));
                 }
                 AttributeValueView valueWidget = reference;
                 if (reference.hasValue()) {
@@ -226,7 +210,7 @@ public class AttributeHandler extends RootHandler {
                     if (m_widgetService.isDisplaySingleLine(m_attributeName)) {
                         valueWidget.setCompactMode(AttributeValueView.COMPACT_MODE_SINGLE_LINE);
                     }
-                    if (valueIndex == -1) {
+                    if (insertLast) {
                         ((FlowPanel)reference.getParent()).add(valueWidget);
                     } else {
                         ((FlowPanel)reference.getParent()).insert(valueWidget, valueIndex);
@@ -259,12 +243,14 @@ public class AttributeHandler extends RootHandler {
         boolean mayHaveMore = ((attribute == null) || (attribute.getValueCount() < maxOccurrence));
         if (mayHaveMore) {
             if (getAttributeType().isSimpleType()) {
-                String defaultValue = m_widgetService.getDefaultAttributeValue(m_attributeName);
+                String defaultValue = m_widgetService.getDefaultAttributeValue(
+                    m_attributeName,
+                    getSimplePath(referenceIndex + 1));
                 if ((attribute == null) || (attribute.getValueCount() == (referenceIndex + 1))) {
                     m_entity.addAttributeValue(m_attributeName, defaultValue);
                 } else {
                     m_entity.insertAttributeValue(m_attributeName, defaultValue, referenceIndex + 1);
-
+                    m_widgetService.addChangedOrderPath(getSimplePath(-1));
                 }
             } else {
                 I_Entity value = m_vie.createEntity(null, m_attributeType.getId());
@@ -272,6 +258,7 @@ public class AttributeHandler extends RootHandler {
                     m_entity.addAttributeValue(m_attributeName, value);
                 } else {
                     m_entity.insertAttributeValue(m_attributeName, value, referenceIndex + 1);
+                    m_widgetService.addChangedOrderPath(getSimplePath(-1));
                 }
                 insertHandlers(referenceIndex + 1);
             }
@@ -287,6 +274,7 @@ public class AttributeHandler extends RootHandler {
     public void addNewChoiceAttributeValue(AttributeValueView reference, List<String> choicePath) {
 
         ValueFocusHandler.getInstance().clearFocus();
+        m_widgetService.addChangedOrderPath(getSimplePath(-1));
         if (isChoiceHandler()) {
             addChoiceOption(reference, choicePath);
         } else {
@@ -296,33 +284,6 @@ public class AttributeHandler extends RootHandler {
         UndoRedoHandler handler = UndoRedoHandler.getInstance();
         if (handler.isIntitalized()) {
             handler.addChange(m_entity.getId(), m_attributeName, reference.getValueIndex() + 1, ChangeType.choice);
-        }
-
-    }
-
-    /**
-     * Handles value changes from the view.<p>
-     * 
-     * @param reference the attribute value reference
-     * @param value the value
-     */
-    public void handleValueChange(AttributeValueView reference, String value) {
-
-        handleValueChange(reference.getValueIndex(), value);
-    }
-
-    /**
-     * Handles value changes from the view.<p>
-     * 
-     * @param valueIndex the value index
-     * @param value the value
-     */
-    public void handleValueChange(int valueIndex, String value) {
-
-        changeEntityValue(value, valueIndex);
-        UndoRedoHandler handler = UndoRedoHandler.getInstance();
-        if (handler.isIntitalized()) {
-            handler.addChange(m_entity.getId(), m_attributeName, valueIndex, ChangeType.value);
         }
     }
 
@@ -336,6 +297,25 @@ public class AttributeHandler extends RootHandler {
 
         m_attributeValueViews.get(valueIndex).getValueWidget().setValue(value, false);
         changeEntityValue(value, valueIndex);
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.RootHandler#collectSimplePath(com.alkacon.acacia.client.I_AttributeHandler)
+     */
+    @Override
+    public String collectSimplePath(I_AttributeHandler childHandler) {
+
+        int index = -1;
+        for (int i = 0; i < m_handlers.size(); i++) {
+            if (m_handlers.get(i).get(childHandler.getAttributeName()) == childHandler) {
+                index = i;
+                break;
+            }
+        }
+        if (index == -1) {
+            throw new RuntimeException("Child handler is not properly registered.");
+        }
+        return getSimplePath(index) + "/";
     }
 
     /**
@@ -353,7 +333,7 @@ public class AttributeHandler extends RootHandler {
             parentValue.addAttributeValue(Type.CHOICE_ATTRIBUTE_NAME, choice);
             I_Type choiceOptionType = choiceType.getAttributeType(attributeChoice);
             if (choiceOptionType.isSimpleType()) {
-                String choiceValue = m_widgetService.getDefaultAttributeValue(attributeChoice);
+                String choiceValue = m_widgetService.getDefaultAttributeValue(attributeChoice, getSimplePath(0));
                 choice.addAttributeValue(attributeChoice, choiceValue);
                 break;
             } else {
@@ -385,6 +365,7 @@ public class AttributeHandler extends RootHandler {
      * 
      * @return the attribute name
      */
+    @Override
     public String getAttributeName() {
 
         return m_attributeName;
@@ -420,6 +401,16 @@ public class AttributeHandler extends RootHandler {
     }
 
     /**
+     * Returns the entity id.<p>
+     * 
+     * @return the entity id
+     */
+    public String getEntityId() {
+
+        return m_entity.getId();
+    }
+
+    /**
      * Gets the maximum occurrence of the attribute.<p>
      * 
      * @return the maximum occurrence 
@@ -430,6 +421,25 @@ public class AttributeHandler extends RootHandler {
     }
 
     /**
+     * Returns the simple value path for the given index.<p>
+     * This will use the last fragment of the attribute name and concatenate it with the parent path.<p>
+     * If the given index equals -1 no value index will be appended
+     * 
+     * @param index the value index
+     * 
+     * @return the simple path
+     */
+    public String getSimplePath(int index) {
+
+        String simpleName = m_attributeName.substring(m_attributeName.lastIndexOf("/") + 1);
+        String result = m_parentHandler.collectSimplePath(this) + simpleName;
+        if (index != -1) {
+            result += "[" + (index + 1) + "]";
+        }
+        return result;
+    }
+
+    /**
      * Gets the widget service.<p>
      * 
      * @return the widget service 
@@ -437,6 +447,32 @@ public class AttributeHandler extends RootHandler {
     public I_WidgetService getWidgetService() {
 
         return m_widgetService;
+    }
+
+    /**
+     * Handles value changes from the view.<p>
+     * 
+     * @param reference the attribute value reference
+     * @param value the value
+     */
+    public void handleValueChange(AttributeValueView reference, String value) {
+
+        handleValueChange(reference.getValueIndex(), value);
+    }
+
+    /**
+     * Handles value changes from the view.<p>
+     * 
+     * @param valueIndex the value index
+     * @param value the value
+     */
+    public void handleValueChange(int valueIndex, String value) {
+
+        changeEntityValue(value, valueIndex);
+        UndoRedoHandler handler = UndoRedoHandler.getInstance();
+        if (handler.isIntitalized()) {
+            handler.addChange(m_entity.getId(), m_attributeName, valueIndex, ChangeType.value);
+        }
     }
 
     /**
@@ -485,7 +521,7 @@ public class AttributeHandler extends RootHandler {
             return;
         }
         FlowPanel parent = (FlowPanel)valueView.getParent();
-
+        m_widgetService.addChangedOrderPath(getSimplePath(-1));
         valueView.removeFromParent();
         m_attributeValueViews.remove(valueView);
         AttributeValueView valueWidget = null;
@@ -509,7 +545,7 @@ public class AttributeHandler extends RootHandler {
                 valueWidget.setValueWidget(
                     m_widgetService.getAttributeFormWidget(attributeChoice),
                     value.getAttribute(attributeChoice).getSimpleValue(),
-                    m_widgetService.getDefaultAttributeValue(attributeChoice),
+                    m_widgetService.getDefaultAttributeValue(attributeChoice, getSimplePath(targetPosition)),
                     true);
             } else {
                 valueWidget.setValueEntity(
@@ -536,7 +572,7 @@ public class AttributeHandler extends RootHandler {
             valueWidget.setValueWidget(
                 m_widgetService.getAttributeFormWidget(m_attributeName),
                 value,
-                m_widgetService.getDefaultAttributeValue(m_attributeName),
+                m_widgetService.getDefaultAttributeValue(m_attributeName, getSimplePath(targetPosition)),
                 true);
         } else {
             removeHandlers(currentPosition);
@@ -572,6 +608,7 @@ public class AttributeHandler extends RootHandler {
         if (index >= (m_entity.getAttribute(m_attributeName).getValueCount() - 1)) {
             return;
         }
+        m_widgetService.addChangedOrderPath(getSimplePath(-1));
         reference.hideAllButtons();
         Element parent = reference.getElement().getParentElement();
         parent.getStyle().setPosition(Position.RELATIVE);
@@ -611,6 +648,7 @@ public class AttributeHandler extends RootHandler {
         if (index == 0) {
             return;
         }
+        m_widgetService.addChangedOrderPath(getSimplePath(-1));
         reference.hideAllButtons();
         Element parent = reference.getElement().getParentElement();
         parent.getStyle().setPosition(Position.RELATIVE);
@@ -741,6 +779,17 @@ public class AttributeHandler extends RootHandler {
                 }
 
             }
+        }
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.RootHandler#setHandlerById(java.lang.String, com.alkacon.acacia.client.AttributeHandler)
+     */
+    @Override
+    public void setHandlerById(String attributeName, AttributeHandler handler) {
+
+        if (m_parentHandler != null) {
+            m_parentHandler.setHandlerById(attributeName, handler);
         }
     }
 
@@ -892,7 +941,7 @@ public class AttributeHandler extends RootHandler {
         insertHandlers(valueWidget.getValueIndex());
 
         if (optionType.isSimpleType()) {
-            String defaultValue = m_widgetService.getDefaultAttributeValue(attributeChoice);
+            String defaultValue = m_widgetService.getDefaultAttributeValue(attributeChoice, getSimplePath(valueIndex));
             I_FormEditWidget widget = m_widgetService.getAttributeFormWidget(attributeChoice);
             choiceEntity.addAttributeValue(attributeChoice, defaultValue);
             valueWidget.setValueWidget(widget, defaultValue, defaultValue, true);
@@ -924,7 +973,7 @@ public class AttributeHandler extends RootHandler {
             parentValue.addAttributeValue(Type.CHOICE_ATTRIBUTE_NAME, choice);
             I_Type choiceOptionType = choiceType.getAttributeType(attributeChoice);
             if (choiceOptionType.isSimpleType()) {
-                String choiceValue = m_widgetService.getDefaultAttributeValue(attributeChoice);
+                String choiceValue = m_widgetService.getDefaultAttributeValue(attributeChoice, getSimplePath(0));
                 choice.addAttributeValue(attributeChoice, choiceValue);
                 break;
             } else {
@@ -1020,6 +1069,7 @@ public class AttributeHandler extends RootHandler {
                 ((FlowPanel)reference.getParent()).add(valueWidget);
             } else {
                 ((FlowPanel)reference.getParent()).insert(valueWidget, valueIndex);
+                m_widgetService.addChangedOrderPath(getSimplePath(-1));
             }
         }
         valueIndex = valueWidget.getValueIndex();

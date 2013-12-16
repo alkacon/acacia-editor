@@ -46,6 +46,13 @@ public interface I_WidgetService {
     public void addRenderer(I_EntityRenderer renderer);
 
     /**
+     * Adds the given path to the list of paths where child attributes have change their order.<p>
+     * 
+     * @param attributePath the attribute path
+     */
+    void addChangedOrderPath(String attributePath);
+
+    /**
      * Adds all configurations.<p>
      * 
      * @param configurations the configurations to add
@@ -101,10 +108,11 @@ public interface I_WidgetService {
      * Returns the default attribute value.<p>
      * 
      * @param attributeName the attribute name
+     * @param simpleValuePath the value path
      * 
      * @return the default value
      */
-    String getDefaultAttributeValue(String attributeName);
+    String getDefaultAttributeValue(String attributeName, String simpleValuePath);
 
     /**
      * Returns the renderer for the given attribute.<p>

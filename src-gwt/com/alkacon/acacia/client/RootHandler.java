@@ -37,11 +37,11 @@ import java.util.Map;
  */
 public class RootHandler implements I_AttributeHandler {
 
+    /** The sub handlers. */
+    protected List<Map<String, AttributeHandler>> m_handlers;
+
     /** The attribute handler by id. */
     private Map<String, AttributeHandler> m_handlerById;
-
-    /** The sub handlers. */
-    private List<Map<String, AttributeHandler>> m_handlers;
 
     /**
      * Constructor.<p>
@@ -67,6 +67,22 @@ public class RootHandler implements I_AttributeHandler {
         m_handlers.clear();
         m_handlers.add(new HashMap<String, AttributeHandler>());
         m_handlerById.clear();
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.I_AttributeHandler#collectSimplePath(com.alkacon.acacia.client.I_AttributeHandler)
+     */
+    public String collectSimplePath(I_AttributeHandler childHandler) {
+
+        return "";
+    }
+
+    /**
+     * @see com.alkacon.acacia.client.I_AttributeHandler#getAttributeName()
+     */
+    public String getAttributeName() {
+
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -215,5 +231,4 @@ public class RootHandler implements I_AttributeHandler {
         }
         m_handlerById.clear();
     }
-
 }

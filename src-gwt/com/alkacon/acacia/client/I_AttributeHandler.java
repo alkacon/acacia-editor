@@ -30,6 +30,22 @@ package com.alkacon.acacia.client;
 public interface I_AttributeHandler {
 
     /**
+     * Returns the simple path.<p>
+     * 
+     * @param childHandler the child attribute handler
+     * 
+     * @return the simple path
+     */
+    String collectSimplePath(I_AttributeHandler childHandler);
+
+    /**
+     * Returns the attribute name.<p>
+     * 
+     * @return the attribute name
+     */
+    String getAttributeName();
+
+    /**
      * Returns the handler for the given attribute at the given index.<p>
      * 
      * @param attributeName the attribute name
