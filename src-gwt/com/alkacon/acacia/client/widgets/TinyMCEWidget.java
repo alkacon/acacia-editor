@@ -386,7 +386,11 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
     @Override
     protected void onDetach() {
 
-        detachEditor();
+        try {
+            detachEditor();
+        } catch (Throwable t) {
+            // may happen in rare cases, can be ignored
+        }
         if (m_toolbarContainer != null) {
             m_toolbarContainer.removeFromParent();
             m_toolbarContainer = null;
@@ -666,6 +670,7 @@ public final class TinyMCEWidget extends A_EditWidget implements HasResizeHandle
      * Removes the editor.<p>
      */
     private native void detachEditor() /*-{
+                                       
                                        var ed = this.@com.alkacon.acacia.client.widgets.TinyMCEWidget::m_editor;
                                        if (ed != null) {
                                        ed.remove();
