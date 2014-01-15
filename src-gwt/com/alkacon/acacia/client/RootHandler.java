@@ -70,6 +70,23 @@ public class RootHandler implements I_AttributeHandler {
     }
 
     /**
+     * Ensures attribute handler maps are available up to the specified index.<p>
+     * This is required during inline editing, where only a fragment of the handlers data structure is build and used.<p>
+     * 
+     * @param index the index of the currently edited attribute 
+     */
+    public void ensureHandlers(int index) {
+
+        if (m_handlers.size() <= index) {
+            // make sure the handler maps are available
+            // this may be necessary
+            for (int i = m_handlers.size(); i <= index; i++) {
+                insertHandlers(i);
+            }
+        }
+    }
+
+    /**
      * @see com.alkacon.acacia.client.I_AttributeHandler#getChildHandler(java.lang.String, int)
      */
     public AttributeHandler getChildHandler(String attributeName, int index) {
