@@ -392,8 +392,12 @@ div.helpBubble{
 	display: block;
 	margin-top: 3px;
 }
-.hasError div.helpBubble{
+.hasError div.helpBubble, .gwt-TabLayoutPanel .gwt-TabLayoutPanelTabBar .gwt-TabLayoutPanelTab.hasError{
 	background-color: #ffcccc;
+}
+
+.gwt-TabLayoutPanel .gwt-TabLayoutPanelTabBar .gwt-TabLayoutPanelTab.hasWarning{
+	background: #FFFFCC;
 }
 
 @sprite .hasError .helpMessage .helpMessageIcon{
