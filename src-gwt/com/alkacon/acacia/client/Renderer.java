@@ -336,6 +336,7 @@ public class Renderer implements I_EntityRenderer {
         context.add(attributeElement);
         context.addStyleName(ENTITY_CLASS);
         RootHandler parentHandler = new RootHandler();
+        parentHandler.ensureHandlers(attributeIndex);
         parentHandler.setHandler(attributeIndex, attributeName, attributeHandler);
         attributeHandler.setSingleValueIndex(attributeIndex);
         String label = m_widgetService.getAttributeLabel(attributeName);

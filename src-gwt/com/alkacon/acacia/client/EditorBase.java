@@ -395,6 +395,8 @@ public class EditorBase implements I_InlineHtmlUpdateHandler {
             if (initUndo) {
                 UndoRedoHandler.getInstance().initialize(m_entity, this, m_rootHandler);
             }
+            // trigger validation right away
+            m_validationHandler.validate(m_entity);
         }
     }
 

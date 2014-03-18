@@ -1,7 +1,7 @@
 dependencies {
-    compile group: 'com.google.gwt', name: 'gwt-dev', version: '2.6.0-rc1'
-    compile group: 'com.google.gwt', name: 'gwt-user', version: '2.6.0-rc1'
-    compile group: 'com.google.gwt', name: 'gwt-servlet', version: '2.6.0-rc1'
+    compile group: 'com.google.gwt', name: 'gwt-dev', version: '2.6.0'
+    compile group: 'com.google.gwt', name: 'gwt-user', version: '2.6.0'
+    compile group: 'com.google.gwt', name: 'gwt-servlet', version: '2.6.0'
     compile group: 'org.timepedia.exporter', name: 'gwtexporter', version: '2.4.0'
     compile group: 'com.google.guava', name: 'guava', version: '15.0'
     compile group: 'com.google.guava', name: 'guava-gwt', version: '15.0'
