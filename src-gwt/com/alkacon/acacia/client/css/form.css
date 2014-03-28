@@ -440,7 +440,7 @@ div.helpBubble{
 	color: #222222;
 }
 
-.attributeValue.focused > .helpBubble, div.attributeValue.focused.hasError > .helpBubble{
+.attributeValue.focused > .helpBubble, div.attributeValue.focused.hasError > .helpBubble, div.attributeValue.focused.hasWarning > .helpBubble{
 	display: block;
 }
 
