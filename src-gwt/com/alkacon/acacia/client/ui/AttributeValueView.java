@@ -644,7 +644,9 @@ implements I_Draggable, I_HasResizeOnShow, HasMouseOverHandlers, HasMouseOutHand
         m_isSimpleValue = false;
         FlowPanel entityPanel = new FlowPanel();
         m_widgetHolder.add(entityPanel);
-        renderer.renderForm(value, entityPanel, m_handler, getValueIndex());
+        int index = getValueIndex();
+        m_handler.ensureHandlers(index);
+        renderer.renderForm(value, entityPanel, m_handler, index);
         removeStyleName(formCss().emptyValue());
     }
 
