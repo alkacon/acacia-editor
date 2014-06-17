@@ -98,4 +98,15 @@ public class ValidationContext {
 
         return !m_invalidEntityIds.isEmpty();
     }
+
+    /**
+     * Removes the given entity id, use when validating the entity is no longer required.<p>
+     * 
+     * @param entityId the entity id
+     */
+    public void removeEntityId(String entityId) {
+
+        m_invalidEntityIds.remove(entityId);
+        m_validEntityIds.remove(entityId);
+    }
 }

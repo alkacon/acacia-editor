@@ -181,6 +181,16 @@ public final class ValidationHandler implements ValueChangeHandler<I_Entity>, Ha
     }
 
     /**
+     * Returns the validation context.<p>
+     * 
+     * @return the validation context
+     */
+    public ValidationContext getValidationContext() {
+
+        return m_validationContext;
+    }
+
+    /**
      * @see com.google.gwt.event.logical.shared.ValueChangeHandler#onValueChange(com.google.gwt.event.logical.shared.ValueChangeEvent)
      */
     public void onValueChange(final ValueChangeEvent<I_Entity> event) {
